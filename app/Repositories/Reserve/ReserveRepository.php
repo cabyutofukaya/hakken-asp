@@ -35,8 +35,9 @@ class ReserveRepository implements ReserveRepositoryInterface
      */
     public function findByEstimateNumber(string $estimateNumber, int $agencyId, array $with = [], array $select = [], bool $getDeleted = false) : ?Reserve
     {
-        $query = $this->reserve->draft(); // スコープは未予約確定
-
+        // $query = $this->reserve->draft(); // スコープは未予約確定 → 予約確定後のページで本メソッドを実行するケースがあるので、予約確定後のデータにもアクセスできるようにdraftスコープは一旦外し
+        $query = $this->reserve;
+        
         $query = $select ? $query->select($select) : $query;
         $query = $with ? $query->with($with) : $query;
         $query = $getDeleted ? $query->withTrashed() : $query;

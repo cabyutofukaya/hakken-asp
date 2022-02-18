@@ -53,7 +53,6 @@ class EstimateController extends AppController
             abort(403);
         }
 
-        // 相談ステータスのページなので念の為、ステータスもチェック
         if ($reserve->application_step == config('consts.reserves.APPLICATION_STEP_RESERVE')) { // 予約段階に切り替わった場合は転送
             return redirect(route('staff.web.estimates.reserve.show', [$agencyAccount, $reserve->control_number]));
         } elseif ($reserve->application_step == config('consts.reserves.APPLICATION_STEP_DRAFT')) { // 見積段階に切り替わった場合は転送
@@ -86,9 +85,8 @@ class EstimateController extends AppController
             abort(403);
         }
 
-        // 見積ステータスのページなので念の為、ステータスもチェック
-        if ($reserve->application_step != config('consts.reserves.APPLICATION_STEP_DRAFT')) {
-            abort(404);
+        if ($reserve->application_step == config('consts.reserves.APPLICATION_STEP_RESERVE')) { // 予約段階に切り替わった場合は転送
+            return redirect(route('staff.web.estimates.reserve.show', [$agencyAccount, $reserve->control_number]));
         }
 
         return view('staff.web.estimate.show', compact('reserve'));
@@ -107,6 +105,11 @@ class EstimateController extends AppController
         $response = \Gate::inspect('view', [$reserve]);
         if (!$response->allowed()) {
             abort(403);
+        }
+
+        // 念の為ステータスチェック
+        if ($reserve->application_step != config('consts.reserves.APPLICATION_STEP_DRAFT')) {
+            abort(404);
         }
 
         return view('staff.web.estimate.edit', compact('reserve'));

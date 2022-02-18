@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Staff;
 
-use App\Events\UpdatedReserveEvent;
 use App\Events\ReserveChangeHeadcountEvent;
 use App\Events\ReserveChangeRepresentativeEvent;
+use App\Events\UpdatedReserveEvent;
 use App\Exceptions\ExclusiveLockException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Staff\EstimateStoretRequest;
@@ -40,7 +40,7 @@ class EstimateController extends AppController
 
     /**
      * 詳細表示ページ
-     * 
+     *
      * @param string $estimateNumber 見積番号
      */
     public function show($agencyAccount, $estimateNumber)
@@ -51,6 +51,10 @@ class EstimateController extends AppController
         $response = Gate::inspect('view', [$reserve]);
         if (!$response->allowed()) {
             abort(403);
+        }
+
+        if ($reserve->application_step == config('consts.reserves.APPLICATION_STEP_RESERVE')) { // 予約段階に切り替わった場合は転送
+            return redirect(route('staff.asp.estimates.reserve.show', [$agencyAccount, $reserve->control_number]));
         }
 
         return view('staff.estimate.show', compact('reserve'));
@@ -75,7 +79,7 @@ class EstimateController extends AppController
     /**
      * 登録処理
      * バリデーションは予約作成時と共通(ReserveStoretRequest)
-     * 
+     *
      * @param string $agencyAccount 会社アカウント
      */
     public function store(EstimateStoretRequest $request, $agencyAccount)
@@ -110,12 +114,11 @@ class EstimateController extends AppController
             Log::error($e);
         }
         abort(500);
-
     }
 
     /**
      * 編集ページ
-     * 
+     *
      * @param string $estimateNumber 見積番号
      */
     public function edit(string $agencyAccount, string $estimateNumber)
@@ -126,6 +129,11 @@ class EstimateController extends AppController
         $response = Gate::inspect('view', [$reserve]);
         if (!$response->allowed()) {
             abort(403);
+        }
+
+        // 念の為ステータスチェック
+        if ($reserve->application_step != config('consts.reserves.APPLICATION_STEP_DRAFT')) {
+            abort(404);
         }
 
         return view('staff.estimate.edit', compact('reserve'));
@@ -157,14 +165,11 @@ class EstimateController extends AppController
             if ($updatedReserve) {
                 return redirect()->route('staff.asp.estimates.normal.index', [$agencyAccount])->with('success_message', "「{$updatedReserve->estimate_number}」を更新しました");
             }
-
         } catch (ExclusiveLockException $e) { // 同時編集エラー
             return back()->withInput()->with('error_message', "他のユーザーによる編集済みレコードです。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
-
         } catch (Exception $e) {
             Log::error($e);
         }
         abort(500);
-
     }
 }
