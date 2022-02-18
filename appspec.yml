@@ -1,0 +1,27 @@
+version: 0.0
+os: linux
+files:
+  - source: /
+    destination: /var/www/html/
+permissions:
+  - object: /var/www/html/
+    pattern: "**"
+    mode: 775
+    owner: nginx
+hooks:
+  BeforeInstall:
+    - location: scripts/before
+      timeout: 300
+      runas: root
+  AfterInstall:
+    - location: scripts/after
+      timeout: 500
+      runas: root
+  ApplicationStop:
+    - location: scripts/stop
+      timeout: 300
+      runas: root
+  ApplicationStart:
+    - location: scripts/start
+      timeout: 300
+      runas: root

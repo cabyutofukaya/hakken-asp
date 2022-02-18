@@ -1,0 +1,821 @@
+@charset "utf-8";
+/*
+	Description: initial setting
+	Version: 1.0
+	Author: idealgrow
+*/
+/*
+===== 1: universal reset =================================
+*/
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+#wrapper.fix {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    z-index: 100;
+}
+/*
+===== 2: body and base setting ===========================
+*/
+html {
+    height: 100%;
+    width: 100%;
+    overflow: auto;
+}
+body {
+    font-family: "Noto Sans JP", "Hiragino Kaku Gothic Pro", "Meiryo",
+        sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    margin: 0px;
+    padding: 0px;
+    color: #000;
+    font-weight: 500;
+    -webkit-text-size-adjust: 100%;
+    width: 100%;
+}
+@font-face {
+    font-family: "Material Icons";
+    font-style: normal;
+    font-weight: 400;
+    src: url(https://example.com/MaterialIcons-Regular.eot); /* For IE6-8 */
+    src: local("Material Icons"), local("MaterialIcons-Regular"),
+        url(https://example.com/MaterialIcons-Regular.woff2) format("woff2"),
+        url(https://example.com/MaterialIcons-Regular.woff) format("woff"),
+        url(https://example.com/MaterialIcons-Regular.ttf) format("truetype");
+}
+.material-icons {
+    font-family: "Material Icons";
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px; /* Preferred icon size */
+    display: inline-block;
+    line-height: 1;
+    text-transform: none;
+    letter-spacing: normal;
+    word-wrap: normal;
+    white-space: nowrap;
+    direction: ltr;
+    vertical-align: middle;
+    margin-bottom: 4px;
+    /* Support for all WebKit browsers. */
+    -webkit-font-smoothing: antialiased;
+    /* Support for Safari and Chrome. */
+    text-rendering: optimizeLegibility;
+
+    /* Support for Firefox. */
+    -moz-osx-font-smoothing: grayscale;
+
+    /* Support for IE. */
+    font-feature-settings: "liga";
+}
+/* Rules for sizing the icon. */
+.material-icons.md-18 {
+    font-size: 18px;
+}
+.material-icons.md-24 {
+    font-size: 24px;
+}
+.material-icons.md-36 {
+    font-size: 36px;
+}
+.material-icons.md-48 {
+    font-size: 48px;
+}
+
+/* Rules for using icons as black on a light background. */
+.material-icons.md-dark {
+    color: rgba(0, 0, 0, 1);
+}
+.material-icons.md-dark.md-inactive {
+    color: rgba(0, 0, 0, 0.26);
+}
+
+/* Rules for using icons as white on a dark background. */
+.material-icons.md-light {
+    color: rgba(255, 255, 255, 1);
+}
+.material-icons.md-light.md-inactive {
+    color: rgba(255, 255, 255, 0.3);
+}
+.icons {
+    position: relative;
+}
+.icons:before {
+    content: "";
+    width: 16px;
+    height: 20px;
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.4;
+    transition: all 0.2s;
+}
+.icons:hover:before {
+    opacity: 1;
+}
+.icons.ico-claim:before {
+    /* background: url("../img/shared/ico_claim.svg") center center no-repeat; */
+    background-size: 100%;
+}
+.icons.ico-in:before {
+    /* background: url("../img/shared/ico_in.svg") center center no-repeat; */
+    background-size: 100%;
+}
+/*
+===== margin setting ====
+*/
+.mt00 {
+    margin-top: 0 !important;
+}
+.mt05 {
+    margin-top: 5px !important;
+}
+.mt10 {
+    margin-top: 10px !important;
+}
+.mt12 {
+    margin-top: 12px !important;
+}
+.mt15 {
+    margin-top: 15px !important;
+}
+.mt20 {
+    margin-top: 20px !important;
+}
+.mt25 {
+    margin-top: 25px !important;
+}
+.mt30 {
+    margin-top: 30px !important;
+}
+.mt35 {
+    margin-top: 35px !important;
+}
+.mt40 {
+    margin-top: 40px !important;
+}
+.mt45 {
+    margin-top: 45px !important;
+}
+.mt50 {
+    margin-top: 50px !important;
+}
+.mt60 {
+    margin-top: 60px !important;
+}
+.mr00 {
+    margin-right: 0 !important;
+}
+.mr05 {
+    margin-right: 5px !important;
+}
+.mr10 {
+    margin-right: 10px !important;
+}
+.mr12 {
+    margin-right: 12px !important;
+}
+.mr15 {
+    margin-right: 15px !important;
+}
+.mr20 {
+    margin-right: 20px !important;
+}
+.mr25 {
+    margin-right: 25px !important;
+}
+.mr30 {
+    margin-right: 30px !important;
+}
+.mr35 {
+    margin-right: 35px !important;
+}
+.mr40 {
+    margin-right: 40px !important;
+}
+.mr45 {
+    margin-right: 45px !important;
+}
+.mr50 {
+    margin-right: 50px !important;
+}
+.mr65 {
+    margin-right: 65px !important;
+}
+.mr95 {
+    margin-right: 95px !important;
+}
+.mb00 {
+    margin-bottom: 0 !important;
+}
+.mb05 {
+    margin-bottom: 5px !important;
+}
+.mb10 {
+    margin-bottom: 10px !important;
+}
+.mb12 {
+    margin-bottom: 12px !important;
+}
+.mb15 {
+    margin-bottom: 15px !important;
+}
+.mb20 {
+    margin-bottom: 20px !important;
+}
+.mb25 {
+    margin-bottom: 25px !important;
+}
+.mb30 {
+    margin-bottom: 30px !important;
+}
+.mb35 {
+    margin-bottom: 35px !important;
+}
+.mb40 {
+    margin-bottom: 40px !important;
+}
+.mb45 {
+    margin-bottom: 45px !important;
+}
+.mb50 {
+    margin-bottom: 50px !important;
+}
+.mb60 {
+    margin-bottom: 60px !important;
+}
+.ml00 {
+    margin-left: 0 !important;
+}
+.ml05 {
+    margin-left: 5px !important;
+}
+.ml10 {
+    margin-left: 10px !important;
+}
+.ml12 {
+    margin-left: 12px !important;
+}
+.ml15 {
+    margin-left: 15px !important;
+}
+.ml20 {
+    margin-left: 20px !important;
+}
+.ml25 {
+    margin-left: 25px !important;
+}
+.ml30 {
+    margin-left: 30px !important;
+}
+.ml35 {
+    margin-left: 35px !important;
+}
+.ml40 {
+    margin-left: 40px !important;
+}
+.ml45 {
+    margin-left: 45px !important;
+}
+.ml50 {
+    margin-left: 50px !important;
+}
+.wd10 {
+    width: 10%;
+}
+.wd15 {
+    width: 15%;
+}
+.wd20 {
+    width: 20%;
+}
+.wd25 {
+    width: 25%;
+}
+.wd30 {
+    width: 30%;
+}
+.wd35 {
+    width: 35%;
+}
+.wd40 {
+    width: 40%;
+}
+.wd45 {
+    width: 45%;
+}
+.wd50 {
+    width: 50%;
+}
+.wd55 {
+    width: 55%;
+}
+.wd60 {
+    width: 60%;
+}
+.wd65 {
+    width: 65%;
+}
+.wd70 {
+    width: 70%;
+}
+.wd75 {
+    width: 75%;
+}
+.wd80 {
+    width: 80%;
+}
+.wd85 {
+    width: 85%;
+}
+.wd90 {
+    width: 90%;
+}
+.wd95 {
+    width: 95%;
+}
+.wd100 {
+    width: 100%;
+}
+/*
+===== font setting ====
+*/
+.txtalc {
+    text-align: center !important;
+}
+.ita {
+    font-style: italic;
+}
+.bold {
+    font-weight: bold;
+}
+.rb {
+    color: #f00;
+    font-weight: bold;
+}
+.rs {
+    color: #f00;
+    font-size: 14px;
+}
+.fz14 {
+    font-size: 14px;
+}
+.fz16 {
+    font-size: 16px;
+}
+.fz18 {
+    font-size: 18px;
+}
+.fz20 {
+    font-size: 20px;
+}
+.fz22 {
+    font-size: 22px;
+}
+.fz24 {
+    font-size: 24px;
+}
+/* general params
+--------------------*/
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+pre,
+ul,
+ol,
+dl,
+dt,
+dd,
+address,
+blockquote {
+    padding: 0; /* margin&padding reset */
+    line-height: 1.8;
+    display: block;
+    margin: 0px;
+    font-weight: normal;
+    color: #333;
+    box-sizing: border-box;
+}
+div,
+ul,
+li,
+p,
+a,
+dl,
+dt,
+dd,
+span,
+input,
+select,
+textarea {
+    box-sizing: border-box;
+}
+form {
+    padding: 0; /* margin&padding reset */
+    margin: 0px;
+}
+hr,
+.areaAnchor,
+.anchor {
+    display: none;
+}
+hr {
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+img {
+    border: none; /* img do not want a border */
+    display: block;
+}
+li {
+    list-style: none;
+} /* link do not want a dot */
+/* acronyms and abbreviations styles 
+-------------------------------------*/
+acronym,
+abbr {
+    cursor: help;
+}
+/* form Setting
+--------------------*/
+input,
+textarea {
+    font-family: "Noto Sans JP", sans-serif;
+    width: 100%;
+    border-radius: 3px;
+    background: #ebebeb;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    padding: 15px;
+    font-size: 16px;
+    box-sizing: border-box;
+    border: solid 2px #ebebeb;
+}
+.error {
+    border: solid 2px #fd595e !important;
+    background: #ffe1e2 !important;
+}
+input:focus,
+textarea:focus {
+    outline: solid #000 2px;
+}
+input[type="submit"] {
+    cursor: pointer;
+    transition: all 0.2s;
+}
+input[type="submit"]:focus {
+    outline: none;
+}
+::placeholder {
+    color: #999;
+}
+#searchBox input[type="text"],
+#searchBox input[type="tel"],
+#searchBox input[type="email"],
+#searchBox input[type="number"],
+#searchBox input[type="textarea"],
+#searchBox select {
+    background: #fff;
+}
+button {
+    font-size: 16px;
+    cursor: pointer;
+    font-weight: bold;
+    padding: 15px 20px;
+    border-radius: 5px;
+    width: 100%;
+    border: none;
+    text-align: center;
+    position: relative;
+    border-width: 2px;
+    border-style: solid;
+    background: transparent;
+    z-index: 10;
+}
+button:after {
+    position: absolute;
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    content: "";
+    left: 0;
+    top: 0;
+    z-index: -1;
+    border-width: 0;
+    border-style: solid;
+    border-color: #fff;
+    transition: all 0.1s;
+}
+button:hover:after {
+    border-width: 2px;
+}
+.blueBtn {
+    color: #d4eaf0;
+    border-color: #39aed2;
+}
+.blueBtn:after {
+    background: #39aed2;
+}
+.orangeBtn {
+    color: #fff;
+    border-color: #f09247;
+}
+.orangeBtn:after {
+    background: #f09247;
+}
+.grayBtn {
+    color: #747474;
+    border-color: #c9c9c9;
+}
+.grayBtn:after {
+    background: #c9c9c9;
+}
+.redBtn {
+    color: #fff;
+    border-color: #fd595e;
+}
+.redBtn:after {
+    background: #fd595e;
+}
+button.icon-left span {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+button.slimBtn {
+    padding: 2px 20px;
+}
+.addBtn {
+    border: none;
+    background: #fff;
+    position: relative;
+    padding: 14px 10px 14px 47px;
+    transition: all 0.1s ease-in;
+    color: #39aed2;
+}
+.addBtn span {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 47px;
+    height: 100%;
+    background: #39aed2;
+    color: #d4eaf0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px 0 0 5px;
+}
+.addBtn:hover:after {
+    border-color: #39aed2;
+    border-radius: 5px;
+}
+.calendar {
+    position: relative;
+}
+.calendar input {
+    cursor: pointer;
+}
+.calendar:after {
+    font-family: "Material Icons";
+    content: "calendar_today";
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 24px;
+    color: #9fa1a3;
+    pointer-events: none;
+}
+.selectBox {
+    cursor: pointer;
+    position: relative;
+}
+.selectBox select {
+    width: 100%;
+    padding: 14px 40px 14px 12px;
+    height: 58px;
+    background: #ebebeb;
+    border: solid 2px #ebebeb;
+    cursor: pointer;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    font-size: 16px;
+    border-radius: 5px;
+}
+.selectBox:after {
+    font-family: "Material Icons";
+    content: "expand_more";
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 34px;
+    height: 24px;
+    pointer-events: none;
+    border-left: solid 1px #9fa1a3;
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9fa1a3;
+    font-size: 24px;
+}
+.slideRadio {
+    display: flex;
+    background: #ebebeb;
+    border-radius: 5px;
+    padding: 4px;
+    height: 58px;
+}
+.slideRadio input {
+    display: none;
+}
+.slideRadio li {
+    position: relative;
+    width: 50%;
+    margin-right: 0 !important;
+    margin-top: 0 !important;
+}
+.slideRadio label {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 50px;
+    background: transparent;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2;
+    color: #c3c3c3;
+    cursor: pointer;
+}
+.slideRadio li:first-of-type label:after {
+    border-radius: 5px 0 0 5px;
+}
+.slideRadio li:nth-of-type(2) label:after {
+    border-radius: 0 5px 5px 0;
+}
+.slideRadio label:after {
+    content: "";
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    background: #ddd;
+    z-index: -1;
+}
+.slideRadio li input:checked + label {
+    color: #fff;
+}
+.slideRadio li:first-of-type input:checked + label:after {
+    background: #88d361;
+}
+.slideRadio li:nth-of-type(2) input:checked + label:after {
+    background: #9fa1a3;
+}
+.baseRadio input {
+    display: none;
+}
+.baseRadio label {
+    cursor: pointer;
+    color: #c3c3c3;
+    padding-left: 28px;
+}
+.baseRadio label:before {
+    content: "";
+    background: #ebebeb;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    position: absolute;
+    left: 0;
+    top: 7px;
+}
+.baseRadio input:checked + label {
+    color: #000;
+}
+.baseRadio input:checked + label:before {
+    background: #88d361;
+}
+.baseRadio input:checked + label:after {
+    content: "";
+    width: 10px;
+    height: 10px;
+    position: absolute;
+    background: #fff;
+    border-radius: 50%;
+    left: 4px;
+    top: 11px;
+}
+.thColumn {
+    display: flex;
+    flex-wrap: wrap;
+}
+.thColumn li {
+    width: 32%;
+    margin-right: 2%;
+    margin-bottom: 0; /** atode kesu **/
+    position: relative;
+}
+.thColumn li:nth-of-type(3n) {
+    margin-right: 0;
+}
+.thColumn li:nth-of-type(3) ~ li {
+    margin-top: 2%;
+}
+.checkBox input {
+    display: none;
+}
+.checkBox label {
+    padding-left: 28px;
+    cursor: pointer;
+    color: #c3c3c3;
+}
+.checkBox label:before {
+    content: "";
+    background: #ebebeb;
+    position: absolute;
+    left: 0;
+    top: 7px;
+    width: 18px;
+    height: 17px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 1px;
+}
+.checkBox input:checked + label:before {
+    font-family: "Material Icons";
+    content: "done";
+    font-size: 18px;
+    color: #fff;
+    font-weight: bold;
+    background: #88d361;
+}
+.checkBox input:checked + label {
+    color: #000;
+}
+.disable {
+    opacity: 0.2;
+}
+.unit {
+    position: relative;
+}
+.unit input {
+    text-align: right;
+    padding-right: 40px;
+}
+.unit:after {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+.uPrice:after {
+    content: "円";
+}
+.uNum:after {
+    content: "名";
+}
+/*
+===== 3: link setting ===========================
+*/
+a:link {
+    color: #39aed2;
+    transition: all 0.3s ease;
+}
+a:visited {
+    color: #39aed2;
+}
+a:hover {
+    color: #888;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+a:active {
+    color: #333;
+    text-decoration: none;
+}
+a img {
+    transition: all 0.3s ease;
+    opacity: 1;
+}
+a img:hover {
+    opacity: 0.6;
+    transition: all 0.3s ease;
+}

@@ -1,0 +1,174 @@
+<?php
+
+namespace App\Http\Controllers\Staff\Api;
+
+use App\Events\ChangePaymentAmountEvent;
+use App\Exceptions\ExclusiveLockException;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Staff\AccountPayableDetailPaymentBatchRequest;
+use App\Http\Requests\Staff\AccountPayableDetailUpdateRequest;
+use App\Http\Resources\Staff\AccountPayableDetail\IndexResource;
+use App\Models\AccountPayableDetail;
+use App\Services\AccountPayableDetailService;
+use App\Services\AgencyWithdrawalService;
+use App\Services\ReserveItineraryService;
+use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
+
+/**
+ * 仕入れ先買掛金詳細
+ */
+class AccountPayableDetailController extends Controller
+{
+    public function __construct(AccountPayableDetailService $accountPayableDetailService, ReserveItineraryService $reserveItineraryService, AgencyWithdrawalService $agencyWithdrawalService)
+    {
+        $this->accountPayableDetailService = $accountPayableDetailService;
+        $this->reserveItineraryService = $reserveItineraryService;
+        $this->agencyWithdrawalService = $agencyWithdrawalService;
+    }
+
+    /**
+     * 一覧取得＆表示処理
+     *
+     * @param array $params 検索パラメータ
+     * @param int $limit 取得件数
+     * @param string $agencyAccount 会社アカウント
+     */
+    private function search(array $params, int $limit, string $agencyAccount)
+    {
+        $search = [];
+        // 一応検索に使用するパラメータだけに絞る
+        foreach ($params as $key => $val) {
+            if (in_array($key, ['payable_number','status','reserve_number','supplier_name','item_name','item_code','last_manager_id','payment_date_from','payment_date_to']) || strpos($key, config('consts.user_custom_items.USER_CUSTOM_ITEM_PREFIX')) === 0) { // カスタム項目はプレフィックスを元に抽出
+
+                if (in_array($key, ['payment_date_from','payment_date_to'], true) || strpos($key, config('consts.user_custom_items.USER_CUSTOM_ITEM_CALENDAR_PREFIX')) === 0) { // カレンダーパラメータは日付を（YYYY/MM/DD → YYYY-MM-DD）に整形
+                    $search[$key] = !is_empty($val) ? date('Y-m-d', strtotime($val)) : null;
+                } else {
+                    $search[$key] = $val;
+                }
+            }
+        }
+        
+        return IndexResource::collection(
+            $this->accountPayableDetailService->paginateByAgencyAccount(
+                $agencyAccount,
+                $search,
+                $limit,
+                true,
+                config('consts.reserves.APPLICATION_STEP_RESERVE'), // スコープ設定は確定済予約情報に
+                ['reserve','agency_withdrawals.v_agency_withdrawal_custom_values','saleable'],
+                []
+            )
+        );
+    }
+
+    /**
+     * 仕入一覧
+     */
+    public function index(Request $request, $agencyAccount)
+    {
+        // 認可チェック
+        $response = \Gate::authorize('viewAny', new AccountPayableDetail);
+        if (!$response->allowed()) {
+            abort(403, $response->message());
+        }
+
+        return $this->search($request->all(), $request->get("per_page", 10), $agencyAccount);
+    }
+
+    /**
+     * 更新
+     *
+     * @param int $id account_payable_details ID
+     */
+    public function update(AccountPayableDetailUpdateRequest $request, $agencyAccount, $id)
+    {
+        $accountPayableDetail = $this->accountPayableDetailService->find($id);
+
+        if (!$accountPayableDetail) {
+            return response("データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 404);
+        }
+
+        // 認可チェック
+        $response = \Gate::inspect('update', [$accountPayableDetail]);
+        if (!$response->allowed()) {
+            abort(403, $response->message());
+        }
+
+        $input = $request->all();
+        try {
+            if ($accountPayableDetail = $this->accountPayableDetailService->update($accountPayableDetail->id, $input)) {
+                return new IndexResource($accountPayableDetail);
+            }
+        } catch (ExclusiveLockException $e) { // 同時編集エラー
+            return response("他のユーザーによる編集済みレコードです。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 409);
+        } catch (\Exception $e) {
+            \Log::error($e);
+        }
+
+        abort(500);
+    }
+
+    /**
+     * 支払い一括処理
+     */
+    public function paymentBatch(AccountPayableDetailPaymentBatchRequest $request, $agencyAccount)
+    {
+        $input = $request->only(['data', 'input', 'params']); // 更新対象一覧、form値、検索パラメータ
+
+        $input['input']['agency_id'] = auth('staff')->user()->agency_id; // form値に会社IDをセット
+
+        // id=>updated_at形式の配列にまとめる
+        $idInfo = collect($input['data'])->pluck('updated_at','id')->toArray();
+
+        foreach (array_keys($idInfo) as $id) {
+            $accountPayableDetail = $this->accountPayableDetailService->find($id);
+
+            if (!$accountPayableDetail) {
+                return response("データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 404);
+            }
+    
+            // 認可チェック
+            $response = \Gate::inspect('update', [$accountPayableDetail]);
+            if (!$response->allowed()) {
+                abort(403, $response->message());
+            }
+            
+            if ($accountPayableDetail->unpaid_balance <= 0) {
+                continue;
+            } // 未払金額が0円以下の場合は処理ナシ
+
+            // 保存用データ配列にamount、account_payable_detail_id値をセット
+            $data = array_merge($input['input'], [
+                'amount' => $accountPayableDetail['unpaid_balance'],
+                'account_payable_detail_id' => $accountPayableDetail->id, // 仕入明細ID
+                'reserve_id' => $accountPayableDetail->reserve_id,
+                'reserve_travel_date_id' => $accountPayableDetail->reserve_travel_date_id,
+            ]);
+            $data['account_payable_detail']['updated_at'] = Arr::get($idInfo, $id); // 書類更新日時(同時編集チェック用)
+
+            try {
+                $agencyWithdrawal = \DB::transaction(function () use ($data) {
+                    $agencyWithdrawal = $this->agencyWithdrawalService->create($data, true);// 一応、同時編集もチェック
+                    
+                    // ステータスと支払い残高計算
+                    event(new ChangePaymentAmountEvent($agencyWithdrawal->account_payable_detail->id));
+    
+                    return $agencyWithdrawal;
+                });
+            } catch (ExclusiveLockException $e) { // 同時編集エラー
+                return response("他のユーザーによる編集済みレコードです。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 409);
+            } catch (\Exception $e) {
+                \Log::error($e);
+            }
+        }
+
+        return $this->search(
+            $input['params'],
+            $request->get("per_page", 10),
+            $agencyAccount
+        );
+
+        // return response('', 200);
+    }
+}

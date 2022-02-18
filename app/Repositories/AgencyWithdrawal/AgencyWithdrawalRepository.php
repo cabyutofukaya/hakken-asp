@@ -1,0 +1,69 @@
+<?php
+namespace App\Repositories\AgencyWithdrawal;
+
+use App\Models\AgencyWithdrawal;
+use Illuminate\Support\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
+
+class AgencyWithdrawalRepository implements AgencyWithdrawalRepositoryInterface
+{
+    /**
+    * @param object $agencyWithdrawal
+    */
+    public function __construct(AgencyWithdrawal $agencyWithdrawal)
+    {
+        $this->agencyWithdrawal = $agencyWithdrawal;
+    }
+
+    /**
+     * 当該レコードを取得
+     *
+     * データがない場合は 404ステータス
+     *
+     * @param int $id
+     */
+    public function find(int $id, array $with = [], array $select = []): AgencyWithdrawal
+    {
+        $query = $this->agencyWithdrawal;
+        $query = $with ? $query->with($with) : $query;
+        $query = $select ? $query->select($select) : $query;
+        return $query->findOrFail($id);
+    }
+
+    /**
+     * 当該支払い明細の出金額合計を取得
+     * 行ロックで取得
+     *
+     * @param int $accountPayableDetailId 支払い明細ID
+     * @return int
+     */
+    public function getSumAmountByAccountPayableDetailId(int $accountPayableDetailId, bool $isLock=false) : int
+    {
+        return $isLock ? $this->agencyWithdrawal->where('account_payable_detail_id', $accountPayableDetailId)->lockForUpdate()->sum("amount") :  $this->agencyWithdrawal->where('account_payable_detail_id', $accountPayableDetailId)->sum("amount");
+    }
+
+    /**
+     * 出金登録
+     */
+    public function create(array $data): AgencyWithdrawal
+    {
+        return $this->agencyWithdrawal->create($data);
+    }
+
+    /**
+     * 削除
+     *
+     * @param int $id ID
+     * @param boolean $isSoftDelete 論理削除の場合はtrue
+     * @return boolean
+     */
+    public function delete(int $id, bool $isSoftDelete): bool
+    {
+        if ($isSoftDelete) {
+            $this->agencyWithdrawal->destroy($id);
+        } else {
+            $this->find($id)->forceDelete();
+        }
+        return true;
+    }
+}

@@ -1,0 +1,1037 @@
+@charset "utf-8";
+/*
+	Description: initial setting
+	Version: 1.0
+	Author: idealgrow
+*/
+/*
+===== CONTENTS ===========================================
+
+	1: BASE LAYOUT
+
+==========================================================
+*/
+.formSample {
+    padding: 60px;
+}
+.formSample li {
+    margin-bottom: 20px;
+}
+/*
+===== 1: BASE LAYOUT =====================================
+*/
+#login {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+}
+#login #loginBox {
+    width: 380px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+#login #loginBox ul {
+    margin-top: 20px;
+}
+#login #loginBox ul li {
+    margin-bottom: 20px;
+}
+#login #loginBox ul li span {
+    font-size: 14px;
+    display: block;
+    color: #2b2d2e;
+    font-weight: bold;
+}
+#login #loginBox ul li input {
+    background: #ebebeb;
+    width: 100%;
+    border: none;
+    padding: 15px;
+    border-radius: 3px;
+    font-size: 18px;
+}
+#login #loginBox .blueBtn {
+    width: 70%;
+    margin: 40px auto 0 auto;
+    display: block;
+}
+header {
+    padding: 20px;
+    position: relative;
+    height: 66px;
+}
+header #logout {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-weight: bold;
+}
+header #logout a {
+    display: block;
+    width: 100px;
+    text-align: right;
+    text-decoration: none;
+    color: #000;
+}
+header #logout a:hover {
+    opacity: 0.2;
+}
+header #logout span {
+    margin-right: 5px;
+}
+header #logout:before {
+    content: "";
+    background: #ebebeb;
+    width: 1px;
+    height: 110%;
+    position: absolute;
+    left: -20px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+#content nav ul {
+    border-top: solid 1px #4e5051;
+}
+#content nav ul li {
+    border-bottom: solid 1px #4e5051;
+    background: #2b2d2e;
+    position: relative;
+    white-space: nowrap;
+    overflow: hidden;
+    transition: all 0.2s ease-in;
+}
+#content nav ul li a {
+    display: block;
+    padding: 16px 20px;
+    min-height: 63px;
+    color: #9fa1a3;
+    font-weight: bold;
+    position: relative;
+    z-index: 10;
+    text-decoration: none;
+}
+#content nav ul li.active {
+    background: #fff;
+}
+#content nav ul li:not(.active):hover {
+    background: #fff;
+}
+#content nav ul li.active a,
+#content nav ul li a:hover {
+    color: #2b2d2e;
+}
+#content nav ul li a span {
+    margin-right: 20px;
+}
+#content nav ul li.current > a:before {
+    font-family: "Material Icons";
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;
+    content: "\e313";
+    position: absolute;
+    right: 10px;
+    top: 22px;
+    width: 20px;
+    height: 20px;
+    line-height: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.2s ease-in;
+    opacity: 1;
+}
+#content nav ul li.current.active > a:before {
+    transform-origin: center;
+    transform: rotate(180deg);
+}
+#content nav ul li .subNavi {
+    background: #fff;
+    position: relative;
+    z-index: 10;
+    width: 250px;
+    display: none;
+    transition: all 0.2s ease-in;
+    border-top: none;
+    padding-left: 20px;
+}
+#content nav ul li.active .subNavi {
+    display: block;
+}
+#content nav ul li .subNavi li:first-of-type {
+    border-top: solid 1px #ebebeb;
+}
+#content nav ul li .subNavi li {
+    background: none !important;
+    animation: none;
+    border-bottom: solid 1px #ebebeb;
+}
+#content nav ul li .subNavi li:hover {
+    animation: none;
+}
+#content nav ul li .subNavi li:before,
+#content nav ul li .subNavi li:after {
+    display: none;
+}
+#content nav ul li.active .subNavi li a {
+    padding: 10px 20px;
+    min-height: auto;
+    font-size: 15px;
+    color: #9fa1a3;
+}
+#content nav ul li .subNavi li.stay a,
+#content nav ul li.active .subNavi li a:hover,
+#content nav ul li.stay a {
+    color: #2b2d2e;
+    background: #ebebeb;
+}
+#content {
+    display: flex;
+    min-height: calc(100vh - 66px);
+    width: 100%;
+}
+#content nav #minimal span {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #9fa1a3;
+    cursor: pointer;
+    padding-top: 1px;
+}
+#content nav #minimal span:hover {
+    color: #fff;
+}
+#content nav #minimal.active span {
+    transform: scale(-1, 1);
+}
+#content nav {
+    position: relative;
+    width: 235px;
+    background: #2b2d2e;
+    padding-top: 20px;
+    transition: all 0.2s ease-in;
+}
+#content main {
+    width: calc(100% - 235px);
+    background: #ebebeb;
+    padding: 40px;
+    box-sizing: border-box;
+    transition: all 0.2s ease-in;
+    border-top: solid 20px #ddd;
+}
+#content.resize nav ul li .subNavi {
+    padding-left: 0;
+}
+#content.resize nav {
+    width: 63px;
+}
+#content.resize main {
+    width: calc(100% - 60px);
+}
+#content.resize nav ul li.current > a:before {
+    opacity: 0;
+}
+#pageHead {
+    position: relative;
+    margin-bottom: 50px;
+}
+.breadCrumbs {
+    display: flex;
+}
+.breadCrumbs li {
+    background: #fff;
+    font-size: 15px;
+    line-height: 28px;
+}
+.breadCrumbs a {
+    display: block;
+    background: #2b2d2e;
+    padding: 0 10px;
+    text-decoration: none;
+    color: #9fa1a3;
+    position: relative;
+    margin-right: 5px;
+}
+.breadCrumbs a:after {
+    content: "";
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 14px 0 14px 6px;
+    border-color: transparent transparent transparent #2b2d2e;
+    position: absolute;
+    right: -6px;
+    top: 0;
+}
+.breadCrumbs span {
+    padding: 0 10px;
+}
+.inputLabel {
+    font-size: 14px;
+    color: #2b2d2e;
+    display: block;
+}
+.rtBtn {
+    position: absolute;
+    right: 0;
+    top: 2px;
+    width: 180px;
+}
+.acountControl {
+    position: absolute;
+    right: 0;
+    top: 2px;
+    width: 270px;
+}
+.acountControl ul {
+    background: #fff;
+}
+.acountControl ul li:nth-of-type(3) {
+    margin-left: 10px;
+}
+.acountControl ul li:nth-of-type(3) button {
+    height: 50px;
+    padding: 13px;
+}
+.loginUrl {
+    margin-top: 20px;
+    background: #fff;
+    padding: 10px;
+}
+.loginUrl span {
+    margin-right: 5px;
+}
+#searchBox {
+    display: flex;
+}
+#searchBox ul:not(:first-of-type) {
+    margin-top: 10px;
+}
+.periodList {
+    display: flex;
+}
+.periodList li {
+    width: 48% !important;
+    margin-right: 4% !important;
+    position: relative;
+}
+.periodList li:first-of-type:after {
+    content: "~";
+    position: absolute;
+    right: -6%;
+    top: 50%;
+    transform: translateY(-50%);
+}
+.periodList li:last-of-type {
+    margin-right: 0 !important;
+}
+.sideList {
+    display: flex;
+}
+.sideList.listBd {
+    border-top: solid 1px #39aed2;
+    border-bottom: solid 1px #39aed2;
+    padding: 20px;
+    background: #f5fdff;
+}
+.sideList.listBd.mt00 {
+    border-top: none;
+}
+.sideList li {
+    margin-right: 2%;
+    position: relative;
+}
+.sideList.half {
+    flex-wrap: wrap;
+}
+.sideList.half li {
+    width: 49%;
+}
+.sideList.half li:nth-child(2) ~ li {
+    margin-top: 30px;
+}
+.sideList.half li:nth-of-type(even) {
+    margin-right: 0;
+}
+#searchBox #inputList {
+    width: calc(100% - 210px);
+    margin-right: 30px;
+}
+#controlList {
+    padding-top: 24px;
+    width: 180px;
+}
+#controlList ul li:not(:first-of-type) {
+    margin-top: 15px;
+}
+.dragTable {
+    cursor: grab;
+}
+.dragTable:active {
+    cursor: grabbing;
+}
+#tableWrap {
+    background: #fff;
+    overflow: auto;
+}
+#tableWrap #tableCont.managemnetTable table thead th {
+    min-width: 20px;
+}
+.managemnetTable td.checkBox {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 26px !important;
+}
+.managemnetTable td.checkBox label {
+    padding-left: 0;
+    height: 18px;
+}
+.managemnetTable td.checkBox label:before {
+    position: static;
+}
+#tableWrap #tableCont,
+.tableWrap .tableCont {
+    padding: 5px 25px 25px 25px;
+}
+#tableWrap #tableCont table,
+.tableWrap .tableCont table {
+    min-width: 100%;
+    border-collapse: collapse;
+    white-space: nowrap;
+}
+#tableWrap #tableCont table thead th:first-of-type,
+#tableWrap #tableCont table tbody td:first-of-type,
+.tableWrap .tableCont table thead th:first-of-type,
+.tableWrap .tableCont table tbody td:first-of-type {
+    padding-left: 10px;
+}
+#tableWrap #tableCont table thead th,
+.tableWrap .tableCont table thead th {
+    text-align: left;
+    font-weight: normal;
+    font-size: 14px;
+    padding: 20px 40px 20px 0;
+    border-bottom: solid 1px #ebebeb;
+    position: relative;
+    min-width: 120px;
+    color: #2b2d2e;
+}
+#tableWrap #tableCont table thead th:after,
+.tableWrap .tableCont table thead th:after {
+    content: "";
+    width: 1px;
+    height: 10px;
+    background: #9fa1a3;
+    position: absolute;
+    right: 20px;
+    top: 53%;
+    transform: translateY(-50%);
+}
+#tableWrap #tableCont table thead th:last-of-type:after,
+.tableWrap .tableCont table thead th:last-of-type:after {
+    display: none;
+}
+#tableWrap #tableCont table thead th.sort,
+.tableWrap .tableCont table thead th.sort {
+    cursor: pointer;
+}
+#tableWrap #tableCont table thead th.sort span:after,
+.tableWrap .tableCont table thead th.sort span:after {
+    font-family: "Material Icons";
+    content: "expand_more";
+    vertical-align: middle;
+}
+#tableWrap #tableCont table thead th.sort.active span:after,
+.tableWrap .tableCont table thead th.sort.active span:after {
+    content: "expand_less";
+}
+#tableWrap #tableCont table tbody tr,
+.tableWrap .tableCont table tbody tr {
+    border-bottom: solid 1px #ebebeb;
+    transition: all 0.1s ease-in;
+}
+#tableWrap #tableCont table tbody tr.trLink,
+.tableWrap .tableCont table tbody tr.trLink {
+    cursor: pointer;
+}
+#tableWrap #tableCont table tbody tr:hover,
+.tableWrap .tableCont table tbody tr:hover {
+    background: #f7f7f7;
+}
+#tableWrap #tableCont table tbody td,
+.tableWrap .tableCont table tbody td {
+    padding: 20px 40px 20px 0;
+    min-width: 80px;
+}
+#tableWrap #tableCont table tbody td .material-icons.enable,
+.tableWrap .tableCont table tbody td .material-icons.enable {
+    color: #88d361;
+}
+.status {
+    display: block;
+    background: #000;
+    color: #fff;
+    border-radius: 15px;
+    padding: 2px 10px;
+    font-size: 14px;
+}
+.status.green {
+    background: #88d361;
+}
+.status.blue,
+.payPeriod.blue {
+    background: #39aed2;
+}
+.status.orange {
+    background: #f09247;
+}
+.status.gray,
+.payPeriod.gray {
+    background: #9fa1a3;
+}
+.status.red {
+    background: #fd595e;
+}
+.payPeriod {
+    display: block;
+    background: #fd595e;
+    color: #fff;
+    border-radius: 3px;
+    padding: 2px 10px;
+    font-size: 14px;
+}
+.allCheck {
+    margin-top: 20px;
+    width: 400px;
+}
+.allCheck button {
+    padding: 10px;
+}
+.period {
+    position: relative;
+}
+.period:after {
+    content: "~";
+    position: absolute;
+    right: -7%;
+    top: 33px;
+    color: #999;
+    font-size: 24px;
+}
+.confTxt {
+    line-height: 58px;
+    font-weight: bold;
+}
+.delete {
+    position: absolute;
+    right: 0;
+    background: #ebebeb;
+    padding: 3px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.delete:hover {
+    background: #000;
+    color: #fff;
+}
+#pageNation {
+    margin-top: 20px;
+    display: flex;
+}
+#pageNation li {
+    margin-right: 2px;
+}
+#pageNation li a,
+#pageNation li span.stay {
+    display: flex;
+    justify-content: center;
+    height: 27px;
+    width: 27px;
+    text-decoration: none;
+    font-size: 14px;
+    border-radius: 3px;
+    transition: all 0.1s linear;
+}
+#pageNation li span.material-icons {
+    font-size: 16px !important;
+    margin-bottom: 0;
+    display: flex;
+    height: 100%;
+    align-items: center;
+    color: #9fa1a3;
+}
+#pageNation li a {
+    background: #2b2d2e;
+    color: #fff;
+    color: #9fa1a3;
+}
+#pageNation li a:hover {
+    background: #ebebeb;
+}
+#pageNation li span.stay {
+    background: #ebebeb;
+}
+#inputArea,
+.inputSubArea,
+.requestBox,
+#inputSubArea {
+    background: #fff;
+    padding: 30px;
+}
+.inputSubArea {
+    position: relative;
+}
+.inputSubArea.topBd {
+    border-top: solid 2px #ebebeb;
+}
+.inputSubArea.hidden {
+    opacity: 0.6;
+}
+#inputArea ul:not(:first-of-type),
+.inputSubArea ul:not(:first-of-type) {
+    margin-top: 30px;
+}
+#inputArea ul:not(:first-of-type),
+#inputSubArea ul:not(:first-of-type) {
+    margin-top: 30px;
+}
+.inputSubArea h2.optTit {
+    background: #ebebeb;
+    padding: 10px;
+    font-size: 18px;
+    border-left: solid 3px #2b2d2e;
+    position: relative;
+    font-weight: bold;
+}
+.inputSubArea h2.optTit a {
+    position: absolute;
+    right: 10px;
+    font-size: 16px;
+    text-decoration: none;
+    background: #39aed2;
+    color: #fff;
+    padding: 2px 10px;
+    border-radius: 3px;
+}
+.inputSubArea h2.optTit span {
+    font-size: 20px;
+}
+.buttonSet {
+    display: flex;
+}
+.buttonSet button {
+    margin-left: 2%;
+}
+.buttonSet .check {
+    position: relative;
+}
+.buttonSet .check input {
+    padding-right: 50px;
+    background: #fff;
+}
+.buttonSet .check.ok input {
+    border: solid 2px #88d361;
+    color: #88d361;
+}
+.buttonSet .check.ng input {
+    border: solid 2px #fd595e;
+    color: #fd595e;
+}
+.buttonSet .check:after {
+    font-family: "Material Icons";
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 24px;
+}
+.buttonSet .check.ok:after {
+    content: "check_circle";
+    color: #88d361;
+}
+.buttonSet .check.ng:after {
+    content: "cancel";
+    color: #fd595e;
+}
+.selectSet {
+    display: flex;
+}
+.selectSet input[type="text"] {
+    margin-left: 2%;
+}
+hr.sepBorder {
+    border-top: dashed 1px #ebebeb;
+    width: 100%;
+    display: block;
+    margin-top: 30px;
+    background: none;
+}
+.baseList li:not(:first-of-type) {
+    margin-top: 30px;
+}
+#errorMessage {
+    border: solid 5px #fd595e;
+    background: #ffe1e2;
+    padding: 30px;
+    margin-bottom: 30px;
+}
+#errorMessage p {
+    color: #fd595e;
+    font-weight: bold;
+}
+#successMessage {
+    border-top: solid 2px #39aed2;
+    border-bottom: solid 2px #ebebeb;
+    background: #fff;
+    position: relative;
+}
+#successMessage p {
+    padding: 20px;
+    font-weight: bold;
+    color: #39aed2;
+    font-size: 18px;
+    border-radius: 10px;
+}
+#successMessage .closeIcon {
+    position: absolute;
+    right: 20px;
+    top: 25px;
+    color: #999;
+    cursor: pointer;
+}
+#declineMessage {
+    border-top: solid 2px #fd595e;
+    border-bottom: solid 2px #ebebeb;
+    background: #fff;
+    position: relative;
+}
+#declineMessage p {
+    padding: 20px;
+    font-weight: bold;
+    color: #fd595e;
+    font-size: 18px;
+    border-radius: 10px;
+}
+#declineMessage .closeIcon {
+    position: absolute;
+    right: 20px;
+    top: 25px;
+    color: #999;
+    cursor: pointer;
+}
+#formControl {
+    margin: 60px auto 20px auto;
+    width: 60%;
+    display: flex;
+    align-items: center;
+}
+#formControl li {
+    margin: 0 2%;
+}
+#formControl button {
+    font-size: 20px;
+    padding: 20px 20px 20px 40px;
+}
+#formControl button span {
+    position: absolute;
+    left: 30px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 20px;
+}
+#formControl li:last-of-type button span {
+    font-size: 30px;
+    left: 25px;
+}
+#optionPlan {
+    margin-top: 30px;
+    background: #ebebeb;
+    border-radius: 10px;
+    padding: 20px 0;
+}
+#optionPlan ul {
+    display: flex;
+    flex-wrap: wrap;
+}
+#optionPlan ul li {
+    width: 50%;
+    padding: 0 20px;
+}
+#optionPlan ul li:nth-of-type(odd) {
+    border-right: solid 1px #bbb;
+}
+#optionPlan ul li div {
+    background: #fff;
+    border-radius: 10px;
+    padding: 10px 20px;
+    margin-top: 10px;
+    position: relative;
+    display: flex;
+}
+#optionPlan ul li div p {
+    font-size: 24px;
+    color: #39aed2;
+    width: calc(100% - 220px);
+}
+#optionPlan ul li div ul {
+    width: 220px;
+    justify-content: flex-end;
+}
+#optionPlan ul li div ul li {
+    border-right: none !important;
+}
+#optionPlan ul li div button {
+    width: 100px;
+    padding: 10px;
+}
+#optionPlan ul li div span.material-icons {
+    font-size: 30px;
+    margin-right: 5px;
+}
+#optionPlan ul li div span {
+    font-size: 16px;
+}
+.planPrice {
+    border: solid 4px #ebebeb;
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 30px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 20px;
+}
+.planPrice span {
+    font-size: 28px;
+    margin: 0 5px;
+    color: #39aed2;
+}
+.archive {
+    background: #ebebeb;
+    padding: 20px;
+    margin: 30px 0 0 0;
+    border-radius: 10px;
+    display: flex;
+}
+.archive h3 {
+    width: 150px;
+    font-size: 18px;
+    font-weight: bold;
+}
+.archive dl {
+    width: calc(100% - 150px);
+    display: flex;
+    flex-wrap: wrap;
+    max-height: 150px;
+    overflow: auto;
+}
+.archive dl dt {
+    width: 240px;
+    padding: 5px 0;
+    border-bottom: solid 1px #ddd;
+}
+.archive dl dt span {
+    margin-right: 5px;
+}
+.archive dl dt .blue {
+    background: #39aed2;
+    color: #fff;
+    padding: 2px 10px;
+    border-radius: 3px;
+    font-size: 14px;
+}
+.archive dl dt .gray {
+    background: #2b2d2e;
+    color: #fff;
+    padding: 2px 10px;
+    border-radius: 3px;
+    font-size: 14px;
+}
+.archive dl dt .red {
+    background: #fd595e;
+    color: #fff;
+    padding: 2px 10px;
+    border-radius: 3px;
+    font-size: 14px;
+}
+.archive dl dd {
+    width: calc(100% - 240px);
+    padding: 5px 0;
+    border-bottom: solid 1px #ddd;
+}
+.archive dl dt:first-of-type,
+.archive dl dd:first-of-type {
+    padding-top: 0;
+}
+.archive dl dt:last-of-type,
+.archive dl dd:last-of-type {
+    border-bottom: none;
+}
+.modal {
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 100;
+    display: none;
+}
+.modal__bg {
+    background: rgba(0, 0, 0, 0.7);
+    height: 100vh;
+    position: absolute;
+    width: 100%;
+}
+.mdTit {
+    font-size: 20px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+.modal__content {
+    border-radius: 10px;
+    background: #fff;
+    left: 50%;
+    padding: 30px;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 40%;
+    max-width: 600px;
+    max-height: 70%;
+    overflow-y: auto;
+    box-shadow: 0px 3px 10px 0px rgba(0, 0, 0, 0.2);
+}
+.wideModal .modal__content {
+    width: 70%;
+    max-width: 950px;
+}
+.mgModal h3 {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+.mgModal .baseTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+.mgModal .baseTable th {
+    padding: 10px 10px 10px 0;
+    width: 30%;
+    font-size: 14px;
+    font-weight: normal;
+    color: #2b2d2e;
+}
+.mgModal .baseTable td {
+    padding: 10px 10px 10px 0;
+    width: 70%;
+    font-weight: bold;
+}
+.mgModal .history .baseTable {
+    margin: 0 0 40px 0;
+}
+.mgModal .history .baseTable th,
+.mgModal .history .baseTable td {
+    width: 22.5%;
+    min-width: 20px;
+}
+.mgModal .history .baseTable th:last-of-type,
+.mgModal .history .baseTable td.txtalc:last-of-type {
+    width: 10%;
+    padding: 5px 20px 5px 0;
+}
+.mgModal .history .baseTable td.txtalc {
+    padding: 5px 40px 5px 0;
+}
+.modalPriceList {
+    overflow-x: auto;
+}
+.modalPriceList .baseTable {
+    border-collapse: collapse;
+    width: 100%;
+}
+.modalPriceList .baseTable thead th,
+.modalPriceList .baseTable td {
+    white-space: nowrap;
+}
+.modalPriceList .baseTable thead th {
+    font-size: 14px;
+    font-weight: normal;
+    text-align: left;
+    padding: 5px 40px 5px 0;
+    padding-left: 0px;
+    border-bottom: solid 1px #ebebeb;
+    position: relative;
+    min-width: 20px;
+    color: #2b2d2e;
+}
+.modalPriceList .baseTable thead th:after {
+    content: "";
+    width: 1px;
+    height: 10px;
+    background: #9fa1a3;
+    position: absolute;
+    right: 20px;
+    top: 53%;
+    transform: translateY(-50%);
+}
+.modalPriceList .baseTable thead th:last-of-type:after {
+    display: none;
+}
+.modalPriceList .baseTable td {
+    font-size: 16px;
+    font-weight: normal;
+    padding: 10px 40px 10px 0;
+    min-width: 20px;
+}
+.modalPriceList .baseTable td input {
+    padding: 10px;
+    min-width: 150px;
+}
+.modalPriceList .baseTable td .selectBox {
+    min-width: 150px;
+}
+.modalPriceList .baseTable td .priceInput input {
+    padding-right: 30px;
+}
+.modalPriceList .baseTable td.taxTd .selectBox {
+    width: 140px !important;
+}
+.modalPriceList .baseTable td select {
+    padding: 10px 40px 10px 10px;
+    height: 48px;
+}
+.modalPriceList .baseTable tbody tr {
+    border-bottom: solid 1px #ebebeb;
+    transition: all 0.1s ease-in;
+}
+.optionMdList {
+    display: flex;
+    flex-wrap: wrap;
+}
+.optionMdList li {
+    margin-bottom: 20px;
+    margin-right: 2%;
+    width: 38%;
+}
+.optionMdList li:first-of-type {
+    margin-right: 0;
+    width: 100%;
+}
+.optionMdList.cancel li:first-of-type {
+    margin-right: 2%;
+    width: 38%;
+}
+.optionMdList.cancel li:nth-of-type(2) {
+    margin-right: 0;
+    width: 60%;
+}
+.optionMdList li:last-of-type {
+    margin-right: 0;
+    width: 60%;
+}

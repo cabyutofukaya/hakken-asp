@@ -1,0 +1,489 @@
+@charset "utf-8";
+/*
+	Description: initial setting
+	Version: 1.0
+	Author: idealgrow
+*/
+/*
+===== CONTENTS ===========================================
+*/
+.documentPreview {
+    width: 595px;
+    margin: 0 auto;
+    border: solid 1px #ebebeb;
+    padding: 20px;
+    position: relative;
+}
+.documentPreview h2 {
+    text-align: center;
+    font-weight: bold;
+    font-size: 24px;
+}
+.documentPreview .number {
+    position: absolute;
+    right: 20px;
+    top: 25px;
+    font-size: 12px;
+    text-align: right;
+}
+.dcHead {
+    padding-top: 20px;
+    font-size: 12px;
+    overflow: hidden;
+    margin-bottom: 30px;
+}
+.dcHead > div:first-of-type {
+    width: 56%;
+    margin-right: 4%;
+    float: left;
+}
+.dcHead .dispCorp {
+    width: 40%;
+    text-align: right;
+    float: right;
+}
+.dispName {
+    padding: 20px 0;
+}
+.documentPreview h3 {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+.documentPreview table,
+.documentPrint table {
+    border-collapse: collapse;
+    width: 100%;
+}
+.documentPreview table th,
+.documentPrint table th {
+    font-size: 12px;
+    text-align: left;
+    background: #f0f0f0;
+    padding: 5px;
+    position: relative;
+}
+.documentPreview table th:after,
+.documentPreview table td:after,
+.documentPrint table th:after,
+.documentPrint table td:after {
+    content: "";
+    background: #ccc;
+    height: 40%;
+    width: 1px;
+    right: 0;
+    position: absolute;
+    bottom: 50%;
+    transform: translateY(50%);
+}
+.documentPreview table th:last-of-type:after,
+.documentPreview table td:last-of-type:after,
+.documentPrint table th:last-of-type:after,
+.documentPrint table td:last-of-type:after {
+    display: none;
+}
+.documentPreview table td,
+.documentPrint table td {
+    padding: 5px;
+    font-size: 12px;
+    position: relative;
+}
+.documentPreview table tbody tr,
+.documentPrint table tbody tr {
+    border-bottom: solid 1px #f0f0f0;
+}
+.documentPreview table tbody tr.total,
+.documentPrint table tbody tr.total {
+    border-top: solid 4px #f0f0f0;
+}
+.dispPrice,
+.dispSchedule,
+.dispHotel {
+    margin-bottom: 30px;
+}
+.dispHotelList {
+    background: #ebebeb;
+    padding: 10px;
+    font-size: 12px;
+}
+.dispHotelList:not(:first-of-type) {
+    margin-top: 10px;
+}
+.dispAnounce {
+    margin-bottom: 20px;
+    border-top: solid 1px #ddd;
+    border-bottom: solid 1px #ddd;
+    padding: 20px 0;
+    font-size: 12px;
+}
+.dispEtc {
+    margin-top: 20px;
+    font-size: 12px;
+}
+.dispBank {
+    margin-top: 20px;
+    font-size: 12px;
+    border-top: solid 1px #ddd;
+    border-bottom: solid 1px #ddd;
+    padding: 20px 0;
+}
+.dispStump ul {
+    overflow: hidden;
+    margin-top: 10px;
+    float: right;
+    width: 240px;
+}
+.dispStump ul li {
+    float: right;
+    text-align: center;
+    width: 60px;
+    height: 60px;
+    border: solid 1px #ddd;
+}
+.dispStump ul li:not(:last-of-type) {
+    border-left: none;
+}
+.dispStump ul li span {
+    border-bottom: solid 1px #ddd;
+    display: block;
+}
+.dispStump ul li {
+    margin-right: 0;
+}
+.dispStump p {
+    clear: both;
+}
+.dispTotalPrice dl {
+    overflow: hidden;
+    border: solid 1px #ddd;
+    margin-bottom: 20px;
+}
+.dispTotalPrice dl dt {
+    float: left;
+    background: #ebebeb;
+    width: 20%;
+    padding: 10px;
+    text-align: center;
+}
+.dispTotalPrice dl dd {
+    float: left;
+    padding: 10px;
+    width: 30%;
+    text-align: center;
+    font-weight: bold;
+}
+.dispReceiptBox {
+    position: relative;
+}
+.dispRevenue {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    border: dotted 1px #000;
+    line-height: 1.2;
+    color: #888;
+    padding: 20px 22px;
+}
+.dispReceipt {
+    text-align: center;
+    border-bottom: solid 2px #000;
+    width: 300px;
+    margin: 0 auto;
+    padding: 5px 0;
+    font-size: 24px;
+    font-weight: bold;
+}
+.dispReceiptTxt {
+    width: 300px;
+    margin: 0 auto;
+    padding: 5px 0;
+}
+.dispReceiptName {
+    font-size: 18px;
+}
+.dispReceiptName span {
+    border-bottom: solid 2px #000;
+    padding: 5px;
+}
+.documentPrint:not(:first-of-type) {
+    page-break-before: always;
+}
+.documentPrint h2 {
+    text-align: center;
+    font-weight: bold;
+    font-size: 30px;
+    padding: 20px 0;
+}
+.documentPrint h3 {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+.documentPrint .number {
+    position: absolute;
+    right: 0;
+    top: 30px;
+    font-size: 14px;
+    text-align: right;
+}
+.documentPrint .dcHead,
+.documentPrint p,
+.documentPrint td {
+    font-size: 16px !important;
+}
+.documentPrint th {
+    font-size: 14px !important;
+    font-weight: normal;
+}
+.documentPrint .dispStump ul li {
+    width: 70px;
+    height: 90px;
+    font-size: 12px;
+}
+.documentPrint .dispRevenue {
+    width: 80px;
+    height: 80px;
+}
+.documentPrint .dispReceipt {
+    width: 400px;
+    font-size: 30px !important;
+}
+.documentPrint .dispReceiptTxt {
+    width: 400px;
+}
+.documentPrint .dispReceiptName {
+    font-size: 24px !important;
+}
+.dispRoomingTit {
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+.dispRoomingTit dt {
+    float: left;
+    width: 20%;
+    border-bottom: solid 1px #ddd;
+    padding: 5px 0;
+}
+.dispRoomingTit dd {
+    width: 80%;
+    border-bottom: solid 1px #ddd;
+    padding: 5px 0;
+    font-weight: bold;
+}
+.dispCourse {
+    overflow: hidden;
+}
+.dispCourse.single .dispPlan {
+    width: 100%;
+}
+.dispCourse:not(:first-of-type) {
+    margin-top: 60px;
+}
+.dispPh {
+    float: right;
+    width: 30%;
+    counter-reset: spotNum;
+}
+.dispPh .ph {
+    border-radius: 10px;
+    margin-bottom: 10px;
+    overflow: hidden;
+}
+.dispPh img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    object-position: center center;
+}
+.dispPh h4 {
+    position: relative;
+    font-weight: bold;
+    font-size: 18px;
+    padding: 15px 0 10px 50px;
+    counter-increment: spotNum;
+}
+.dispPh h4:before {
+    content: counter(spotNum);
+    position: absolute;
+    background: url("../img/shared/ico_pickup.png") center center no-repeat;
+    background-size: 100%;
+    width: 40px;
+    height: 40px;
+    color: #fff;
+    line-height: 2;
+    text-align: center;
+    padding-top: 10px;
+    left: 0;
+    top: 2px;
+    z-index: 20;
+}
+.dispSpotPh:not(:first-of-type) {
+    margin-top: 40px;
+}
+.dispPlan {
+    float: left;
+    counter-reset: pickupNum;
+    width: 68%;
+    margin-right: 2%;
+    border: solid 1px #ddd;
+    border-radius: 5px;
+    margin-bottom: 40px;
+}
+.dispPlan h3 {
+    border-bottom: solid 1px #ddd;
+    padding: 10px 20px;
+    background: #fff;
+    box-shadow: 0px 3px 10px 0px rgba(9, 1, 3, 0.1);
+}
+.dispPlan .inner {
+    padding: 10px 20px 20px 20px;
+}
+.spotList li {
+    padding-left: 20px;
+    position: relative;
+}
+.spotList li:before {
+    content: "";
+    width: 2px;
+    position: absolute;
+    left: 0;
+    height: 100%;
+    background: #ddd;
+    bottom: 0;
+}
+.spotList li:first-of-type:before {
+    height: 90%;
+}
+.spotList li:after {
+    content: "";
+    position: absolute;
+    left: -2px;
+    top: 0;
+    width: 5px;
+    height: 30px;
+    background: #f8b62d;
+}
+.spotList li:last-of-type:before {
+    display: none;
+}
+.spotList li:last-of-type .spotBlock {
+    padding-bottom: 0;
+}
+.spotList li .spotBlock {
+    position: relative;
+    padding-left: 60px;
+    padding-bottom: 20px;
+}
+.spotList li .spotBlock:before {
+    content: "";
+    background: #ddd;
+    width: 1px;
+    height: 100%;
+    position: absolute;
+    left: 22px;
+    top: 0;
+}
+.spotList li .spotBlock .time {
+    position: absolute;
+    left: 0;
+    color: #888;
+    font-weight: bold;
+    background: #fff;
+}
+.spotList li .spotBlock h4 {
+    font-size: 18px;
+    font-weight: bold;
+    line-height: 1.4;
+}
+.spotList li .spotBlock h4.pickup {
+    counter-increment: pickupNum;
+}
+.spotList li .spotBlock h4.pickup:before {
+    content: counter(pickupNum);
+    position: absolute;
+    background: url("../img/shared/ico_pickup.png") center top no-repeat;
+    background-size: 100%;
+    width: 40px;
+    height: 40px;
+    color: #fff;
+    text-align: center;
+    padding-top: 5px;
+    line-height: 2;
+    left: -40px;
+    top: -8px;
+    z-index: 20;
+}
+.spotList li .spotBlock h4 span {
+    background: #000;
+    color: #fff;
+    display: inline-block;
+    font-size: 14px;
+    padding: 0 6px;
+    margin-left: 10px;
+}
+.spotList li .spotBlock:after {
+    content: "";
+    width: 25px;
+    height: 20px;
+    position: absolute;
+    left: 10px;
+    top: 30px;
+    z-index: 10;
+}
+.spotList li:last-of-type .spotBlock:before {
+    display: none;
+}
+.spotList li .spotBlock.airplane:after {
+    background: url("../img/shared/ico_airplane.svg") center center no-repeat,
+        #fff;
+}
+.spotList li .spotBlock.taxi:after {
+    background: url("../img/shared/ico_taxi.svg") center center no-repeat, #fff;
+}
+.spotList li .spotBlock.bus:after {
+    background: url("../img/shared/ico_bus.svg") center center no-repeat, #fff;
+}
+.spotList li .spotBlock.express:after {
+    background: url("../img/shared/ico_sinkan.svg") center center no-repeat,
+        #fff;
+}
+.spotList li .spotBlock.train:after {
+    background: url("../img/shared/ico_train.svg") center center no-repeat, #fff;
+}
+.spotList li .spotBlock.walk:after {
+    background: url("../img/shared/ico_walk.svg") center center no-repeat, #fff;
+}
+.roomTable th:first-of-type,
+.roomTable tr td:first-of-type {
+    width: 10% !important;
+}
+.roomTable th:nth-of-type(2),
+.roomTable tr td:nth-of-type(2) {
+    width: 15% !important;
+}
+.roomTable th:nth-of-type(3),
+.roomTable tr td:nth-of-type(3) {
+    width: 35% !important;
+}
+.roomTable th:nth-of-type(4),
+.roomTable tr td:nth-of-type(4) {
+    width: 10% !important;
+}
+.roomTable th:nth-of-type(5),
+.roomTable tr td:nth-of-type(5) {
+    width: 10% !important;
+}
+.roomTable th:nth-of-type(6),
+.roomTable tr td:nth-of-type(6) {
+    width: 20% !important;
+}
+.dispPrice .roomTable:not(:first-of-type) {
+    margin-bottom: 20px;
+}
+.dispPrice .roomTable:nth-of-type(odd) {
+    background: #fafafa;
+    border-top: solid 1px #ddd;
+}

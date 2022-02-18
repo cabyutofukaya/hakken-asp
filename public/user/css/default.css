@@ -1,0 +1,314 @@
+@charset "utf-8";
+/*
+	Description: initial setting
+	Version: 1.0
+	Author: idealgrow
+*/
+/*
+===== CONTENTS ===========================================
+
+	1: universal reset 
+	2: body and base setting
+		: general params
+		: acronyms and abbreviations styles
+	3: link setting
+
+==========================================================
+*/
+/*
+===== 1: universal reset =================================
+*/
+* {
+  margin: 0;
+  padding: 0;
+}
+.futuraHv{
+font-family: futura-pt, sans-serif;
+font-weight: 700;
+font-style: normal;
+}
+.futuraBk{
+font-family: futura-pt, sans-serif;
+font-weight: 400;
+font-style: normal;
+}
+.futuraBd{
+font-family: futura-pt-bold, sans-serif;
+font-weight: 700;
+font-style: normal;
+}
+
+/*
+===== 2: body and base setting ===========================
+*/
+html {
+  overflow: auto;
+  -webkit-text-size-adjust: 100%;
+}
+body {
+  font-family:'Noto Sans JP', sans-serif;
+  font-size: 16px;
+  line-height: 1.8;
+  margin: 0px;
+  padding: 0px;
+  color: #333;
+}
+/*
+===== margin setting ====
+*/
+.mt00 {
+  margin-top: 0 !important;
+}
+.mt05 {
+  margin-top: 5px !important;
+}
+.mt10 {
+  margin-top: 10px !important;
+}
+.mt12 {
+  margin-top: 12px !important;
+}
+.mt15 {
+  margin-top: 15px !important;
+}
+.mt20 {
+  margin-top: 20px !important;
+}
+.mt25 {
+  margin-top: 25px !important;
+}
+.mt30 {
+  margin-top: 30px !important;
+}
+.mt35 {
+  margin-top: 35px !important;
+}
+.mt40 {
+  margin-top: 40px !important;
+}
+.mt45 {
+  margin-top: 45px !important;
+}
+.mt50 {
+  margin-top: 50px !important;
+}
+.mt60 {
+  margin-top: 60px !important;
+}
+.mr00 {
+  margin-right: 0 !important;
+}
+.mr05 {
+  margin-right: 5px !important;
+}
+.mr10 {
+  margin-right: 10px !important;
+}
+.mr12 {
+  margin-right: 12px !important;
+}
+.mr15 {
+  margin-right: 15px !important;
+}
+.mr20 {
+  margin-right: 20px !important;
+}
+.mr25 {
+  margin-right: 25px !important;
+}
+.mr30 {
+  margin-right: 30px !important;
+}
+.mr35 {
+  margin-right: 35px !important;
+}
+.mr40 {
+  margin-right: 40px !important;
+}
+.mr45 {
+  margin-right: 45px !important;
+}
+.mr50 {
+  margin-right: 50px !important;
+}
+.mr65 {
+  margin-right: 65px !important;
+}
+.mr95 {
+  margin-right: 95px !important;
+}
+.mb00 {
+  margin-bottom: 0 !important;
+}
+.mb05 {
+  margin-bottom: 5px !important;
+}
+.mb10 {
+  margin-bottom: 10px !important;
+}
+.mb12 {
+  margin-bottom: 12px !important;
+}
+.mb15 {
+  margin-bottom: 15px !important;
+}
+.mb20 {
+  margin-bottom: 20px !important;
+}
+.mb25 {
+  margin-bottom: 25px !important;
+}
+.mb30 {
+  margin-bottom: 30px !important;
+}
+.mb35 {
+  margin-bottom: 35px !important;
+}
+.mb40 {
+  margin-bottom: 40px !important;
+}
+.mb45 {
+  margin-bottom: 45px !important;
+}
+.mb50 {
+  margin-bottom: 50px !important;
+}
+.mb60 {
+  margin-bottom: 60px !important;
+}
+.ml00 {
+  margin-left: 0 !important;
+}
+.ml05 {
+  margin-left: 5px !important;
+}
+.ml10 {
+  margin-left: 10px !important;
+}
+.ml12 {
+  margin-left: 12px !important;
+}
+.ml15 {
+  margin-left: 15px !important;
+}
+.ml20 {
+  margin-left: 20px !important;
+}
+.ml25 {
+  margin-left: 25px !important;
+}
+.ml30 {
+  margin-left: 30px !important;
+}
+.ml35 {
+  margin-left: 35px !important;
+}
+.ml40 {
+  margin-left: 40px !important;
+}
+.ml45 {
+  margin-left: 45px !important;
+}
+.ml50 {
+  margin-left: 50px !important;
+}
+.bold{
+	font-weight: bold;
+	font-size: 20px;
+}
+/* general params
+--------------------*/
+h1, h2, h3, h4, h5, h6, p, pre, ul, ol, dl, dt, dd, address, blockquote {
+  padding: 0; /* margin&padding reset */
+  line-height: 1.8;
+  display: block;
+  margin: 0px;
+  font-weight: normal;
+  color: #333;
+  box-sizing: border-box;
+}
+div, ul, li, p, a, dl, dt, dd, span, input, select, textarea {
+  box-sizing: border-box;
+}
+form {
+  padding: 0; /* margin&padding reset */
+  margin: 0px;
+}
+hr, .areaAnchor, .anchor {
+  display: none;
+}
+img {
+  border: none; /* img do not want a border */
+  display: block;
+	transition: all 0.2s ease-in;
+}
+li {
+  list-style: none;
+} /* link do not want a dot */
+input:focus {
+  outline:none;
+}
+input[type=text], textarea{
+  font-family:'Noto Sans JP', sans-serif;
+	width: 100%;
+	border-radius: 3px;
+	border: solid 1px #aeaeae;
+	-moz-appearance: none;
+	-webkit-appearance: none;
+	padding: 15px;
+	font-size: 16px;
+	background: #f5f5f5;
+}
+select{
+  font-family:'Noto Sans JP', sans-serif;
+	width: 100%;
+	border-radius: 3px;
+	border: solid 1px #aeaeae;
+	-moz-appearance: none;
+	-webkit-appearance: none;
+	padding: 15px;
+	font-size: 16px;
+	/*background: url("../img/contact/ico_select.png")right 10px center no-repeat,#f5f5f5;*/
+	background-size: 15px auto,100%;
+}
+.submitBtn input{
+	background: #fd7abb;
+	border: none;
+	border-bottom: solid 2px #e43a8e;
+	color: #fff;
+	padding: 15px;
+	font-size: 16px;
+	font-weight: bold;
+}
+input[type=radio]{
+	display: none;
+}
+/* acronyms and abbreviations styles 
+-------------------------------------*/
+acronym, abbr {
+  cursor: help;
+}
+/*
+===== 3: link setting ===========================
+*/
+a:link {
+  color: #000;
+  text-decoration: none;
+  transition: all .3s ease;
+}
+a:visited {
+  color: #000;
+  text-decoration: none
+}
+a:hover {
+  color: #0082bc;
+  text-decoration: none;
+  transition: all .3s ease;
+}
+a:active {
+  color: #0082bc;
+  text-decoration: none
+}
+a img:hover{
+	opacity: 0.7;
+}
