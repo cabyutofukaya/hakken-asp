@@ -16,8 +16,6 @@
 
   </div>
   
-  @include('staff.web.common._check_web_valid')
-
   <h2 class="subTit">
     <span class="material-icons">person</span>プロフィール基本情報
   </h2>
