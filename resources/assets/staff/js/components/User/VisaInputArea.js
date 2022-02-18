@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import VisaEditModal from "./VisaEditModal";
 import SmallDangerModal from "../SmallDangerModal";
+import moment from "moment";
 
 // ビザ情報
 const VisaInputArea = ({
@@ -136,8 +137,20 @@ const VisaInputArea = ({
                                                 row.issue_place_code
                                             ] ?? "-"}
                                         </td>
-                                        <td>{row.issue_date ?? "-"}</td>
-                                        <td>{row.expiration_date ?? "-"}</td>
+                                        <td>
+                                            {row?.issue_date
+                                                ? moment(row.issue_date).format(
+                                                      "YYYY/M/D"
+                                                  )
+                                                : "-"}
+                                        </td>
+                                        <td>
+                                            {row?.expiration_date
+                                                ? moment(
+                                                      row.expiration_date
+                                                  ).format("YYYY/M/D")
+                                                : "-"}
+                                        </td>
                                         <td>{row.note ?? "-"}</td>
                                         <td className="txtalc">
                                             <span

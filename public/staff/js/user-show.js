@@ -61951,6 +61951,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _hooks_useMountedRef__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../../../hooks/useMountedRef */ "./resources/assets/hooks/useMountedRef.js");
 /* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! classnames */ "./node_modules/classnames/index.js");
 /* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(classnames__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js");
+/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(moment__WEBPACK_IMPORTED_MODULE_7__);
 function ownKeys(object, enumerableOnly) {
   var keys = Object.keys(object);
 
@@ -62111,6 +62113,7 @@ function _iterableToArrayLimit(arr, i) {
 function _arrayWithHoles(arr) {
   if (Array.isArray(arr)) return arr;
 }
+
 
 
 
@@ -62420,7 +62423,7 @@ var VisaArea = function VisaArea(_ref) {
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("table", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("thead", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("tr", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("th", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", null, "\u756A\u53F7")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("th", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", null, "\u56FD")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("th", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", null, "\u7A2E\u5225")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("th", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", null, "\u767A\u884C\u5730")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("th", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", null, "\u767A\u884C\u65E5")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("th", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", null, "\u6709\u52B9\u671F\u9650")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("th", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", null, "\u5099\u8003")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("th", {
     className: "txtalc wd10"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", null, "\u524A\u9664")))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("tbody", null, rows && rows.map(function (row) {
-    var _row$number, _row$country$name, _row$kind, _row$issue_place$name, _row$issue_date, _row$expiration_date, _row$note;
+    var _row$number, _row$country$name, _row$kind, _row$issue_place$name, _row$note;
 
     return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("tr", {
       key: row.id
@@ -62430,7 +62433,7 @@ var VisaArea = function VisaArea(_ref) {
       onClick: function onClick(e) {
         return handleModalEdit(e, row.id);
       }
-    }, (_row$number = row.number) !== null && _row$number !== void 0 ? _row$number : "-")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", null, (_row$country$name = row.country.name) !== null && _row$country$name !== void 0 ? _row$country$name : "-"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", null, (_row$kind = row.kind) !== null && _row$kind !== void 0 ? _row$kind : "-"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", null, (_row$issue_place$name = row.issue_place.name) !== null && _row$issue_place$name !== void 0 ? _row$issue_place$name : "-"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", null, (_row$issue_date = row.issue_date) !== null && _row$issue_date !== void 0 ? _row$issue_date : "-"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", null, (_row$expiration_date = row.expiration_date) !== null && _row$expiration_date !== void 0 ? _row$expiration_date : "-"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", null, (_row$note = row.note) !== null && _row$note !== void 0 ? _row$note : "-"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", {
+    }, (_row$number = row.number) !== null && _row$number !== void 0 ? _row$number : "-")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", null, (_row$country$name = row.country.name) !== null && _row$country$name !== void 0 ? _row$country$name : "-"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", null, (_row$kind = row.kind) !== null && _row$kind !== void 0 ? _row$kind : "-"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", null, (_row$issue_place$name = row.issue_place.name) !== null && _row$issue_place$name !== void 0 ? _row$issue_place$name : "-"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", null, row !== null && row !== void 0 && row.issue_date ? moment__WEBPACK_IMPORTED_MODULE_7___default()(row.issue_date).format("YYYY/M/D") : "-"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", null, row !== null && row !== void 0 && row.expiration_date ? moment__WEBPACK_IMPORTED_MODULE_7___default()(row.expiration_date).format("YYYY/M/D") : "-"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", null, (_row$note = row.note) !== null && _row$note !== void 0 ? _row$note : "-"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", {
       className: "txtalc"
     }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", {
       className: "material-icons js-modal-open",
@@ -62478,6 +62481,91 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var flatpickr_dist_l10n_ja_js__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(flatpickr_dist_l10n_ja_js__WEBPACK_IMPORTED_MODULE_3__);
 /* harmony import */ var react_flatpickr__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react-flatpickr */ "./node_modules/react-flatpickr/build/index.js");
 /* harmony import */ var react_flatpickr__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(react_flatpickr__WEBPACK_IMPORTED_MODULE_4__);
+function _objectWithoutProperties(source, excluded) {
+  if (source == null) return {};
+
+  var target = _objectWithoutPropertiesLoose(source, excluded);
+
+  var key, i;
+
+  if (Object.getOwnPropertySymbols) {
+    var sourceSymbolKeys = Object.getOwnPropertySymbols(source);
+
+    for (i = 0; i < sourceSymbolKeys.length; i++) {
+      key = sourceSymbolKeys[i];
+      if (excluded.indexOf(key) >= 0) continue;
+      if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue;
+      target[key] = source[key];
+    }
+  }
+
+  return target;
+}
+
+function _objectWithoutPropertiesLoose(source, excluded) {
+  if (source == null) return {};
+  var target = {};
+  var sourceKeys = Object.keys(source);
+  var key, i;
+
+  for (i = 0; i < sourceKeys.length; i++) {
+    key = sourceKeys[i];
+    if (excluded.indexOf(key) >= 0) continue;
+    target[key] = source[key];
+  }
+
+  return target;
+}
+
+function ownKeys(object, enumerableOnly) {
+  var keys = Object.keys(object);
+
+  if (Object.getOwnPropertySymbols) {
+    var symbols = Object.getOwnPropertySymbols(object);
+    if (enumerableOnly) symbols = symbols.filter(function (sym) {
+      return Object.getOwnPropertyDescriptor(object, sym).enumerable;
+    });
+    keys.push.apply(keys, symbols);
+  }
+
+  return keys;
+}
+
+function _objectSpread(target) {
+  for (var i = 1; i < arguments.length; i++) {
+    var source = arguments[i] != null ? arguments[i] : {};
+
+    if (i % 2) {
+      ownKeys(Object(source), true).forEach(function (key) {
+        _defineProperty(target, key, source[key]);
+      });
+    } else if (Object.getOwnPropertyDescriptors) {
+      Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
+    } else {
+      ownKeys(Object(source)).forEach(function (key) {
+        Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+      });
+    }
+  }
+
+  return target;
+}
+
+function _defineProperty(obj, key, value) {
+  if (key in obj) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+  } else {
+    obj[key] = value;
+  }
+
+  return obj;
+}
+
 
  // flatpickr
 
@@ -62600,33 +62688,63 @@ var VisaEditModal = function VisaEditModal() {
     }, countries[val]);
   })))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("li", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", {
     className: "inputLabel"
-  }, "\u767A\u884C\u65E5"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
-    type: "date",
-    name: "issue_date",
-    onChange: function onChange(e) {
-      return handleChange({
+  }, "\u767A\u884C\u65E5"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+    className: "calendar"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_flatpickr__WEBPACK_IMPORTED_MODULE_4___default.a, {
+    theme: "airbnb",
+    value: (_input$issue_date = input.issue_date) !== null && _input$issue_date !== void 0 ? _input$issue_date : "",
+    onChange: function onChange(date, dateStr) {
+      handleChange({
         target: {
           name: "issue_date",
-          value: e.target.value
+          value: dateStr
         }
       });
     },
-    value: (_input$issue_date = input.issue_date) !== null && _input$issue_date !== void 0 ? _input$issue_date : ""
-  })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("li", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", {
+    options: {
+      dateFormat: "Y/m/d",
+      locale: _objectSpread({}, flatpickr_dist_l10n_ja_js__WEBPACK_IMPORTED_MODULE_3__["Japanese"])
+    },
+    render: function render(_ref2, ref) {
+      var defaultValue = _ref2.defaultValue,
+          value = _ref2.value,
+          props = _objectWithoutProperties(_ref2, ["defaultValue", "value"]);
+
+      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
+        defaultValue: value !== null && value !== void 0 ? value : "",
+        ref: ref
+      });
+    }
+  }))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("li", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", {
     className: "inputLabel"
-  }, "\u6709\u52B9\u671F\u9650"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
-    type: "date",
-    name: "expiration_date",
-    onChange: function onChange(e) {
-      return handleChange({
+  }, "\u6709\u52B9\u671F\u9650"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+    className: "calendar"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_flatpickr__WEBPACK_IMPORTED_MODULE_4___default.a, {
+    theme: "airbnb",
+    value: (_input$expiration_dat = input.expiration_date) !== null && _input$expiration_dat !== void 0 ? _input$expiration_dat : "",
+    onChange: function onChange(date, dateStr) {
+      handleChange({
         target: {
           name: "expiration_date",
-          value: e.target.value
+          value: dateStr
         }
       });
     },
-    value: (_input$expiration_dat = input.expiration_date) !== null && _input$expiration_dat !== void 0 ? _input$expiration_dat : ""
-  })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("li", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", {
+    options: {
+      dateFormat: "Y/m/d",
+      locale: _objectSpread({}, flatpickr_dist_l10n_ja_js__WEBPACK_IMPORTED_MODULE_3__["Japanese"])
+    },
+    render: function render(_ref3, ref) {
+      var defaultValue = _ref3.defaultValue,
+          value = _ref3.value,
+          props = _objectWithoutProperties(_ref3, ["defaultValue", "value"]);
+
+      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
+        defaultValue: value !== null && value !== void 0 ? value : "",
+        ref: ref
+      });
+    }
+  }))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("li", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", {
     className: "inputLabel"
   }, "\u5099\u8003"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
     type: "text",

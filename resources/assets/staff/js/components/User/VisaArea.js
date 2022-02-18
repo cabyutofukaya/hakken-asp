@@ -4,6 +4,7 @@ import VisaEditModal from "./VisaEditModal";
 import SmallDangerModal from "../SmallDangerModal";
 import { useMountedRef } from "../../../../hooks/useMountedRef";
 import classNames from "classnames";
+import moment from "moment";
 
 const VisaArea = ({ userNumber, countries, customCategoryCode }) => {
     const { agencyAccount } = useContext(ConstContext);
@@ -206,8 +207,20 @@ const VisaArea = ({ userNumber, countries, customCategoryCode }) => {
                                         <td>{row.country.name ?? "-"}</td>
                                         <td>{row.kind ?? "-"}</td>
                                         <td>{row.issue_place.name ?? "-"}</td>
-                                        <td>{row.issue_date ?? "-"}</td>
-                                        <td>{row.expiration_date ?? "-"}</td>
+                                        <td>
+                                            {row?.issue_date
+                                                ? moment(row.issue_date).format(
+                                                      "YYYY/M/D"
+                                                  )
+                                                : "-"}
+                                        </td>
+                                        <td>
+                                            {row?.expiration_date
+                                                ? moment(
+                                                      row.expiration_date
+                                                  ).format("YYYY/M/D")
+                                                : "-"}
+                                        </td>
                                         <td>{row.note ?? "-"}</td>
                                         <td className="txtalc">
                                             <span

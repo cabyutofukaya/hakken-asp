@@ -125,20 +125,7 @@ const VisaEditModal = ({
                         </li>
                         <li>
                             <span className="inputLabel">発行日</span>
-                            <input
-                                type="date"
-                                name="issue_date"
-                                onChange={e =>
-                                    handleChange({
-                                        target: {
-                                            name: "issue_date",
-                                            value: e.target.value
-                                        }
-                                    })
-                                }
-                                value={input.issue_date ?? ""}
-                            />
-                            {/* <div className="calendar">
+                            <div className="calendar">
                                 <Flatpickr
                                     theme="airbnb"
                                     value={input.issue_date ?? ""}
@@ -168,24 +155,11 @@ const VisaEditModal = ({
                                         );
                                     }}
                                 />
-                            </div> */}
+                            </div>
                         </li>
                         <li>
                             <span className="inputLabel">有効期限</span>
-                            <input
-                                type="date"
-                                name="expiration_date"
-                                onChange={e =>
-                                    handleChange({
-                                        target: {
-                                            name: "expiration_date",
-                                            value: e.target.value
-                                        }
-                                    })
-                                }
-                                value={input.expiration_date ?? ""}
-                            />
-                            {/* <div className="calendar">
+                            <div className="calendar">
                                 <Flatpickr
                                     theme="airbnb"
                                     value={input.expiration_date ?? ""}
@@ -215,7 +189,7 @@ const VisaEditModal = ({
                                         );
                                     }}
                                 />
-                            </div> */}
+                            </div>
                         </li>
                         <li>
                             <span className="inputLabel">備考</span>
