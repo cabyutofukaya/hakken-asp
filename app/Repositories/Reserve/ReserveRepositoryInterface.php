@@ -14,8 +14,6 @@ interface ReserveRepositoryInterface
 
     public function findByControlNumber(string $controlNumber, int $agencyId, array $with = [], array $select = [], bool $getDeleted = false) : ?Reserve;
 
-    public function findByDepartedNumber(string $controlNumber, int $agencyId, array $with = [], array $select = [], bool $getDeleted = false) : ?Reserve;
-
     public function paginateByAgencyId(int $agencyId, string $applicationStep, array $params, int $limit, array $with, array $select) : LengthAwarePaginator;
 
     public function paginateByUserId(int $userId, int $agencyId, array $params, int $limit, array $with, array $select) : LengthAwarePaginator;

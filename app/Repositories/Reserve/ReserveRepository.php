@@ -67,24 +67,6 @@ class ReserveRepository implements ReserveRepositoryInterface
     }
 
     /**
-     * 予約番号から催行済データを1件取得
-     *
-     */
-    public function findByDepartedNumber(string $controlNumber, int $agencyId, array $with = [], array $select = [], bool $getDeleted = false) : ?Reserve
-    {
-        $query = $this->reserve->departed(); // スコープは"催行済"
-
-        $query = $select ? $query->select($select) : $query;
-        $query = $with ? $query->with($with) : $query;
-        $query = $getDeleted ? $query->withTrashed() : $query;
-
-        return $query
-                ->where('control_number', $controlNumber)
-                ->where('agency_id', $agencyId)
-                ->firstOrFail();
-    }
-
-    /**
      * ページネーションで取得
      *
      * @param int $scope 予約ステータス(予約 or 見積)
@@ -97,8 +79,6 @@ class ReserveRepository implements ReserveRepositoryInterface
             $query = $this->reserve->reserve();
         } elseif ($applicationStep === config('consts.reserves.APPLICATION_STEP_DRAFT')) { // 見積データ対象
             $query = $this->reserve->draft();
-        } elseif ($applicationStep === config('consts.reserves.APPLICATION_STEP_DEPARTED')) { // 催行済みデータ対象
-            $query = $this->reserve->departed();
         } else {
             $query = $this->reserve;
         }

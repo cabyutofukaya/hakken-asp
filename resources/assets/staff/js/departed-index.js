@@ -105,7 +105,7 @@ const DepartedList = ({ searchParam }) => {
         setIsDeleting(true);
 
         const response = await axios
-            .delete(`/api/${agencyAccount}/reserve/${deleteNumber}`)
+            .delete(`/api/${agencyAccount}/departed/${deleteNumber}`)
             .finally(() => {
                 $(".js-modal-close").trigger("click"); // 削除モーダルclose
                 setTimeout(function() {
@@ -144,8 +144,8 @@ const DepartedList = ({ searchParam }) => {
                                 <span>予約番号</span>
                             </th>
                             <th
-                                className="sort"
-                                // onClick={e => handleSortClick("status")}
+                            // className="sort"
+                            // onClick={e => handleSortClick("status")}
                             >
                                 <span>状況</span>
                             </th>
@@ -247,7 +247,17 @@ const DepartedList = ({ searchParam }) => {
                                             {row.control_number ?? "-"}
                                         </a>
                                     </td>
-                                    <td>状況</td>
+                                    <td className="txtalc">
+                                        <span
+                                            className={classNames("status", {
+                                                gray:
+                                                    row?.departed_status_label ===
+                                                    "催行完了"
+                                            })}
+                                        >
+                                            {row.departed_status_label ?? "-"}
+                                        </span>
+                                    </td>
                                     <td>{row.departure_date ?? "-"}</td>
                                     <td>{row.return_date ?? "-"}</td>
                                     <td>{row.departure.name ?? "-"}</td>
@@ -286,9 +296,7 @@ const DepartedList = ({ searchParam }) => {
                                             )}
                                             data-target="mdDelete"
                                             onClick={() => {
-                                                setDeleteNumber(
-                                                    row?.control_number
-                                                );
+                                                setDeleteNumber(row?.hash_id);
                                             }}
                                         >
                                             delete

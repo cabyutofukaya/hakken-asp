@@ -4,7 +4,7 @@
    </div>
    <ul>
       @if(auth('staff')->user()->is_reserve_setting_read_permission){{-- 予約/見積閲覧権限 --}}
-         <li class="current @if(strpos(\Route::current()->getName(), 'staff.asp.estimates.') !== false || strpos(\Route::current()->getName(), 'staff.web.estimates.') !== false) active @endif">
+         <li class="current @if(strpos(\Route::current()->getName(), 'staff.asp.estimates.') !== false || strpos(\Route::current()->getName(), 'staff.web.estimates.') !== false || strpos(\Route::current()->getName(), 'staff.estimates.') !== false) active @endif">
             <a href="#">
                <span class="material-icons">edit_calendar</span>予約/見積
             </a>
@@ -33,8 +33,8 @@
                   @endif">
                   <a href="{{ route('staff.web.estimates.normal.index', $agencyAccount) }}"><span class="material-icons">language</span>WEB見積管理</a>
                </li>
-               <li class="@if(strpos(\Route::current()->getName(), 'staff.asp.estimates.departed.') !== false) stay @endif">
-                  <a href="{{ route('staff.asp.estimates.departed.index', $agencyAccount) }}">
+               <li class="@if(strpos(\Route::current()->getName(), 'staff.estimates.departed.') !== false) stay @endif">
+                  <a href="{{ route('staff.estimates.departed.index', $agencyAccount) }}">
                      <span class="material-icons">event_available</span>催行済み一覧
                   </a>
                </li>

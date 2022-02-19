@@ -4,7 +4,6 @@
 @can('view', $reserve)
   <main id="reserveShowArea"
   defaultTab='{{ $defaultTab }}'
-  tabCodes='@json($tabCodes)'
   reserve='@json($reserve)'
   defaultValue='@json($defaultValue)'
   formSelects='@json($formSelects)'

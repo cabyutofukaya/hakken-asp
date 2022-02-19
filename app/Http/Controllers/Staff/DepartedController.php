@@ -36,9 +36,9 @@ class DepartedController extends Controller
      *
      * @param string $controlNumber 予約番号
      */
-    public function show($agencyAccount, $controlNumber)
+    public function show(string $agencyAccount, string $controlNumber)
     {
-        $reserve = $this->departedService->findByDepartedNumber($controlNumber, $agencyAccount);
+        $reserve = $this->departedService->findByControlNumber($controlNumber, $agencyAccount);
 
         // 認可チェック
         $response = \Gate::inspect('view', [$reserve]);

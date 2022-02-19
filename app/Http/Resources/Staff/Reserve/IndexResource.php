@@ -36,7 +36,8 @@ class IndexResource extends JsonResource
                 'val' => $this->travel_types->isNotEmpty() ? $this->travel_types[0]->val : null
             ],
             "status" => [ // 予約ステータス
-                'val' => $this->statuses->isNotEmpty() ? $this->statuses[0]->val : null
+                // 'val' => $this->statuses->isNotEmpty() ? $this->statuses[0]->val : null
+                'val' => optional($this->status)->val,
             ],
             "application_date" => [ // 申込日
                 'val' => $this->application_dates->isNotEmpty() ? $this->application_dates[0]->val : null
