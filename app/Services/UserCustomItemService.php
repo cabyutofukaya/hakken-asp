@@ -36,12 +36,17 @@ class UserCustomItemService
     /**
      * 作成
      */
-    public function create(array $data): UserCustomItem
+    public function create(array $data, int $agencyId): UserCustomItem
     {
         $data['key'] = get_uniqid(); // 項目キーを設定
 
+        if($this->userCustomItemRepository->isExistsKey($data['key'], $agencyId)){
+            throw new \Exception('カスタム項目キーが重複しました。');
+        }
+
         // リスト項目が重複するとよからぬ不具合を起こすかもしれないので重複削除しておく
         $data['list'] = array_values(array_unique(Arr::get($data, 'list', [])));
+
         return $this->userCustomItemRepository->create($data);
     }
 

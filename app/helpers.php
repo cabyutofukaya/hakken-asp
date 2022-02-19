@@ -115,7 +115,8 @@ if (! function_exists('get_uniqid')) {
     function get_uniqid(): string
     {
         // return md5(uniqid(rand()."", true));
-        return uniqid(rand()."");
+        // return uniqid(rand()."");
+        return uniqid();
     }
 }
 

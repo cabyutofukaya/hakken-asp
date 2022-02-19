@@ -65,11 +65,11 @@ return [
 
   // カスタム項目接頭辞
   'USER_CUSTOM_ITEM_PREFIX' => 'uci-', // 全項目共通
-  'USER_CUSTOM_ITEM_ONELINE_PREFIX' => 'uci-oneline-', // 一行入力（変更する場合は USER_CUSTOM_ITEM_PREFIX も変更のこと）
-  'USER_CUSTOM_ITEM_MULTIPLE_PREFIX' => 'uci-multiple-', // 複数行入力（変更する場合は USER_CUSTOM_ITEM_PREFIX も変更のこと）
-  'USER_CUSTOM_ITEM_CALENDAR_PREFIX' => 'uci-calendar-', // カレンダー入力（変更する場合は USER_CUSTOM_ITEM_PREFIX も変更のこと）
-  'USER_CUSTOM_ITEM_TIME_PREFIX' => 'uci-time-', // 時刻入力（変更する場合は USER_CUSTOM_ITEM_PREFIX も変更のこと）
-  'USER_CUSTOM_ITEM_TEXT_PREFIX' => 'uci-text-', // 一般的なテキスト入力。リストタイプで使用（変更する場合は USER_CUSTOM_ITEM_PREFIX も変更のこと）
+  'USER_CUSTOM_ITEM_ONELINE_PREFIX' => 'uci-01-', // 一行入力（変更する場合は USER_CUSTOM_ITEM_PREFIX も変更のこと）
+  'USER_CUSTOM_ITEM_MULTIPLE_PREFIX' => 'uci-02-', // 複数行入力（変更する場合は USER_CUSTOM_ITEM_PREFIX も変更のこと）
+  'USER_CUSTOM_ITEM_CALENDAR_PREFIX' => 'uci-03-', // カレンダー入力（変更する場合は USER_CUSTOM_ITEM_PREFIX も変更のこと）
+  'USER_CUSTOM_ITEM_TIME_PREFIX' => 'uci-04-', // 時刻入力（変更する場合は USER_CUSTOM_ITEM_PREFIX も変更のこと）
+  'USER_CUSTOM_ITEM_TEXT_PREFIX' => 'uci-05-', // 一般的なテキスト入力。リストタイプで使用（変更する場合は USER_CUSTOM_ITEM_PREFIX も変更のこと）
 
   // 入力形式（テキスト）
   'INPUT_TYPE_TEXT_01' => "oneline",

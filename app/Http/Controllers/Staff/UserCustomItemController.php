@@ -121,24 +121,29 @@ class UserCustomItemController extends AppController
             return $this->forbiddenRedirect($response->message());
         }
 
-        $input = $request->validated();
-        $input['type'] = config("consts.user_custom_items.CUSTOM_ITEM_TYPE_TEXT");
-
-        if ($userCustomCategoryItem = $this->userCustomCategoryItemService->findWhere(['user_custom_category_id' => $input['user_custom_category_id'], 'type' => $input['type']])) { // user_custom_category_id と type の組み合わせでユニーク
-
-            $input['agency_id'] = auth('staff')->user()->agency->id;
-            $input['user_custom_category_item_id'] = $userCustomCategoryItem->id;
-            
-            $userCustomItem = DB::transaction(function () use ($input) {
-                $input['seq'] = $this->userCustomItemService->maxSeqForAgency($input['agency_id'], $input['user_custom_category_item_id']) + 1; // 次のseq値をセット
+        try {
+            $input = $request->validated();
+            $input['type'] = config("consts.user_custom_items.CUSTOM_ITEM_TYPE_TEXT");
     
-                return $this->userCustomItemService->create($input);
-            });
-            
-            if ($userCustomItem) {
-                return redirect()->route('staff.system.custom.index', ['agencyAccount'=>$agencyAccount, 'tab'=>$userCustomItem->user_custom_category->code])->with('success_message', "カスタム項目「{$userCustomItem->name}」を登録しました"); // tabは一覧ページでデフォルトでopen状態にするカテゴリを指定
+            if ($userCustomCategoryItem = $this->userCustomCategoryItemService->findWhere(['user_custom_category_id' => $input['user_custom_category_id'], 'type' => $input['type']])) { // user_custom_category_id と type の組み合わせでユニーク
+
+                $input['agency_id'] = auth('staff')->user()->agency->id;
+                $input['user_custom_category_item_id'] = $userCustomCategoryItem->id;
+                
+                $userCustomItem = DB::transaction(function () use ($input) {
+                    $input['seq'] = $this->userCustomItemService->maxSeqForAgency($input['agency_id'], $input['user_custom_category_item_id']) + 1; // 次のseq値をセット
+        
+                    return $this->userCustomItemService->create($input, $input['agency_id']);
+                });
+                
+                if ($userCustomItem) {
+                    return redirect()->route('staff.system.custom.index', ['agencyAccount'=>$agencyAccount, 'tab'=>$userCustomItem->user_custom_category->code])->with('success_message', "カスタム項目「{$userCustomItem->name}」を登録しました"); // tabは一覧ページでデフォルトでopen状態にするカテゴリを指定
+                }
             }
+        } catch (\Exception $e) {
+            \Log::error($e);
         }
+
         abort(500);
     }
 
@@ -153,26 +158,31 @@ class UserCustomItemController extends AppController
             return $this->forbiddenRedirect($response->message());
         }
         
-        $input = $request->validated();
-        $input['type'] = config("consts.user_custom_items.CUSTOM_ITEM_TYPE_LIST");
+        try {
+            $input = $request->validated();
+            $input['type'] = config("consts.user_custom_items.CUSTOM_ITEM_TYPE_LIST");
+    
+            if ($userCustomCategoryItem = $this->userCustomCategoryItemService->findWhere(['user_custom_category_id' => $input['user_custom_category_id'], 'type' => $input['type']])) { // user_custom_category_id と type の組み合わせでユニーク
 
-        if ($userCustomCategoryItem = $this->userCustomCategoryItemService->findWhere(['user_custom_category_id' => $input['user_custom_category_id'], 'type' => $input['type']])) { // user_custom_category_id と type の組み合わせでユニーク
+                $input['agency_id'] = auth('staff')->user()->agency->id;
+                $input['user_custom_category_item_id'] = $userCustomCategoryItem->id;
 
-            $input['agency_id'] = auth('staff')->user()->agency->id;
-            $input['user_custom_category_item_id'] = $userCustomCategoryItem->id;
+                $userCustomItem = DB::transaction(function () use ($input) {
+                    $input['seq'] = $this->userCustomItemService->maxSeqForAgency($input['agency_id'], $input['user_custom_category_item_id']) + 1; // 次のseq値をセット
 
-            $userCustomItem = DB::transaction(function () use ($input) {
-                $input['seq'] = $this->userCustomItemService->maxSeqForAgency($input['agency_id'], $input['user_custom_category_item_id']) + 1; // 次のseq値をセット
+                    $userCustomItem =  $this->userCustomItemService->create($input, $input['agency_id']);
 
-                $userCustomItem =  $this->userCustomItemService->create($input);
-
-                return $userCustomItem;
-            });
-            
-            if ($userCustomItem) {
-                return redirect()->route('staff.system.custom.index', ['agencyAccount'=>$agencyAccount, 'tab'=>$userCustomItem->user_custom_category->code])->with('success_message', "カスタム項目「{$userCustomItem->name}」を登録しました"); // tabは一覧ページでデフォルトでopen状態にするカテゴリを指定
+                    return $userCustomItem;
+                });
+                
+                if ($userCustomItem) {
+                    return redirect()->route('staff.system.custom.index', ['agencyAccount'=>$agencyAccount, 'tab'=>$userCustomItem->user_custom_category->code])->with('success_message', "カスタム項目「{$userCustomItem->name}」を登録しました"); // tabは一覧ページでデフォルトでopen状態にするカテゴリを指定
+                }
             }
+        } catch (\Exception $e) {
+            \Log::error($e);
         }
+
         abort(500);
     }
 
@@ -187,24 +197,29 @@ class UserCustomItemController extends AppController
             return $this->forbiddenRedirect($response->message());
         }
 
-        $input = $request->validated();
-        $input['type'] = config("consts.user_custom_items.CUSTOM_ITEM_TYPE_DATE");
+        try {
+            $input = $request->validated();
+            $input['type'] = config("consts.user_custom_items.CUSTOM_ITEM_TYPE_DATE");
 
-        if ($userCustomCategoryItem = $this->userCustomCategoryItemService->findWhere(['user_custom_category_id' => $input['user_custom_category_id'], 'type' => $input['type']])) { // user_custom_category_id と type の組み合わせでユニーク
+            if ($userCustomCategoryItem = $this->userCustomCategoryItemService->findWhere(['user_custom_category_id' => $input['user_custom_category_id'], 'type' => $input['type']])) { // user_custom_category_id と type の組み合わせでユニーク
 
-            $input['agency_id'] = auth('staff')->user()->agency->id;
-            $input['user_custom_category_item_id'] = $userCustomCategoryItem->id;
-            
-            $userCustomItem = DB::transaction(function () use ($input) {
-                $input['seq'] = $this->userCustomItemService->maxSeqForAgency($input['agency_id'], $input['user_custom_category_item_id']) + 1; // 次のseq値をセット
-    
-                return $this->userCustomItemService->create($input);
-            });
-            
-            if ($userCustomItem) {
-                return redirect()->route('staff.system.custom.index', ['agencyAccount'=>$agencyAccount, 'tab'=>$userCustomItem->user_custom_category->code])->with('success_message', "カスタム項目「{$userCustomItem->name}」を登録しました"); // tabは一覧ページでデフォルトでopen状態にするカテゴリを指定
+                $input['agency_id'] = auth('staff')->user()->agency->id;
+                $input['user_custom_category_item_id'] = $userCustomCategoryItem->id;
+                
+                $userCustomItem = DB::transaction(function () use ($input) {
+                    $input['seq'] = $this->userCustomItemService->maxSeqForAgency($input['agency_id'], $input['user_custom_category_item_id']) + 1; // 次のseq値をセット
+        
+                    return $this->userCustomItemService->create($input, $input['agency_id']);
+                });
+                
+                if ($userCustomItem) {
+                    return redirect()->route('staff.system.custom.index', ['agencyAccount'=>$agencyAccount, 'tab'=>$userCustomItem->user_custom_category->code])->with('success_message', "カスタム項目「{$userCustomItem->name}」を登録しました"); // tabは一覧ページでデフォルトでopen状態にするカテゴリを指定
+                }
             }
+        } catch (\Exception $e) {
+            \Log::error($e);
         }
+
         abort(500);
     }
 

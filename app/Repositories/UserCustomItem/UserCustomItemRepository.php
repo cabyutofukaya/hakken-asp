@@ -105,6 +105,19 @@ class UserCustomItemRepository implements UserCustomItemRepositoryInterface
     }
     
     /**
+     * 存在するキーか
+     * 厳密にはプレフィックス含めて検索する必要があるが、ここでは末尾のキー部分のみで判断
+     *
+     * @param boolean $checkDeleted 論理削除も含めてチェックする場合はtrue
+     */
+    public function isExistsKey(string $keyStr, int $agencyId, bool $checkDeleted = true) : bool
+    {
+        $query = $this->userCustomItem;
+        $query = $checkDeleted ? $query->withTrashed() : $query;
+        return $query->where('agency_id', $agencyId)->where('key', 'like', "%$keyStr")->exists();
+    }
+
+    /**
      * 当該コードのkeyを取得
      *
      * @param string $code 管理コード
