@@ -3,9 +3,7 @@ import React, { useState, useReducer, useContext, useCallback } from "react";
 import ConstApp from "./components/ConstApp";
 import ReserveItineraryConstApp from "./components/ReserveItineraryConstApp";
 import { ReserveItineraryConstContext } from "./components/ReserveItineraryConstApp";
-import { ConstContext } from "./components/ConstApp";
 import { render } from "react-dom";
-import { useMountedRef } from "../../hooks/useMountedRef";
 import SmallDangerModal from "./components/SmallDangerModal";
 import Waypoint from "./components/ReserveItinerary/Waypoint";
 import WaypointImage from "./components/ReserveItinerary/WaypointImage";
@@ -102,7 +100,15 @@ const listsReducer = (state, action) => {
         dateRow[action.payload.index][action.payload.name] =
             action.payload.value;
         return { ...copyState };
-    } else if (action.type === "CHANGE_PHOTO_INPUT") {
+    } else if (action.type === "CHANGE_PHOTO") {
+        // 写真選択
+        const photoRow =
+            copyState[action.payload.date][action.payload.index]["photos"][
+                action.payload.no
+            ];
+        photoRow[action.payload.name] = action.payload.value;
+        return { ...copyState };
+    } else if (action.type === "CHANGE_PHOTO_EXPLANATION") {
         // 写真情報の入力制御（説明フィールド）
         const photoRow =
             copyState[action.payload.date][action.payload.index]["photos"][
@@ -160,11 +166,7 @@ const ItineraryArea = ({
     subjectCustomCategoryCode,
     modalInitialValues
 } = {}) => {
-    const { agencyAccount } = useContext(ConstContext);
-
     const { subjectCategoryTypes } = useContext(ReserveItineraryConstContext);
-
-    const mounted = useMountedRef(); // マウント・アンマウント制御
 
     const [isDeleteChecking, setIsDeleteChecking] = useState(false); // 削除可否チェック中か否か
 
@@ -187,6 +189,7 @@ const ItineraryArea = ({
     }; // 仕入情報初期値(MODE_CREATE=新規登録)
 
     const [lists, rowDispatch] = useReducer(listsReducer, defaultValue?.dates); // 日程情報の入力制御
+
     const [note, setNote] = useState(defaultValue?.note); // 備考入力制御
     // 追加対象行情報。日付、行番号
     const [targetAddRow, setTargetAddRow] = useReducer((state, newState) => ({
@@ -568,10 +571,24 @@ const ItineraryArea = ({
         });
     }, []);
 
-    // 写真情報の入力データ制御（説明フィールド）
-    const handleChangePhotoInput = useCallback((e, date, index, no) => {
+    // 画像ファイルの選択制御
+    const handleChangePhoto = useCallback((e, date, index, no) => {
         rowDispatch({
-            type: "CHANGE_PHOTO_INPUT",
+            type: "CHANGE_PHOTO",
+            payload: {
+                date,
+                index,
+                no,
+                name: e.target.name,
+                value: e.target.value
+            }
+        });
+    }, []);
+
+    // 写真情報の入力データ制御（説明フィールド）
+    const handleChangePhotoExplanation = useCallback((e, date, index, no) => {
+        rowDispatch({
+            type: "CHANGE_PHOTO_EXPLANATION",
             payload: {
                 date,
                 index,
@@ -875,8 +892,11 @@ const ItineraryArea = ({
                                                     handleClearPhoto={
                                                         handleClearPhoto
                                                     }
-                                                    handleChangePhotoInput={
-                                                        handleChangePhotoInput
+                                                    handleChangePhoto={
+                                                        handleChangePhoto
+                                                    }
+                                                    handleChangePhotoExplanation={
+                                                        handleChangePhotoExplanation
                                                     }
                                                     handleUpRow={handleUpRow}
                                                     handleDownRow={

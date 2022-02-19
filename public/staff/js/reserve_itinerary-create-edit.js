@@ -44893,7 +44893,7 @@ function _arrayWithHoles(arr) {
  */
 
 var PickupSpot = function PickupSpot(_ref) {
-  var _input$photos$no$id, _input$photos, _input$photos$no, _input$photos$no$file, _input$photos2, _input$photos2$no, _input$photos$no$uplo, _input$photos3, _input$photos3$no, _input$photos$no$file2, _input$photos4, _input$photos4$no, _input$photos$no$orig, _input$photos5, _input$photos5$no, _input$photos$no$mime, _input$photos6, _input$photos6$no, _input$photos7, _input$photos7$no, _input$photos$no$desc, _input$photos8, _input$photos8$no;
+  var _input$photos$no$id, _input$photos, _input$photos$no, _input$photos$no$file, _input$photos2, _input$photos2$no, _input$photos$no$uplo, _input$photos3, _input$photos3$no, _input$photos$no$file2, _input$photos4, _input$photos4$no, _input$photos$no$orig, _input$photos5, _input$photos5$no, _input$photos$no$mime, _input$photos6, _input$photos6$no, _input$photos7, _input$photos7$no, _input$photos8, _input$photos8$no, _input$photos$no$desc, _input$photos9, _input$photos9$no;
 
   var index = _ref.index,
       date = _ref.date,
@@ -44903,7 +44903,8 @@ var PickupSpot = function PickupSpot(_ref) {
       thumbSBaseUrl = _ref.thumbSBaseUrl,
       handleUploadPhoto = _ref.handleUploadPhoto,
       handleClearPhoto = _ref.handleClearPhoto,
-      handleChangePhotoInput = _ref.handleChangePhotoInput;
+      handleChangePhoto = _ref.handleChangePhoto,
+      handleChangePhotoExplanation = _ref.handleChangePhotoExplanation;
 
   var _useContext = Object(react__WEBPACK_IMPORTED_MODULE_1__["useContext"])(_ConstApp__WEBPACK_IMPORTED_MODULE_2__["ConstContext"]),
       agencyAccount = _useContext.agencyAccount;
@@ -44914,12 +44915,7 @@ var PickupSpot = function PickupSpot(_ref) {
       _useState2 = _slicedToArray(_useState, 2),
       isUploading = _useState2[0],
       setIsUploading = _useState2[1]; // 画像アップロード中か否か
-
-
-  var _useState3 = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])(null),
-      _useState4 = _slicedToArray(_useState3, 2),
-      image = _useState4[0],
-      setImage = _useState4[1]; // 画像選択
+  // 画像選択
 
 
   var handleImageChange = /*#__PURE__*/function () {
@@ -44959,7 +44955,12 @@ var PickupSpot = function PickupSpot(_ref) {
               }
 
               alert("画像はjpg/png/gif形式のファイルを選択してください");
-              setImage(null);
+              handleChangePhoto({
+                target: {
+                  name: "image",
+                  value: null
+                }
+              }, date, index, no);
               return _context.abrupt("return");
 
             case 12:
@@ -44969,7 +44970,12 @@ var PickupSpot = function PickupSpot(_ref) {
               }
 
               alert("10MBを超える画像はアップロードできません。");
-              setImage(null);
+              handleChangePhoto({
+                target: {
+                  name: "image",
+                  value: null
+                }
+              }, date, index, no);
               return _context.abrupt("return");
 
             case 16:
@@ -44998,7 +45004,13 @@ var PickupSpot = function PickupSpot(_ref) {
                 reader.onload = function (e) {
                   if (mounted.current) {
                     handleUploadPhoto(e, date, index, no, response.data);
-                    setImage(e.target.result); // サムネイル画像セット
+                    handleChangePhoto({
+                      target: {
+                        name: "image",
+                        value: e.target.result // サムネイル画像セット
+
+                      }
+                    }, date, index, no);
                   }
                 };
 
@@ -45020,7 +45032,12 @@ var PickupSpot = function PickupSpot(_ref) {
 
 
   var handleDelete = function handleDelete(e) {
-    setImage(null);
+    handleChangePhoto({
+      target: {
+        name: "image",
+        value: null
+      }
+    }, date, index, no);
     handleClearPhoto(e, date, index, no);
   };
 
@@ -45073,20 +45090,20 @@ var PickupSpot = function PickupSpot(_ref) {
     color: "#dddddd",
     width: 45,
     height: 45
-  }), !isUploading && image && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", {
+  }), !isUploading && (input === null || input === void 0 ? void 0 : (_input$photos8 = input.photos) === null || _input$photos8 === void 0 ? void 0 : (_input$photos8$no = _input$photos8[no]) === null || _input$photos8$no === void 0 ? void 0 : _input$photos8$no.image) && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", {
     className: "material-icons",
     onClick: handleDelete
   }, "cancel"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("img", {
-    src: image,
+    src: input.photos[no].image,
     alt: ""
   }))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("li", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", {
     className: "inputLabel"
   }, "\u5199\u771F\u306E\u8AAC\u660E"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("input", {
     type: "text",
-    value: (_input$photos$no$desc = input === null || input === void 0 ? void 0 : (_input$photos8 = input.photos) === null || _input$photos8 === void 0 ? void 0 : (_input$photos8$no = _input$photos8[no]) === null || _input$photos8$no === void 0 ? void 0 : _input$photos8$no.description) !== null && _input$photos$no$desc !== void 0 ? _input$photos$no$desc : "",
+    value: (_input$photos$no$desc = input === null || input === void 0 ? void 0 : (_input$photos9 = input.photos) === null || _input$photos9 === void 0 ? void 0 : (_input$photos9$no = _input$photos9[no]) === null || _input$photos9$no === void 0 ? void 0 : _input$photos9$no.description) !== null && _input$photos$no$desc !== void 0 ? _input$photos$no$desc : "",
     name: "".concat(inputName, "[photos][").concat(no, "][description]"),
     onChange: function onChange(e) {
-      return handleChangePhotoInput({
+      return handleChangePhotoExplanation({
         target: {
           name: "description",
           value: e.target.value
@@ -45132,11 +45149,11 @@ var ScheduleInputRows = function ScheduleInputRows(_ref) {
   }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
     type: "hidden",
     name: "".concat(inputName, "[seq]]"),
-    value: index
+    value: index !== null && index !== void 0 ? index : ""
   }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
     type: "hidden",
     name: "".concat(inputName, "[travel_date]]"),
-    value: date
+    value: date !== null && date !== void 0 ? date : ""
   }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("li", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", {
     className: "inputLabel"
   }, "\u5230\u7740\u6642\u9593"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
@@ -47893,7 +47910,8 @@ var WaypointImage = function WaypointImage(_ref) {
       handleChange = _ref.handleChange,
       handleUploadPhoto = _ref.handleUploadPhoto,
       handleClearPhoto = _ref.handleClearPhoto,
-      handleChangePhotoInput = _ref.handleChangePhotoInput,
+      handleChangePhoto = _ref.handleChangePhoto,
+      handleChangePhotoExplanation = _ref.handleChangePhotoExplanation,
       handleUpRow = _ref.handleUpRow,
       handleDownRow = _ref.handleDownRow,
       handleDelete = _ref.handleDelete,
@@ -47985,7 +48003,8 @@ var WaypointImage = function WaypointImage(_ref) {
     thumbSBaseUrl: thumbSBaseUrl,
     handleUploadPhoto: handleUploadPhoto,
     handleClearPhoto: handleClearPhoto,
-    handleChangePhotoInput: handleChangePhotoInput
+    handleChangePhoto: handleChangePhoto,
+    handleChangePhotoExplanation: handleChangePhotoExplanation
   })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
     className: "subjectList"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h3", null, "\u4ED5\u5165\u79D1\u76EE", /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("a", {
@@ -48396,14 +48415,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_ReserveItineraryConstApp__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./components/ReserveItineraryConstApp */ "./resources/assets/staff/js/components/ReserveItineraryConstApp.js");
 /* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
 /* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(react_dom__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var _hooks_useMountedRef__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../hooks/useMountedRef */ "./resources/assets/hooks/useMountedRef.js");
-/* harmony import */ var _components_SmallDangerModal__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./components/SmallDangerModal */ "./resources/assets/staff/js/components/SmallDangerModal.js");
-/* harmony import */ var _components_ReserveItinerary_Waypoint__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./components/ReserveItinerary/Waypoint */ "./resources/assets/staff/js/components/ReserveItinerary/Waypoint.js");
-/* harmony import */ var _components_ReserveItinerary_WaypointImage__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./components/ReserveItinerary/WaypointImage */ "./resources/assets/staff/js/components/ReserveItinerary/WaypointImage.js");
-/* harmony import */ var _components_ReserveItinerary_Destination__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./components/ReserveItinerary/Destination */ "./resources/assets/staff/js/components/ReserveItinerary/Destination.js");
-/* harmony import */ var _components_ReserveItinerary_SubjectModal__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./components/ReserveItinerary/SubjectModal */ "./resources/assets/staff/js/components/ReserveItinerary/SubjectModal.js");
-/* harmony import */ var _libs__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./libs */ "./resources/assets/staff/js/libs.js");
-/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./constants */ "./resources/assets/staff/js/constants.js");
+/* harmony import */ var _components_SmallDangerModal__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./components/SmallDangerModal */ "./resources/assets/staff/js/components/SmallDangerModal.js");
+/* harmony import */ var _components_ReserveItinerary_Waypoint__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./components/ReserveItinerary/Waypoint */ "./resources/assets/staff/js/components/ReserveItinerary/Waypoint.js");
+/* harmony import */ var _components_ReserveItinerary_WaypointImage__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./components/ReserveItinerary/WaypointImage */ "./resources/assets/staff/js/components/ReserveItinerary/WaypointImage.js");
+/* harmony import */ var _components_ReserveItinerary_Destination__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./components/ReserveItinerary/Destination */ "./resources/assets/staff/js/components/ReserveItinerary/Destination.js");
+/* harmony import */ var _components_ReserveItinerary_SubjectModal__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./components/ReserveItinerary/SubjectModal */ "./resources/assets/staff/js/components/ReserveItinerary/SubjectModal.js");
+/* harmony import */ var _libs__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./libs */ "./resources/assets/staff/js/libs.js");
+/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./constants */ "./resources/assets/staff/js/constants.js");
 function _toConsumableArray(arr) {
   return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread();
 }
@@ -48539,8 +48557,6 @@ function _defineProperty(obj, key, value) {
 
 
 
-
-
  // 写真項目初期値。説明フィールドは含まない
 
 var initialPhotoInfo = {
@@ -48563,11 +48579,11 @@ var listsReducer = function listsReducer(state, action) {
     var dateRow = copyState[action.payload.date];
 
     switch (action.payload.name) {
-      case _constants__WEBPACK_IMPORTED_MODULE_12__["RESERVE_ITINERARY"].WAYPOINT:
+      case _constants__WEBPACK_IMPORTED_MODULE_11__["RESERVE_ITINERARY"].WAYPOINT:
         dateRow.push(row);
         return _objectSpread({}, copyState);
 
-      case _constants__WEBPACK_IMPORTED_MODULE_12__["RESERVE_ITINERARY"].WAYPOINT_IMAGE:
+      case _constants__WEBPACK_IMPORTED_MODULE_11__["RESERVE_ITINERARY"].WAYPOINT_IMAGE:
         row["photos"] = [];
         row["photos"].push(_objectSpread(_objectSpread({}, initialPhotoInfo), {}, {
           description: ""
@@ -48576,7 +48592,7 @@ var listsReducer = function listsReducer(state, action) {
         dateRow.push(row);
         return _objectSpread({}, copyState);
 
-      case _constants__WEBPACK_IMPORTED_MODULE_12__["RESERVE_ITINERARY"].DESTINATION:
+      case _constants__WEBPACK_IMPORTED_MODULE_11__["RESERVE_ITINERARY"].DESTINATION:
         dateRow.push(row);
         return _objectSpread({}, copyState);
 
@@ -48633,25 +48649,30 @@ var listsReducer = function listsReducer(state, action) {
     var _dateRow4 = copyState[action.payload.date];
     _dateRow4[action.payload.index][action.payload.name] = action.payload.value;
     return _objectSpread({}, copyState);
-  } else if (action.type === "CHANGE_PHOTO_INPUT") {
-    // 写真情報の入力制御（説明フィールド）
+  } else if (action.type === "CHANGE_PHOTO") {
+    // 写真選択
     var photoRow = copyState[action.payload.date][action.payload.index]["photos"][action.payload.no];
     photoRow[action.payload.name] = action.payload.value;
     return _objectSpread({}, copyState);
+  } else if (action.type === "CHANGE_PHOTO_EXPLANATION") {
+    // 写真情報の入力制御（説明フィールド）
+    var _photoRow = copyState[action.payload.date][action.payload.index]["photos"][action.payload.no];
+    _photoRow[action.payload.name] = action.payload.value;
+    return _objectSpread({}, copyState);
   } else if (action.type === "CHANGE_PHOTO_UPLOAD") {
     // 写真アップロード制御。既存の画像パスをクリアしてS3にアップした画像パスをセット
-    var _photoRow = copyState[action.payload.date][action.payload.index]["photos"][action.payload.no];
-    _photoRow.file_name = "";
-    _photoRow.upload_file_name = action.payload.upload_file_name;
-    _photoRow.file_size = action.payload.file_size;
-    _photoRow.original_file_name = action.payload.original_file_name;
-    _photoRow.mime_type = action.payload.mime_type;
+    var _photoRow2 = copyState[action.payload.date][action.payload.index]["photos"][action.payload.no];
+    _photoRow2.file_name = "";
+    _photoRow2.upload_file_name = action.payload.upload_file_name;
+    _photoRow2.file_size = action.payload.file_size;
+    _photoRow2.original_file_name = action.payload.original_file_name;
+    _photoRow2.mime_type = action.payload.mime_type;
     return _objectSpread({}, copyState);
   } else if (action.type === "CHANGE_CLEAR_PHOTO") {
     // 画像情報クリア
-    var _photoRow2 = copyState[action.payload.date][action.payload.index]["photos"][action.payload.no];
+    var _photoRow3 = copyState[action.payload.date][action.payload.index]["photos"][action.payload.no];
     Object.keys(initialPhotoInfo).map(function (k) {
-      return _photoRow2[k] = initialPhotoInfo[k];
+      return _photoRow3[k] = initialPhotoInfo[k];
     }); // 写真フィールド初期化
 
     return _objectSpread({}, copyState);
@@ -48686,13 +48707,8 @@ var ItineraryArea = function ItineraryArea() {
       subjectCustomCategoryCode = _ref.subjectCustomCategoryCode,
       modalInitialValues = _ref.modalInitialValues;
 
-  var _useContext = Object(react__WEBPACK_IMPORTED_MODULE_1__["useContext"])(_components_ConstApp__WEBPACK_IMPORTED_MODULE_2__["ConstContext"]),
-      agencyAccount = _useContext.agencyAccount;
-
-  var _useContext2 = Object(react__WEBPACK_IMPORTED_MODULE_1__["useContext"])(_components_ReserveItineraryConstApp__WEBPACK_IMPORTED_MODULE_3__["ReserveItineraryConstContext"]),
-      subjectCategoryTypes = _useContext2.subjectCategoryTypes;
-
-  var mounted = Object(_hooks_useMountedRef__WEBPACK_IMPORTED_MODULE_5__["useMountedRef"])(); // マウント・アンマウント制御
+  var _useContext = Object(react__WEBPACK_IMPORTED_MODULE_1__["useContext"])(_components_ReserveItineraryConstApp__WEBPACK_IMPORTED_MODULE_3__["ReserveItineraryConstContext"]),
+      subjectCategoryTypes = _useContext.subjectCategoryTypes;
 
   var _useState = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])(false),
       _useState2 = _slicedToArray(_useState, 2),
@@ -48701,7 +48717,7 @@ var ItineraryArea = function ItineraryArea() {
 
 
   var initialTargetPurchasing = {
-    mode: _constants__WEBPACK_IMPORTED_MODULE_12__["RESERVE_ITINERARY"].MODE_CREATE,
+    mode: _constants__WEBPACK_IMPORTED_MODULE_11__["RESERVE_ITINERARY"].MODE_CREATE,
     subject: subjectCategoryTypes === null || subjectCategoryTypes === void 0 ? void 0 : subjectCategoryTypes["default"],
     ad_zei_kbn: modalInitialValues === null || modalInitialValues === void 0 ? void 0 : modalInitialValues.zeiKbnDefault,
     ch_zei_kbn: modalInitialValues === null || modalInitialValues === void 0 ? void 0 : modalInitialValues.zeiKbnDefault,
@@ -48824,9 +48840,9 @@ var ItineraryArea = function ItineraryArea() {
           // 大人区分
           if (/_gross_ex$/.test(name) || /_zei_kbn$/.test(name)) {
             // 税金
-            copyState["ad_gross"] = Object(_libs__WEBPACK_IMPORTED_MODULE_11__["calcTaxInclud"])(copyState["ad_gross_ex"], copyState["ad_zei_kbn"]); //粗利
+            copyState["ad_gross"] = Object(_libs__WEBPACK_IMPORTED_MODULE_10__["calcTaxInclud"])(copyState["ad_gross_ex"], copyState["ad_zei_kbn"]); //粗利
 
-            copyState["ad_gross_profit"] = Object(_libs__WEBPACK_IMPORTED_MODULE_11__["calcGrossProfit"])(copyState["ad_gross"], copyState["ad_net"]);
+            copyState["ad_gross_profit"] = Object(_libs__WEBPACK_IMPORTED_MODULE_10__["calcGrossProfit"])(copyState["ad_gross"], copyState["ad_net"]);
             copyState.participants.forEach(function (row) {
               var _consts$ageKbns4;
 
@@ -48839,9 +48855,9 @@ var ItineraryArea = function ItineraryArea() {
             });
           } else if (/_cost$/.test(name) || /_commission_rate$/.test(name)) {
             //NET単価
-            copyState["ad_net"] = Object(_libs__WEBPACK_IMPORTED_MODULE_11__["calcNet"])(copyState["ad_cost"], copyState["ad_commission_rate"]); //粗利
+            copyState["ad_net"] = Object(_libs__WEBPACK_IMPORTED_MODULE_10__["calcNet"])(copyState["ad_cost"], copyState["ad_commission_rate"]); //粗利
 
-            copyState["ad_gross_profit"] = Object(_libs__WEBPACK_IMPORTED_MODULE_11__["calcGrossProfit"])(copyState["ad_gross"], copyState["ad_net"]);
+            copyState["ad_gross_profit"] = Object(_libs__WEBPACK_IMPORTED_MODULE_10__["calcGrossProfit"])(copyState["ad_gross"], copyState["ad_net"]);
             copyState.participants.forEach(function (row) {
               var _consts$ageKbns5;
 
@@ -48854,7 +48870,7 @@ var ItineraryArea = function ItineraryArea() {
             });
           } else if (/_gross$/.test(name) || /_net$/.test(name)) {
             // 粗利
-            copyState["ad_gross_profit"] = Object(_libs__WEBPACK_IMPORTED_MODULE_11__["calcGrossProfit"])(copyState["ad_gross"], copyState["ad_net"]);
+            copyState["ad_gross_profit"] = Object(_libs__WEBPACK_IMPORTED_MODULE_10__["calcGrossProfit"])(copyState["ad_gross"], copyState["ad_net"]);
             copyState.participants.forEach(function (row) {
               var _consts$ageKbns6;
 
@@ -48869,9 +48885,9 @@ var ItineraryArea = function ItineraryArea() {
           // 子供区分
           if (/_gross_ex$/.test(name) || /_zei_kbn$/.test(name)) {
             // 税金
-            copyState["ch_gross"] = Object(_libs__WEBPACK_IMPORTED_MODULE_11__["calcTaxInclud"])(copyState["ch_gross_ex"], copyState["ch_zei_kbn"]); //粗利
+            copyState["ch_gross"] = Object(_libs__WEBPACK_IMPORTED_MODULE_10__["calcTaxInclud"])(copyState["ch_gross_ex"], copyState["ch_zei_kbn"]); //粗利
 
-            copyState["ch_gross_profit"] = Object(_libs__WEBPACK_IMPORTED_MODULE_11__["calcGrossProfit"])(copyState["ch_gross"], copyState["ch_net"]);
+            copyState["ch_gross_profit"] = Object(_libs__WEBPACK_IMPORTED_MODULE_10__["calcGrossProfit"])(copyState["ch_gross"], copyState["ch_net"]);
             copyState.participants.forEach(function (row) {
               var _consts$ageKbns7;
 
@@ -48884,9 +48900,9 @@ var ItineraryArea = function ItineraryArea() {
             });
           } else if (/_cost$/.test(name) || /_commission_rate$/.test(name)) {
             // NET単価
-            copyState["ch_net"] = Object(_libs__WEBPACK_IMPORTED_MODULE_11__["calcNet"])(copyState["ch_cost"], copyState["ch_commission_rate"]); //粗利
+            copyState["ch_net"] = Object(_libs__WEBPACK_IMPORTED_MODULE_10__["calcNet"])(copyState["ch_cost"], copyState["ch_commission_rate"]); //粗利
 
-            copyState["ch_gross_profit"] = Object(_libs__WEBPACK_IMPORTED_MODULE_11__["calcGrossProfit"])(copyState["ch_gross"], copyState["ch_net"]);
+            copyState["ch_gross_profit"] = Object(_libs__WEBPACK_IMPORTED_MODULE_10__["calcGrossProfit"])(copyState["ch_gross"], copyState["ch_net"]);
             copyState.participants.forEach(function (row) {
               var _consts$ageKbns8;
 
@@ -48899,7 +48915,7 @@ var ItineraryArea = function ItineraryArea() {
             });
           } else if (/_gross$/.test(name) || /_net$/.test(name)) {
             // 粗利
-            copyState["ch_gross_profit"] = Object(_libs__WEBPACK_IMPORTED_MODULE_11__["calcGrossProfit"])(copyState["ch_gross"], copyState["ch_net"]);
+            copyState["ch_gross_profit"] = Object(_libs__WEBPACK_IMPORTED_MODULE_10__["calcGrossProfit"])(copyState["ch_gross"], copyState["ch_net"]);
             copyState.participants.forEach(function (row) {
               var _consts$ageKbns9;
 
@@ -48914,9 +48930,9 @@ var ItineraryArea = function ItineraryArea() {
           // 幼児区分
           if (/_gross_ex$/.test(name) || /_zei_kbn$/.test(name)) {
             // 税金
-            copyState["inf_gross"] = Object(_libs__WEBPACK_IMPORTED_MODULE_11__["calcTaxInclud"])(copyState["inf_gross_ex"], copyState["inf_zei_kbn"]); //粗利
+            copyState["inf_gross"] = Object(_libs__WEBPACK_IMPORTED_MODULE_10__["calcTaxInclud"])(copyState["inf_gross_ex"], copyState["inf_zei_kbn"]); //粗利
 
-            copyState["inf_gross_profit"] = Object(_libs__WEBPACK_IMPORTED_MODULE_11__["calcGrossProfit"])(copyState["inf_gross"], copyState["inf_net"]);
+            copyState["inf_gross_profit"] = Object(_libs__WEBPACK_IMPORTED_MODULE_10__["calcGrossProfit"])(copyState["inf_gross"], copyState["inf_net"]);
             copyState.participants.forEach(function (row) {
               var _consts$ageKbns10;
 
@@ -48929,7 +48945,7 @@ var ItineraryArea = function ItineraryArea() {
             });
           } else if (/_cost$/.test(name) || /_commission_rate$/.test(name)) {
             // NET単価
-            copyState["inf_net"] = Object(_libs__WEBPACK_IMPORTED_MODULE_11__["calcNet"])(copyState["inf_cost"], copyState["inf_commission_rate"]);
+            copyState["inf_net"] = Object(_libs__WEBPACK_IMPORTED_MODULE_10__["calcNet"])(copyState["inf_cost"], copyState["inf_commission_rate"]);
             copyState.participants.forEach(function (row) {
               var _consts$ageKbns11;
 
@@ -48941,7 +48957,7 @@ var ItineraryArea = function ItineraryArea() {
             });
           } else if (/_gross$/.test(name) || /_net$/.test(name)) {
             // 粗利
-            copyState["inf_gross_profit"] = Object(_libs__WEBPACK_IMPORTED_MODULE_11__["calcGrossProfit"])(copyState["inf_gross"], copyState["inf_net"]);
+            copyState["inf_gross_profit"] = Object(_libs__WEBPACK_IMPORTED_MODULE_10__["calcGrossProfit"])(copyState["inf_gross"], copyState["inf_net"]);
             copyState.participants.forEach(function (row) {
               var _consts$ageKbns12;
 
@@ -48975,17 +48991,17 @@ var ItineraryArea = function ItineraryArea() {
 
         if (/gross_ex$/.test(action.name) || /zei_kbn$/.test(action.name)) {
           // 税金
-          row["gross"] = Object(_libs__WEBPACK_IMPORTED_MODULE_11__["calcTaxInclud"])(row["gross_ex"], row["zei_kbn"]); // 粗利
+          row["gross"] = Object(_libs__WEBPACK_IMPORTED_MODULE_10__["calcTaxInclud"])(row["gross_ex"], row["zei_kbn"]); // 粗利
 
-          row["gross_profit"] = Object(_libs__WEBPACK_IMPORTED_MODULE_11__["calcGrossProfit"])(row["gross"], row["net"]);
+          row["gross_profit"] = Object(_libs__WEBPACK_IMPORTED_MODULE_10__["calcGrossProfit"])(row["gross"], row["net"]);
         } else if (/cost$/.test(action.name) || /commission_rate$/.test(action.name)) {
           // NET単価
-          row["net"] = Object(_libs__WEBPACK_IMPORTED_MODULE_11__["calcNet"])(row["cost"], row["commission_rate"]); // 粗利
+          row["net"] = Object(_libs__WEBPACK_IMPORTED_MODULE_10__["calcNet"])(row["cost"], row["commission_rate"]); // 粗利
 
-          row["gross_profit"] = Object(_libs__WEBPACK_IMPORTED_MODULE_11__["calcGrossProfit"])(row["gross"], row["net"]);
+          row["gross_profit"] = Object(_libs__WEBPACK_IMPORTED_MODULE_10__["calcGrossProfit"])(row["gross"], row["net"]);
         } else if (/gross$/.test(action.name) || /net$/.test(action.name)) {
           // 粗利
-          row["gross_profit"] = Object(_libs__WEBPACK_IMPORTED_MODULE_11__["calcGrossProfit"])(row["gross"], row["net"]);
+          row["gross_profit"] = Object(_libs__WEBPACK_IMPORTED_MODULE_10__["calcGrossProfit"])(row["gross"], row["net"]);
         }
 
         return _objectSpread({}, copyState);
@@ -49007,7 +49023,7 @@ var ItineraryArea = function ItineraryArea() {
 
         var copyData = lodash__WEBPACK_IMPORTED_MODULE_0___default.a.cloneDeep(data);
 
-        copyData.mode = _constants__WEBPACK_IMPORTED_MODULE_12__["RESERVE_ITINERARY"].MODE_EDIT; // MODE_EDIT=編集
+        copyData.mode = _constants__WEBPACK_IMPORTED_MODULE_11__["RESERVE_ITINERARY"].MODE_EDIT; // MODE_EDIT=編集
 
         return _objectSpread({}, copyData);
 
@@ -49067,11 +49083,24 @@ var ItineraryArea = function ItineraryArea() {
         no: no
       }
     });
+  }, []); // 画像ファイルの選択制御
+
+  var handleChangePhoto = Object(react__WEBPACK_IMPORTED_MODULE_1__["useCallback"])(function (e, date, index, no) {
+    rowDispatch({
+      type: "CHANGE_PHOTO",
+      payload: {
+        date: date,
+        index: index,
+        no: no,
+        name: e.target.name,
+        value: e.target.value
+      }
+    });
   }, []); // 写真情報の入力データ制御（説明フィールド）
 
-  var handleChangePhotoInput = Object(react__WEBPACK_IMPORTED_MODULE_1__["useCallback"])(function (e, date, index, no) {
+  var handleChangePhotoExplanation = Object(react__WEBPACK_IMPORTED_MODULE_1__["useCallback"])(function (e, date, index, no) {
     rowDispatch({
-      type: "CHANGE_PHOTO_INPUT",
+      type: "CHANGE_PHOTO_EXPLANATION",
       payload: {
         date: date,
         index: index,
@@ -49265,7 +49294,7 @@ var ItineraryArea = function ItineraryArea() {
     }, lists[date] && lists[date].map(function (row, index) {
       switch (row.type) {
         case consts.itineraryTypes.waypoint:
-          return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_components_ReserveItinerary_Waypoint__WEBPACK_IMPORTED_MODULE_7__["default"], {
+          return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_components_ReserveItinerary_Waypoint__WEBPACK_IMPORTED_MODULE_6__["default"], {
             canUp: index > 0,
             canDown: index < lists[date].length - 1 && lodash__WEBPACK_IMPORTED_MODULE_0___default.a.get(lists[date][index + 1], "type") !== "destination",
             key: index,
@@ -49289,7 +49318,7 @@ var ItineraryArea = function ItineraryArea() {
           });
 
         case consts.itineraryTypes.waypoint_image:
-          return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_components_ReserveItinerary_WaypointImage__WEBPACK_IMPORTED_MODULE_8__["default"], {
+          return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_components_ReserveItinerary_WaypointImage__WEBPACK_IMPORTED_MODULE_7__["default"], {
             canUp: index > 0,
             canDown: index < lists[date].length - 1 && lodash__WEBPACK_IMPORTED_MODULE_0___default.a.get(lists[date][index + 1], "type") !== "destination",
             key: index,
@@ -49303,7 +49332,8 @@ var ItineraryArea = function ItineraryArea() {
             handleChange: handleChange,
             handleUploadPhoto: handleUploadPhoto,
             handleClearPhoto: handleClearPhoto,
-            handleChangePhotoInput: handleChangePhotoInput,
+            handleChangePhoto: handleChangePhoto,
+            handleChangePhotoExplanation: handleChangePhotoExplanation,
             handleUpRow: handleUpRow,
             handleDownRow: handleDownRow,
             handleDelete: function handleDelete(e) {
@@ -49317,7 +49347,7 @@ var ItineraryArea = function ItineraryArea() {
           });
 
         case consts.itineraryTypes.destination:
-          return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_components_ReserveItinerary_Destination__WEBPACK_IMPORTED_MODULE_9__["default"], {
+          return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_components_ReserveItinerary_Destination__WEBPACK_IMPORTED_MODULE_8__["default"], {
             key: index,
             index: index,
             input: row,
@@ -49364,17 +49394,17 @@ var ItineraryArea = function ItineraryArea() {
     }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", {
       className: "material-icons"
     }, "flag"), "\u5BBF\u6CCA\u5730\u30FB\u76EE\u7684\u5730\u3092\u8FFD\u52A0")))));
-  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_components_SmallDangerModal__WEBPACK_IMPORTED_MODULE_6__["default"], {
+  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_components_SmallDangerModal__WEBPACK_IMPORTED_MODULE_5__["default"], {
     id: "mdScheduleDelete",
     title: "\u3053\u306E\u9805\u76EE\u3092\u524A\u9664\u3057\u307E\u3059\u304B\uFF1F",
     handleAction: handleDeleteRow,
     isActioning: isDeleteChecking
-  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_components_SmallDangerModal__WEBPACK_IMPORTED_MODULE_6__["default"], {
+  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_components_SmallDangerModal__WEBPACK_IMPORTED_MODULE_5__["default"], {
     id: "mdPurchasingDelete",
     title: "\u3053\u306E\u9805\u76EE\u3092\u524A\u9664\u3057\u307E\u3059\u304B\uFF1F",
     handleAction: handleDeletePurchasingRow,
     isActioning: isDeleteChecking
-  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_components_ReserveItinerary_SubjectModal__WEBPACK_IMPORTED_MODULE_10__["default"], {
+  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_components_ReserveItinerary_SubjectModal__WEBPACK_IMPORTED_MODULE_9__["default"], {
     subjectCategories: formSelects === null || formSelects === void 0 ? void 0 : formSelects.subjectCategories,
     input: targetPurchasing,
     targetAddRow: targetAddRow,

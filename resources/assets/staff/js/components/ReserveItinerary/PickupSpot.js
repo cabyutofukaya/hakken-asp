@@ -18,13 +18,14 @@ const PickupSpot = ({
     thumbSBaseUrl,
     handleUploadPhoto,
     handleClearPhoto,
-    handleChangePhotoInput
+    handleChangePhoto,
+    handleChangePhotoExplanation
 }) => {
     const { agencyAccount } = useContext(ConstContext);
+
     const mounted = useMountedRef(); // マウント・アンマウント制御
 
     const [isUploading, setIsUploading] = useState(false); // 画像アップロード中か否か
-    const [image, setImage] = useState(null);
 
     // 画像選択
     const handleImageChange = async ev => {
@@ -39,13 +40,33 @@ const PickupSpot = ({
             // MIMEタイプの判定
             if (["image/jpeg", "image/png", "image/gif"].indexOf(type) === -1) {
                 alert("画像はjpg/png/gif形式のファイルを選択してください");
-                setImage(null);
+                handleChangePhoto(
+                    {
+                        target: {
+                            name: "image",
+                            value: null
+                        }
+                    },
+                    date,
+                    index,
+                    no
+                );
                 return;
             }
             // サイズの判定
             if (limit < size) {
                 alert("10MBを超える画像はアップロードできません。");
-                setImage(null);
+                handleChangePhoto(
+                    {
+                        target: {
+                            name: "image",
+                            value: null
+                        }
+                    },
+                    date,
+                    index,
+                    no
+                );
                 return;
             }
 
@@ -69,7 +90,17 @@ const PickupSpot = ({
                 reader.onload = e => {
                     if (mounted.current) {
                         handleUploadPhoto(e, date, index, no, response.data);
-                        setImage(e.target.result); // サムネイル画像セット
+                        handleChangePhoto(
+                            {
+                                target: {
+                                    name: "image",
+                                    value: e.target.result // サムネイル画像セット
+                                }
+                            },
+                            date,
+                            index,
+                            no
+                        );
                     }
                 };
                 reader.readAsDataURL(file);
@@ -79,7 +110,17 @@ const PickupSpot = ({
 
     // 選択画像削除
     const handleDelete = e => {
-        setImage(null);
+        handleChangePhoto(
+            {
+                target: {
+                    name: "image",
+                    value: null
+                }
+            },
+            date,
+            index,
+            no
+        );
         handleClearPhoto(e, date, index, no);
     };
 
@@ -154,7 +195,7 @@ const PickupSpot = ({
                         />
                     )}
                     {/** アップロード済み画像有り */}
-                    {!isUploading && image && (
+                    {!isUploading && input?.photos?.[no]?.image && (
                         <div>
                             <span
                                 className="material-icons"
@@ -162,7 +203,7 @@ const PickupSpot = ({
                             >
                                 cancel
                             </span>
-                            <img src={image} alt="" />
+                            <img src={input.photos[no].image} alt="" />
                         </div>
                     )}
                     {/** 選択画像あり */}
@@ -174,7 +215,7 @@ const PickupSpot = ({
                         value={input?.photos?.[no]?.description ?? ""}
                         name={`${inputName}[photos][${no}][description]`}
                         onChange={e =>
-                            handleChangePhotoInput(
+                            handleChangePhotoExplanation(
                                 {
                                     target: {
                                         name: "description",
