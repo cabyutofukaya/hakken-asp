@@ -28,7 +28,7 @@
     <ul id="formControl">
       <li class="wd50"><button class="grayBtn" onClick="event.preventDefault();location.href='{{ route('staff.system.document.index', ['agencyAccount' => $agencyAccount, 'tab' => config('consts.document_categories.DOCUMENT_CATEGORY_REQUEST_ALL')]) }}'"><span class="material-icons">arrow_back_ios</span>更新せずに戻る</button></li>
       @can('update', $documentRequestAll)
-        <li class="wd50"><button class="blueBtn"><span class="material-icons">save</span> この内容で更新する</button>
+        <li class="wd50"><button class="blueBtn doubleBan"><span class="material-icons">save</span>この内容で更新する</button>
       </li>
       @endcan
     </ul>
