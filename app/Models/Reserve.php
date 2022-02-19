@@ -432,6 +432,16 @@ class Reserve extends Model
         return $this->getRouteKey();
     }
 
+    /**
+     * 催行済みの場合はtrue
+     *
+     * この条件を変える場合は 「scopeDeparted」 も変更のこと
+     */
+    public function getIsDepartedAttribute($value) : bool
+    {
+        return $this->application_step == config('consts.reserves.APPLICATION_STEP_RESERVE') && date('Y-m-d', strtotime($this->return_date)) < date('Y-m-d');
+    }
+
     // 見積/予約/依頼番号
     public function getRecordNumberAttribute($value): ?string
     {
@@ -661,6 +671,8 @@ class Reserve extends Model
 
     /**
      * 催行済みレコード
+     *
+     * この条件を変える場合は 「getIsDepartedAttribute」 も変更のこと
      *
      * 条件:
      * 申込段階(application_step)が「予約」且つ、帰着日が本日を過ぎている

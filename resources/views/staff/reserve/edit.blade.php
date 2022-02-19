@@ -16,7 +16,7 @@
     <span class="material-icons"> subject </span>基本情報
   </h2>
 
-  <form method="post" action="{{ route('staff.asp.estimates.reserve.update', [$agencyAccount, $reserve->control_number]) }}" id="editForm">
+  <form method="post" action="{{ route('staff.asp.estimates.reserve.update', [$agencyAccount, $reserve->control_number]) }}" id="reserveForm">
     @csrf
     @method('PUT')
     

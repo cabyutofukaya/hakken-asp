@@ -52,6 +52,10 @@ class ReserveController extends AppController
             abort(403);
         }
 
+        if ($reserve->is_departed) { // 催行済みに切り替わった場合は転送
+            return redirect(route('staff.estimates.departed.show', [$agencyAccount, $reserve->control_number]));
+        }
+
         return view('staff.reserve.show', compact('reserve'));
     }
 
@@ -102,7 +106,11 @@ class ReserveController extends AppController
             });
 
             if ($reserve) {
-                return redirect()->route('staff.asp.estimates.reserve.index', [$agencyAccount])->with('success_message', "「{$reserve->control_number}」を登録しました");
+                if ($reserve->is_departed) { // 催行済の場合は催行一覧へ
+                    return redirect(route('staff.estimates.departed.index', [$agencyAccount]))->with('success_message', "「{$reserve->control_number}」を登録しました");
+                } else {
+                    return redirect()->route('staff.asp.estimates.reserve.index', [$agencyAccount])->with('success_message', "「{$reserve->control_number}」を登録しました");
+                }
             }
         } catch (Exception $e) {
             Log::error($e);
@@ -152,7 +160,11 @@ class ReserveController extends AppController
             });
 
             if ($updatedReserve) {
-                return redirect()->route('staff.asp.estimates.reserve.index', [$agencyAccount])->with('success_message', "「{$updatedReserve->control_number}」を更新しました");
+                if ($updatedReserve->is_departed) { // 催行済の場合は催行一覧へ
+                    return redirect(route('staff.estimates.departed.index', [$agencyAccount]))->with('success_message', "「{$updatedReserve->control_number}」を更新しました");
+                } else {
+                    return redirect()->route('staff.asp.estimates.reserve.index', [$agencyAccount])->with('success_message', "「{$updatedReserve->control_number}」を更新しました");
+                }
             }
         } catch (ExclusiveLockException $e) { // 同時編集エラー
             return back()->withInput()->with('error_message', "他のユーザーによる編集済みレコードです。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");

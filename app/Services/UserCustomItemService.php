@@ -510,23 +510,27 @@ class UserCustomItemService
 
             $userCustomCategoryItem = $this->userCustomCategoryItemRepository->findWhere(['user_custom_category_id' => $userCustomCategory->id, 'type' => $conf['type']]);
         
-            $this->create([
-                'user_custom_category_id' => $userCustomCategory->id,
-                'user_custom_category_item_id' => $userCustomCategoryItem->id,
-                'type' => $userCustomCategoryItem->type,
-                'input_type' => $conf['input_type'],
-                'agency_id' => $agency->id,
-                'name' => $conf['name'],
-                'code' => $conf['code'],
-                'display_position' => $conf['position'],
-                'undelete_item' => $conf['undelete_item'],
-                'unedit_item' => $conf['unedit_item'],
-                'fixed_item' => $conf['fixed_item'],
-                'seq' => $conf['seq'],
-                'flg' => true,
-                'list' => $conf['list'],
-                'protect_list' => $conf['protect_list']
-            ]);
+            $this->create(
+                [
+                    'user_custom_category_id' => $userCustomCategory->id,
+                    'user_custom_category_item_id' => $userCustomCategoryItem->id,
+                    'type' => $userCustomCategoryItem->type,
+                    'input_type' => $conf['input_type'],
+                    'agency_id' => $agency->id,
+                    'name' => $conf['name'],
+                    'code' => $conf['code'],
+                    'display_position' => $conf['position'],
+                    'undelete_item' => $conf['undelete_item'],
+                    'unedit_item' => $conf['unedit_item'],
+                    'fixed_item' => $conf['fixed_item'],
+                    'seq' => $conf['seq'],
+                    'flg' => true,
+                    'list' => $conf['list'],
+                    'protect_list' => $conf['protect_list']
+                ],
+                $agency->id
+            );
+            usleep(1); // 一応、1マイクロ秒遅延
         }
     }
 }

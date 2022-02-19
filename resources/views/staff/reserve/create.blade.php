@@ -15,7 +15,7 @@
 
   <h2 class="subTit"><span class="material-icons"> subject </span>基本情報</h2>
 
-  <form method="post" action="{{ route('staff.asp.estimates.reserve.store', $agencyAccount) }}">
+  <form method="post" action="{{ route('staff.asp.estimates.reserve.store', $agencyAccount) }}" id="reserveForm">
     @csrf
     <div id="reserveInputArea"
       defaultValue='@json($defaultValue)'
@@ -36,5 +36,8 @@
 
 </main>
 
+<script>
+  @include("staff.common._check_return_date_js")
+</script>
 <script src="{{ mix('/staff/js/reserve-create.js') }}"></script>
 @endsection

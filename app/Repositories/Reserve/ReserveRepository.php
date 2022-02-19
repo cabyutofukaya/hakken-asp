@@ -54,8 +54,8 @@ class ReserveRepository implements ReserveRepositoryInterface
      */
     public function findByControlNumber(string $controlNumber, int $agencyId, array $with = [], array $select = [], bool $getDeleted = false) : ?Reserve
     {
-        $query = $this->reserve->reserve(); // スコープは"予約"
-
+        // $query = $this->reserve->reserve(); // スコープは"予約" → 催行済のデータにもアクセスできるようにdraftスコープは一旦外し
+        $query = $this->reserve;
         $query = $select ? $query->select($select) : $query;
         $query = $with ? $query->with($with) : $query;
         $query = $getDeleted ? $query->withTrashed() : $query;

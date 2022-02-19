@@ -1,5 +1,5 @@
 $(function(){
-  $('#editForm').submit(function(){
+  $('#reserveForm').submit(function(){
     const rd = $("[name=return_date]").val();
     if(rd){
       const dt = new Date();
