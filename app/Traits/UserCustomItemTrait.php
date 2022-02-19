@@ -14,7 +14,7 @@ trait UserCustomItemTrait
      * カスタム項目のデータ一覧を取得し、かつformの初期値をセット
      * createフォーム用
      */
-    public function getUserCustomItemsAndSetCustomFieldDefaultCreateInput(&$defaultValue, $userCustomItemService, $agencyAccount, $customCategoryCode, array $select = [], array $where = [], array $notWhere = [])
+    public function getUserCustomItemsAndSetCustomFieldDefaultCreateInput(&$defaultValue, $userCustomItemService, $agencyAccount, $customCategoryCode, array $select = [], array $where = [])
     {
         $userCustomItems = $userCustomItemService->getByCategoryCodeForAgencyAccount(
             $customCategoryCode,
@@ -32,8 +32,7 @@ trait UserCustomItemTrait
                 'user_custom_items.display_position',
                 'user_custom_items.unedit_item',
             ], // 取得カラムを指定。joinするので対象レコードを明示的に指定
-            $where,
-            $notWhere
+            $where
         );
 
         // カスタム項目フィールドに初期値をセット

@@ -128,7 +128,7 @@ class UserCustomItemService
      * @param bool $flg 表示フラグ
      * @param array $where 検索パラメータ
      */
-    public function getByCategoryCodeForAgencyAccount(string $code, string $agencyAccount, ?bool $flg = null, array $with = [], array $select = [], array $where = [], array $notWhere = []) : Collection
+    public function getByCategoryCodeForAgencyAccount(string $code, string $agencyAccount, ?bool $flg = null, array $with = [], array $select = [], array $where = []) : Collection
     {
         $agencyId = $this->agencyRepository->getIdByAccount($agencyAccount);
         return $this->userCustomItemRepository->getByCategoryCodeForAgencyId(
@@ -137,8 +137,7 @@ class UserCustomItemService
             $flg, 
             $with, 
             $select,
-            $where, 
-            $notWhere
+            $where
         );
     }
 

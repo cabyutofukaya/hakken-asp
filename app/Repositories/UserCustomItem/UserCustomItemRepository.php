@@ -80,7 +80,7 @@ class UserCustomItemRepository implements UserCustomItemRepositoryInterface
      * @param array $where 条件
      * @param array $notWhere 否定条件
      */
-    public function getByCategoryCodeForAgencyId(string $code, int $agencyId, ?bool $flg, array $with = [], array $select = [], array $where = [], array $notWhere = []) : Collection
+    public function getByCategoryCodeForAgencyId(string $code, int $agencyId, ?bool $flg, array $with = [], array $select = [], array $where = []) : Collection
     {
         $query = $select ? $this->userCustomItem->select($select) : $this->userCustomItem->select('user_custom_items.*');
         
@@ -95,12 +95,6 @@ class UserCustomItemRepository implements UserCustomItemRepositoryInterface
         if ($where) { // 検索パラメータあり
             foreach ($where as $k => $v) {
                 $query = $query->where($k, $v);
-            }
-        }
-
-        if ($notWhere) { // 否定検索パラメータあり
-            foreach ($notWhere as $k => $v) {
-                $query = $query->where($k, '<>', $v);
             }
         }
 
