@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers\Staff;
 
-use App\Events\UpdatedReserveEvent;
 use App\Events\ReserveChangeHeadcountEvent;
 use App\Events\ReserveChangeRepresentativeEvent;
 use App\Events\ReserveEvent;
+use App\Events\UpdatedReserveEvent;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Staff\ReserveStoretRequest;
 use App\Http\Requests\Staff\ReserveUpdateRequest;
 use App\Models\Reserve;
-use App\Services\ReserveService;
 use App\Services\ReserveInvoiceService;
+use App\Services\ReserveService;
+use App\Traits\ReserveControllerTrait;
 use DB;
 use Exception;
 use Gate;
@@ -20,6 +21,8 @@ use Log;
 
 class ReserveController extends AppController
 {
+    use ReserveControllerTrait;
+
     public function __construct(ReserveService $reserveService, ReserveInvoiceService $reserveInvoiceService)
     {
         $this->reserveService = $reserveService;
@@ -52,9 +55,8 @@ class ReserveController extends AppController
             abort(403);
         }
 
-        if ($reserve->is_departed) { // 催行済みに切り替わった場合は転送
-            return redirect(route('staff.estimates.departed.show', [$agencyAccount, $reserve->control_number]));
-        }
+        // 催行済みの場合は転送
+        $this->checkReserveState($agencyAccount, $reserve);
 
         return view('staff.reserve.show', compact('reserve'));
     }
@@ -133,6 +135,9 @@ class ReserveController extends AppController
             abort(403);
         }
 
+        // 催行済みの場合は転送
+        $this->checkReserveState($agencyAccount, $reserve);
+
         return view('staff.reserve.edit', compact('reserve'));
     }
 
@@ -148,6 +153,9 @@ class ReserveController extends AppController
         if (!$response->allowed()) {
             return $this->forbiddenRedirect($response->message());
         }
+
+        // 催行済みの場合は転送
+        $this->checkReserveState($agencyAccount, $reserve);
 
         $input = $request->all();
         try {

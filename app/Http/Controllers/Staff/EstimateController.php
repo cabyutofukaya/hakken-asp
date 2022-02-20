@@ -152,6 +152,11 @@ class EstimateController extends AppController
             return $this->forbiddenRedirect($response->message());
         }
 
+        // 念の為ステータスチェック
+        if ($reserve->application_step != config('consts.reserves.APPLICATION_STEP_DRAFT')) {
+            abort(404);
+        }
+
         $input = $request->all();
         try {
             $updatedReserve = DB::transaction(function () use ($reserve, $agencyAccount, $input) {
