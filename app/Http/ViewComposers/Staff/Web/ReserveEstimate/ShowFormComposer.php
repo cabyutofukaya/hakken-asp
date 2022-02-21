@@ -60,15 +60,14 @@ class ShowFormComposer
         // 相談の表示指定がある場合
         $targetConsultationNumber = request()->input('consultation_number');
 
-        // ステータス値
-        $status = null;
+        $status = null; // ステータス値
+        $reserveStatus = ''; // 状況
         if ($applicationStep === config('consts.reserves.APPLICATION_STEP_DRAFT')) { // 見積
-            $status = $reserve->estimate_statuses->isNotEmpty() ? $reserve->estimate_statuses[0]->val : null;
+            $status = $reserve->estimate_status ? $reserve->estimate_status->val : null;
         } elseif ($applicationStep === config('consts.reserves.APPLICATION_STEP_RESERVE')) { // 予約
-            if ($reserve->is_departed()) {
-                // 催行済
-            } else {
-                $status = $reserve->statuses->isNotEmpty() ? $reserve->statuses[0]->val : null;
+            $status = $reserve->status ? $reserve->status->val : null;
+            if ($reserve->is_departed) { // 催行済
+                $reserveStatus = '催行完了';
             }
         }
 
@@ -76,6 +75,7 @@ class ShowFormComposer
         $defaultValue = [ // 基本情報
             config('consts.reserves.TAB_BASIC_INFO') => [
                 'status' => $status, // ステータス値
+                'reserveStatus' => $reserveStatus, // 状況
             ],
             config('consts.reserves.TAB_RESERVE_DETAIL') => [ // 詳細
                 'sex' => config('consts.participants.DEFAULT_SEX'),
@@ -206,8 +206,9 @@ class ShowFormComposer
         ];
 
         // 一覧URL
-        $estimateIndexUrl = route('staff.web.estimates.normal.index', $agencyAccount);
-        $reserveIndexUrl = route('staff.web.estimates.reserve.index', $agencyAccount);
+        $estimateIndexUrl = route('staff.web.estimates.normal.index', $agencyAccount); // 見積
+        $reserveIndexUrl = route('staff.web.estimates.reserve.index', $agencyAccount); // 予約
+        $departedIndexUrl = route('staff.estimates.departed.index', $agencyAccount); // 催行済
 
         // 各種定数値。タブ毎にセット
         $consts = [
@@ -224,6 +225,7 @@ class ShowFormComposer
                 ],
                 'estimateIndexUrl' => $estimateIndexUrl,
                 'reserveIndexUrl' => $reserveIndexUrl,
+                'departedIndexUrl' => $departedIndexUrl,
                 'senderTypes' => config('consts.web_online_schedules.SENDER_TYPE_LIST'),
                 'onlineRequestStatuses' => config('consts.web_online_schedules.ONLINE_REQUEST_STATUS_LIST'),
             ],

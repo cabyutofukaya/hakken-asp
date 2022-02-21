@@ -33,6 +33,7 @@ class Reserve extends Model
         'sum_deposit',
         'sum_not_deposit',
         'hash_id', // ハッシュID
+        'is_departed', // 催行済みか否か
     ];
     
     protected $softCascade = [
@@ -286,18 +287,6 @@ class Reserve extends Model
         return $this->hasMany('App\Models\VReserveCustomValue')->where('flg', true);
     }
 
-    /**
-     * 催行済みか否か
-     */
-    public function is_departed()
-    {
-        return $this->application_step === config('consts.reserves.APPLICATION_STEP_RESERVE') && (
-            (
-                !is_null($this->return_date) && date('Y-m-d', strtotime($this->return_date)) < date('Y-m-d')
-            ) || !is_null($this->cancel_at)
-        );
-    }
-
     ////////////////// カスタム項目 ここから ////////////////////
 
     /**
@@ -323,6 +312,7 @@ class Reserve extends Model
 
     /**
      * ステータスを取得（有効な項目のみ対象 flg=1）
+     * TODO このメソッドは削除予定(statusへ移行)
      */
     public function statuses()
     {
@@ -343,6 +333,7 @@ class Reserve extends Model
 
     /**
      * 見積ステータスを取得（有効な項目のみ対象 flg=1）
+     * TODO このメソッドは削除予定(estimate_statusへ移行)
      */
     public function estimate_statuses()
     {

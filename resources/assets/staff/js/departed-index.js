@@ -198,7 +198,7 @@ const DepartedList = ({ searchParam }) => {
                             >
                                 <span>旅行種別</span>
                             </th>
-                            <th class="sort">
+                            <th className="sort">
                                 <span>申込種別</span>
                             </th>
                             <th

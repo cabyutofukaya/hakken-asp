@@ -32992,7 +32992,7 @@ var DepartedList = function DepartedList(_ref) {
       return handleSortClick("travel_type");
     }
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", null, "\u65C5\u884C\u7A2E\u5225")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("th", {
-    "class": "sort"
+    className: "sort"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", null, "\u7533\u8FBC\u7A2E\u5225")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("th", {
     className: "sort",
     onClick: function onClick(e) {
