@@ -70,11 +70,12 @@
           </tbody>
         </table>
       </li>
-      <li>
+      {{-- <li>
         <h2><span class="material-icons">app_registration</span>見積金額内訳</h2>
         <table class="baseTable">
           <tbody>
-            {{-- <tr>
+            <!--
+            <tr>
               <th>GRS合計</th>
               <td>￥0</td>
             </tr>
@@ -85,14 +86,15 @@
             <tr>
               <th>利益(利益率)</th>
               <td>￥0(0.0%)</td>
-            </tr> --}}
+            </tr>
+            -->
             <tr>
               <th>表示単価</th>
               <td>大人1名￥{{ number_format($webModelcourse->price_per_ad) }} 子供1名￥{{ number_format($webModelcourse->price_per_ch) }} 幼児1名￥{{ number_format($webModelcourse->price_per_inf) }}</td>
             </tr>
           </tbody>
         </table>
-      </li>
+      </li> --}}
     </ul>
     <h2 class="mt40"><span class="material-icons">playlist_add_check</span>モデルコース管理情報</h2>
     <ul class="sideList half">

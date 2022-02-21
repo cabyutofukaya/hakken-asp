@@ -54838,11 +54838,6 @@ var ModelcourseList = function ModelcourseList(_ref) {
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", null, "\u4F5C\u6210\u8005")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("th", {
     className: "sort",
     onClick: function onClick(e) {
-      return handleSortClick("price_per_ad");
-    }
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", null, "\u6599\u91D1")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("th", {
-    className: "sort",
-    onClick: function onClick(e) {
       return handleSortClick("updated_at");
     }
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", null, "\u66F4\u65B0\u65E5")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("th", {
@@ -54852,14 +54847,14 @@ var ModelcourseList = function ModelcourseList(_ref) {
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", null, "\u8907\u88FD")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("th", {
     className: "txtalc wd10"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", null, "\u524A\u9664")))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("tbody", null, isLoading && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("tr", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", {
-    colSpan: 11
+    colSpan: 10
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(react_loading__WEBPACK_IMPORTED_MODULE_9___default.a, {
     type: "bubbles",
     color: "#dddddd"
   }))), !isLoading && courses.length === 0 && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("tr", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", {
-    colSpan: 11
+    colSpan: 10
   }, "\u30E2\u30C7\u30EB\u30B3\u30FC\u30B9\u30C7\u30FC\u30BF\u306F\u3042\u308A\u307E\u305B\u3093")), !isLoading && courses.length > 0 && courses.map(function (row, index) {
-    var _row$course_no, _row$departure$name, _row$destination$name, _row$name, _row$author, _row$author2, _row$price_per_ad, _row$price_per_ch;
+    var _row$course_no, _row$departure$name, _row$destination$name, _row$name, _row$author, _row$author2;
 
     return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("tr", {
       key: index
@@ -54881,7 +54876,7 @@ var ModelcourseList = function ModelcourseList(_ref) {
     }, (_row$course_no = row.course_no) !== null && _row$course_no !== void 0 ? _row$course_no : "-")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", null, (_row$departure$name = row.departure.name) !== null && _row$departure$name !== void 0 ? _row$departure$name : "-"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", null, (_row$destination$name = row.destination.name) !== null && _row$destination$name !== void 0 ? _row$destination$name : "-"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", null, (_row$name = row.name) !== null && _row$name !== void 0 ? _row$name : "-"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_components_StaffTd__WEBPACK_IMPORTED_MODULE_10__["default"], {
       name: row === null || row === void 0 ? void 0 : (_row$author = row.author) === null || _row$author === void 0 ? void 0 : _row$author.name,
       isDeleted: row === null || row === void 0 ? void 0 : (_row$author2 = row.author) === null || _row$author2 === void 0 ? void 0 : _row$author2.is_deleted
-    }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", null, "\u5927\u4EBA1\u540D\uFFE5", ((_row$price_per_ad = row.price_per_ad) !== null && _row$price_per_ad !== void 0 ? _row$price_per_ad : 0).toLocaleString(), "\u3000\u5B50\u4F9B1\u540D\uFFE5", ((_row$price_per_ch = row.price_per_ch) !== null && _row$price_per_ch !== void 0 ? _row$price_per_ch : 0).toLocaleString()), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", null, moment__WEBPACK_IMPORTED_MODULE_11___default()(row.updated_at).format("YYYY/MM/DD")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", {
+    }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", null, moment__WEBPACK_IMPORTED_MODULE_11___default()(row.updated_at).format("YYYY/MM/DD")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", {
       className: "txtalc"
     }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", {
       className: "material-icons"

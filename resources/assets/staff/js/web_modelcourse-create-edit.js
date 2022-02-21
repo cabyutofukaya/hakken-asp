@@ -224,7 +224,7 @@ const InputArea = ({ defaultValue, formSelects, consts }) => {
                         </div>
                     </li>
                 </ul>
-                <ul className="sideList">
+                {/* <ul className="sideList">
                     <li className="wd20">
                         <span className="inputLabel">大人</span>
                         <OnlyNumberInput
@@ -252,7 +252,7 @@ const InputArea = ({ defaultValue, formSelects, consts }) => {
                             placeholder="1名あたりの金額"
                         />
                     </li>
-                </ul>
+                </ul> */}
                 <ul className="sideList half">
                     <li>
                         <span className="inputLabel">出発地</span>

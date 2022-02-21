@@ -41167,7 +41167,7 @@ var IMAGE_MAX_SIZE = 2097152; // 画像アップロードサイズ(2MB)
  */
 
 var InputArea = function InputArea(_ref) {
-  var _defaultValue$web_mod, _defaultValue$web_mod2, _input$name, _input$description, _input$stays, _input$price_per_ad, _input$price_per_ch, _input$price_per_inf, _input$departure, _input$departure_plac, _input$destination, _input$destination_pl, _input$author_id;
+  var _defaultValue$web_mod, _defaultValue$web_mod2, _input$name, _input$description, _input$stays, _input$departure, _input$departure_plac, _input$destination, _input$destination_pl, _input$author_id;
 
   var defaultValue = _ref.defaultValue,
       formSelects = _ref.formSelects,
@@ -41451,35 +41451,6 @@ var InputArea = function InputArea(_ref) {
       value: k
     }, formSelects.stays[k]);
   }))))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("ul", {
-    className: "sideList"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("li", {
-    className: "wd20"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", {
-    className: "inputLabel"
-  }, "\u5927\u4EBA"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_components_OnlyNumberInput__WEBPACK_IMPORTED_MODULE_8__["default"], {
-    name: "price_per_ad",
-    value: (_input$price_per_ad = input.price_per_ad) !== null && _input$price_per_ad !== void 0 ? _input$price_per_ad : "",
-    handleChange: handleChange,
-    placeholder: "1\u540D\u3042\u305F\u308A\u306E\u91D1\u984D"
-  })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("li", {
-    className: "wd20"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", {
-    className: "inputLabel"
-  }, "\u5B50\u4F9B"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_components_OnlyNumberInput__WEBPACK_IMPORTED_MODULE_8__["default"], {
-    name: "price_per_ch",
-    value: (_input$price_per_ch = input.price_per_ch) !== null && _input$price_per_ch !== void 0 ? _input$price_per_ch : "",
-    handleChange: handleChange,
-    placeholder: "1\u540D\u3042\u305F\u308A\u306E\u91D1\u984D"
-  })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("li", {
-    className: "wd20"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", {
-    className: "inputLabel"
-  }, "\u5E7C\u5150"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_components_OnlyNumberInput__WEBPACK_IMPORTED_MODULE_8__["default"], {
-    name: "price_per_inf",
-    value: (_input$price_per_inf = input.price_per_inf) !== null && _input$price_per_inf !== void 0 ? _input$price_per_inf : "",
-    handleChange: handleChange,
-    placeholder: "1\u540D\u3042\u305F\u308A\u306E\u91D1\u984D"
-  }))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("ul", {
     className: "sideList half"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("li", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", {
     className: "inputLabel"
