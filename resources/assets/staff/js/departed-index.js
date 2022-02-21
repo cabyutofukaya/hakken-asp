@@ -18,7 +18,7 @@ const DepartedList = ({ searchParam }) => {
     // ページャー関連変数
     const [page, setPage] = useState(1);
     const [lastPage, setLastPage] = useState(0);
-    const [sort, setSort] = useState("control_number");
+    const [sort, setSort] = useState("latest_number_issue_at");
     const [direction, setDirection] = useState("desc");
     const [total, setTotal] = useState(0);
     const perPage = 10; // 1ページ表示件数
@@ -30,7 +30,7 @@ const DepartedList = ({ searchParam }) => {
 
     // TODO 申込者のソートはつけなくて良いか相談
     const [sortParam, setSortParam] = useState({
-        control_number: "desc",
+        latest_number_issue_at: "desc",
         status: "desc",
         "manager.name": "desc",
         departure_date: "desc",
@@ -139,7 +139,9 @@ const DepartedList = ({ searchParam }) => {
                         <tr>
                             <th
                                 className="sort"
-                                onClick={e => handleSortClick("control_number")}
+                                onClick={e =>
+                                    handleSortClick("latest_number_issue_at")
+                                }
                             >
                                 <span>予約番号</span>
                             </th>
