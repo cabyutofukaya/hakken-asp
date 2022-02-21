@@ -37731,6 +37731,43 @@ var AccountPayableArea = function AccountPayableArea(_ref) {
 
 /***/ }),
 
+/***/ "./resources/assets/staff/js/components/Reserve/BackToIndexButton.js":
+/*!***************************************************************************!*\
+  !*** ./resources/assets/staff/js/components/Reserve/BackToIndexButton.js ***!
+  \***************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+ // 詳細ページの「indexへ戻る」ボタン。催行済みか否かでURLを出し分け
+
+var BackToIndexButton = function BackToIndexButton(_ref) {
+  var isDeparted = _ref.isDeparted,
+      reserveIndexUrl = _ref.reserveIndexUrl,
+      departedIndexUrl = _ref.departedIndexUrl;
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+    className: "grayBtn",
+    onClick: function onClick(e) {
+      e.preventDefault();
+
+      if (isDeparted) {
+        window.location.href = departedIndexUrl;
+      } else {
+        window.location.href = reserveIndexUrl;
+      }
+    }
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", {
+    className: "material-icons"
+  }, "arrow_back_ios"), "\u4E00\u89A7\u306B\u623B\u308B");
+};
+
+/* harmony default export */ __webpack_exports__["default"] = (BackToIndexButton);
+
+/***/ }),
+
 /***/ "./resources/assets/staff/js/components/Reserve/ConsultationArea.js":
 /*!**************************************************************************!*\
   !*** ./resources/assets/staff/js/components/Reserve/ConsultationArea.js ***!
@@ -40800,6 +40837,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(classnames__WEBPACK_IMPORTED_MODULE_3__);
 /* harmony import */ var _hooks_useMountedRef__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../../../hooks/useMountedRef */ "./resources/assets/hooks/useMountedRef.js");
 /* harmony import */ var _ReserveAmountBreakdown__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./ReserveAmountBreakdown */ "./resources/assets/staff/js/components/Reserve/ReserveAmountBreakdown.js");
+/* harmony import */ var _BackToIndexButton__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./BackToIndexButton */ "./resources/assets/staff/js/components/Reserve/BackToIndexButton.js");
 
 
 function ownKeys(object, enumerableOnly) {
@@ -40951,11 +40989,13 @@ function _arrayWithHoles(arr) {
 
 
 
+
 var ReserveBasicInfoArea = function ReserveBasicInfoArea(_ref) {
   var _data$control_number, _data$estimate_number, _data$applicant$appli, _data$applicant, _data$applicant2, _data$applicant3, _data$applicant$user_, _data$applicant4, _data$applicant5, _data$applicant$user_2, _data$applicant6, _data$applicant$name, _data$applicant7, _data$applicant$name_, _data$applicant8, _data$name, _data$travel_type$val, _data$travel_type, _data$departure_date, _data$return_date, _data$departure, _data$destination, _data$note, _data$reserve_confirm, _data$reserve_confirm2, _data$itinerary, _data$itinerary$label, _data$invoice, _data$invoice$label, _data$receipt, _data$receipt$label, _data$manager$name, _data$manager, _consts$customFieldPo, _consts$customFieldPo2;
 
   var isShow = _ref.isShow,
       reserveNumber = _ref.reserveNumber,
+      isDeparted = _ref.isDeparted,
       status = _ref.status,
       consts = _ref.consts,
       constsCommon = _ref.constsCommon,
@@ -40963,8 +41003,7 @@ var ReserveBasicInfoArea = function ReserveBasicInfoArea(_ref) {
       permission = _ref.permission;
 
   var _useContext = Object(react__WEBPACK_IMPORTED_MODULE_1__["useContext"])(_ConstApp__WEBPACK_IMPORTED_MODULE_2__["ConstContext"]),
-      agencyAccount = _useContext.agencyAccount,
-      customFieldCodes = _useContext.customFieldCodes;
+      agencyAccount = _useContext.agencyAccount;
 
   var mounted = Object(_hooks_useMountedRef__WEBPACK_IMPORTED_MODULE_4__["useMountedRef"])(); // マウント・アンマウント制御
 
@@ -41117,15 +41156,11 @@ var ReserveBasicInfoArea = function ReserveBasicInfoArea(_ref) {
     id: "formControl"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("li", {
     className: "wd50"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("button", {
-    className: "grayBtn",
-    onClick: function onClick(e) {
-      e.preventDefault();
-      window.location.href = constsCommon === null || constsCommon === void 0 ? void 0 : constsCommon.reserveIndexUrl;
-    }
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", {
-    className: "material-icons"
-  }, "arrow_back_ios"), "\u4E00\u89A7\u306B\u623B\u308B")), permission.reserve_update && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("li", {
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_BackToIndexButton__WEBPACK_IMPORTED_MODULE_6__["default"], {
+    isDeparted: isDeparted,
+    reserveIndexUrl: constsCommon === null || constsCommon === void 0 ? void 0 : constsCommon.reserveIndexUrl,
+    departedIndexUrl: constsCommon === null || constsCommon === void 0 ? void 0 : constsCommon.departedIndexUrl
+  })), !isDeparted && permission.reserve_update && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("li", {
     className: "wd50"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("button", {
     className: "blueBtn",
@@ -41566,6 +41601,56 @@ var StatusModal = function StatusModal() {
 
 /***/ }),
 
+/***/ "./resources/assets/staff/js/components/Reserve/TopControlBox.js":
+/*!***********************************************************************!*\
+  !*** ./resources/assets/staff/js/components/Reserve/TopControlBox.js ***!
+  \***********************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! classnames */ "./node_modules/classnames/index.js");
+/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(classnames__WEBPACK_IMPORTED_MODULE_1__);
+
+ // キャンセル・削除ボタン。権限、催行済みか否かの状態により出し分け
+
+var TopControlBox = function TopControlBox(_ref) {
+  var reserve = _ref.reserve,
+      isCanceling = _ref.isCanceling,
+      isDeleting = _ref.isDeleting,
+      updatePermission = _ref.updatePermission,
+      deletePermission = _ref.deletePermission;
+
+  if (reserve !== null && reserve !== void 0 && reserve.is_departed) {
+    return null;
+  } else {
+    if (updatePermission || deletePermission) {
+      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("ul", {
+        className: "estimateControl"
+      }, updatePermission && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("li", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+        className: classnames__WEBPACK_IMPORTED_MODULE_1___default()("grayBtn", {
+          "js-modal-open": !isCanceling
+        }),
+        "data-target": "mdCxl"
+      }, "\u30AD\u30E3\u30F3\u30BB\u30EB")), deletePermission && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("li", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+        className: classnames__WEBPACK_IMPORTED_MODULE_1___default()("redBtn", {
+          "js-modal-open": !isDeleting
+        }),
+        "data-target": "mdDelete"
+      }, "\u524A\u9664")));
+    }
+  }
+
+  return null;
+};
+
+/* harmony default export */ __webpack_exports__["default"] = (TopControlBox);
+
+/***/ }),
+
 /***/ "./resources/assets/staff/js/components/SmallDangerModal.js":
 /*!******************************************************************!*\
   !*** ./resources/assets/staff/js/components/SmallDangerModal.js ***!
@@ -41821,6 +41906,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_SmallDangerModal__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./components/SmallDangerModal */ "./resources/assets/staff/js/components/SmallDangerModal.js");
 /* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! classnames */ "./node_modules/classnames/index.js");
 /* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_11___default = /*#__PURE__*/__webpack_require__.n(classnames__WEBPACK_IMPORTED_MODULE_11__);
+/* harmony import */ var _components_Reserve_TopControlBox__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./components/Reserve/TopControlBox */ "./resources/assets/staff/js/components/Reserve/TopControlBox.js");
 
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
@@ -41929,6 +42015,7 @@ function _arrayWithHoles(arr) {
 
 
 
+
 /**
  *
  * @param {array} formSelects form選択値（配列はタブ毎に保持）
@@ -41937,7 +42024,7 @@ function _arrayWithHoles(arr) {
  */
 
 var ReserveShowArea = function ReserveShowArea(_ref) {
-  var _defaultValue$consts$, _consts$common$tabCod, _permission$basic, _permission$basic2, _permission$basic3, _permission$basic4, _formSelects$consts$c, _consts$common$tabCod2;
+  var _defaultValue$consts$, _consts$common$tabCod, _defaultValue$consts$2, _consts$common$tabCod2, _consts$common, _consts$common2, _permission$basic, _permission$basic2, _formSelects$consts$c, _consts$common$tabCod3;
 
   var defaultTab = _ref.defaultTab,
       targetConsultationNumber = _ref.targetConsultationNumber,
@@ -42102,32 +42189,64 @@ var ReserveShowArea = function ReserveShowArea(_ref) {
     return function handleDelete() {
       return _ref3.apply(this, arguments);
     };
-  }();
+  }(); // 上部ステータス部(催行済みか否かで出し分け)
+
+
+  var TopStatus = function TopStatus(_ref4) {
+    var reserve = _ref4.reserve,
+        status = _ref4.status,
+        reserveStatus = _ref4.reserveStatus;
+
+    if (reserve !== null && reserve !== void 0 && reserve.is_departed) {
+      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement("span", {
+        className: "status gray fix"
+      }, reserveStatus);
+    } else {
+      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement("span", {
+        className: "status blue js-modal-open",
+        "data-target": "mdStatus"
+      }, status);
+    }
+  }; // パンクズリストindex部
+
+
+  var IndexBreadcrumb = function IndexBreadcrumb(_ref5) {
+    var reserve = _ref5.reserve,
+        reserveIndexUrl = _ref5.reserveIndexUrl,
+        departedIndexUrl = _ref5.departedIndexUrl;
+
+    if (reserve !== null && reserve !== void 0 && reserve.is_departed) {
+      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement("li", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement("a", {
+        href: departedIndexUrl
+      }, "\u50AC\u884C\u6E08\u307F\u4E00\u89A7"));
+    } else {
+      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement("li", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement("a", {
+        href: reserveIndexUrl
+      }, "\u4E88\u7D04\u7BA1\u7406"));
+    }
+  };
 
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_2___default.a.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement("div", {
     id: "pageHead"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement("h1", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement("span", {
     className: "material-icons"
-  }, "event_note"), "\u4E88\u7D04\u60C5\u5831", reserve === null || reserve === void 0 ? void 0 : reserve.control_number, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement("span", {
-    className: "status blue js-modal-open",
-    "data-target": "mdStatus"
-  }, status)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement("ol", {
+  }, "event_note"), "\u4E88\u7D04\u60C5\u5831", reserve === null || reserve === void 0 ? void 0 : reserve.control_number, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(TopStatus, {
+    reserve: reserve,
+    status: status,
+    reserveStatus: defaultValue === null || defaultValue === void 0 ? void 0 : (_defaultValue$consts$2 = defaultValue[(_consts$common$tabCod2 = consts.common.tabCodes) === null || _consts$common$tabCod2 === void 0 ? void 0 : _consts$common$tabCod2.tab_basic_info]) === null || _defaultValue$consts$2 === void 0 ? void 0 : _defaultValue$consts$2.reserveStatus
+  })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement("ol", {
     className: "breadCrumbs"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement("li", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement("a", {
-    href: consts.common.reserveIndexUrl
-  }, "\u4E88\u7D04\u7BA1\u7406")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement("li", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement("span", null, "\u4E88\u7D04\u60C5\u5831 ", reserve === null || reserve === void 0 ? void 0 : reserve.control_number))), (((_permission$basic = permission.basic) === null || _permission$basic === void 0 ? void 0 : _permission$basic.reserve_update) || ((_permission$basic2 = permission.basic) === null || _permission$basic2 === void 0 ? void 0 : _permission$basic2.reserve_delete)) && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement("ul", {
-    className: "estimateControl"
-  }, ((_permission$basic3 = permission.basic) === null || _permission$basic3 === void 0 ? void 0 : _permission$basic3.reserve_update) && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement("li", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement("button", {
-    className: classnames__WEBPACK_IMPORTED_MODULE_11___default()("grayBtn", {
-      "js-modal-open": !isCanceling
-    }),
-    "data-target": "mdCxl"
-  }, "\u30AD\u30E3\u30F3\u30BB\u30EB")), ((_permission$basic4 = permission.basic) === null || _permission$basic4 === void 0 ? void 0 : _permission$basic4.reserve_delete) && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement("li", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement("button", {
-    className: classnames__WEBPACK_IMPORTED_MODULE_11___default()("redBtn", {
-      "js-modal-open": !isDeleting
-    }),
-    "data-target": "mdDelete"
-  }, "\u524A\u9664")))), (flashMessage === null || flashMessage === void 0 ? void 0 : flashMessage.success_message) && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement("div", {
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(IndexBreadcrumb, {
+    reserve: reserve,
+    reserveIndexUrl: consts === null || consts === void 0 ? void 0 : (_consts$common = consts.common) === null || _consts$common === void 0 ? void 0 : _consts$common.reserveIndexUrl,
+    departedIndexUrl: consts === null || consts === void 0 ? void 0 : (_consts$common2 = consts.common) === null || _consts$common2 === void 0 ? void 0 : _consts$common2.departedIndexUrl
+  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement("li", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement("span", null, "\u4E88\u7D04\u60C5\u5831 ", reserve === null || reserve === void 0 ? void 0 : reserve.control_number))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_components_Reserve_TopControlBox__WEBPACK_IMPORTED_MODULE_12__["default"], {
+    reserve: reserve,
+    isCanceling: isCanceling,
+    isDeleting: isDeleting,
+    updatePermission: (_permission$basic = permission.basic) === null || _permission$basic === void 0 ? void 0 : _permission$basic.reserve_update,
+    deletePermission: (_permission$basic2 = permission.basic) === null || _permission$basic2 === void 0 ? void 0 : _permission$basic2.reserve_delete
+  })), (flashMessage === null || flashMessage === void 0 ? void 0 : flashMessage.success_message) && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement("div", {
     id: "successMessage"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement("p", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement("span", {
     className: "material-icons"
@@ -42154,6 +42273,7 @@ var ReserveShowArea = function ReserveShowArea(_ref) {
   }, "\u76F8\u8AC7\u4E00\u89A7")))), permission.basic.reserve_read && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_components_Reserve_ReserveBasicInfoArea__WEBPACK_IMPORTED_MODULE_6__["default"], {
     isShow: currentTab === consts.common.tabCodes.tab_basic_info,
     reserveNumber: reserve === null || reserve === void 0 ? void 0 : reserve.control_number,
+    isDeparted: reserve === null || reserve === void 0 ? void 0 : reserve.is_departed,
     status: status,
     consts: consts === null || consts === void 0 ? void 0 : consts[consts.common.tabCodes.tab_basic_info],
     customFields: customFields === null || customFields === void 0 ? void 0 : customFields[consts.common.tabCodes.tab_basic_info],
@@ -42185,7 +42305,7 @@ var ReserveShowArea = function ReserveShowArea(_ref) {
     apiUrl: "/api/".concat(agencyAccount, "/reserve/").concat(reserve === null || reserve === void 0 ? void 0 : reserve.control_number, "/status"),
     status: status,
     changeStatus: setStatus,
-    statuses: formSelects === null || formSelects === void 0 ? void 0 : (_formSelects$consts$c = formSelects[(_consts$common$tabCod2 = consts.common.tabCodes) === null || _consts$common$tabCod2 === void 0 ? void 0 : _consts$common$tabCod2.tab_basic_info]) === null || _formSelects$consts$c === void 0 ? void 0 : _formSelects$consts$c.statuses
+    statuses: formSelects === null || formSelects === void 0 ? void 0 : (_formSelects$consts$c = formSelects[(_consts$common$tabCod3 = consts.common.tabCodes) === null || _consts$common$tabCod3 === void 0 ? void 0 : _consts$common$tabCod3.tab_basic_info]) === null || _formSelects$consts$c === void 0 ? void 0 : _formSelects$consts$c.statuses
   }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_components_SmallDangerModal__WEBPACK_IMPORTED_MODULE_10__["default"], {
     id: "mdCxl",
     title: "\u3053\u306E\u4E88\u7D04\u3092\u53D6\u308A\u6D88\u3057\u307E\u3059\u304B\uFF1F",

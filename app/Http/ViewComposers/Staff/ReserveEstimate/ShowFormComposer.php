@@ -57,15 +57,15 @@ class ShowFormComposer
         // 相談の表示指定がある場合
         $targetConsultationNumber = request()->input('consultation_number');
 
-        // ステータス値
-        $status = null;
+        $status = null; // ステータス値
+        $reserveStatus = ''; // 状況
         if ($applicationStep === config('consts.reserves.APPLICATION_STEP_DRAFT')) { // 見積
-            $status = $reserve->estimate_statuses->isNotEmpty() ? $reserve->estimate_statuses[0]->val : null;
+            $status = $reserve->estimate_status ? $reserve->estimate_status->val : null;
+
         } elseif ($applicationStep === config('consts.reserves.APPLICATION_STEP_RESERVE')) { // 予約
-            if ($reserve->is_departed()) {
-                // 催行済
-            } else {
-                $status = $reserve->statuses->isNotEmpty() ? $reserve->statuses[0]->val : null;
+            $status = $reserve->status ? $reserve->status->val : null;
+            if ($reserve->is_departed) { // 催行済
+                $reserveStatus = '催行完了';
             }
         }
 
@@ -73,6 +73,7 @@ class ShowFormComposer
         $defaultValue = [ // 基本情報
             config('consts.reserves.TAB_BASIC_INFO') => [
                 'status' => $status, // ステータス値
+                'reserveStatus' => $reserveStatus, // 状況
             ],
             config('consts.reserves.TAB_RESERVE_DETAIL') => [ // 詳細
                 'sex' => config('consts.participants.DEFAULT_SEX'),
@@ -206,6 +207,7 @@ class ShowFormComposer
         // 一覧URL
         $estimateIndexUrl = route('staff.asp.estimates.normal.index', [$agencyAccount]);
         $reserveIndexUrl = route('staff.asp.estimates.reserve.index', [$agencyAccount]);
+        $departedIndexUrl = route('staff.estimates.departed.index', $agencyAccount); // 催行済
 
         // 各種定数値。タブ毎にセット
         $consts = [
@@ -222,6 +224,7 @@ class ShowFormComposer
                 ],
                 'estimateIndexUrl' => $estimateIndexUrl,
                 'reserveIndexUrl' => $reserveIndexUrl,
+                'departedIndexUrl' => $departedIndexUrl,
             ],
             // 基本情報
             config('consts.reserves.TAB_BASIC_INFO') =>
@@ -237,7 +240,8 @@ class ShowFormComposer
                     'estimates_custom' => config('consts.user_custom_items.POSITION_APPLICATION_CUSTOM_FIELD'),//カスタムフィールド
                 ],
                 'determineUrl' => $applicationStep === config('consts.reserves.APPLICATION_STEP_DRAFT') ? route('staff.api.asp.estimate.determine', [$agencyAccount,$reserve->estimate_number]) : null, // 見積決定URL
-                'afterDetermineRedirectUrl' => route('staff.asp.estimates.reserve.index', [$agencyAccount]), // 見積決定後の転送URL
+                'reserveIndexUrl' => $reserveIndexUrl, // 予約一覧URL
+                'departedIndexUrl' => $departedIndexUrl, // 催行済み一覧URL
                 'reserveEditUrl' => $applicationStep === config('consts.reserves.APPLICATION_STEP_RESERVE') ? route('staff.asp.estimates.reserve.edit', [$agencyAccount,$reserve->control_number]) : null,
                 'estimateEditUrl' => $applicationStep === config('consts.reserves.APPLICATION_STEP_DRAFT') ? route('staff.asp.estimates.normal.edit', [$agencyAccount,$reserve->estimate_number]) : null,
             ],

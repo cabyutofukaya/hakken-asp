@@ -45,7 +45,7 @@ Route::domain(env('STAFF_DOMAIN', 'api.hakken-tour.com'))->namespace('Staff\Api'
         
         // 催行済み
         Route::get('departed/list', 'DepartedController@index'); // 一覧
-
+        Route::delete('departed/{hashId}', 'DepartedController@destroy'); // 削除
 
         // 予約行程
         Route::get('estimate/{reception}/{applicationStep}/{controlNumber}/itinerary/list', 'ReserveItineraryController@index'); // 一覧

@@ -16,6 +16,7 @@ use App\Services\ReserveCustomValueService;
 use App\Services\UserCustomItemService;
 use App\Services\UserService;
 use App\Services\VAreaService;
+use Hashids;
 use DB;
 use Exception;
 use Gate;
@@ -73,6 +74,38 @@ class DepartedController extends Controller
                 'representatives.user'
             ]
         ));
+    }
+
+    /**
+     * 一件削除
+     *
+     * @param string $reserveNumber 予約番号
+     */
+    public function destroy(Request $request, string $agencyAccount, string $hashId)
+    {
+        $id = Hashids::decode($hashId)[0] ?? 0;
+
+        $reserve = $this->departedService->find((int)$id);
+
+        if (!$reserve) {
+            return response("データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 404);
+        }
+
+        // 認可チェック
+        $response = Gate::inspect('delete', [$reserve]);
+        if (!$response->allowed()) {
+            abort(403, $response->message());
+        }
+
+        if ($this->departedService->delete($reserve->id, true)) { // 論理削除
+
+            if ($request->input("set_message")) {
+                $request->session()->flash('decline_message', "{$reserveNumber}」の削除が完了しました。"); // set_messageは処理成功のフラッシュメッセージのセットを要求するパラメータ
+            }
+
+            return response('', 200);
+        }
+        abort(500);
     }
 
 }

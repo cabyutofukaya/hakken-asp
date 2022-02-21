@@ -5,7 +5,7 @@
   <main>
     <div id="pageHead">
       <h1><span class="material-icons">event_available</span>催行済み一覧</h1>
-      <form method="GET" action="{{ route('staff.asp.estimates.departed.index', [$agencyAccount]) }}">
+      <form method="GET" action="{{ route('staff.estimates.departed.index', [$agencyAccount]) }}">
         <div id="searchBox">
           <div id="inputList">
             <ul class="sideList">

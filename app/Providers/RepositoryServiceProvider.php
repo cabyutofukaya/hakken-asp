@@ -178,6 +178,10 @@ class RepositoryServiceProvider extends ServiceProvider
             \App\Repositories\WebReserve\WebReserveRepository::class
         );
         $this->app->bind(
+            \App\Repositories\ReserveDeparted\ReserveDepartedRepositoryInterface::class,
+            \App\Repositories\ReserveDeparted\ReserveDepartedRepository::class
+        );
+        $this->app->bind(
             \App\Repositories\WebReserveExt\WebReserveExtRepositoryInterface::class,
             \App\Repositories\WebReserveExt\WebReserveExtRepository::class
         );

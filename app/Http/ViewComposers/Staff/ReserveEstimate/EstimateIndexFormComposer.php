@@ -51,12 +51,11 @@ class EstimateIndexFormComposer
                 'user_custom_items.list',
                 'user_custom_items.unedit_item',
             ], // 取得カラム
-            [],
-            [
-                'user_custom_items.code' => config('consts.user_custom_items.CODE_APPLICATION_RESERVE_STATUS')
-            ] // 否定パラメータ。「予約ステータス」のカスタム項目を除去
         );
-
+        // 「予約ステータス」のカスタム項目を除去。予約/見積ステータスのみイレギュラー項目
+        $userCustomItemDatas = $userCustomItemDatas->filter(function ($row, $key) {
+            return $row['code'] !== config('consts.user_custom_items.CODE_APPLICATION_RESERVE_STATUS');
+        });
 
         $searchParam = [];// 検索パラメータ
         foreach (array_merge(['estimate_number', 'departure_date', 'return_date', 'departure', 'destination', 'applicant', 'representative', 'search_option_open'], $userCustomItemDatas->pluck('key')->all()) as $p) { // 基本パラメータ + カスタム項目パラメータ

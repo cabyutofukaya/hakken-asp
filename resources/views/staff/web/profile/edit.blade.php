@@ -16,8 +16,6 @@
 
   </div>
   
-  @include('staff.web.common._check_web_valid')
-
   <h2 class="subTit">
     <span class="material-icons">person</span>プロフィール基本情報
   </h2>
@@ -36,7 +34,7 @@
     ></div>
     <ul id="formControl">
       <li class="wd50"><button class="grayBtn" onClick="event.preventDefault();history.back()"><span class="material-icons">arrow_back_ios</span>登録せずに戻る</button></li>
-      <li class="wd50"><button class="blueBtn"><span class="material-icons">save</span> この内容で登録する</button></li>
+      <li class="wd50"><button class="blueBtn doubleBan"><span class="material-icons">save</span>この内容で登録する</button></li>
     </ul>
   </form>
 </main>

@@ -85,6 +85,11 @@ $(".toggleOption").on("click", function() {
     }
 });
 
+// submitの二重送信防止
+$(".doubleBan").on("click", function() {
+    $(this).css("pointer-events", "none");
+});
+
 $(".current").on("click", function() {
     if ($(this).hasClass("active")) {
         // $(this).removeClass("active"); 閉じるアクション不要かも、ということで一旦コメント

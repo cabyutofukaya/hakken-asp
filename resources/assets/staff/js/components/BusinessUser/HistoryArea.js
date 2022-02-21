@@ -170,7 +170,7 @@ const HistoryArea = ({ isShow, userNumber, consts, permission }) => {
                                     <span>旅行金額</span>
                                 </th>
                                 <th className="txtalc">
-                                    <span>状況</span>
+                                    <span>ステータス</span>
                                 </th>
                             </tr>
                         </thead>

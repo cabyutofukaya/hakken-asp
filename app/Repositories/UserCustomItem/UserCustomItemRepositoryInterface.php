@@ -25,7 +25,9 @@ interface UserCustomItemRepositoryInterface
 
     public function getByKeys(array $keys, array $with = [], array $select = []) : Collection;
 
-    public function getByCategoryCodeForAgencyId(string $code, int $agencyId, ?bool $flg, array $with = [], array $select = [], array $where = [], array $notWhere = []) : Collection;
+    public function isExistsKey(string $keyStr, int $agencyId, bool $checkDeleted = true) : bool;
+
+    public function getByCategoryCodeForAgencyId(string $code, int $agencyId, ?bool $flg, array $with = [], array $select = [], array $where = []) : Collection;
 
     public function delete(int $id, bool $isSoftDelete): bool;
 

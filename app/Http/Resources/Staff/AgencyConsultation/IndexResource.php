@@ -19,8 +19,20 @@ class IndexResource extends JsonResource
             return [$item['key'] => $item['val']];
         });
 
+        // リンクURL
+        $reserveUrl = '';
+        if ($this->taxonomy == config('consts.agency_consultations.TAXONOMY_RESERVE')) { // 相談種別が「予約」
+            // 予約状態によってURLを出し分け(見積or予約)
+            if ($this->reserve->application_step == config('consts.reserves.APPLICATION_STEP_DRAFT')) { // 見積
+                $reserveUrl = route('staff.asp.estimates.normal.show', [$request->agencyAccount, $this->reserve->estimate_number]) . "?tab=" . config('consts.reserves.TAB_CONSULTATION') . "&consultation_number=" . $this->control_number;
+            } elseif ($this->reserve->application_step == config('consts.reserves.APPLICATION_STEP_RESERVE')) { // 予約
+                $reserveUrl = route('staff.asp.estimates.reserve.show', [$request->agencyAccount, $this->reserve->control_number]) . "?tab=" . config('consts.reserves.TAB_CONSULTATION') . "&consultation_number=" . $this->control_number;
+            }
+        }
+
         $base = [
             'id' => $this->id,
+            'reserve_url' => $reserveUrl,
             'taxonomy' => $this->taxonomy,
             'control_number' => $this->control_number,
             'title' => $this->title,
@@ -34,8 +46,9 @@ class IndexResource extends JsonResource
             'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
             // 以下、リレーション項目
             "reserve" => [ // 予約/見積
-                'control_number'=> $this->reserve->control_number,
-                'estimate_number'=> $this->reserve->estimate_number,
+                // 'control_number'=> $this->reserve->control_number,
+                // 'estimate_number'=> $this->reserve->estimate_number,
+                "record_number" => $this->reserve->record_number,
                 'application_step'=> $this->reserve->application_step,
                 "applicant" => [ // 申込者
                     'name' => $this->reserve->applicantable ? $this->reserve->applicantable->name : null,
@@ -51,6 +64,5 @@ class IndexResource extends JsonResource
 
         // カスタム項目とマージ
         return array_merge($base, $customValues->toArray());
-
     }
 }

@@ -79167,7 +79167,13 @@ function _asyncToGenerator(fn) {
 
 
 
+ // 帰着日が過去の場合はtrue
 
+var isDeparted = function isDeparted(returnDate) {
+  var dt = new Date();
+  var rd = new Date("".concat(returnDate, " 23:59:59"));
+  return dt.getTime() > rd.getTime();
+};
 
 var DetermineModal = function DetermineModal(_ref) {
   var id = _ref.id,
@@ -79175,12 +79181,8 @@ var DetermineModal = function DetermineModal(_ref) {
       isConfirming = _ref.isConfirming,
       setIsConfirming = _ref.setIsConfirming,
       determineUrl = _ref.determineUrl,
-      afterDetermineRedirectUrl = _ref.afterDetermineRedirectUrl;
-
-  var _useContext = Object(react__WEBPACK_IMPORTED_MODULE_1__["useContext"])(_ConstApp__WEBPACK_IMPORTED_MODULE_2__["ConstContext"]),
-      agencyAccount = _useContext.agencyAccount;
-
-  console.log(determineUrl);
+      reserveIndexUrl = _ref.reserveIndexUrl,
+      departedIndexUrl = _ref.departedIndexUrl;
   var mounted = Object(_hooks_useMountedRef__WEBPACK_IMPORTED_MODULE_3__["useMountedRef"])(); // マウント・アンマウント制御
   // 「予約に変更する」ボタン押下処理
 
@@ -79240,7 +79242,12 @@ var DetermineModal = function DetermineModal(_ref) {
 
               if (mounted.current && ((_response = response) === null || _response === void 0 ? void 0 : _response.status) == 200) {
                 // ページ遷移
-                location.href = afterDetermineRedirectUrl;
+                if (isDeparted(estimate === null || estimate === void 0 ? void 0 : estimate.return_date)) {
+                  // 帰着日が過去の場合は催行済一覧へ遷移
+                  location.href = departedIndexUrl;
+                } else {
+                  location.href = reserveIndexUrl;
+                }
               }
 
             case 11:
@@ -79254,7 +79261,18 @@ var DetermineModal = function DetermineModal(_ref) {
     return function handleClick(_x) {
       return _ref2.apply(this, arguments);
     };
-  }();
+  }(); // 帰着日が過去の場合は注意文を表示
+
+
+  var ReturnDateWarning = function ReturnDateWarning(_ref3) {
+    var returnDate = _ref3.returnDate;
+
+    if (isDeparted(returnDate)) {
+      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_1___default.a.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("br", null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("small", null, "\u203B\u5E30\u7740\u65E5\u304C\u904E\u53BB\u306E\u65E5\u4ED8\u306E\u305F\u3081\u50AC\u884C\u6E08\u307F\u306B\u79FB\u52D5\u3057\u307E\u3059"));
+    }
+
+    return null;
+  };
 
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
     id: id,
@@ -79272,7 +79290,9 @@ var DetermineModal = function DetermineModal(_ref) {
     className: "modal__content"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("p", {
     className: "mdTit mb20"
-  }, "\u3053\u306E\u898B\u7A4D\u3092\u4E88\u7D04\u78BA\u5B9A\u3057\u307E\u3059\u304B\uFF1F"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("ul", {
+  }, "\u3053\u306E\u898B\u7A4D\u3092\u4E88\u7D04\u78BA\u5B9A\u3057\u307E\u3059\u304B\uFF1F", /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(ReturnDateWarning, {
+    returnDate: estimate === null || estimate === void 0 ? void 0 : estimate.return_date
+  })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("ul", {
     className: "sideList"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("li", {
     className: "wd50"
@@ -83257,7 +83277,8 @@ var WebEstimateBasicInfoArea = function WebEstimateBasicInfoArea(_ref) {
     isConfirming: isConfirming,
     setIsConfirming: setIsConfirming,
     determineUrl: consts.determineUrl,
-    afterDetermineRedirectUrl: consts.afterDetermineRedirectUrl
+    reserveIndexUrl: consts.reserveIndexUrl,
+    departedIndexUrl: consts.departedIndexUrl
   }));
 };
 

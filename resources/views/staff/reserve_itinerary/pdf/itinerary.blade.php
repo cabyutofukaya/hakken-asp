@@ -9,7 +9,12 @@
 	</div>
 	<div class="dcHead">
 		<div>
-			<p>{{ $reserveItinerary->reserve->representatives[0]->name ?? '' }}({{ $reserveItinerary->reserve->representatives[0]->name_roman ?? '' }}) 様</p>
+			<p>
+				{{ $reserveItinerary->reserve->representatives[0]->name ?? '' }}
+				@if($reserveItinerary->reserve->representatives && $reserveItinerary->reserve->representatives[0]->name_roman)
+					({{ $reserveItinerary->reserve->representatives[0]->name_roman }})
+				@endif
+				様</p>
 			<p class="dispTitle">件名 {{ $reserveItinerary->reserve->name ?? '' }}</p>
 			<p class="dispPeriod">期間 {{ $reserveItinerary->reserve->departure_date }}～{{ $reserveItinerary->reserve->return_date }}</p>
 		</div>
@@ -36,10 +41,10 @@
 										<h4 class="pickup">{{ $schedule->place }}
 											@if(!$loop->first && $schedule->staying_time)<span>{{ $schedule->staying_time }}滞在</span>@endif{{-- 先頭スケジュールの場合は滞在表記ナシ --}}
 										</h4>
-										<p>{!! nl2br(e($schedule->explanation)) !!}</p>
+										<p>{!! nl2br(e($schedule->explanation ?? " ")) !!}</p>
 									@else
-										<h4>{{ $schedule->place }}</h4>
-										<p>{!! nl2br(e($schedule->explanation)) !!}</p>
+										<h4>{{ $schedule->place ?? " " }}</h4>
+										<p>{!! nl2br(e($schedule->explanation ?? "")) !!}</p>
 									@endif
 								</div>
 							</li>

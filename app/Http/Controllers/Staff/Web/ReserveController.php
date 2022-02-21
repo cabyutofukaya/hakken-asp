@@ -2,22 +2,25 @@
 
 namespace App\Http\Controllers\Staff\Web;
 
+use App\Events\UpdatedReserveEvent;
 use App\Exceptions\ExclusiveLockException;
-use App\Models\Reserve;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Staff\AppController;
-use Illuminate\Http\Request;
-use App\Events\UpdatedReserveEvent;
 use App\Http\Requests\Staff\ReserveUpdateRequest;
-use App\Services\WebReserveService;
+use App\Models\Reserve;
 use App\Services\ReserveInvoiceService;
+use App\Services\WebReserveService;
+use App\Traits\ReserveControllerTrait;
 use Gate;
+use Illuminate\Http\Request;
 
 /**
  * 予約管理
  */
 class ReserveController extends AppController
 {
+    use ReserveControllerTrait;
+
     public function __construct(WebReserveService $webReserveService, ReserveInvoiceService $reserveInvoiceService)
     {
         $this->webReserveService = $webReserveService;
@@ -53,6 +56,9 @@ class ReserveController extends AppController
             abort(403);
         }
 
+        // 催行済みの場合は転送
+        $this->checkReserveState($agencyAccount, $reserve);
+
         return view('staff.web.reserve.show', compact('reserve'));
     }
 
@@ -71,6 +77,9 @@ class ReserveController extends AppController
             abort(403);
         }
 
+        // 催行済みの場合は転送
+        $this->checkReserveState($agencyAccount, $reserve);
+
         return view('staff.web.reserve.edit', compact('reserve'));
     }
 
@@ -86,6 +95,9 @@ class ReserveController extends AppController
         if (!$response->allowed()) {
             return $this->forbiddenRedirect($response->message());
         }
+
+        // 催行済みの場合は転送
+        $this->checkReserveState($agencyAccount, $reserve);
 
         $input = $request->all();
         try {

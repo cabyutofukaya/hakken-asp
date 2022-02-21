@@ -4,17 +4,19 @@ import classNames from "classnames";
 import { useMountedRef } from "../../../../hooks/useMountedRef";
 import ReserveAmountBreakdown from "./ReserveAmountBreakdown";
 import WebReserveBasicInfoLeft from "./WebReserveBasicInfoLeft";
+import BackToIndexButton from "./BackToIndexButton";
 
 const WebReserveBasicInfoArea = ({
     isShow,
     reserveNumber,
+    isDeparted,
     status,
     consts,
     constsCommon,
     customFields,
     permission
 }) => {
-    const { agencyAccount, customFieldCodes } = useContext(ConstContext);
+    const { agencyAccount } = useContext(ConstContext);
 
     const mounted = useMountedRef(); // マウント・アンマウント制御
 
@@ -219,18 +221,14 @@ const WebReserveBasicInfoArea = ({
             </ul>
             <ul id="formControl">
                 <li className="wd50">
-                    <button
-                        className="grayBtn"
-                        onClick={e => {
-                            e.preventDefault();
-                            window.location.href = constsCommon.reserveIndexUrl;
-                        }}
-                    >
-                        <span className="material-icons">arrow_back_ios</span>
-                        一覧に戻る
-                    </button>
+                    <BackToIndexButton
+                        isDeparted={isDeparted}
+                        reserveIndexUrl={constsCommon?.reserveIndexUrl}
+                        departedIndexUrl={constsCommon?.departedIndexUrl}
+                    />
                 </li>
-                {permission.reserve_update && (
+                {/**催行済みの場合は編集リンクなし */}
+                {!isDeparted && permission.reserve_update && (
                     <li className="wd50">
                         <button
                             className="blueBtn"

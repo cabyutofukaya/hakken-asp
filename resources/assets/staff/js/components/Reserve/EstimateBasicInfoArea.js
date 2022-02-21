@@ -336,7 +336,8 @@ const EstimateBasicInfoArea = ({
                 isConfirming={isConfirming}
                 setIsConfirming={setIsConfirming}
                 determineUrl={consts.determineUrl}
-                afterDetermineRedirectUrl={consts.afterDetermineRedirectUrl}
+                reserveIndexUrl={consts.reserveIndexUrl}
+                departedIndexUrl={consts.departedIndexUrl}
             />
         </>
     );

@@ -36,12 +36,17 @@ class UserCustomItemService
     /**
      * 作成
      */
-    public function create(array $data): UserCustomItem
+    public function create(array $data, int $agencyId): UserCustomItem
     {
         $data['key'] = get_uniqid(); // 項目キーを設定
 
+        if($this->userCustomItemRepository->isExistsKey($data['key'], $agencyId)){
+            throw new \Exception('カスタム項目キーが重複しました。');
+        }
+
         // リスト項目が重複するとよからぬ不具合を起こすかもしれないので重複削除しておく
         $data['list'] = array_values(array_unique(Arr::get($data, 'list', [])));
+
         return $this->userCustomItemRepository->create($data);
     }
 
@@ -128,7 +133,7 @@ class UserCustomItemService
      * @param bool $flg 表示フラグ
      * @param array $where 検索パラメータ
      */
-    public function getByCategoryCodeForAgencyAccount(string $code, string $agencyAccount, ?bool $flg = null, array $with = [], array $select = [], array $where = [], array $notWhere = []) : Collection
+    public function getByCategoryCodeForAgencyAccount(string $code, string $agencyAccount, ?bool $flg = null, array $with = [], array $select = [], array $where = []) : Collection
     {
         $agencyId = $this->agencyRepository->getIdByAccount($agencyAccount);
         return $this->userCustomItemRepository->getByCategoryCodeForAgencyId(
@@ -137,8 +142,7 @@ class UserCustomItemService
             $flg, 
             $with, 
             $select,
-            $where, 
-            $notWhere
+            $where
         );
     }
 
@@ -506,23 +510,27 @@ class UserCustomItemService
 
             $userCustomCategoryItem = $this->userCustomCategoryItemRepository->findWhere(['user_custom_category_id' => $userCustomCategory->id, 'type' => $conf['type']]);
         
-            $this->create([
-                'user_custom_category_id' => $userCustomCategory->id,
-                'user_custom_category_item_id' => $userCustomCategoryItem->id,
-                'type' => $userCustomCategoryItem->type,
-                'input_type' => $conf['input_type'],
-                'agency_id' => $agency->id,
-                'name' => $conf['name'],
-                'code' => $conf['code'],
-                'display_position' => $conf['position'],
-                'undelete_item' => $conf['undelete_item'],
-                'unedit_item' => $conf['unedit_item'],
-                'fixed_item' => $conf['fixed_item'],
-                'seq' => $conf['seq'],
-                'flg' => true,
-                'list' => $conf['list'],
-                'protect_list' => $conf['protect_list']
-            ]);
+            $this->create(
+                [
+                    'user_custom_category_id' => $userCustomCategory->id,
+                    'user_custom_category_item_id' => $userCustomCategoryItem->id,
+                    'type' => $userCustomCategoryItem->type,
+                    'input_type' => $conf['input_type'],
+                    'agency_id' => $agency->id,
+                    'name' => $conf['name'],
+                    'code' => $conf['code'],
+                    'display_position' => $conf['position'],
+                    'undelete_item' => $conf['undelete_item'],
+                    'unedit_item' => $conf['unedit_item'],
+                    'fixed_item' => $conf['fixed_item'],
+                    'seq' => $conf['seq'],
+                    'flg' => true,
+                    'list' => $conf['list'],
+                    'protect_list' => $conf['protect_list']
+                ],
+                $agency->id
+            );
+            usleep(1); // 一応、1マイクロ秒遅延
         }
     }
 }

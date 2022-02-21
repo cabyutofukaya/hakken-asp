@@ -13,12 +13,16 @@ const ScheduleInputRows = ({ index, date, input, inputName, handleChange }) => {
                 name={`${inputName}[type]`}
                 value={input?.type ?? ""}
             />
-            <input type="hidden" name={`${inputName}[seq]]`} value={index} />
+            <input
+                type="hidden"
+                name={`${inputName}[seq]]`}
+                value={index ?? ""}
+            />
             {/** 日付はPOSTで渡すname属性値になるが、name属性のバリデーションはできないので同じ値を隠しフィールドにセットして、その値を検証する */}
             <input
                 type="hidden"
                 name={`${inputName}[travel_date]]`}
-                value={date}
+                value={date ?? ""}
             />
             <li>
                 <span className="inputLabel">到着時間</span>

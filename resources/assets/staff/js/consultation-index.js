@@ -238,38 +238,18 @@ const ConsultationList = ({
                                 lists.map((row, index) => (
                                     <tr key={index}>
                                         <td>
-                                            {/**見積 */}
+                                            {/**予約相談の場合は予約リンクを出力 */}
                                             {row.taxonomy ===
                                                 consts.taxonomyList
-                                                    .taxonomy_reserve &&
-                                                row.reserve
-                                                    ?.application_step ===
-                                                    consts.applicationStepList
-                                                        .application_step_draft && (
-                                                    <a
-                                                        href={`/${agencyAccount}/estimates/normal/${row.reserve?.estimate_number}?tab=${consts.reserveTabCodes.tab_consultation}&consultation_number=${row?.control_number}`}
-                                                    >
-                                                        {row.reserve
-                                                            ?.estimate_number ??
-                                                            "-"}
-                                                    </a>
-                                                )}
-                                            {/**予約 */}
-                                            {row.taxonomy ===
+                                                    .taxonomy_reserve && (
+                                                <a href={row?.reserve_url}>
+                                                    {row?.reserve
+                                                        ?.record_number ?? "-"}
+                                                </a>
+                                            )}
+                                            {row.taxonomy !==
                                                 consts.taxonomyList
-                                                    .taxonomy_reserve &&
-                                                row.reserve
-                                                    ?.application_step ===
-                                                    consts.applicationStepList
-                                                        .application_step_reserve && (
-                                                    <a
-                                                        href={`/${agencyAccount}/estimates/reserve/${row.reserve?.control_number}?tab=${consts.reserveTabCodes.tab_consultation}&consultation_number=${row?.control_number}`}
-                                                    >
-                                                        {row.reserve
-                                                            ?.control_number ??
-                                                            "-"}
-                                                    </a>
-                                                )}
+                                                    .taxonomy_reserve && "-"}
                                         </td>
                                         <td>
                                             <a

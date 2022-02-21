@@ -31,7 +31,8 @@ const WaypointImage = ({
     handleChange,
     handleUploadPhoto,
     handleClearPhoto,
-    handleChangePhotoInput,
+    handleChangePhoto,
+    handleChangePhotoExplanation,
     handleUpRow,
     handleDownRow,
     handleDelete,
@@ -135,7 +136,10 @@ const WaypointImage = ({
                         thumbSBaseUrl={thumbSBaseUrl}
                         handleUploadPhoto={handleUploadPhoto}
                         handleClearPhoto={handleClearPhoto}
-                        handleChangePhotoInput={handleChangePhotoInput}
+                        handleChangePhoto={handleChangePhoto}
+                        handleChangePhotoExplanation={
+                            handleChangePhotoExplanation
+                        }
                     />
                 </ul>
                 <div className="subjectList">

@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Models\Reserve;
+use App\Repositories\Agency\AgencyRepository;
+use App\Repositories\ReserveDeparted\ReserveDepartedRepository;
 use Carbon\Carbon;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -10,18 +12,28 @@ use Illuminate\Pagination\LengthAwarePaginator;
  * 催行済み管理
  * ReserveEstimateServiceを継承
  */
-class DepartedService extends ReserveEstimateService
+class DepartedService
 {
+    public function __construct(ReserveDepartedRepository $reserveDepartedRepository, AgencyRepository $agencyRepository)
+    {
+        $this->reserveDepartedRepository = $reserveDepartedRepository;
+        $this->agencyRepository = $agencyRepository;
+    }
 
     /**
-     * 見積番号から催行済みデータを1件取得
-     * 
-     * @param string $controlNumber 予約番号
+     * 予約IDから予約データを取得
      */
-    public function findByDepartedNumber(string $controlNumber, string $agencyAccount, array $with = [], array $select=[], bool $getDeleted = false) : ?Reserve
+    public function find(int $id, array $with = [], array $select=[], bool $getDeleted = false) : Reserve
+    {
+        return $this->reserveDepartedRepository->find($id, $with, $select, $getDeleted);
+    }
+    /**
+     * 予約番号から催行データを1件取得
+     */
+    public function findByControlNumber(string $controlNumber, string $agencyAccount, array $with = [], array $select=[], bool $getDeleted = false) : ?Reserve
     {
         $agencyId = $this->agencyRepository->getIdByAccount($agencyAccount);
-        return $this->reserveRepository->findByDepartedNumber(
+        return $this->reserveDepartedRepository->findByControlNumber(
             $controlNumber,
             $agencyId,
             $with,
@@ -42,9 +54,8 @@ class DepartedService extends ReserveEstimateService
     {
         $agencyId = $this->agencyRepository->getIdByAccount($account);
 
-        return $this->reserveRepository->paginateByAgencyId(
+        return $this->reserveDepartedRepository->paginateByAgencyId(
             $agencyId,
-            config('consts.reserves.APPLICATION_STEP_DEPARTED'), // 催行状態
             $params,
             $limit,
             $with,
@@ -52,4 +63,14 @@ class DepartedService extends ReserveEstimateService
         );
     }
 
+    /**
+     * 削除
+     *
+     * @param int $id ID
+     * @param boolean $isSoftDelete 論理削除の場合はtrue。falseは物理削除
+     */
+    public function delete(int $id, bool $isSoftDelete=true): bool
+    {
+        return $this->reserveDepartedRepository->delete($id, $isSoftDelete);
+    }
 }

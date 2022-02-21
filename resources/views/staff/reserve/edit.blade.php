@@ -16,7 +16,7 @@
     <span class="material-icons"> subject </span>基本情報
   </h2>
 
-  <form method="post" action="{{ route('staff.asp.estimates.reserve.update', [$agencyAccount, $reserve->control_number]) }}" id="editForm">
+  <form method="post" action="{{ route('staff.asp.estimates.reserve.update', [$agencyAccount, $reserve->control_number]) }}" id="reserveForm">
     @csrf
     @method('PUT')
     
@@ -36,7 +36,7 @@
         <button class="grayBtn" onClick="event.preventDefault();history.back()"><span class="material-icons">arrow_back_ios</span>更新せずに戻る</button>
       </li>
       <li class="wd50">
-        <button class="blueBtn">
+        <button class="blueBtn doubleBan">
           <span class="material-icons">save</span> この内容で更新する
         </button>
       </li>

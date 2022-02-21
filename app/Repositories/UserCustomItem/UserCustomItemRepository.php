@@ -80,7 +80,7 @@ class UserCustomItemRepository implements UserCustomItemRepositoryInterface
      * @param array $where 条件
      * @param array $notWhere 否定条件
      */
-    public function getByCategoryCodeForAgencyId(string $code, int $agencyId, ?bool $flg, array $with = [], array $select = [], array $where = [], array $notWhere = []) : Collection
+    public function getByCategoryCodeForAgencyId(string $code, int $agencyId, ?bool $flg, array $with = [], array $select = [], array $where = []) : Collection
     {
         $query = $select ? $this->userCustomItem->select($select) : $this->userCustomItem->select('user_custom_items.*');
         
@@ -98,18 +98,25 @@ class UserCustomItemRepository implements UserCustomItemRepositoryInterface
             }
         }
 
-        if ($notWhere) { // 否定検索パラメータあり
-            foreach ($notWhere as $k => $v) {
-                $query = $query->where($k, '<>', $v);
-            }
-        }
-
         return $query
             ->orderBy('user_custom_items.display_position', 'asc')
             ->orderBy('user_custom_items.id', 'asc')
             ->get();
     }
     
+    /**
+     * 存在するキーか
+     * 厳密にはプレフィックス含めて検索する必要があるが、ここでは末尾のキー部分のみで判断
+     *
+     * @param boolean $checkDeleted 論理削除も含めてチェックする場合はtrue
+     */
+    public function isExistsKey(string $keyStr, int $agencyId, bool $checkDeleted = true) : bool
+    {
+        $query = $this->userCustomItem;
+        $query = $checkDeleted ? $query->withTrashed() : $query;
+        return $query->where('agency_id', $agencyId)->where('key', 'like', "%$keyStr")->exists();
+    }
+
     /**
      * 当該コードのkeyを取得
      *

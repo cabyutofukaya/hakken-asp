@@ -29,7 +29,7 @@
       </li>
       @can('update', $businessUser)
         <li class="wd50">
-          <button class="blueBtn"><span class="material-icons">save</span> この内容で更新する</button>
+          <button class="blueBtn doubleBan"><span class="material-icons">save</span> この内容で更新する</button>
         </li>
       @endcan
     </ul>

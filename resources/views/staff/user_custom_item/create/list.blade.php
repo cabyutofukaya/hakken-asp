@@ -20,7 +20,7 @@
         <button class="grayBtn" onClick="event.preventDefault();location.href='{{route('staff.system.custom.index', ['agencyAccount' => $agencyAccount, 'tab' => $defaultUserCustomCategoryCode])}}'"><span class="material-icons">arrow_back_ios</span>登録せずに戻る</button>
       </li>
       <li class="wd50">
-        <button class="blueBtn"><span class="material-icons">save</span> この内容で登録する</button>
+        <button class="blueBtn doubleBan"><span class="material-icons">save</span> この内容で登録する</button>
       </li>
     </ul>
 

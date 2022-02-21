@@ -69,7 +69,7 @@
       @can('update', $userCustomItem)
         @if(!$userCustomItem->unedit_item)
         <li class="wd50">
-          <button class="blueBtn"><span class="material-icons">save</span> この内容で保存する</button>
+          <button class="blueBtn doubleBan"><span class="material-icons">save</span> この内容で保存する</button>
         </li>
         @endif
       @endcan

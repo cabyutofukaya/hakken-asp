@@ -3,8 +3,6 @@ import React, { useState, useContext } from "react";
 import { render } from "react-dom";
 import ConstApp from "./components/ConstApp";
 import { ConstContext } from "./components/ConstApp";
-import ConsultationArea from "./components/Reserve/ConsultationArea";
-import ReserveDetail from "./components/Reserve/ReserveDetail";
 import StatusModal from "./components/Reserve/StatusModal";
 import { useMountedRef } from "../../hooks/useMountedRef";
 import SmallDangerModal from "./components/SmallDangerModal";
@@ -13,6 +11,7 @@ import InvalidMessage from "./components/Reserve/InvalidMessage";
 import WebReserveBasicInfoArea from "./components/Reserve/WebReserveBasicInfoArea";
 import WebConsultationArea from "./components/Reserve/WebConsultationArea";
 import WebReserveDetail from "./components/Reserve/WebReserveDetail";
+import TopControlBox from "./components/Reserve/TopControlBox";
 
 /**
  *
@@ -108,56 +107,78 @@ const ReserveShowArea = ({
         }
     };
 
+    // 上部ステータス部(催行済みか否かで出し分け)
+    const TopStatus = ({ reserve, status, reserveStatus }) => {
+        if (reserve?.is_departed) {
+            return <span className="status gray fix">{reserveStatus}</span>;
+        } else {
+            return (
+                <span
+                    className="status blue js-modal-open"
+                    data-target="mdStatus"
+                >
+                    {status}
+                </span>
+            );
+        }
+    };
+
+    // パンクズリストindex部(催行済みか否かで出し分け)
+    const IndexBreadcrumb = ({
+        reserve,
+        reserveIndexUrl,
+        departedIndexUrl
+    }) => {
+        if (reserve?.is_departed) {
+            return (
+                <li>
+                    <a href={departedIndexUrl}>催行済み一覧</a>
+                </li>
+            );
+        } else {
+            return (
+                <li>
+                    <a href={reserveIndexUrl}>WEB予約管理</a>
+                </li>
+            );
+        }
+    };
+
     return (
         <>
             <div id="pageHead">
                 <h1>
                     <span className="material-icons">event_note</span>予約情報
                     {reserve?.control_number}
-                    <span
-                        className="status blue js-modal-open"
-                        data-target="mdStatus"
-                    >
-                        {status}
-                    </span>
+                    {/**催行済か否かで出し分け */}
+                    <TopStatus
+                        reserve={reserve}
+                        status={status}
+                        reserveStatus={
+                            defaultValue?.[
+                                consts.common.tabCodes?.tab_basic_info
+                            ]?.reserveStatus
+                        }
+                    />
                 </h1>
                 <ol className="breadCrumbs">
-                    <li>
-                        <a href={consts.common.reserveIndexUrl}>WEB予約管理</a>
-                    </li>
+                    {/**催行済か否かで出し分け */}
+                    <IndexBreadcrumb
+                        reserve={reserve}
+                        reserveIndexUrl={consts?.common?.reserveIndexUrl}
+                        departedIndexUrl={consts?.common?.departedIndexUrl}
+                    />
                     <li>
                         <span>予約情報 {reserve?.control_number}</span>
                     </li>
                 </ol>
-                {(permission.basic?.reserve_update ||
-                    permission.basic?.reserve_delete) && (
-                    <ul className="estimateControl">
-                        {permission.basic?.reserve_update && (
-                            <li>
-                                <button
-                                    className={classNames("grayBtn", {
-                                        "js-modal-open": !isCanceling
-                                    })}
-                                    data-target="mdCxl"
-                                >
-                                    キャンセル
-                                </button>
-                            </li>
-                        )}
-                        {permission.basic?.reserve_delete && (
-                            <li>
-                                <button
-                                    className={classNames("redBtn", {
-                                        "js-modal-open": !isDeleting
-                                    })}
-                                    data-target="mdDelete"
-                                >
-                                    削除
-                                </button>
-                            </li>
-                        )}
-                    </ul>
-                )}
+                <TopControlBox
+                    reserve={reserve}
+                    isCanceling={isCanceling}
+                    isDeleting={isDeleting}
+                    updatePermission={permission.basic?.reserve_update}
+                    deletePermission={permission.basic?.reserve_delete}
+                />
             </div>
 
             {flashMessage?.success_message && (
@@ -243,6 +264,7 @@ const ReserveShowArea = ({
                         currentTab === consts.common.tabCodes.tab_basic_info
                     }
                     reserveNumber={reserve?.control_number}
+                    isDeparted={reserve?.is_departed}
                     status={status}
                     consts={consts?.[consts.common.tabCodes.tab_basic_info]}
                     customFields={

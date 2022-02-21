@@ -15,8 +15,10 @@ class IndexResource extends JsonResource
     public function toArray($request)
     {
         return [
+            "hash_id" => $this->getRouteKey(),
             "control_number" => $this->control_number,
             "name" => $this->name,
+            "departed_status_label" => "催行完了",
             "departure_date" => $this->departure_date,
             "return_date" => $this->return_date,
             "participant_type" => $this->participant_type,
@@ -35,7 +37,8 @@ class IndexResource extends JsonResource
                 'val' => $this->travel_types->isNotEmpty() ? $this->travel_types[0]->val : null
             ],
             "status" => [ // 予約ステータス
-                'val' => $this->statuses->isNotEmpty() ? $this->statuses[0]->val : null
+                // 'val' => $this->statuses->isNotEmpty() ? $this->statuses[0]->val : null
+                'val' => optional($this->status)->val,
             ],
             "application_date" => [ // 申込日
                 'val' => $this->application_dates->isNotEmpty() ? $this->application_dates[0]->val : null

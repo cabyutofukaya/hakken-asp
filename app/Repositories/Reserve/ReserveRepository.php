@@ -35,8 +35,9 @@ class ReserveRepository implements ReserveRepositoryInterface
      */
     public function findByEstimateNumber(string $estimateNumber, int $agencyId, array $with = [], array $select = [], bool $getDeleted = false) : ?Reserve
     {
-        $query = $this->reserve->draft(); // スコープは未予約確定
-
+        // $query = $this->reserve->draft(); // スコープは未予約確定 → 予約確定後のページで本メソッドを実行するケースがあるので、予約確定後のデータにもアクセスできるようにdraftスコープは一旦外し
+        $query = $this->reserve;
+        
         $query = $select ? $query->select($select) : $query;
         $query = $with ? $query->with($with) : $query;
         $query = $getDeleted ? $query->withTrashed() : $query;
@@ -53,26 +54,8 @@ class ReserveRepository implements ReserveRepositoryInterface
      */
     public function findByControlNumber(string $controlNumber, int $agencyId, array $with = [], array $select = [], bool $getDeleted = false) : ?Reserve
     {
-        $query = $this->reserve->reserve(); // スコープは"予約"
-
-        $query = $select ? $query->select($select) : $query;
-        $query = $with ? $query->with($with) : $query;
-        $query = $getDeleted ? $query->withTrashed() : $query;
-
-        return $query
-                ->where('control_number', $controlNumber)
-                ->where('agency_id', $agencyId)
-                ->firstOrFail();
-    }
-
-    /**
-     * 予約番号から催行済データを1件取得
-     *
-     */
-    public function findByDepartedNumber(string $controlNumber, int $agencyId, array $with = [], array $select = [], bool $getDeleted = false) : ?Reserve
-    {
-        $query = $this->reserve->departed(); // スコープは"催行済"
-
+        // $query = $this->reserve->reserve(); // スコープは"予約" → 催行済のデータにもアクセスできるようにdraftスコープは一旦外し
+        $query = $this->reserve;
         $query = $select ? $query->select($select) : $query;
         $query = $with ? $query->with($with) : $query;
         $query = $getDeleted ? $query->withTrashed() : $query;
@@ -96,8 +79,6 @@ class ReserveRepository implements ReserveRepositoryInterface
             $query = $this->reserve->reserve();
         } elseif ($applicationStep === config('consts.reserves.APPLICATION_STEP_DRAFT')) { // 見積データ対象
             $query = $this->reserve->draft();
-        } elseif ($applicationStep === config('consts.reserves.APPLICATION_STEP_DEPARTED')) { // 催行済みデータ対象
-            $query = $this->reserve->departed();
         } else {
             $query = $this->reserve;
         }

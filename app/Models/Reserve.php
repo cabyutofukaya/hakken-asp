@@ -33,6 +33,7 @@ class Reserve extends Model
         'sum_deposit',
         'sum_not_deposit',
         'hash_id', // ハッシュID
+        'is_departed', // 催行済みか否か
     ];
     
     protected $softCascade = [
@@ -159,7 +160,7 @@ class Reserve extends Model
 
     /**
      * 申込者(検索用)
-     * 
+     *
      * 個人顧客のapplicantableが2段階構造(users → asp_users/web_users)になっており
      * 検索処理が難しいので、予約レコードからasp_users or web_usersを直接参照できるように簡略化したリレーション
      */
@@ -286,18 +287,6 @@ class Reserve extends Model
         return $this->hasMany('App\Models\VReserveCustomValue')->where('flg', true);
     }
 
-    /**
-     * 催行済みか否か
-     */
-    public function is_departed()
-    {
-        return $this->application_step === config('consts.reserves.APPLICATION_STEP_RESERVE') && (
-            (
-                !is_null($this->return_date) && date('Y-m-d', strtotime($this->return_date)) < date('Y-m-d')
-            ) || !is_null($this->cancel_at)
-        );
-    }
-
     ////////////////// カスタム項目 ここから ////////////////////
 
     /**
@@ -323,6 +312,7 @@ class Reserve extends Model
 
     /**
      * ステータスを取得（有効な項目のみ対象 flg=1）
+     * TODO このメソッドは削除予定(statusへ移行)
      */
     public function statuses()
     {
@@ -343,6 +333,7 @@ class Reserve extends Model
 
     /**
      * 見積ステータスを取得（有効な項目のみ対象 flg=1）
+     * TODO このメソッドは削除予定(estimate_statusへ移行)
      */
     public function estimate_statuses()
     {
@@ -430,6 +421,16 @@ class Reserve extends Model
     public function getHashIdAttribute($value) : string
     {
         return $this->getRouteKey();
+    }
+
+    /**
+     * 催行済みの場合はtrue
+     *
+     * この条件を変える場合は 「scopeDeparted」 も変更のこと
+     */
+    public function getIsDepartedAttribute($value) : bool
+    {
+        return $this->application_step == config('consts.reserves.APPLICATION_STEP_RESERVE') && date('Y-m-d', strtotime($this->return_date)) < date('Y-m-d');
     }
 
     // 見積/予約/依頼番号
@@ -523,7 +524,7 @@ class Reserve extends Model
     public function statusSortable($query, $direction)
     {
         return $query->select('reserves.*')
-            ->leftJoin('v_reserve_custom_values', function($join){
+            ->leftJoin('v_reserve_custom_values', function ($join) {
                 $join->on('reserves.id', '=', 'v_reserve_custom_values.reserve_id')
                     ->where('v_reserve_custom_values.code', config('consts.user_custom_items.CODE_APPLICATION_RESERVE_STATUS'))
                     ->where('v_reserve_custom_values.flg', true);
@@ -536,7 +537,7 @@ class Reserve extends Model
     public function estimateStatusSortable($query, $direction)
     {
         return $query->select('reserves.*')
-            ->leftJoin('v_reserve_custom_values', function($join){
+            ->leftJoin('v_reserve_custom_values', function ($join) {
                 $join->on('reserves.id', '=', 'v_reserve_custom_values.reserve_id')
                     ->where('v_reserve_custom_values.code', config('consts.user_custom_items.CODE_APPLICATION_ESTIMATE_STATUS'))
                     ->where('v_reserve_custom_values.flg', true);
@@ -549,7 +550,7 @@ class Reserve extends Model
     public function travelTypeSortable($query, $direction)
     {
         return $query->select('reserves.*')
-        ->leftJoin('v_reserve_custom_values', function($join){
+        ->leftJoin('v_reserve_custom_values', function ($join) {
             $join->on('reserves.id', '=', 'v_reserve_custom_values.reserve_id')
                 ->where('v_reserve_custom_values.code', config('consts.user_custom_items.CODE_APPLICATION_TRAVEL_TYPE'))
                 ->where('v_reserve_custom_values.flg', true);
@@ -562,7 +563,7 @@ class Reserve extends Model
     public function applicationDateSortable($query, $direction)
     {
         return $query->select('reserves.*')
-            ->leftJoin('v_reserve_custom_values', function($join){
+            ->leftJoin('v_reserve_custom_values', function ($join) {
                 $join->on('reserves.id', '=', 'v_reserve_custom_values.reserve_id')
                     ->where('v_reserve_custom_values.code', config('consts.user_custom_items.CODE_APPLICATION_APPLICATION_DATE'))
                     ->where('v_reserve_custom_values.flg', true);
@@ -575,7 +576,7 @@ class Reserve extends Model
     public function applicationTypeSortable($query, $direction)
     {
         return $query->select('reserves.*')
-            ->leftJoin('v_reserve_custom_values', function($join){
+            ->leftJoin('v_reserve_custom_values', function ($join) {
                 $join->on('reserves.id', '=', 'v_reserve_custom_values.reserve_id')
                     ->where('v_reserve_custom_values.code', config('consts.user_custom_items.CODE_APPLICATION_TYPE'))
                     ->where('v_reserve_custom_values.flg', true);
@@ -588,7 +589,7 @@ class Reserve extends Model
     public function webOnlineScheduleSortable($query, $direction)
     {
         return $query->select('reserves.*')
-            ->leftJoin('web_online_schedules', function($join){
+            ->leftJoin('web_online_schedules', function ($join) {
                 $join->on('reserves.id', '=', 'web_online_schedules.reserve_id')->whereNull('web_online_schedules.deleted_at');
             })->orderBy('web_online_schedules.consult_date', $direction);
     }
@@ -661,7 +662,11 @@ class Reserve extends Model
 
     /**
      * 催行済みレコード
-     * 条件: 申込段階(application_step)は「予約」で、帰着日が本日を過ぎている、もしくはキャンセル状態
+     *
+     * この条件を変える場合は 「getIsDepartedAttribute」 も変更のこと
+     *
+     * 条件:
+     * 申込段階(application_step)が「予約」且つ、帰着日が本日を過ぎている
      *
      * @param $query
      * @return mixed
@@ -669,11 +674,7 @@ class Reserve extends Model
     public function scopeDeparted($query)
     {
         return $query
-            ->where('application_step', config('consts.reserves.APPLICATION_STEP_RESERVE'))
-            ->where(function ($q) {
-                $q->where('return_date', '<', date('Y-m-d'))
-                    ->orWhereNotNull('cancel_at');
-            });
+            ->where('application_step', config('consts.reserves.APPLICATION_STEP_RESERVE'))->where('return_date', '<', date('Y-m-d'));
     }
 
     //////////////////// ローカルスコープ ここまで /////////////////////////

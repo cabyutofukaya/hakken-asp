@@ -36,9 +36,10 @@ class DepartedController extends Controller
      *
      * @param string $controlNumber 予約番号
      */
-    public function show($agencyAccount, $controlNumber)
+    public function show(string $agencyAccount, string $controlNumber)
     {
-        $reserve = $this->departedService->findByDepartedNumber($controlNumber, $agencyAccount);
+        // departedServiceを介するため$reserveは催行済みレコード
+        $reserve = $this->departedService->findByControlNumber($controlNumber, $agencyAccount);
 
         // 認可チェック
         $response = \Gate::inspect('view', [$reserve]);
@@ -46,7 +47,12 @@ class DepartedController extends Controller
             abort(403);
         }
 
-        return view('staff.departed.show', compact('reserve'));
+        // 申し込み種別に合わせてviewを変える
+        if ($reserve->reception_type == config('consts.reserves.RECEPTION_TYPE_ASP')) { // ASP受付
+            return view('staff.reserve.show', compact('reserve'));
+        } elseif ($reserve->reception_type == config('consts.reserves.RECEPTION_TYPE_WEB')) { // WEB受付
+            return view('staff.web.reserve.show', compact('reserve'));
+        }
+        abort(404);
     }
-
 }

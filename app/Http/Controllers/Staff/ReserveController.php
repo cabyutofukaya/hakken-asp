@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers\Staff;
 
-use App\Events\UpdatedReserveEvent;
 use App\Events\ReserveChangeHeadcountEvent;
 use App\Events\ReserveChangeRepresentativeEvent;
 use App\Events\ReserveEvent;
+use App\Events\UpdatedReserveEvent;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Staff\ReserveStoretRequest;
 use App\Http\Requests\Staff\ReserveUpdateRequest;
 use App\Models\Reserve;
-use App\Services\ReserveService;
 use App\Services\ReserveInvoiceService;
+use App\Services\ReserveService;
+use App\Traits\ReserveControllerTrait;
 use DB;
 use Exception;
 use Gate;
@@ -20,6 +21,8 @@ use Log;
 
 class ReserveController extends AppController
 {
+    use ReserveControllerTrait;
+
     public function __construct(ReserveService $reserveService, ReserveInvoiceService $reserveInvoiceService)
     {
         $this->reserveService = $reserveService;
@@ -51,6 +54,9 @@ class ReserveController extends AppController
         if (!$response->allowed()) {
             abort(403);
         }
+
+        // 催行済みの場合は転送
+        $this->checkReserveState($agencyAccount, $reserve);
 
         return view('staff.reserve.show', compact('reserve'));
     }
@@ -102,7 +108,11 @@ class ReserveController extends AppController
             });
 
             if ($reserve) {
-                return redirect()->route('staff.asp.estimates.reserve.index', [$agencyAccount])->with('success_message', "「{$reserve->control_number}」を登録しました");
+                if ($reserve->is_departed) { // 催行済の場合は催行一覧へ
+                    return redirect(route('staff.estimates.departed.index', [$agencyAccount]))->with('success_message', "「{$reserve->control_number}」を登録しました");
+                } else {
+                    return redirect()->route('staff.asp.estimates.reserve.index', [$agencyAccount])->with('success_message', "「{$reserve->control_number}」を登録しました");
+                }
             }
         } catch (Exception $e) {
             Log::error($e);
@@ -125,6 +135,9 @@ class ReserveController extends AppController
             abort(403);
         }
 
+        // 催行済みの場合は転送
+        $this->checkReserveState($agencyAccount, $reserve);
+
         return view('staff.reserve.edit', compact('reserve'));
     }
 
@@ -141,6 +154,9 @@ class ReserveController extends AppController
             return $this->forbiddenRedirect($response->message());
         }
 
+        // 催行済みの場合は転送
+        $this->checkReserveState($agencyAccount, $reserve);
+
         $input = $request->all();
         try {
             $updatedReserve = DB::transaction(function () use ($reserve, $agencyAccount, $input) {
@@ -152,7 +168,11 @@ class ReserveController extends AppController
             });
 
             if ($updatedReserve) {
-                return redirect()->route('staff.asp.estimates.reserve.index', [$agencyAccount])->with('success_message', "「{$updatedReserve->control_number}」を更新しました");
+                if ($updatedReserve->is_departed) { // 催行済の場合は催行一覧へ
+                    return redirect(route('staff.estimates.departed.index', [$agencyAccount]))->with('success_message', "「{$updatedReserve->control_number}」を更新しました");
+                } else {
+                    return redirect()->route('staff.asp.estimates.reserve.index', [$agencyAccount])->with('success_message', "「{$updatedReserve->control_number}」を更新しました");
+                }
             }
         } catch (ExclusiveLockException $e) { // 同時編集エラー
             return back()->withInput()->with('error_message', "他のユーザーによる編集済みレコードです。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");

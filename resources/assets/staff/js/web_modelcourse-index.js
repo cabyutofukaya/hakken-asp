@@ -264,12 +264,12 @@ const ModelcourseList = ({ myId }) => {
                             >
                                 <span>作成者</span>
                             </th>
-                            <th
+                            {/* <th
                                 className="sort"
                                 onClick={e => handleSortClick("price_per_ad")}
                             >
                                 <span>料金</span>
-                            </th>
+                            </th> */}
                             <th
                                 className="sort"
                                 onClick={e => handleSortClick("updated_at")}
@@ -290,7 +290,7 @@ const ModelcourseList = ({ myId }) => {
                     <tbody>
                         {isLoading && (
                             <tr>
-                                <td colSpan={11}>
+                                <td colSpan={10}>
                                     <ReactLoading
                                         type={"bubbles"}
                                         color={"#dddddd"}
@@ -300,7 +300,7 @@ const ModelcourseList = ({ myId }) => {
                         )}
                         {!isLoading && courses.length === 0 && (
                             <tr>
-                                <td colSpan={11}>
+                                <td colSpan={10}>
                                     モデルコースデータはありません
                                 </td>
                             </tr>
@@ -338,7 +338,7 @@ const ModelcourseList = ({ myId }) => {
                                         name={row?.author?.name}
                                         isDeleted={row?.author?.is_deleted}
                                     />
-                                    <td>
+                                    {/* <td>
                                         大人1名￥
                                         {(
                                             row.price_per_ad ?? 0
@@ -347,7 +347,7 @@ const ModelcourseList = ({ myId }) => {
                                         {(
                                             row.price_per_ch ?? 0
                                         ).toLocaleString()}
-                                    </td>
+                                    </td> */}
                                     <td>
                                         {moment(row.updated_at).format(
                                             "YYYY/MM/DD"

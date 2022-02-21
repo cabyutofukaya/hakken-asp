@@ -3,7 +3,11 @@ rm /var/www/html/appspec.yml
 rm -rf /var/www/html/scripts
 
 #.envをS3からコピー
+if [ "$APPLICATION_NAME" == "hakkenasp-dev-deploy" ]; then
 aws s3 cp s3://hakken-develop/asp/.env /var/www/html/.env
+elif [ "$APPLICATION_NAME" == "hakkenasp-prod-deploy" ]; then
+aws s3 cp s3://hakken-product/asp/.env /var/www/html/.env
+fi
 
 mkdir -p /var/www/html/storage/app/tmp
 

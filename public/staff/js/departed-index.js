@@ -32906,7 +32906,7 @@ var DepartedList = function DepartedList(_ref) {
             case 4:
               setIsDeleting(true);
               _context2.next = 7;
-              return axios["delete"]("/api/".concat(agencyAccount, "/reserve/").concat(deleteNumber))["finally"](function () {
+              return axios["delete"]("/api/".concat(agencyAccount, "/departed/").concat(deleteNumber))["finally"](function () {
                 $(".js-modal-close").trigger("click"); // 削除モーダルclose
 
                 setTimeout(function () {
@@ -32956,10 +32956,7 @@ var DepartedList = function DepartedList(_ref) {
     onClick: function onClick(e) {
       return handleSortClick("control_number");
     }
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", null, "\u4E88\u7D04\u756A\u53F7")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("th", {
-    className: "sort" // onClick={e => handleSortClick("status")}
-
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", null, "\u72B6\u6CC1")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("th", {
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", null, "\u4E88\u7D04\u756A\u53F7")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("th", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", null, "\u72B6\u6CC1")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("th", {
     className: "sort",
     onClick: function onClick(e) {
       return handleSortClick("departure_date");
@@ -32995,7 +32992,7 @@ var DepartedList = function DepartedList(_ref) {
       return handleSortClick("travel_type");
     }
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", null, "\u65C5\u884C\u7A2E\u5225")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("th", {
-    "class": "sort"
+    className: "sort"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", null, "\u7533\u8FBC\u7A2E\u5225")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("th", {
     className: "sort",
     onClick: function onClick(e) {
@@ -33016,13 +33013,19 @@ var DepartedList = function DepartedList(_ref) {
   }))), !isLoading && lists.length === 0 && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("tr", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", {
     colSpan: 14
   }, "\u50AC\u884C\u6E08\u307F\u30C7\u30FC\u30BF\u306F\u3042\u308A\u307E\u305B\u3093")), !isLoading && lists.length > 0 && lists.map(function (row, index) {
-    var _row$control_number, _row$departure_date, _row$return_date, _row$departure$name, _row$destination$name, _row$applicant$name, _row$representative$s, _row$name, _row$travel_type$val, _row$manager, _row$manager2, _row$application_date;
+    var _row$control_number, _row$departed_status_, _row$departure_date, _row$return_date, _row$departure$name, _row$destination$name, _row$applicant$name, _row$representative$s, _row$name, _row$travel_type$val, _row$manager, _row$manager2, _row$application_date;
 
     return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("tr", {
       key: index
     }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("a", {
       href: "/".concat(agencyAccount, "/estimates/departed/").concat(row === null || row === void 0 ? void 0 : row.control_number)
-    }, (_row$control_number = row.control_number) !== null && _row$control_number !== void 0 ? _row$control_number : "-")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", null, "\u72B6\u6CC1"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", null, (_row$departure_date = row.departure_date) !== null && _row$departure_date !== void 0 ? _row$departure_date : "-"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", null, (_row$return_date = row.return_date) !== null && _row$return_date !== void 0 ? _row$return_date : "-"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", null, (_row$departure$name = row.departure.name) !== null && _row$departure$name !== void 0 ? _row$departure$name : "-"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", null, (_row$destination$name = row.destination.name) !== null && _row$destination$name !== void 0 ? _row$destination$name : "-"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", {
+    }, (_row$control_number = row.control_number) !== null && _row$control_number !== void 0 ? _row$control_number : "-")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", {
+      className: "txtalc"
+    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", {
+      className: classnames__WEBPACK_IMPORTED_MODULE_10___default()("status", {
+        gray: (row === null || row === void 0 ? void 0 : row.departed_status_label) === "催行完了"
+      })
+    }, (_row$departed_status_ = row.departed_status_label) !== null && _row$departed_status_ !== void 0 ? _row$departed_status_ : "-")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", null, (_row$departure_date = row.departure_date) !== null && _row$departure_date !== void 0 ? _row$departure_date : "-"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", null, (_row$return_date = row.return_date) !== null && _row$return_date !== void 0 ? _row$return_date : "-"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", null, (_row$departure$name = row.departure.name) !== null && _row$departure$name !== void 0 ? _row$departure$name : "-"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", null, (_row$destination$name = row.destination.name) !== null && _row$destination$name !== void 0 ? _row$destination$name : "-"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", {
       className: classnames__WEBPACK_IMPORTED_MODULE_10___default()({
         txcGray: row.applicant.is_deleted
       })
@@ -33041,7 +33044,7 @@ var DepartedList = function DepartedList(_ref) {
       }),
       "data-target": "mdDelete",
       onClick: function onClick() {
-        setDeleteNumber(row === null || row === void 0 ? void 0 : row.control_number);
+        setDeleteNumber(row === null || row === void 0 ? void 0 : row.hash_id);
       }
     }, "delete")));
   }))), lastPage > 1 && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_components_PageNation__WEBPACK_IMPORTED_MODULE_4__["default"], {

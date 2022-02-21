@@ -38,8 +38,9 @@ class WebReserveRepository implements WebReserveRepositoryInterface
      */
     public function findByRequestNumber(string $requestNumber, int $agencyId, array $with = [], array $select = [], bool $getDeleted = false) : Reserve
     {
-        $query = $this->reserve->draft(); // スコープは予約確定前
-
+        // $query = $this->reserve->draft(); // スコープは予約確定前 → 予約確定後のページで本メソッドを実行するケースがあるので、予約確定後のデータにもアクセスできるようにdraftスコープは一旦外し
+        
+        $query = $this->reserve;
         $query = $select ? $query->select($select) : $query;
         $query = $with ? $query->with($with) : $query;
         $query = $getDeleted ? $query->withTrashed() : $query;
@@ -56,8 +57,9 @@ class WebReserveRepository implements WebReserveRepositoryInterface
      */
     public function findByEstimateNumber(string $estimateNumber, int $agencyId, array $with = [], array $select = [], bool $getDeleted = false) : Reserve
     {
-        $query = $this->reserve->draft(); // スコープは予約確定前
+        // $query = $this->reserve->draft(); // スコープは予約確定前 → 予約確定後のページで本メソッドを実行するケースがあるので、予約確定後のデータにもアクセスできるようにdraftスコープは一旦外し
 
+        $query = $this->reserve;
         $query = $select ? $query->select($select) : $query;
         $query = $with ? $query->with($with) : $query;
         $query = $getDeleted ? $query->withTrashed() : $query;
@@ -74,7 +76,8 @@ class WebReserveRepository implements WebReserveRepositoryInterface
      */
     public function findByControlNumber(string $controlNumber, int $agencyId, array $with = [], array $select = [], bool $getDeleted = false) : ?Reserve
     {
-        $query = $this->reserve->reserve(); // スコープは"予約"
+        // $query = $this->reserve->reserve(); // スコープは"予約" → 催行済のデータにもアクセスできるようにdraftスコープは一旦外し
+        $query = $this->reserve;
 
         $query = $select ? $query->select($select) : $query;
         $query = $with ? $query->with($with) : $query;

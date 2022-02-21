@@ -35,7 +35,7 @@
         <button class="grayBtn" onClick="event.preventDefault();history.back()"><span class="material-icons">arrow_back_ios</span>更新せずに戻る</button>
       </li>
       <li class="wd50">
-        <button class="blueBtn">
+        <button class="blueBtn doubleBan">
           <span class="material-icons">save</span> この内容で更新する
         </button>
       </li>

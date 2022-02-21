@@ -17,6 +17,7 @@ Route::pattern('applicationStep', 'normal|reserve');
 Route::pattern('controlNumber', '[0-9A-Z\-]+');
 Route::pattern('courseNo', 'MD[0-9]{4}');
 
+Route::get('/', 'Staff\DefaultController@index');
 
 // スタッフ（旅行会社）
 Route::domain(env('STAFF_DOMAIN', 'asp.hakken-tour.com'))->namespace('Staff')->name('staff.')->prefix('{agencyAccount}')->group(function () {
@@ -76,14 +77,6 @@ Route::domain(env('STAFF_DOMAIN', 'asp.hakken-tour.com'))->namespace('Staff')->n
 
             });
 
-            // 催行済み
-            Route::prefix('departed')->name('departed.')->group(function () {
-                Route::get('index', 'DepartedController@index')->name('index'); // 一覧
-                Route::get('/{reserveNumber}', 'DepartedController@show')->name('show'); // 表示
-
-            });
-            
-
             // 旅程管理
             Route::get('/{applicationStep}/{controlNumber}/itinerary/create', 'ReserveItineraryController@create')->name('itinerary.create'); // 作成画面
             Route::post('/{applicationStep}/{controlNumber}/itinerary', 'ReserveItineraryController@store')->name('itinerary.store'); // 作成処理
@@ -101,6 +94,11 @@ Route::domain(env('STAFF_DOMAIN', 'asp.hakken-tour.com'))->namespace('Staff')->n
 
         });
 
+        // 催行済み
+        Route::prefix('estimates/departed')->name('estimates.departed.')->group(function () {
+            Route::get('index', 'DepartedController@index')->name('index'); // 一覧
+            Route::get('/{reserveNumber}', 'DepartedController@show')->name('show'); // 表示
+        });
 
         // 顧客管理
         Route::prefix('client')->name('client.')->group(function () {
