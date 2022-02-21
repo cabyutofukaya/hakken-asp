@@ -17,6 +17,7 @@ Route::pattern('applicationStep', 'normal|reserve');
 Route::pattern('controlNumber', '[0-9A-Z\-]+');
 Route::pattern('courseNo', 'MD[0-9]{4}');
 
+Route::get('/', 'Staff\DefaultController@index');
 
 // スタッフ（旅行会社）
 Route::domain(env('STAFF_DOMAIN', 'asp.hakken-tour.com'))->namespace('Staff')->name('staff.')->prefix('{agencyAccount}')->group(function () {
