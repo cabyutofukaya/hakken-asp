@@ -240,7 +240,8 @@ class ShowFormComposer
                     'estimates_custom' => config('consts.user_custom_items.POSITION_APPLICATION_CUSTOM_FIELD'),//カスタムフィールド
                 ],
                 'determineUrl' => $applicationStep === config('consts.reserves.APPLICATION_STEP_DRAFT') ? route('staff.api.asp.estimate.determine', [$agencyAccount,$reserve->estimate_number]) : null, // 見積決定URL
-                'afterDetermineRedirectUrl' => route('staff.asp.estimates.reserve.index', [$agencyAccount]), // 見積決定後の転送URL
+                'reserveIndexUrl' => $reserveIndexUrl, // 予約一覧URL
+                'departedIndexUrl' => $departedIndexUrl, // 催行済み一覧URL
                 'reserveEditUrl' => $applicationStep === config('consts.reserves.APPLICATION_STEP_RESERVE') ? route('staff.asp.estimates.reserve.edit', [$agencyAccount,$reserve->control_number]) : null,
                 'estimateEditUrl' => $applicationStep === config('consts.reserves.APPLICATION_STEP_DRAFT') ? route('staff.asp.estimates.normal.edit', [$agencyAccount,$reserve->estimate_number]) : null,
             ],

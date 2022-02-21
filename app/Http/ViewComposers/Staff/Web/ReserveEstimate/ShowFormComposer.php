@@ -247,7 +247,8 @@ class ShowFormComposer
                 // 編集URL(予約前)
                 'estimateEditUrl' => $applicationStep === config('consts.reserves.APPLICATION_STEP_DRAFT') ? route('staff.web.estimates.normal.edit', [$agencyAccount,$reserve->estimate_number]) : null,
                 'determineUrl' => route('staff.api.web.estimate.determine', [$agencyAccount, $reserve->estimate_number]), // 見積決定URL
-                'afterDetermineRedirectUrl' => route('staff.web.estimates.reserve.index', [$agencyAccount]), // 見積決定後の転送URL
+                'reserveIndexUrl' => $reserveIndexUrl, // 予約一覧URL
+                'departedIndexUrl' => $departedIndexUrl, // 催行済み一覧URL
             ],
             // 詳細
             config('consts.reserves.TAB_RESERVE_DETAIL') =>

@@ -3,16 +3,22 @@ import { ConstContext } from "../ConstApp";
 import { useMountedRef } from "../../../../hooks/useMountedRef";
 import classNames from "classnames";
 
+// 帰着日が過去の場合はtrue
+const isDeparted = returnDate => {
+    const dt = new Date();
+    const rd = new Date(`${returnDate} 23:59:59`);
+    return dt.getTime() > rd.getTime();
+};
+
 const DetermineModal = ({
     id,
     estimate,
     isConfirming,
     setIsConfirming,
     determineUrl,
-    afterDetermineRedirectUrl
+    reserveIndexUrl,
+    departedIndexUrl
 }) => {
-    const { agencyAccount } = useContext(ConstContext);
-    console.log(determineUrl);
     const mounted = useMountedRef(); // マウント・アンマウント制御
 
     // 「予約に変更する」ボタン押下処理
@@ -43,8 +49,26 @@ const DetermineModal = ({
 
         if (mounted.current && response?.status == 200) {
             // ページ遷移
-            location.href = afterDetermineRedirectUrl;
+            if (isDeparted(estimate?.return_date)) {
+                // 帰着日が過去の場合は催行済一覧へ遷移
+                location.href = departedIndexUrl;
+            } else {
+                location.href = reserveIndexUrl;
+            }
         }
+    };
+
+    // 帰着日が過去の場合は注意文を表示
+    const ReturnDateWarning = ({ returnDate }) => {
+        if (isDeparted(returnDate)) {
+            return (
+                <>
+                    <br />
+                    <small>※帰着日が過去の日付のため催行済みに移動します</small>
+                </>
+            );
+        }
+        return null;
     };
 
     return (
@@ -59,7 +83,10 @@ const DetermineModal = ({
                 })}
             ></div>
             <div className="modal__content">
-                <p className="mdTit mb20">この見積を予約確定しますか？</p>
+                <p className="mdTit mb20">
+                    この見積を予約確定しますか？
+                    <ReturnDateWarning returnDate={estimate?.return_date} />
+                </p>
                 <ul className="sideList">
                     <li className="wd50">
                         <button
