@@ -24,10 +24,9 @@ class IndexResource extends JsonResource
                 $request->agencyAccount, optional($this->reserve)->estimate_number ?? ''
             ]) . "?tab=" . config('consts.reserves.TAB_CONSULTATION');
         } elseif (optional($this->reserve)->application_step == config('consts.reserves.APPLICATION_STEP_RESERVE')) { // 予約
-            // TODO ↓予約ページ実装後、コメント解除
-            // $infoUrl = route('staff.web.estimates.reserve.show', [
-            //     $request->agencyAccount, optional($this->reserve)->control_number ?? ''
-            // ]) . "?tab=" . config('consts.reserves.TAB_CONSULTATION');
+            $infoUrl = route('staff.web.estimates.reserve.show', [
+                $request->agencyAccount, optional($this->reserve)->control_number ?? ''
+            ]) . "?tab=" . config('consts.reserves.TAB_CONSULTATION');
         }
 
         // ステータス。見積or予約で取得リレーションを切り替え
