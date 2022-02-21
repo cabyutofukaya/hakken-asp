@@ -14,11 +14,32 @@ class IndexResource extends JsonResource
      */
     public function toArray($request)
     {
+        // 催行済を表すパラメータ
+        $departedQuery = $this->reserve->is_departed ? sprintf('?%s=1', config('consts.const.DEPARTED_QUERY')) : '';
+
         $controlNumber = null; // 予約or見積番号
         if ($this->reserve->application_step == config("consts.reserves.APPLICATION_STEP_DRAFT")) { // 見積
             $controlNumber = $this->reserve->estimate_number;
         } elseif ($this->reserve->application_step == config("consts.reserves.APPLICATION_STEP_RESERVE")) { // 予約
             $controlNumber = $this->reserve->control_number;
+        }
+
+        // 編集URL
+        $editUrl = null;
+        if ($this->reserve->reception_type == config('consts.reserves.RECEPTION_TYPE_ASP')) {
+            $editUrl = route('staff.asp.estimates.itinerary.edit', [
+                $request->agencyAccount,
+                $this->reserve->application_step,
+                $controlNumber,
+                $this->control_number
+            ]) . $departedQuery;
+        } elseif ($this->reserve->reception_type == config('consts.reserves.RECEPTION_TYPE_WEB')) {
+            $editUrl = route('staff.web.estimates.itinerary.edit', [
+                $request->agencyAccount,
+                $this->reserve->application_step,
+                $controlNumber,
+                $this->control_number
+            ]) . $departedQuery;
         }
 
         // 行程PDF
@@ -48,7 +69,6 @@ class IndexResource extends JsonResource
                 $controlNumber, // 見積or予約番号
                 $this->control_number
             ]) : null; // 有効な宿泊科目情報がある場合はURLを返す
-
         } elseif ($this->reserve->reception_type == config('consts.reserves.RECEPTION_TYPE_WEB')) {
             $roomListUrl = $this->reserve_participant_hotel_prices->where('valid', true)->count() > 0 ? route('staff.web.estimates.itinerary_roominglist.pdf', [
                 $this->reserve->agency->account,
@@ -56,17 +76,16 @@ class IndexResource extends JsonResource
                 $controlNumber, // 見積or予約番号
                 $this->control_number
             ]) : null; // 有効な宿泊科目情報がある場合はURLを返す
-
         }
 
         return [
             "control_number" => $this->control_number,
-            "estimate_number" => $this->estimate_number,
             "enabled" => $this->enabled,
             "note" => mb_strimwidth($this->note, 0, 30, "..."),
             "sum_gross" => $this->sum_gross,
             "sum_net" => $this->sum_net,
             "sum_gross_profit" => $this->sum_gross_profit,
+            "edit_url" => $editUrl,
             "pdf_url" => $pdfUrl,
             "room_list_url" => $roomListUrl,
             "updated_at" => $this->updated_at->format('Y/m/d H:i:s'),

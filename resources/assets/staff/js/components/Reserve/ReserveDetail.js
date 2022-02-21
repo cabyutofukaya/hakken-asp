@@ -14,6 +14,7 @@ const ReserveDetail = ({
     defaultValue,
     formSelects,
     consts,
+    constsCommon,
     permission
 }) => {
     // 現在、有効化中の行程番号
@@ -80,6 +81,7 @@ const ReserveDetail = ({
                 hasOriginalDocumentQuoteTemplate={
                     consts?.hasOriginalDocumentQuoteTemplate
                 }
+                constsCommon={constsCommon}
             />
             {permission.management_read && (
                 <AccountPayableArea

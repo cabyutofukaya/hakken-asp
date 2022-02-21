@@ -38580,31 +38580,29 @@ var getListApiUrl = function getListApiUrl(reception, step, types, agencyAccount
       return null;
   }
 };
+/**
+ *
+ * @param {*} reception
+ * @param {*} step
+ * @param {*} types
+ * @param {*} agencyAccount
+ * @param {*} estimateNumber
+ * @param {*} reserveNumber
+ * @param {*} itineraryNumber
+ * @param {*} departedQuery 催行済みの場合に付与するgetクエリ
+ * @returns
+ */
 
-var getCreateApiUrl = function getCreateApiUrl(reception, step, types, agencyAccount, estimateNumber, reserveNumber, itineraryNumber) {
+
+var getCreateApiUrl = function getCreateApiUrl(reception, step, types, agencyAccount, estimateNumber, reserveNumber, itineraryNumber, departedQuery) {
   switch (step) {
     case types.application_step_draft:
       // 見積
-      return "/".concat(agencyAccount, "/estimates/").concat(reception, "/").concat(step, "/").concat(estimateNumber, "/itinerary/").concat(itineraryNumber, "/confirm");
+      return "/".concat(agencyAccount, "/estimates/").concat(reception, "/").concat(step, "/").concat(estimateNumber, "/itinerary/").concat(itineraryNumber, "/confirm").concat(departedQuery);
 
     case types.application_step_reserve:
       // 予約
-      return "/".concat(agencyAccount, "/estimates/").concat(reception, "/").concat(step, "/").concat(reserveNumber, "/itinerary/").concat(itineraryNumber, "/confirm");
-
-    default:
-      return null;
-  }
-};
-
-var getEditApiUrl = function getEditApiUrl(reception, step, types, agencyAccount, estimateNumber, reserveNumber, itineraryNumber, confirmNumber) {
-  switch (step) {
-    case types.application_step_draft:
-      // 見積
-      return "/".concat(agencyAccount, "/estimates/").concat(reception, "/").concat(step, "/").concat(estimateNumber, "/itinerary/").concat(itineraryNumber, "/confirm/").concat(confirmNumber, "/edit");
-
-    case types.application_step_reserve:
-      // 予約
-      return "/".concat(agencyAccount, "/estimates/").concat(reception, "/").concat(step, "/").concat(reserveNumber, "/itinerary/").concat(itineraryNumber, "/confirm/").concat(confirmNumber, "/edit");
+      return "/".concat(agencyAccount, "/estimates/").concat(reception, "/").concat(step, "/").concat(reserveNumber, "/itinerary/").concat(itineraryNumber, "/confirm").concat(departedQuery);
 
     default:
       return null;
@@ -38627,6 +38625,8 @@ var getDeleteApiUrl = function getDeleteApiUrl(reception, step, types, agencyAcc
 };
 
 var DocumentArea = function DocumentArea(_ref) {
+  var _constsCommon$departe;
+
   var isShow = _ref.isShow,
       reception = _ref.reception,
       applicationStep = _ref.applicationStep,
@@ -38634,7 +38634,8 @@ var DocumentArea = function DocumentArea(_ref) {
       estimateNumber = _ref.estimateNumber,
       reserveNumber = _ref.reserveNumber,
       currentItineraryNumber = _ref.currentItineraryNumber,
-      hasOriginalDocumentQuoteTemplate = _ref.hasOriginalDocumentQuoteTemplate;
+      hasOriginalDocumentQuoteTemplate = _ref.hasOriginalDocumentQuoteTemplate,
+      constsCommon = _ref.constsCommon;
 
   var _useContext = Object(react__WEBPACK_IMPORTED_MODULE_1__["useContext"])(_ConstApp__WEBPACK_IMPORTED_MODULE_2__["ConstContext"]),
       agencyAccount = _useContext.agencyAccount;
@@ -38805,7 +38806,7 @@ var DocumentArea = function DocumentArea(_ref) {
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_1___default.a.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("h2", {
     className: "optTit"
   }, "\u5E33\u7968", hasOriginalDocumentQuoteTemplate && currentItineraryNumber && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("a", {
-    href: getCreateApiUrl(reception, applicationStep, applicationStepList, agencyAccount, estimateNumber, reserveNumber, currentItineraryNumber)
+    href: getCreateApiUrl(reception, applicationStep, applicationStepList, agencyAccount, estimateNumber, reserveNumber, currentItineraryNumber, (_constsCommon$departe = constsCommon === null || constsCommon === void 0 ? void 0 : constsCommon.departedQuery) !== null && _constsCommon$departe !== void 0 ? _constsCommon$departe : "")
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", {
     className: "material-icons"
   }, "add_circle"), "\u8FFD\u52A0")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
@@ -38829,7 +38830,7 @@ var DocumentArea = function DocumentArea(_ref) {
     return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("tr", {
       key: index
     }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("a", {
-      href: currentItineraryNumber ? getEditApiUrl(reception, applicationStep, applicationStepList, agencyAccount, estimateNumber, reserveNumber, currentItineraryNumber, row === null || row === void 0 ? void 0 : row.confirm_number) : "#"
+      href: currentItineraryNumber ? row === null || row === void 0 ? void 0 : row.edit_url : "#"
     }, (_row$confirm_number = row.confirm_number) !== null && _row$confirm_number !== void 0 ? _row$confirm_number : "-")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", null, (_row$title = row.title) !== null && _row$title !== void 0 ? _row$title : "-"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", null, (_row$document_address = (_row$document_address2 = row.document_address) === null || _row$document_address2 === void 0 ? void 0 : _row$document_address2.name) !== null && _row$document_address !== void 0 ? _row$document_address : "-"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", null, "\uFFE5", ((_row$amount_total = row.amount_total) !== null && _row$amount_total !== void 0 ? _row$amount_total : 0).toLocaleString()), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", null, (_row$issue_date = row.issue_date) !== null && _row$issue_date !== void 0 ? _row$issue_date : "-"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", {
       className: "txtalc"
     }, (_row$pdf = row.pdf) !== null && _row$pdf !== void 0 && _row$pdf.id ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("a", {
@@ -39025,21 +39026,6 @@ var getCreateUrl = function getCreateUrl(reception, step, types, agencyAccount, 
     case types.application_step_reserve:
       // 予約
       return "/".concat(agencyAccount, "/estimates/").concat(reception, "/").concat(step, "/").concat(reserveNumber, "/itinerary/create");
-
-    default:
-      return null;
-  }
-};
-
-var getEditUrl = function getEditUrl(reception, step, types, agencyAccount, estimateNumber, reserveNumber, itineraryNumber) {
-  switch (step) {
-    case types.application_step_draft:
-      // 見積
-      return "/".concat(agencyAccount, "/estimates/").concat(reception, "/").concat(step, "/").concat(estimateNumber, "/itinerary/").concat(itineraryNumber, "/edit");
-
-    case types.application_step_reserve:
-      // 予約
-      return "/".concat(agencyAccount, "/estimates/").concat(reception, "/").concat(step, "/").concat(reserveNumber, "/itinerary/").concat(itineraryNumber, "/edit");
 
     default:
       return null;
@@ -39408,7 +39394,7 @@ var ItineraryArea = function ItineraryArea(_ref) {
       href: "#",
       onClick: function onClick(e) {
         e.preventDefault();
-        window.location.href = getEditUrl(reception, applicationStep, applicationStepList, agencyAccount, estimateNumber, reserveNumber, row === null || row === void 0 ? void 0 : row.control_number);
+        window.location.href = row === null || row === void 0 ? void 0 : row.edit_url;
       }
     }, (_row$control_number = row === null || row === void 0 ? void 0 : row.control_number) !== null && _row$control_number !== void 0 ? _row$control_number : "-")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", null, (_row$note = row === null || row === void 0 ? void 0 : row.note) !== null && _row$note !== void 0 ? _row$note : "-"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", null, (_row$created_at = row === null || row === void 0 ? void 0 : row.created_at) !== null && _row$created_at !== void 0 ? _row$created_at : "-"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", null, (_row$updated_at = row === null || row === void 0 ? void 0 : row.updated_at) !== null && _row$updated_at !== void 0 ? _row$updated_at : "-"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", null, "\uFFE5", row.sum_gross.toLocaleString()), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", null, "\uFFE5", row.sum_net.toLocaleString()), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", null, row.sum_gross_profit.toLocaleString(), "(", Object(_libs__WEBPACK_IMPORTED_MODULE_6__["calcProfitRate"])(row.sum_gross_profit, row.sum_gross).toFixed(1), "%)"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", {
       className: "txtalc"
@@ -41266,6 +41252,7 @@ var ReserveDetail = function ReserveDetail(_ref) {
       defaultValue = _ref.defaultValue,
       formSelects = _ref.formSelects,
       consts = _ref.consts,
+      constsCommon = _ref.constsCommon,
       permission = _ref.permission; // 現在、有効化中の行程番号
 
   var _useState = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(null),
@@ -41326,7 +41313,8 @@ var ReserveDetail = function ReserveDetail(_ref) {
     estimateNumber: estimateNumber,
     reserveNumber: reserveNumber,
     currentItineraryNumber: currentItineraryNumber,
-    hasOriginalDocumentQuoteTemplate: consts === null || consts === void 0 ? void 0 : consts.hasOriginalDocumentQuoteTemplate
+    hasOriginalDocumentQuoteTemplate: consts === null || consts === void 0 ? void 0 : consts.hasOriginalDocumentQuoteTemplate,
+    constsCommon: constsCommon
   }), permission.management_read && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_AccountPayableArea__WEBPACK_IMPORTED_MODULE_5__["default"], {
     isShow: isShow,
     reception: "asp",
@@ -42288,6 +42276,7 @@ var ReserveShowArea = function ReserveShowArea(_ref) {
     defaultValue: defaultValue === null || defaultValue === void 0 ? void 0 : defaultValue[consts.common.tabCodes.tab_reserve_detail],
     formSelects: formSelects === null || formSelects === void 0 ? void 0 : formSelects[consts.common.tabCodes.tab_reserve_detail],
     consts: consts === null || consts === void 0 ? void 0 : consts[consts.common.tabCodes.tab_reserve_detail],
+    constsCommon: consts === null || consts === void 0 ? void 0 : consts.common,
     permission: permission.detail
   }), permission.consultation.consultation_read && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_components_Reserve_ConsultationArea__WEBPACK_IMPORTED_MODULE_5__["default"], {
     isShow: currentTab === consts.common.tabCodes.tab_consultation,

@@ -9,6 +9,8 @@ return [
   'AGENCY_CONTRACT_EFFECTIVE_MARGIN' => 60, // 契約期間が切れたあと実際にログイン停止にするまでの余白時間（分）。契約更新プログラムの処理に時間がかる可能性があるため1時間程度を目安に設定
   'END_OF_MONTH' => 32, // 月末を表す定数
 
+  'DEPARTED_QUERY' => 'departed', // 催行済GETパラメータ
+
   // Web相談の応札上限
   'WEB_CONSULT_MAX_UNDERTAKE' => 5,
 
