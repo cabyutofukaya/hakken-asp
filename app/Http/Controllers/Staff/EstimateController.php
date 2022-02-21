@@ -53,9 +53,8 @@ class EstimateController extends AppController
             abort(403);
         }
 
-        if ($reserve->application_step == config('consts.reserves.APPLICATION_STEP_RESERVE')) { // 予約段階に切り替わった場合は転送
-            return redirect(route('staff.asp.estimates.reserve.show', [$agencyAccount, $reserve->control_number]));
-        }
+        // 予約に切り替わった場合は転送
+        $this->checkEstimateState($agencyAccount, $reserve);
 
         return view('staff.estimate.show', compact('reserve'));
     }
@@ -176,5 +175,19 @@ class EstimateController extends AppController
             Log::error($e);
         }
         abort(500);
+    }
+
+    /**
+     * 見積状態をチェックして予約の場合は予約詳細へ転送
+     */
+    public function checkEstimateState(string $agencyAccount, Reserve $reserve)
+    {
+        if ($reserve->application_step == config('consts.reserves.APPLICATION_STEP_RESERVE')) { // 予約段階に切り替わった場合は転送
+            $q = '';
+            if (($qp = request()->query())) { // GETクエリがある場合はパラメータもつけて転送
+                $q = "?" . http_build_query($qp);
+            }
+            return redirect(route('staff.asp.estimates.reserve.show', [$agencyAccount, $reserve->control_number]) . $q)->throwResponse();
+        }
     }
 }

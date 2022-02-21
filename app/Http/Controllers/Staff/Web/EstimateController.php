@@ -53,11 +53,8 @@ class EstimateController extends AppController
             abort(403);
         }
 
-        if ($reserve->application_step == config('consts.reserves.APPLICATION_STEP_RESERVE')) { // 予約段階に切り替わった場合は転送
-            return redirect(route('staff.web.estimates.reserve.show', [$agencyAccount, $reserve->control_number]));
-        } elseif ($reserve->application_step == config('consts.reserves.APPLICATION_STEP_DRAFT')) { // 見積段階に切り替わった場合は転送
-            return redirect(route('staff.web.estimates.normal.show', [$agencyAccount, $reserve->estimate_number]));
-        }
+        // リクエスト状態をチェックして必要に応じて転送処理
+        $this->checkRequestState($agencyAccount, $reserve);
 
         if ($reserve->application_step != config('consts.reserves.APPLICATION_STEP_CONSULT')) {
             abort(404);
@@ -85,9 +82,8 @@ class EstimateController extends AppController
             abort(403);
         }
 
-        if ($reserve->application_step == config('consts.reserves.APPLICATION_STEP_RESERVE')) { // 予約段階に切り替わった場合は転送
-            return redirect(route('staff.web.estimates.reserve.show', [$agencyAccount, $reserve->control_number]));
-        }
+        // 見積状態をチェックして必要に応じて転送処理
+        $this->checkEstimateState($agencyAccount, $reserve);
 
         return view('staff.web.estimate.show', compact('reserve'));
     }
@@ -147,5 +143,37 @@ class EstimateController extends AppController
             \Log::error($e);
         }
         abort(500);
+    }
+
+    /**
+     * リクエスト状態をチェックして必要に応じて見積/予約詳細ページへ転送
+     */
+    public function checkRequestState(string $agencyAccount, Reserve $reserve)
+    {
+        $q = '';
+        if (($qp = request()->query())) { // GETクエリがある場合はパラメータもつけて転送
+            $q = "?" . http_build_query($qp);
+        }
+
+        if ($reserve->application_step == config('consts.reserves.APPLICATION_STEP_RESERVE')) { // 予約段階に切り替わった場合は転送
+            return redirect(route('staff.web.estimates.reserve.show', [$agencyAccount, $reserve->control_number]) . $q)->throwResponse();
+        } elseif ($reserve->application_step == config('consts.reserves.APPLICATION_STEP_DRAFT')) { // 見積段階に切り替わった場合は転送
+            return redirect(route('staff.web.estimates.normal.show', [$agencyAccount, $reserve->estimate_number]). $q)->throwResponse();
+        }
+    }
+
+    /**
+     * 見積状態をチェックして必要に応じて予約詳細ページへ転送
+     */
+    public function checkEstimateState(string $agencyAccount, Reserve $reserve)
+    {
+        $q = '';
+        if (($qp = request()->query())) { // GETクエリがある場合はパラメータもつけて転送
+            $q = "?" . http_build_query($qp);
+        }
+
+        if ($reserve->application_step == config('consts.reserves.APPLICATION_STEP_RESERVE')) { // 予約段階に切り替わった場合は転送
+            return redirect(route('staff.web.estimates.reserve.show', [$agencyAccount, $reserve->control_number]) . $q)->throwResponse();
+        }
     }
 }

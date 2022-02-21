@@ -15,7 +15,11 @@ trait ReserveControllerTrait
     public function checkReserveState(string $agencyAccount, Reserve $reserve)
     {
         if ($reserve->is_departed) {
-            return redirect(route('staff.estimates.departed.show', [$agencyAccount, $reserve->control_number]))->throwResponse();
+            $q = '';
+            if (($qp = request()->query())) { // GETクエリがある場合はパラメータもつけて転送
+                $q = "?" . http_build_query($qp);
+            }
+            return redirect(route('staff.estimates.departed.show', [$agencyAccount, $reserve->control_number]) . $q)->throwResponse();
         }
     }
 }

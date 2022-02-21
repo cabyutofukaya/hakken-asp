@@ -41612,6 +41612,9 @@ var StatusModal = function StatusModal() {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! classnames */ "./node_modules/classnames/index.js");
+/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(classnames__WEBPACK_IMPORTED_MODULE_1__);
+
  // キャンセル・削除ボタン。権限、催行済みか否かの状態により出し分け
 
 var TopControlBox = function TopControlBox(_ref) {
@@ -41628,12 +41631,12 @@ var TopControlBox = function TopControlBox(_ref) {
       return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("ul", {
         className: "estimateControl"
       }, updatePermission && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("li", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
-        className: classNames("grayBtn", {
+        className: classnames__WEBPACK_IMPORTED_MODULE_1___default()("grayBtn", {
           "js-modal-open": !isCanceling
         }),
         "data-target": "mdCxl"
       }, "\u30AD\u30E3\u30F3\u30BB\u30EB")), deletePermission && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("li", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
-        className: classNames("redBtn", {
+        className: classnames__WEBPACK_IMPORTED_MODULE_1___default()("redBtn", {
           "js-modal-open": !isDeleting
         }),
         "data-target": "mdDelete"
