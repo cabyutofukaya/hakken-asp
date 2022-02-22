@@ -28,7 +28,7 @@
   @include('staff.common.decline_message')
   @include('staff.common.error_message')
 
-  <form method="post" action="{{ route('staff.system.user.update', [$agencyAccount, $staff->account]) }}">
+  <form method="post" action="{{ route('staff.system.user.update', [$agencyAccount, $staff->account]) }}" id="staffForm">
     @method('PUT')
     @csrf
 
@@ -59,5 +59,24 @@
     </ul>
   </form>
 </main>
+
+<script>
+$(function(){
+  // 自身のパスワードを変更すると一度ログアウトするので注意を促す
+  if('{{ $staff->account }}' == '{{ auth('staff')->user()->account }}'){
+    $('#staffForm').submit(function(){
+    if($('[name=password]').val() && $('[name=password_confirmation]').val()){
+      if(confirm("ご自身のパスワードを変更すると一旦ログアウトします。\nよろしいですか?")){
+          return true;
+        }else{
+          $("form .doubleBan").css("pointer-events", "auto"); // 二重送信防止class除去
+          return false;
+        }
+      }
+      return true;
+    });
+  }
+});
+</script>
 <script src="{{ mix('/staff/js/staff-edit.js') }}"></script>
 @endsection
