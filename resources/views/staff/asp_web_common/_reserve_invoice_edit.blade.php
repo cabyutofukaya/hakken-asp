@@ -2,6 +2,7 @@
   <div id="reserveInvoiceArea" 
   applicationStep='{{ $applicationStep }}'
   reserveNumber='{{ $reserveNumber }}'
+  isDeparted='{{ $isDeparted }}'
   defaultValue='@json($defaultValue)'
   documentSetting='@json($documentSetting)'
   documentCommonSetting='@json($documentCommonSetting)'

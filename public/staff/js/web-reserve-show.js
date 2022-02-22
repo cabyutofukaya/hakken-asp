@@ -82582,11 +82582,11 @@ var ReserveShowArea = function ReserveShowArea(_ref) {
 
 
   var IndexBreadcrumb = function IndexBreadcrumb(_ref5) {
-    var reserve = _ref5.reserve,
+    var isDeparted = _ref5.isDeparted,
         reserveIndexUrl = _ref5.reserveIndexUrl,
         departedIndexUrl = _ref5.departedIndexUrl;
 
-    if (reserve !== null && reserve !== void 0 && reserve.is_departed) {
+    if (isDeparted == 1) {
       return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement("li", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement("a", {
         href: departedIndexUrl
       }, "\u50AC\u884C\u6E08\u307F\u4E00\u89A7"));
@@ -82608,7 +82608,7 @@ var ReserveShowArea = function ReserveShowArea(_ref) {
   })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement("ol", {
     className: "breadCrumbs"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(IndexBreadcrumb, {
-    reserve: reserve,
+    isDeparted: reserve === null || reserve === void 0 ? void 0 : reserve.is_departed,
     reserveIndexUrl: consts === null || consts === void 0 ? void 0 : (_consts$common = consts.common) === null || _consts$common === void 0 ? void 0 : _consts$common.reserveIndexUrl,
     departedIndexUrl: consts === null || consts === void 0 ? void 0 : (_consts$common2 = consts.common) === null || _consts$common2 === void 0 ? void 0 : _consts$common2.departedIndexUrl
   }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement("li", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement("span", null, "\u4E88\u7D04\u60C5\u5831 ", reserve === null || reserve === void 0 ? void 0 : reserve.control_number))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_components_Reserve_TopControlBox__WEBPACK_IMPORTED_MODULE_13__["default"], {

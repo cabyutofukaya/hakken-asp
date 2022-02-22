@@ -126,11 +126,11 @@ const ReserveShowArea = ({
 
     // パンクズリストindex部
     const IndexBreadcrumb = ({
-        reserve,
+        isDeparted,
         reserveIndexUrl,
         departedIndexUrl
     }) => {
-        if (reserve?.is_departed) {
+        if (isDeparted == 1) {
             return (
                 <li>
                     <a href={departedIndexUrl}>催行済み一覧</a>
@@ -165,7 +165,7 @@ const ReserveShowArea = ({
                 <ol className="breadCrumbs">
                     {/**催行済か否かで出し分け */}
                     <IndexBreadcrumb
-                        reserve={reserve}
+                        isDeparted={reserve?.is_departed}
                         reserveIndexUrl={consts?.common?.reserveIndexUrl}
                         departedIndexUrl={consts?.common?.departedIndexUrl}
                     />

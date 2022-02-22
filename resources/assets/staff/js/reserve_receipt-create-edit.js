@@ -26,7 +26,8 @@ const ReserveReceiptArea = ({
     documentReceiptSetting,
     documentCommonSetting,
     formSelects,
-    consts
+    consts,
+    isDeparted
 }) => {
     const { agencyAccount, receptionTypes } = useContext(ConstContext);
 
@@ -262,6 +263,30 @@ const ReserveReceiptArea = ({
         }
     };
 
+    const IndexBreadcrumb = ({
+        isDeparted,
+        reception,
+        reserveIndexUrl,
+        departedIndexUrl
+    }) => {
+        if (isDeparted) {
+            return (
+                <li>
+                    <a href={departedIndexUrl}>催行済み一覧</a>
+                </li>
+            );
+        } else {
+            return (
+                <li>
+                    <a href={reserveIndexUrl ?? ""}>
+                        {receptionTypes.web == reception && "WEB"}
+                        予約管理
+                    </a>
+                </li>
+            );
+        }
+    };
+
     return (
         <>
             <div id="pageHead">
@@ -316,12 +341,12 @@ const ReserveReceiptArea = ({
                     </ul>
                 </div>
                 <ol className="breadCrumbs">
-                    <li>
-                        <a href={consts?.reserveIndexUrl ?? ""}>
-                            {receptionTypes.web == reception && "WEB"}
-                            予約管理
-                        </a>
-                    </li>
+                    <IndexBreadcrumb
+                        isDeparted={isDeparted}
+                        reception={reception}
+                        reserveIndexUrl={consts?.reserveUrl}
+                        departedIndexUrl={consts?.departedIndexUrl}
+                    />
                     <li>
                         <a href={consts?.reserveUrl ?? ""}>
                             予約情報 {reserveNumber}
@@ -647,6 +672,7 @@ if (Element) {
     const parsedFormSelects = formSelects && JSON.parse(formSelects);
     const consts = Element.getAttribute("consts");
     const parsedConsts = consts && JSON.parse(consts);
+    const isDeparted = Element.getAttribute("isDeparted");
 
     render(
         <ConstApp jsVars={parsedJsVars}>
@@ -659,6 +685,7 @@ if (Element) {
                 documentCommonSetting={parsedDocumentCommonSetting}
                 formSelects={parsedFormSelects}
                 consts={parsedConsts}
+                isDeparted={isDeparted}
             />
         </ConstApp>,
         document.getElementById("reserveReceiptArea")

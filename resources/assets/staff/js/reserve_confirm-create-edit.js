@@ -90,6 +90,11 @@ const getUpdateUrl = (
     }
 };
 
+/**
+ *
+ * @param {integer} isDeparted 催行済みの場合は1
+ * @returns
+ */
 const ReserveConfirmArea = ({
     reception,
     applicationStep,
@@ -105,7 +110,8 @@ const ReserveConfirmArea = ({
     hotelPrices,
     optionPrices,
     hotelContacts,
-    consts
+    consts,
+    isDeparted
 }) => {
     const { agencyAccount } = useContext(ConstContext);
     const mounted = useMountedRef(); // マウント・アンマウント制御
@@ -474,6 +480,36 @@ const ReserveConfirmArea = ({
         );
     }, [input.participant_ids]);
 
+    // パンクズリストindex部(催行済、予約状態を判別してリンクを出し分け)
+    const IndexBreadcrumb = ({
+        isDeparted,
+        applicationStep,
+        reserveIndexUrl,
+        departedIndexUrl
+    }) => {
+        if (isDeparted == 1) {
+            return (
+                <li>
+                    <a href={departedIndexUrl}>催行済み一覧</a>
+                </li>
+            );
+        } else {
+            return (
+                <li>
+                    {applicationStep ==
+                        consts.application_step_list
+                            .application_step_reserve && (
+                        <a href={reserveIndexUrl}>予約管理</a>
+                    )}
+                    {applicationStep ==
+                        consts.application_step_list.application_step_draft && (
+                        <a href={reserveIndexUrl}>見積管理</a>
+                    )}
+                </li>
+            );
+        }
+    };
+
     return (
         <>
             <div id="pageHead">
@@ -539,18 +575,12 @@ const ReserveConfirmArea = ({
                     </ul>
                 </div>
                 <ol className="breadCrumbs">
-                    <li>
-                        {applicationStep ==
-                            consts.application_step_list
-                                .application_step_reserve && (
-                            <a href={backUrl}>予約管理</a>
-                        )}
-                        {applicationStep ==
-                            consts.application_step_list
-                                .application_step_draft && (
-                            <a href={backUrl}>見積管理</a>
-                        )}
-                    </li>
+                    <IndexBreadcrumb
+                        isDeparted={isDeparted}
+                        applicationStep={applicationStep}
+                        reserveIndexUrl={backUrl}
+                        departedIndexUrl={consts?.departedIndexUrl}
+                    />
                     <li>
                         {applicationStep ==
                             consts.application_step_list
@@ -1345,6 +1375,7 @@ if (Element) {
         airticketPrices && JSON.parse(airticketPrices);
     const consts = Element.getAttribute("consts");
     const parsedConsts = consts && JSON.parse(consts);
+    const isDeparted = Element.getAttribute("isDeparted");
 
     render(
         <ConstApp jsVars={parsedJsVars}>
@@ -1364,6 +1395,7 @@ if (Element) {
                 hotelPrices={parsedHotelPrices}
                 optionPrices={parsedOptionPrices}
                 consts={parsedConsts}
+                isDeparted={isDeparted}
             />
         </ConstApp>,
         document.getElementById("reserveConfirmArea")

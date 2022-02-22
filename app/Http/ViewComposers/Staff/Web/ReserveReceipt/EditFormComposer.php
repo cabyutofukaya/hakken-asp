@@ -48,6 +48,10 @@ class EditFormComposer
         // 受付種別
         $reception = config('consts.const.RECEPTION_TYPE_WEB');
 
+        // 催行済みか否か
+        $isDeparted = $reserve->is_departed;
+
+
         $defaultValue = [];
 
         if ($reserveReceipt) { // 招集書保存データあり
@@ -154,6 +158,7 @@ class EditFormComposer
         ];
 
         $consts = $this->getConstDatas();
+        $consts['departedIndexUrl'] = route('staff.estimates.departed.index', $agencyAccount); // 催行済URL
 
         // 各種URL。ASP or WEB申し込みで出し分け
         $consts['reserveIndexUrl'] = '';
@@ -172,6 +177,6 @@ class EditFormComposer
         // reactに渡す各種定数
         $jsVars = $this->getJsVars($agencyAccount);
 
-        $view->with(compact('maximumAmount', 'defaultValue', 'formSelects', 'consts', 'documentCommonSetting', 'documentSetting', 'jsVars', 'reception', 'reception'));
+        $view->with(compact('maximumAmount', 'defaultValue', 'formSelects', 'consts', 'documentCommonSetting', 'documentSetting', 'jsVars', 'reception', 'reception', 'isDeparted'));
     }
 }

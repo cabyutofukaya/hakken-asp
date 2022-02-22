@@ -35876,6 +35876,12 @@ var getUpdateUrl = function getUpdateUrl(reception, step, types, agencyAccount, 
     return null;
   }
 };
+/**
+ *
+ * @param {integer} isDeparted 催行済みの場合は1
+ * @returns
+ */
+
 
 var ReserveConfirmArea = function ReserveConfirmArea(_ref) {
   var _formSelects$statuses, _documentSetting$sett, _input$document_addre, _documentSetting$sett2, _input$document_addre2, _documentSetting$sett3, _documentSetting$sett4, _commonSetting$settin, _documentSetting$sett5, _documentSetting$seal, _documentSetting$seal2, _documentSetting$sett6, _documentSetting$sett7, _documentSetting$sett8, _documentSetting$sett9, _documentSetting$sett10, _documentSetting$sett11, _documentSetting$sett12, _documentSetting$mana, _input$control_number, _input$issue_date, _input$document_quote, _documentSetting$titl, _documentSetting$info, _documentSetting$note, _input$document_commo, _documentSetting$seal3, _documentSetting$seal4, _consts$sealMaxNum, _documentSetting$sett13, _documentSetting$sett14, _input$document_addre3, _input$document_addre4, _input$name, _input$departure_date, _input$return_date, _input$representative, _formSelects$particip, _input$participant_id, _formSelects$setting, _formSelects$setting2, _formSelects$setting3, _formSelects$setting4;
@@ -35894,7 +35900,8 @@ var ReserveConfirmArea = function ReserveConfirmArea(_ref) {
       hotelPrices = _ref.hotelPrices,
       optionPrices = _ref.optionPrices,
       hotelContacts = _ref.hotelContacts,
-      consts = _ref.consts;
+      consts = _ref.consts,
+      isDeparted = _ref.isDeparted;
 
   var _useContext = Object(react__WEBPACK_IMPORTED_MODULE_1__["useContext"])(_components_ConstApp__WEBPACK_IMPORTED_MODULE_2__["ConstContext"]),
       agencyAccount = _useContext.agencyAccount;
@@ -36430,7 +36437,27 @@ var ReserveConfirmArea = function ReserveConfirmArea(_ref) {
     return airticketPrices.filter(function (item) {
       return input.participant_ids.includes(parseInt(item.participant_id, 10));
     });
-  }, [input.participant_ids]);
+  }, [input.participant_ids]); // パンクズリストindex部(催行済、予約状態を判別してリンクを出し分け)
+
+  var IndexBreadcrumb = function IndexBreadcrumb(_ref7) {
+    var isDeparted = _ref7.isDeparted,
+        applicationStep = _ref7.applicationStep,
+        reserveIndexUrl = _ref7.reserveIndexUrl,
+        departedIndexUrl = _ref7.departedIndexUrl;
+
+    if (isDeparted == 1) {
+      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("li", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("a", {
+        href: departedIndexUrl
+      }, "\u50AC\u884C\u6E08\u307F\u4E00\u89A7"));
+    } else {
+      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("li", null, applicationStep == consts.application_step_list.application_step_reserve && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("a", {
+        href: reserveIndexUrl
+      }, "\u4E88\u7D04\u7BA1\u7406"), applicationStep == consts.application_step_list.application_step_draft && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("a", {
+        href: reserveIndexUrl
+      }, "\u898B\u7A4D\u7BA1\u7406"));
+    }
+  };
+
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_1___default.a.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
     id: "pageHead"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("h1", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", {
@@ -36464,11 +36491,12 @@ var ReserveConfirmArea = function ReserveConfirmArea(_ref) {
     className: "material-icons"
   }, "picture_as_pdf"), "PDF")))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("ol", {
     className: "breadCrumbs"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("li", null, applicationStep == consts.application_step_list.application_step_reserve && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("a", {
-    href: backUrl
-  }, "\u4E88\u7D04\u7BA1\u7406"), applicationStep == consts.application_step_list.application_step_draft && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("a", {
-    href: backUrl
-  }, "\u898B\u7A4D\u7BA1\u7406")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("li", null, applicationStep == consts.application_step_list.application_step_reserve && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("a", {
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(IndexBreadcrumb, {
+    isDeparted: isDeparted,
+    applicationStep: applicationStep,
+    reserveIndexUrl: backUrl,
+    departedIndexUrl: consts === null || consts === void 0 ? void 0 : consts.departedIndexUrl
+  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("li", null, applicationStep == consts.application_step_list.application_step_reserve && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("a", {
     href: backUrl
   }, "\u4E88\u7D04\u60C5\u5831 ".concat(reserveNumber)), applicationStep == consts.application_step_list.application_step_draft && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("a", {
     href: backUrl
@@ -36593,10 +36621,10 @@ var ReserveConfirmArea = function ReserveConfirmArea(_ref) {
       dateFormat: "Y/m/d",
       locale: _objectSpread({}, flatpickr_dist_l10n_ja_js__WEBPACK_IMPORTED_MODULE_19__["Japanese"])
     },
-    render: function render(_ref7, ref) {
-      var defaultValue = _ref7.defaultValue,
-          value = _ref7.value,
-          props = _objectWithoutProperties(_ref7, ["defaultValue", "value"]);
+    render: function render(_ref8, ref) {
+      var defaultValue = _ref8.defaultValue,
+          value = _ref8.value,
+          props = _objectWithoutProperties(_ref8, ["defaultValue", "value"]);
 
       return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("input", {
         name: "issue_date",
@@ -36700,10 +36728,10 @@ var ReserveConfirmArea = function ReserveConfirmArea(_ref) {
       dateFormat: "Y/m/d",
       locale: _objectSpread({}, flatpickr_dist_l10n_ja_js__WEBPACK_IMPORTED_MODULE_19__["Japanese"])
     },
-    render: function render(_ref8, ref) {
-      var defaultValue = _ref8.defaultValue,
-          value = _ref8.value,
-          props = _objectWithoutProperties(_ref8, ["defaultValue", "value"]);
+    render: function render(_ref9, ref) {
+      var defaultValue = _ref9.defaultValue,
+          value = _ref9.value,
+          props = _objectWithoutProperties(_ref9, ["defaultValue", "value"]);
 
       return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("input", {
         name: "departure_date",
@@ -36730,10 +36758,10 @@ var ReserveConfirmArea = function ReserveConfirmArea(_ref) {
       dateFormat: "Y/m/d",
       locale: _objectSpread({}, flatpickr_dist_l10n_ja_js__WEBPACK_IMPORTED_MODULE_19__["Japanese"])
     },
-    render: function render(_ref9, ref) {
-      var defaultValue = _ref9.defaultValue,
-          value = _ref9.value,
-          props = _objectWithoutProperties(_ref9, ["defaultValue", "value"]);
+    render: function render(_ref10, ref) {
+      var defaultValue = _ref10.defaultValue,
+          value = _ref10.value,
+          props = _objectWithoutProperties(_ref10, ["defaultValue", "value"]);
 
       return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("input", {
         name: "return_date",
@@ -36856,6 +36884,7 @@ if (Element) {
   var parsedAirticketPrices = airticketPrices && JSON.parse(airticketPrices);
   var consts = Element.getAttribute("consts");
   var parsedConsts = consts && JSON.parse(consts);
+  var isDeparted = Element.getAttribute("isDeparted");
   Object(react_dom__WEBPACK_IMPORTED_MODULE_3__["render"])( /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_components_ConstApp__WEBPACK_IMPORTED_MODULE_2__["default"], {
     jsVars: parsedJsVars
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(ReserveConfirmArea, {
@@ -36873,7 +36902,8 @@ if (Element) {
     airticketPrices: parsedAirticketPrices,
     hotelPrices: parsedHotelPrices,
     optionPrices: parsedOptionPrices,
-    consts: parsedConsts
+    consts: parsedConsts,
+    isDeparted: isDeparted
   })), document.getElementById("reserveConfirmArea"));
 }
 

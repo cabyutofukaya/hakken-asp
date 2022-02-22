@@ -78,6 +78,9 @@ class EditFormComposer
 
         $applicationStep = $reserve->application_step;
 
+        // 催行済みか否か
+        $isDeparted = $reserve->is_departed;
+
         // 参加者情報
         $participantInfo = $this->webReserveService->getParticipants($reserve->id, true); // 参加者一覧（取消者を含む。削除済は取得しない）
 
@@ -230,6 +233,7 @@ class EditFormComposer
         ];
 
         $consts = $this->getConstDatas();
+        $consts['departedIndexUrl'] = route('staff.estimates.departed.index', $agencyAccount); // 催行済URL
 
         // 各種URL。ASP or WEB申し込みで出し分け
         $consts['reserveIndexUrl'] = '';
@@ -252,6 +256,6 @@ class EditFormComposer
         // reactに渡す各種定数
         $jsVars = $this->getJsVars($agencyAccount);
 
-        $view->with(compact('applicationStep', 'defaultValue', 'formSelects', 'consts', 'documentCommonSetting', 'hotelContacts', 'hotelInfo', 'optionPrices', 'airticketPrices', 'hotelPrices', 'documentSetting', 'jsVars', 'reception'));
+        $view->with(compact('applicationStep', 'defaultValue', 'formSelects', 'consts', 'documentCommonSetting', 'hotelContacts', 'hotelInfo', 'optionPrices', 'airticketPrices', 'hotelPrices', 'documentSetting', 'jsVars', 'reception', 'isDeparted'));
     }
 }

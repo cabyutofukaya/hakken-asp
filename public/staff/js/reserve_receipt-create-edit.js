@@ -34520,7 +34520,7 @@ function _arrayWithHoles(arr) {
 
 
 var ReserveReceiptArea = function ReserveReceiptArea(_ref) {
-  var _formSelects$statuses, _consts$reserveIndexU, _consts$reserveUrl, _documentSetting$titl, _input$user_receipt_n, _input$issue_date, _input$document_addre, _input$document_addre2, _input$user_receipt_n2, _input$issue_date2, _input$document_recei, _documentSetting$titl2, _input$receipt_amount3, _documentSetting$prov, _documentSetting$note, _input$document_commo, _input$document_addre3, _input$document_addre4;
+  var _formSelects$statuses, _consts$reserveUrl, _documentSetting$titl, _input$user_receipt_n, _input$issue_date, _input$document_addre, _input$document_addre2, _input$user_receipt_n2, _input$issue_date2, _input$document_recei, _documentSetting$titl2, _input$receipt_amount3, _documentSetting$prov, _documentSetting$note, _input$document_commo, _input$document_addre3, _input$document_addre4;
 
   var reserveNumber = _ref.reserveNumber,
       maximumAmount = _ref.maximumAmount,
@@ -34529,7 +34529,8 @@ var ReserveReceiptArea = function ReserveReceiptArea(_ref) {
       documentReceiptSetting = _ref.documentReceiptSetting,
       documentCommonSetting = _ref.documentCommonSetting,
       formSelects = _ref.formSelects,
-      consts = _ref.consts;
+      consts = _ref.consts,
+      isDeparted = _ref.isDeparted;
 
   var _useContext = Object(react__WEBPACK_IMPORTED_MODULE_1__["useContext"])(_components_ConstApp__WEBPACK_IMPORTED_MODULE_2__["ConstContext"]),
       agencyAccount = _useContext.agencyAccount,
@@ -34925,6 +34926,23 @@ var ReserveReceiptArea = function ReserveReceiptArea(_ref) {
     };
   }();
 
+  var IndexBreadcrumb = function IndexBreadcrumb(_ref7) {
+    var isDeparted = _ref7.isDeparted,
+        reception = _ref7.reception,
+        reserveIndexUrl = _ref7.reserveIndexUrl,
+        departedIndexUrl = _ref7.departedIndexUrl;
+
+    if (isDeparted) {
+      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("li", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("a", {
+        href: departedIndexUrl
+      }, "\u50AC\u884C\u6E08\u307F\u4E00\u89A7"));
+    } else {
+      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("li", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("a", {
+        href: reserveIndexUrl !== null && reserveIndexUrl !== void 0 ? reserveIndexUrl : ""
+      }, receptionTypes.web == reception && "WEB", "\u4E88\u7D04\u7BA1\u7406"));
+    }
+  };
+
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_1___default.a.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
     id: "pageHead"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("h1", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", {
@@ -34958,9 +34976,12 @@ var ReserveReceiptArea = function ReserveReceiptArea(_ref) {
     className: "material-icons"
   }, "picture_as_pdf"), "PDF")))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("ol", {
     className: "breadCrumbs"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("li", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("a", {
-    href: (_consts$reserveIndexU = consts === null || consts === void 0 ? void 0 : consts.reserveIndexUrl) !== null && _consts$reserveIndexU !== void 0 ? _consts$reserveIndexU : ""
-  }, receptionTypes.web == reception && "WEB", "\u4E88\u7D04\u7BA1\u7406")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("li", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("a", {
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(IndexBreadcrumb, {
+    isDeparted: isDeparted,
+    reception: reception,
+    reserveIndexUrl: consts === null || consts === void 0 ? void 0 : consts.reserveUrl,
+    departedIndexUrl: consts === null || consts === void 0 ? void 0 : consts.departedIndexUrl
+  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("li", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("a", {
     href: (_consts$reserveUrl = consts === null || consts === void 0 ? void 0 : consts.reserveUrl) !== null && _consts$reserveUrl !== void 0 ? _consts$reserveUrl : ""
   }, "\u4E88\u7D04\u60C5\u5831 ", reserveNumber)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("li", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", null, "\u9818\u53CE\u66F8")))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
     id: "inputArea"
@@ -35036,10 +35057,10 @@ var ReserveReceiptArea = function ReserveReceiptArea(_ref) {
       dateFormat: "Y/m/d",
       locale: _objectSpread({}, flatpickr_dist_l10n_ja_js__WEBPACK_IMPORTED_MODULE_12__["Japanese"])
     },
-    render: function render(_ref7, ref) {
-      var defaultValue = _ref7.defaultValue,
-          value = _ref7.value,
-          props = _objectWithoutProperties(_ref7, ["defaultValue", "value"]);
+    render: function render(_ref8, ref) {
+      var defaultValue = _ref8.defaultValue,
+          value = _ref8.value,
+          props = _objectWithoutProperties(_ref8, ["defaultValue", "value"]);
 
       return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("input", {
         name: "issue_date",
@@ -35148,6 +35169,7 @@ if (Element) {
   var parsedFormSelects = formSelects && JSON.parse(formSelects);
   var consts = Element.getAttribute("consts");
   var parsedConsts = consts && JSON.parse(consts);
+  var isDeparted = Element.getAttribute("isDeparted");
   Object(react_dom__WEBPACK_IMPORTED_MODULE_3__["render"])( /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_components_ConstApp__WEBPACK_IMPORTED_MODULE_2__["default"], {
     jsVars: parsedJsVars
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(ReserveReceiptArea, {
@@ -35158,7 +35180,8 @@ if (Element) {
     documentReceiptSetting: parsedDocumentSetting,
     documentCommonSetting: parsedDocumentCommonSetting,
     formSelects: parsedFormSelects,
-    consts: parsedConsts
+    consts: parsedConsts,
+    isDeparted: isDeparted
   })), document.getElementById("reserveReceiptArea"));
 }
 

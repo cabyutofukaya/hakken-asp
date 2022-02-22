@@ -44,7 +44,8 @@ const ReserveInvoiceArea = ({
     hotelPrices,
     optionPrices,
     hotelContacts,
-    consts
+    consts,
+    isDeparted
 }) => {
     const { agencyAccount, receptionTypes } = useContext(ConstContext);
 
@@ -354,6 +355,30 @@ const ReserveInvoiceArea = ({
         );
     }, [input.participant_ids]);
 
+    const IndexBreadcrumb = ({
+        isDeparted,
+        reception,
+        reserveIndexUrl,
+        departedIndexUrl
+    }) => {
+        if (isDeparted) {
+            return (
+                <li>
+                    <a href={departedIndexUrl}>催行済み一覧</a>
+                </li>
+            );
+        } else {
+            return (
+                <li>
+                    <a href={reserveIndexUrl}>
+                        {receptionTypes.web == reception && "WEB"}
+                        予約管理
+                    </a>
+                </li>
+            );
+        }
+    };
+
     return (
         <>
             <div id="pageHead">
@@ -408,12 +433,12 @@ const ReserveInvoiceArea = ({
                     </ul>
                 </div>
                 <ol className="breadCrumbs">
-                    <li>
-                        <a href={consts.reserveIndexUrl}>
-                            {receptionTypes.web == reception && "WEB"}
-                            予約管理
-                        </a>
-                    </li>
+                    <IndexBreadcrumb
+                        isDeparted={isDeparted}
+                        reception={reception}
+                        reserveIndexUrl={consts?.reserveIndexUrl}
+                        departedIndexUrl={consts?.departedIndexUrl}
+                    />
                     <li>
                         <a href={consts.reserveUrl}>予約情報 {reserveNumber}</a>
                     </li>
@@ -1254,6 +1279,7 @@ if (Element) {
         airticketPrices && JSON.parse(airticketPrices);
     const consts = Element.getAttribute("consts");
     const parsedConsts = consts && JSON.parse(consts);
+    const isDeparted = Element.getAttribute("isDeparted");
 
     render(
         <ConstApp jsVars={parsedJsVars}>
@@ -1271,6 +1297,7 @@ if (Element) {
                 hotelPrices={parsedHotelPrices}
                 optionPrices={parsedOptionPrices}
                 consts={parsedConsts}
+                isDeparted={isDeparted}
             />
         </ConstApp>,
         document.getElementById("reserveInvoiceArea")
