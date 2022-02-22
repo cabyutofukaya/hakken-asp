@@ -4,10 +4,10 @@ namespace App\Http\Controllers\Staff\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
+use App\Services\AgencyService;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Services\AgencyService;
 
 class LoginController extends Controller
 {

@@ -31,14 +31,19 @@ class CheckAgencyAccount
             Auth::guard('staff')->logout();
             abort(403);
         }
-        if ($staff->agency->status != config('consts.agencies.STATUS_MAIN_REGISTRATION')) { // ステータスチェック
+        if ($staff->agency->status != config('consts.agencies.STATUS_MAIN_REGISTRATION')) { // 会社のステータスをチェック
             Auth::guard('staff')->logout();
             abort(403);
         };
-        if (!$staff->agency->is_trial() && !$staff->agency->is_definitive()) {
+        if ($staff->status != config('consts.staffs.STATUS_VALID')) { // スタッフのステータスをチェック
             Auth::guard('staff')->logout();
-            throw new PromotionException;
-        }
+            abort(403);
+        };
+        // 販売プラン検討中につきトライアルのチェックはひとまず不要
+        // if (!$staff->agency->is_trial() && !$staff->agency->is_definitive()) {
+        //     Auth::guard('staff')->logout();
+        //     throw new PromotionException;
+        // }
         return $next($request);
     }
 }

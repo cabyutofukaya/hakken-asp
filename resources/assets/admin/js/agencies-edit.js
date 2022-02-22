@@ -878,7 +878,8 @@ const AgencyEdit = ({ errors, defaultValue, formSelects, consts }) => {
                         </div>
                     </li>
                 </ul>
-                <hr className="sepBorder" />
+
+                {/* <hr className="sepBorder" />
                 <ul className="sideList">
                     <li className="wd40">
                         <span className="inputLabel">契約プラン</span>
@@ -976,7 +977,7 @@ const AgencyEdit = ({ errors, defaultValue, formSelects, consts }) => {
                 </div>
                 <div className="planPrice">
                     当月請求額<span>25,000</span>円
-                </div>
+                </div> */}
             </div>
             <ul id="formControl">
                 <li className="wd50">
