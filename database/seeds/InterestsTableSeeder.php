@@ -39,6 +39,7 @@ class InterestsTableSeeder extends Seeder
                 ['name' => '世界遺産', 'seq' => 125],
                 ['name' => '重要文化財や国宝', 'seq' => 130],
                 ['name' => '鉄道旅', 'seq' => 135],
+                ['name' => 'クルーズ船', 'seq' => 140],
                 ['name' => 'その他', 'seq' => 999],
             ]);
 
