@@ -174,6 +174,7 @@ const AgencyCreate = ({ consts, errors, defaultValue, formSelects }) => {
                             type="text"
                             name="password"
                             defaultValue={defaultValue.password ?? ""}
+                            placeholder="半角英数6~12。1つ以上の !#$%&=-"
                         />
                     </li>
                 </ul>

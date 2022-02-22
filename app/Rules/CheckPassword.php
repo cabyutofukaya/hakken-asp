@@ -22,7 +22,9 @@ class CheckPassword implements Rule
      */
     public function passes($attribute, $value)
     {
-        return preg_match("/[a-zA-Z0-9]+/", $value) && preg_match("/[\!#\$%&=\-]+/", $value) && strlen($value) >= 6 && strlen($value) <= 12;
+        $escaped = preg_quote('!#$%()*+-./:;=?@[]^_`{|}', '/');
+        
+        return preg_match("/[a-zA-Z0-9]+/", $value) && preg_match("/[{$escaped}]+/", $value) && strlen($value) >= 6 && strlen($value) <= 12;
     }
 
 

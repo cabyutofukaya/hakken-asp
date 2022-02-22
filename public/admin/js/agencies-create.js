@@ -35600,7 +35600,8 @@ var AgencyCreate = function AgencyCreate(_ref) {
   }, "\u30D1\u30B9\u30EF\u30FC\u30C9(\u7BA1\u7406\u30E6\u30FC\u30B6\u30FC)"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
     type: "text",
     name: "password",
-    defaultValue: (_defaultValue$passwor = defaultValue.password) !== null && _defaultValue$passwor !== void 0 ? _defaultValue$passwor : ""
+    defaultValue: (_defaultValue$passwor = defaultValue.password) !== null && _defaultValue$passwor !== void 0 ? _defaultValue$passwor : "",
+    placeholder: "\u534A\u89D2\u82F1\u65706~12\u30021\u3064\u4EE5\u4E0A\u306E !#$%&=-"
   }))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("ul", {
     className: "sideList half"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("li", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", {

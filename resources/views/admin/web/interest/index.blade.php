@@ -9,7 +9,7 @@
     <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
       <h1>興味管理</h1>
       <div class="mb-2">
-        <a class="btn btn-primary" href="{{ route('admin.hakken.interests.create') }}">新規登録</a>
+        {{-- <a class="btn btn-primary" href="{{ route('admin.hakken.interests.create') }}">新規登録</a> --}}
       </div>
 
       <table class="table table-striped table-sm">
@@ -27,7 +27,7 @@
               <th scope="row">{{ $interest->id }}</th>
               <td>{{ $interest->name }}</td>
               <td>{{ $interest->seq }}</td>
-              <td><a href="{{ route('admin.hakken.interests.edit', $interest->id) }}" class="btn btn-secondary">編集</a></td>
+              {{-- <td><a href="{{ route('admin.hakken.interests.edit', $interest->id) }}" class="btn btn-secondary">編集</a></td> --}}
             </tr>
           @empty
             <tr>

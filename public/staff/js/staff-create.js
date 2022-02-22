@@ -29891,7 +29891,8 @@ var InputArea = function InputArea(_ref) {
     type: "text",
     name: "password",
     value: (_data$password = data.password) !== null && _data$password !== void 0 ? _data$password : "",
-    onChange: handleInputChange
+    onChange: handleInputChange,
+    placeholder: "\u534A\u89D2\u82F1\u65706~12\u6587\u5B57\u30671\u3064\u4EE5\u4E0A\u306E\u7279\u6B8A\u6587\u5B57(!#$%&=-)"
   })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("li", {
     className: "wd40"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", {
