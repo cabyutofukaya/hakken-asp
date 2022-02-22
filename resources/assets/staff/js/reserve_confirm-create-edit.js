@@ -397,13 +397,7 @@ const ReserveConfirmArea = ({
         }
 
         if (mounted.current && response?.data?.data) {
-            // const res = response.data.data;
-            // setInput({
-            //     ...input,
-            //     confirm_number: res.confirm_number,
-            //     updated_at: res.updated_at
-            // }); // 確認番号、更新日時をセットする
-            location.href = backUrl;
+            location.href = document.referrer ? document.referrer : backUrl;
         }
     };
 

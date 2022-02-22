@@ -36287,13 +36287,7 @@ var ReserveConfirmArea = function ReserveConfirmArea(_ref) {
 
             case 25:
               if (mounted.current && (_response = response) !== null && _response !== void 0 && (_response$data3 = _response.data) !== null && _response$data3 !== void 0 && _response$data3.data) {
-                // const res = response.data.data;
-                // setInput({
-                //     ...input,
-                //     confirm_number: res.confirm_number,
-                //     updated_at: res.updated_at
-                // }); // 確認番号、更新日時をセットする
-                location.href = backUrl;
+                location.href = document.referrer ? document.referrer : backUrl;
               }
 
             case 26:
