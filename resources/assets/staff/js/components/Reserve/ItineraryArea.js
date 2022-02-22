@@ -43,25 +43,6 @@ const getCreateUrl = (
     }
 };
 
-const getEditUrl = (
-    reception,
-    step,
-    types,
-    agencyAccount,
-    estimateNumber,
-    reserveNumber,
-    itineraryNumber
-) => {
-    switch (step) {
-        case types.application_step_draft: // 見積
-            return `/${agencyAccount}/estimates/${reception}/${step}/${estimateNumber}/itinerary/${itineraryNumber}/edit`;
-        case types.application_step_reserve: // 予約
-            return `/${agencyAccount}/estimates/${reception}/${step}/${reserveNumber}/itinerary/${itineraryNumber}/edit`;
-        default:
-            return null;
-    }
-};
-
 const getEnableApiUrl = (
     reception,
     step,
@@ -402,15 +383,8 @@ const ItineraryArea = ({
                                                 href="#"
                                                 onClick={e => {
                                                     e.preventDefault();
-                                                    window.location.href = getEditUrl(
-                                                        reception,
-                                                        applicationStep,
-                                                        applicationStepList,
-                                                        agencyAccount,
-                                                        estimateNumber,
-                                                        reserveNumber,
-                                                        row?.control_number
-                                                    );
+                                                    window.location.href =
+                                                        row?.edit_url;
                                                 }}
                                             >
                                                 {row?.control_number ?? "-"}

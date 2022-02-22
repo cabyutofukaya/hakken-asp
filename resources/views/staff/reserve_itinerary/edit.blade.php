@@ -8,27 +8,12 @@
     作成日 {{ $reserveItinerary->created_at->format('Y/m/d') }}<br>
     更新日時 {{ $reserveItinerary->updated_at->format('Y/m/d H:i') }}
     </p>
-    <ol class="breadCrumbs">
-      <li>
-        @if($reserve->application_step == config('consts.reserves.APPLICATION_STEP_DRAFT'))
-          <a href="{{ route('staff.asp.estimates.normal.index', $agencyAccount) }}">見積管理</a>
-        @elseif($reserve->application_step == config('consts.reserves.APPLICATION_STEP_RESERVE'))
-          <a href="{{ route('staff.asp.estimates.reserve.index', $agencyAccount) }}">予約管理</a>
-        @endif
-      </li>
-      <li>
-        <a href="{{ $backUrl }}">
-          @if($reserve->application_step == config('consts.reserves.APPLICATION_STEP_DRAFT'))
-            見積情報 {{ $reserve->estimate_number }}
-          @elseif($reserve->application_step == config('consts.reserves.APPLICATION_STEP_RESERVE'))
-            予約情報 {{ $reserve->control_number }}
-          @endif
-        </a>
-      </li>
-      <li>
-        <span>行程編集</span>
-      </li>
-    </ol>
+    @include('staff.reserve_itinerary.common._breadcrumb', [
+      'reserve' => $reserve,
+      'agencyAccount' => $agencyAccount,
+      'backUrl' => $backUrl,
+      'current' => '行程編集'
+    ])
   </div>
 
   @include('staff.common.error_message')

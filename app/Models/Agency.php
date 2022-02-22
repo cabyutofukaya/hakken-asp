@@ -52,6 +52,7 @@ class Agency extends Model implements AppUser
         'iata',
         'etbt',
         'bond_guarantee',
+        'status',
     ];
 
     /**

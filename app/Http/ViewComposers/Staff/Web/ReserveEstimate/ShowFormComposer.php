@@ -60,6 +60,9 @@ class ShowFormComposer
         // 相談の表示指定がある場合
         $targetConsultationNumber = request()->input('consultation_number');
 
+        // 催行済みGETパラメータ
+        $departedQuery = $reserve->is_departed ? sprintf('?%s=1', config('consts.const.DEPARTED_QUERY')) : '';
+
         $status = null; // ステータス値
         $reserveStatus = ''; // 状況
         if ($applicationStep === config('consts.reserves.APPLICATION_STEP_DRAFT')) { // 見積
@@ -217,6 +220,7 @@ class ShowFormComposer
                     'application_step_draft' => config('consts.reserves.APPLICATION_STEP_DRAFT'),
                     'application_step_reserve' => config('consts.reserves.APPLICATION_STEP_RESERVE'),
                 ],
+                'departedQuery' => $departedQuery,
                 // タブコード一覧
                 'tabCodes' => [
                     'tab_basic_info' => config('consts.reserves.TAB_BASIC_INFO'),

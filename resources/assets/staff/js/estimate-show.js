@@ -225,6 +225,7 @@ const EstimateShowArea = ({
                         formSelects?.[consts.common.tabCodes.tab_reserve_detail]
                     }
                     consts={consts?.[consts.common.tabCodes.tab_reserve_detail]}
+                    constsCommon={consts?.common}
                     permission={permission.detail}
                 />
             )}

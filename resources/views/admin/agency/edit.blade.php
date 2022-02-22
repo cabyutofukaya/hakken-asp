@@ -7,7 +7,6 @@
     @method('PUT')
 
       <input type="hidden" name="number_staff_allowed" value="{{ $agency->number_staff_allowed }}"/><!-- スタッフ登録許可数 -->
-      <input type="hidden" name="status" value="{{ $agency->status }}" /><!-- 状態 -->
       <input type="hidden" name="updated_at" value="{{ $agency->updated_at }}" />
 
       <div 

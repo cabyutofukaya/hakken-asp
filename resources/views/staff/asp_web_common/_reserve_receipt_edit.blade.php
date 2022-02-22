@@ -9,6 +9,7 @@
   consts='@json($consts)'
   jsVars='@json($jsVars)'
   reception='{{ $reception }}'
+  isDeparted='{{ $isDeparted }}'
   ></div>
 </main>
 

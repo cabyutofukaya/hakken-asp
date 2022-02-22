@@ -220,7 +220,12 @@ class ReserveItineraryController extends AppController
                 if ($applicationStep == config("consts.reserves.APPLICATION_STEP_DRAFT")) { // 見積
                     return redirect()->route('staff.web.estimates.normal.show', ['agencyAccount' => $agencyAccount, 'estimateNumber' => $controlNumber, 'tab' => config('consts.reserves.TAB_RESERVE_DETAIL')])->with('success_message', "行程「{$reserveItinerary->control_number}」を更新しました");
                 } elseif ($applicationStep == config("consts.reserves.APPLICATION_STEP_RESERVE")) { // 予約
-                    return redirect()->route('staff.web.estimates.reserve.show', ['agencyAccount' => $agencyAccount, 'reserveNumber' => $controlNumber, 'tab' => config('consts.reserves.TAB_RESERVE_DETAIL')])->with('success_message', "行程「{$reserveItinerary->control_number}」を更新しました");
+                    // 催行済みか否かでリダイレクト先変更
+                    if ($reserveItinerary->reserve->is_departed) {
+                        return redirect()->route('staff.estimates.departed.show', ['agencyAccount' => $agencyAccount, 'reserveNumber' => $controlNumber, 'tab' => config('consts.reserves.TAB_RESERVE_DETAIL')])->with('success_message', "行程「{$reserveItinerary->control_number}」を更新しました");
+                    } else {
+                        return redirect()->route('staff.web.estimates.reserve.show', ['agencyAccount' => $agencyAccount, 'reserveNumber' => $controlNumber, 'tab' => config('consts.reserves.TAB_RESERVE_DETAIL')])->with('success_message', "行程「{$reserveItinerary->control_number}」を更新しました");
+                    }
                 }
             }
         } catch (ExclusiveLockException $e) { // 同時編集エラー

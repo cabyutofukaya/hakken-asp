@@ -186,7 +186,6 @@ class ReserveItineraryController extends AppController
             $reserve = $this->estimateService->findByEstimateNumber($controlNumber, $agencyAccount);
 
             $reserveItinerary = $this->reserveItineraryService->findByItineraryNumber($reserve->id, $itineraryNumber, $reserve->agency_id);
-
         } elseif ($applicationStep == config("consts.reserves.APPLICATION_STEP_RESERVE")) { // 予約
 
             $reserve = $this->reserveService->findByControlNumber($controlNumber, $agencyAccount);
@@ -219,7 +218,12 @@ class ReserveItineraryController extends AppController
                 if ($applicationStep == config("consts.reserves.APPLICATION_STEP_DRAFT")) { // 見積
                     return redirect()->route('staff.asp.estimates.normal.show', ['agencyAccount' => $agencyAccount, 'estimateNumber' => $controlNumber, 'tab' => config('consts.reserves.TAB_RESERVE_DETAIL')])->with('success_message', "行程「{$reserveItinerary->control_number}」を更新しました");
                 } elseif ($applicationStep == config("consts.reserves.APPLICATION_STEP_RESERVE")) { // 予約
-                    return redirect()->route('staff.asp.estimates.reserve.show', ['agencyAccount' => $agencyAccount, 'reserveNumber' => $controlNumber, 'tab' => config('consts.reserves.TAB_RESERVE_DETAIL')])->with('success_message', "行程「{$reserveItinerary->control_number}」を更新しました");
+                    // 催行済みか否かでリダイレクト先変更
+                    if ($reserveItinerary->reserve->is_departed) {
+                        return redirect()->route('staff.estimates.departed.show', ['agencyAccount' => $agencyAccount, 'reserveNumber' => $controlNumber, 'tab' => config('consts.reserves.TAB_RESERVE_DETAIL')])->with('success_message', "行程「{$reserveItinerary->control_number}」を更新しました");
+                    } else {
+                        return redirect()->route('staff.asp.estimates.reserve.show', ['agencyAccount' => $agencyAccount, 'reserveNumber' => $controlNumber, 'tab' => config('consts.reserves.TAB_RESERVE_DETAIL')])->with('success_message', "行程「{$reserveItinerary->control_number}」を更新しました");
+                    }
                 }
             }
         } catch (ExclusiveLockException $e) { // 同時編集エラー
@@ -246,7 +250,6 @@ class ReserveItineraryController extends AppController
             $reserve = $this->estimateService->findByEstimateNumber($controlNumber, $agencyAccount);
 
             $reserveItinerary = $this->reserveItineraryService->findByItineraryNumber($reserve->id, $itineraryNumber, $reserve->agency_id);
-
         } elseif ($applicationStep == config("consts.reserves.APPLICATION_STEP_RESERVE")) { // 予約
 
             $reserve = $this->reserveService->findByControlNumber($controlNumber, $agencyAccount);
@@ -328,7 +331,6 @@ class ReserveItineraryController extends AppController
                 $reserve->agency_id,
                 ['reserve_travel_dates.reserve_schedules.reserve_purchasing_subject_hotels.reserve_participant_prices.participant','reserve_travel_dates.reserve_schedules.reserve_purchasing_subject_hotels.room_types']
             );
-
         } elseif ($applicationStep == config("consts.reserves.APPLICATION_STEP_RESERVE")) { // 予約
             
             $reserve = $this->reserveService->findByControlNumber($controlNumber, $agencyAccount);

@@ -35856,7 +35856,8 @@ var ReserveInvoiceArea = function ReserveInvoiceArea(_ref) {
       hotelPrices = _ref.hotelPrices,
       optionPrices = _ref.optionPrices,
       hotelContacts = _ref.hotelContacts,
-      consts = _ref.consts;
+      consts = _ref.consts,
+      isDeparted = _ref.isDeparted;
 
   var _useContext = Object(react__WEBPACK_IMPORTED_MODULE_1__["useContext"])(_components_ConstApp__WEBPACK_IMPORTED_MODULE_2__["ConstContext"]),
       agencyAccount = _useContext.agencyAccount,
@@ -36350,6 +36351,24 @@ var ReserveInvoiceArea = function ReserveInvoiceArea(_ref) {
       return input.participant_ids.includes(parseInt(item.participant_id, 10));
     });
   }, [input.participant_ids]);
+
+  var IndexBreadcrumb = function IndexBreadcrumb(_ref8) {
+    var isDeparted = _ref8.isDeparted,
+        reception = _ref8.reception,
+        reserveIndexUrl = _ref8.reserveIndexUrl,
+        departedIndexUrl = _ref8.departedIndexUrl;
+
+    if (isDeparted) {
+      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("li", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("a", {
+        href: departedIndexUrl
+      }, "\u50AC\u884C\u6E08\u307F\u4E00\u89A7"));
+    } else {
+      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("li", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("a", {
+        href: reserveIndexUrl
+      }, receptionTypes.web == reception && "WEB", "\u4E88\u7D04\u7BA1\u7406"));
+    }
+  };
+
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_1___default.a.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
     id: "pageHead"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("h1", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", {
@@ -36383,9 +36402,12 @@ var ReserveInvoiceArea = function ReserveInvoiceArea(_ref) {
     className: "material-icons"
   }, "picture_as_pdf"), "PDF")))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("ol", {
     className: "breadCrumbs"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("li", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("a", {
-    href: consts.reserveIndexUrl
-  }, receptionTypes.web == reception && "WEB", "\u4E88\u7D04\u7BA1\u7406")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("li", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("a", {
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(IndexBreadcrumb, {
+    isDeparted: isDeparted,
+    reception: reception,
+    reserveIndexUrl: consts === null || consts === void 0 ? void 0 : consts.reserveIndexUrl,
+    departedIndexUrl: consts === null || consts === void 0 ? void 0 : consts.departedIndexUrl
+  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("li", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("a", {
     href: consts.reserveUrl
   }, "\u4E88\u7D04\u60C5\u5831 ", reserveNumber)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("li", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", null, "\u8ACB\u6C42\u66F8")))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
     id: "inputArea"
@@ -36506,10 +36528,10 @@ var ReserveInvoiceArea = function ReserveInvoiceArea(_ref) {
       dateFormat: "Y/m/d",
       locale: _objectSpread({}, flatpickr_dist_l10n_ja_js__WEBPACK_IMPORTED_MODULE_16__["Japanese"])
     },
-    render: function render(_ref8, ref) {
-      var defaultValue = _ref8.defaultValue,
-          value = _ref8.value,
-          props = _objectWithoutProperties(_ref8, ["defaultValue", "value"]);
+    render: function render(_ref9, ref) {
+      var defaultValue = _ref9.defaultValue,
+          value = _ref9.value,
+          props = _objectWithoutProperties(_ref9, ["defaultValue", "value"]);
 
       return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("input", {
         name: "issue_date",
@@ -36538,10 +36560,10 @@ var ReserveInvoiceArea = function ReserveInvoiceArea(_ref) {
       dateFormat: "Y/m/d",
       locale: _objectSpread({}, flatpickr_dist_l10n_ja_js__WEBPACK_IMPORTED_MODULE_16__["Japanese"])
     },
-    render: function render(_ref9, ref) {
-      var defaultValue = _ref9.defaultValue,
-          value = _ref9.value,
-          props = _objectWithoutProperties(_ref9, ["defaultValue", "value"]);
+    render: function render(_ref10, ref) {
+      var defaultValue = _ref10.defaultValue,
+          value = _ref10.value,
+          props = _objectWithoutProperties(_ref10, ["defaultValue", "value"]);
 
       return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("input", {
         name: "payment_deadline",
@@ -36652,10 +36674,10 @@ var ReserveInvoiceArea = function ReserveInvoiceArea(_ref) {
       dateFormat: "Y/m/d",
       locale: _objectSpread({}, flatpickr_dist_l10n_ja_js__WEBPACK_IMPORTED_MODULE_16__["Japanese"])
     },
-    render: function render(_ref10, ref) {
-      var defaultValue = _ref10.defaultValue,
-          value = _ref10.value,
-          props = _objectWithoutProperties(_ref10, ["defaultValue", "value"]);
+    render: function render(_ref11, ref) {
+      var defaultValue = _ref11.defaultValue,
+          value = _ref11.value,
+          props = _objectWithoutProperties(_ref11, ["defaultValue", "value"]);
 
       return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("input", {
         name: "departure_date",
@@ -36682,10 +36704,10 @@ var ReserveInvoiceArea = function ReserveInvoiceArea(_ref) {
       dateFormat: "Y/m/d",
       locale: _objectSpread({}, flatpickr_dist_l10n_ja_js__WEBPACK_IMPORTED_MODULE_16__["Japanese"])
     },
-    render: function render(_ref11, ref) {
-      var defaultValue = _ref11.defaultValue,
-          value = _ref11.value,
-          props = _objectWithoutProperties(_ref11, ["defaultValue", "value"]);
+    render: function render(_ref12, ref) {
+      var defaultValue = _ref12.defaultValue,
+          value = _ref12.value,
+          props = _objectWithoutProperties(_ref12, ["defaultValue", "value"]);
 
       return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("input", {
         name: "return_date",
@@ -36806,6 +36828,7 @@ if (Element) {
   var parsedAirticketPrices = airticketPrices && JSON.parse(airticketPrices);
   var consts = Element.getAttribute("consts");
   var parsedConsts = consts && JSON.parse(consts);
+  var isDeparted = Element.getAttribute("isDeparted");
   Object(react_dom__WEBPACK_IMPORTED_MODULE_3__["render"])( /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_components_ConstApp__WEBPACK_IMPORTED_MODULE_2__["default"], {
     jsVars: parsedJsVars
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(ReserveInvoiceArea, {
@@ -36821,7 +36844,8 @@ if (Element) {
     airticketPrices: parsedAirticketPrices,
     hotelPrices: parsedHotelPrices,
     optionPrices: parsedOptionPrices,
-    consts: parsedConsts
+    consts: parsedConsts,
+    isDeparted: isDeparted
   })), document.getElementById("reserveInvoiceArea"));
 }
 

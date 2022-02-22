@@ -91,7 +91,7 @@ class ReserveConfirmController extends Controller
         return IndexResource::collection(
             $this->reserveConfirmService->getByReserveItineraryId(
                 $reserveItinerary->id,
-                ['reserve_itinerary','document_quote']
+                ['reserve','reserve_itinerary','document_quote']
             )
         );
     }

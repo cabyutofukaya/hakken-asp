@@ -14,8 +14,42 @@ class IndexResource extends JsonResource
      */
     public function toArray($request)
     {
+        // 催行済を表すパラメータ
+        $departedQuery = $this->reserve->is_departed ? sprintf('?%s=1', config('consts.const.DEPARTED_QUERY')) : '';
+
+        $controlNumber = null; // 予約or見積番号
+        if ($this->reserve->application_step == config("consts.reserves.APPLICATION_STEP_DRAFT")) { // 見積
+            $controlNumber = $this->reserve->estimate_number;
+        } elseif ($this->reserve->application_step == config("consts.reserves.APPLICATION_STEP_RESERVE")) { // 予約
+            $controlNumber = $this->reserve->control_number;
+        }
+
+        // 行程番号
+        $reserveItineraryControlNumber = $this->reserve_itinerary ? $this->reserve_itinerary->control_number : "";
+        
+        // 編集URL
+        $editUrl = null;
+        if ($this->reserve->reception_type == config('consts.reserves.RECEPTION_TYPE_ASP')) {
+            $editUrl = route('staff.asp.estimates.reserve_confirm.edit', [
+                $request->agencyAccount,
+                $this->reserve->application_step,
+                $controlNumber,
+                $reserveItineraryControlNumber,
+                $this->confirm_number
+            ]) . $departedQuery;
+        } elseif ($this->reserve->reception_type == config('consts.reserves.RECEPTION_TYPE_WEB')) {
+            $editUrl = route('staff.web.estimates.reserve_confirm.edit', [
+                $request->agencyAccount,
+                $this->reserve->application_step,
+                $controlNumber,
+                $reserveItineraryControlNumber,
+                $this->confirm_number
+            ]) . $departedQuery;
+        }
+
         return [
             'id' => $this->id,
+            'edit_url' => $editUrl,
             'confirm_number' => $this->confirm_number,
             'title' => data_get($this, "document_setting.title"),
             'issue_date' => $this->issue_date,
@@ -28,7 +62,7 @@ class IndexResource extends JsonResource
                 'id' => $this->pdf ? $this->pdf->getRouteKey() : null
             ],
             'reserve_itinerary' => [
-                'control_number' => $this->reserve_itinerary ? $this->reserve_itinerary->control_number : null,
+                'control_number' => $reserveItineraryControlNumber,
             ]
         ];
     }

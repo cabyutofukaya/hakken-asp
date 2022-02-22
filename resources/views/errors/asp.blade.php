@@ -38,7 +38,11 @@
 			@if(Auth::guard('staff')->check()) {{-- ログイン時 --}}
 				<a href='{{ route('staff.asp.estimates.reserve.index', request()->agencyAccount) }}' class="baseBtn">HOME</a>
 			@else
-				<a href="/" class="baseBtn">HOME</a>
+				@if(request()->agencyAccount) {{-- アカウト情報あり → ログインページへ --}}
+					<a href="{{ route('staff.login', request()->agencyAccount) }}" class="baseBtn">HOME</a>
+				@else
+					<a href="/" class="baseBtn">HOME</a>
+				@endif
 			@endif
 
 		</div>

@@ -25,6 +25,18 @@ const getListApiUrl = (
     }
 };
 
+/**
+ *
+ * @param {*} reception
+ * @param {*} step
+ * @param {*} types
+ * @param {*} agencyAccount
+ * @param {*} estimateNumber
+ * @param {*} reserveNumber
+ * @param {*} itineraryNumber
+ * @param {*} departedQuery 催行済みの場合に付与するgetクエリ
+ * @returns
+ */
 const getCreateApiUrl = (
     reception,
     step,
@@ -32,33 +44,14 @@ const getCreateApiUrl = (
     agencyAccount,
     estimateNumber,
     reserveNumber,
-    itineraryNumber
-) => {
-    switch (step) {
-        case types.application_step_draft: // 見積
-            return `/${agencyAccount}/estimates/${reception}/${step}/${estimateNumber}/itinerary/${itineraryNumber}/confirm`;
-        case types.application_step_reserve: // 予約
-            return `/${agencyAccount}/estimates/${reception}/${step}/${reserveNumber}/itinerary/${itineraryNumber}/confirm`;
-        default:
-            return null;
-    }
-};
-
-const getEditApiUrl = (
-    reception,
-    step,
-    types,
-    agencyAccount,
-    estimateNumber,
-    reserveNumber,
     itineraryNumber,
-    confirmNumber
+    departedQuery
 ) => {
     switch (step) {
         case types.application_step_draft: // 見積
-            return `/${agencyAccount}/estimates/${reception}/${step}/${estimateNumber}/itinerary/${itineraryNumber}/confirm/${confirmNumber}/edit`;
+            return `/${agencyAccount}/estimates/${reception}/${step}/${estimateNumber}/itinerary/${itineraryNumber}/confirm${departedQuery}`;
         case types.application_step_reserve: // 予約
-            return `/${agencyAccount}/estimates/${reception}/${step}/${reserveNumber}/itinerary/${itineraryNumber}/confirm/${confirmNumber}/edit`;
+            return `/${agencyAccount}/estimates/${reception}/${step}/${reserveNumber}/itinerary/${itineraryNumber}/confirm${departedQuery}`;
         default:
             return null;
     }
@@ -92,7 +85,8 @@ const DocumentArea = ({
     estimateNumber,
     reserveNumber,
     currentItineraryNumber,
-    hasOriginalDocumentQuoteTemplate
+    hasOriginalDocumentQuoteTemplate,
+    constsCommon
 }) => {
     const { agencyAccount } = useContext(ConstContext);
 
@@ -211,7 +205,8 @@ const DocumentArea = ({
                             agencyAccount,
                             estimateNumber,
                             reserveNumber,
-                            currentItineraryNumber
+                            currentItineraryNumber,
+                            constsCommon?.departedQuery ?? ""
                         )}
                     >
                         <span className="material-icons">add_circle</span>追加
@@ -271,16 +266,7 @@ const DocumentArea = ({
                                             <a
                                                 href={
                                                     currentItineraryNumber
-                                                        ? getEditApiUrl(
-                                                              reception,
-                                                              applicationStep,
-                                                              applicationStepList,
-                                                              agencyAccount,
-                                                              estimateNumber,
-                                                              reserveNumber,
-                                                              currentItineraryNumber,
-                                                              row?.confirm_number
-                                                          )
+                                                        ? row?.edit_url
                                                         : "#"
                                                 }
                                             >

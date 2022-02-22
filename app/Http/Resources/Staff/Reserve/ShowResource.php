@@ -17,6 +17,9 @@ class ShowResource extends JsonResource
      */
     public function toArray($request)
     {
+        // 催行済を表すパラメータ
+        $departedQuery = $this->is_departed ? sprintf('?%s=1', config('consts.const.DEPARTED_QUERY')) : '';
+        
         // 有効行程
         $enabledReserveItinerary = $this->enabled_reserve_itinerary->id ? $this->enabled_reserve_itinerary : null;
 
@@ -103,7 +106,7 @@ class ShowResource extends JsonResource
                     $this->control_number,
                     $enabledReserveItinerary->control_number,
                     $reserveConfirm->confirm_number
-                ]) : null,
+                ]) . $departedQuery: null,
             ],
             // 行程表。有効な行程がない場合は新規作成ページ、ある場合は編集ページ
             'itinerary' => [
@@ -113,11 +116,11 @@ class ShowResource extends JsonResource
                     config('consts.reserves.APPLICATION_STEP_RESERVE'),
                     $this->control_number,
                     $enabledReserveItinerary->control_number
-                ]) : route('staff.asp.estimates.itinerary.create', [
+                ]) . $departedQuery : route('staff.asp.estimates.itinerary.create', [
                     $request->agencyAccount,
                     config('consts.reserves.APPLICATION_STEP_RESERVE'),
                     $this->control_number
-                ]),
+                ]) . $departedQuery,
             ],
             // 請求書
             'invoice' => [
@@ -125,7 +128,7 @@ class ShowResource extends JsonResource
                 'url' => $reserveInvoice ? route('staff.asp.estimates.reserve.invoice.edit', [
                     $request->agencyAccount,
                     $this->control_number
-                ]) : null,
+                ]) . $departedQuery: null,
             ],
             // 領収書(請求書が作成済みであれば作成・編集可)
             'receipt' => [
@@ -133,7 +136,7 @@ class ShowResource extends JsonResource
                 'url' => $reserveReceipt ? route('staff.asp.estimates.reserve.receipt.edit', [
                     $request->agencyAccount,
                     $this->control_number
-                ]) : null,
+                ]) . $departedQuery: null,
             ]
         ];
     }

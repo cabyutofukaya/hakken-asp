@@ -10,8 +10,8 @@
             </a>
             <ul class="subNavi">
                <li class="
-                  @if(strpos(\Route::current()->getName(), 'staff.asp.estimates.reserve.') !== false || (strpos(\Route::current()->getName(), 'staff.asp.estimates') !== false && \Route::current()->parameter('applicationStep') === config("consts.reserves.APPLICATION_STEP_RESERVE"))) stay 
-                  @endif">
+                  @if(!request()->get(config('consts.const.DEPARTED_QUERY')) && (strpos(\Route::current()->getName(), 'staff.asp.estimates.reserve.') !== false || (strpos(\Route::current()->getName(), 'staff.asp.estimates') !== false && \Route::current()->parameter('applicationStep') === config("consts.reserves.APPLICATION_STEP_RESERVE")))) stay 
+                  @endif">{{-- 催行済みを示すGETパラメータがないことが前提 --}}
                   <a href="{{ route('staff.asp.estimates.reserve.index', $agencyAccount) }}">
                      <span class="material-icons">event_note</span>予約管理
                   </a>
@@ -24,8 +24,8 @@
                   </a>
                </li>
                <li class="
-                  @if(strpos(\Route::current()->getName(), 'staff.web.estimates.reserve.') !== false || (strpos(\Route::current()->getName(), 'staff.web.estimates') !== false && \Route::current()->parameter('applicationStep') === config("consts.reserves.APPLICATION_STEP_RESERVE"))) stay 
-                  @endif">
+                  @if(!request()->get(config('consts.const.DEPARTED_QUERY')) && (strpos(\Route::current()->getName(), 'staff.web.estimates.reserve.') !== false || (strpos(\Route::current()->getName(), 'staff.web.estimates') !== false && \Route::current()->parameter('applicationStep') === config("consts.reserves.APPLICATION_STEP_RESERVE")))) stay 
+                  @endif">{{-- 催行済みを示すGETパラメータがないことが前提 --}}
                   <a href="{{ route('staff.web.estimates.reserve.index', $agencyAccount) }}"><span class="material-icons">language</span>WEB予約管理</a>
                </li>
                <li class="
@@ -33,7 +33,7 @@
                   @endif">
                   <a href="{{ route('staff.web.estimates.normal.index', $agencyAccount) }}"><span class="material-icons">language</span>WEB見積管理</a>
                </li>
-               <li class="@if(strpos(\Route::current()->getName(), 'staff.estimates.departed.') !== false) stay @endif">
+               <li class="@if(strpos(\Route::current()->getName(), 'staff.estimates.departed.') !== false || request()->get(config('consts.const.DEPARTED_QUERY'))) stay @endif">{{-- route名とGETクエリパラメータで判定 --}}
                   <a href="{{ route('staff.estimates.departed.index', $agencyAccount) }}">
                      <span class="material-icons">event_available</span>催行済み一覧
                   </a>

@@ -154,7 +154,7 @@ const AgencyCreate = ({ consts, errors, defaultValue, formSelects }) => {
                                 <input
                                     type="text"
                                     name="account"
-                                    defaultValue={defaultValue?.account}
+                                    defaultValue={defaultValue?.account ?? ""}
                                     onChange={e => setAccount(e.target.value)}
                                 />
                             </div>
@@ -174,6 +174,7 @@ const AgencyCreate = ({ consts, errors, defaultValue, formSelects }) => {
                             type="text"
                             name="password"
                             defaultValue={defaultValue.password ?? ""}
+                            placeholder="半角英数6~12。1つ以上の !#$%&=-"
                         />
                     </li>
                 </ul>
@@ -264,7 +265,7 @@ const AgencyCreate = ({ consts, errors, defaultValue, formSelects }) => {
                             <div className="selectBox wd20">
                                 <select
                                     name="prefecture_code"
-                                    value={prefectureCode}
+                                    value={prefectureCode ?? ""}
                                 >
                                     {formSelects?.prefectureCodes &&
                                         Object.keys(formSelects.prefectureCodes)
@@ -283,7 +284,7 @@ const AgencyCreate = ({ consts, errors, defaultValue, formSelects }) => {
                                 type="text"
                                 name="address1"
                                 className="wd80"
-                                value={address1}
+                                value={address1 ?? ""}
                                 onChange={e => setAddress1(e.target.value)}
                             />
                         </div>
@@ -368,7 +369,7 @@ const AgencyCreate = ({ consts, errors, defaultValue, formSelects }) => {
                                 type="text"
                                 name="capital"
                                 maxLength={10}
-                                value={capital}
+                                value={capital ?? ""}
                                 handleChange={e => setCapital(e.target.value)}
                             />
                         </div>
@@ -380,7 +381,7 @@ const AgencyCreate = ({ consts, errors, defaultValue, formSelects }) => {
                                 type="text"
                                 name="employees_number"
                                 maxLength={10}
-                                value={employeesNumber}
+                                value={employeesNumber ?? ""}
                                 handleChange={e =>
                                     setEmployeesNumber(e.target.value)
                                 }
@@ -425,7 +426,7 @@ const AgencyCreate = ({ consts, errors, defaultValue, formSelects }) => {
                         <div className="selectBox">
                             <select
                                 name="business_scope"
-                                value={businessScope}
+                                value={businessScope ?? ""}
                                 onChange={e => setBusinessScope(e.target.value)}
                             >
                                 {formSelects?.businessScopes &&
@@ -457,7 +458,7 @@ const AgencyCreate = ({ consts, errors, defaultValue, formSelects }) => {
                         <div className="selectBox">
                             <select
                                 name="registration_type"
-                                value={registrationType}
+                                value={registrationType ?? ""}
                                 onChange={e =>
                                     setRegistrationType(e.target.value)
                                 }
@@ -493,7 +494,7 @@ const AgencyCreate = ({ consts, errors, defaultValue, formSelects }) => {
                         <div className="selectBox">
                             <select
                                 name="travel_agency_association"
-                                value={travelAgencyAssociation}
+                                value={travelAgencyAssociation ?? ""}
                                 onChange={e =>
                                     setTravelAgencyAssociation(e.target.value)
                                 }
@@ -761,7 +762,7 @@ const AgencyCreate = ({ consts, errors, defaultValue, formSelects }) => {
                         </div>
                     </li>
                 </ul>
-                <hr className="sepBorder" />
+                {/* <hr className="sepBorder" />
                 <ul className="sideList">
                     <li className="wd40">
                         <span className="inputLabel">契約プラン</span>
@@ -859,7 +860,7 @@ const AgencyCreate = ({ consts, errors, defaultValue, formSelects }) => {
                 </div>
                 <div className="planPrice">
                     当月請求額<span>25,000</span>円
-                </div>
+                </div> */}
             </div>
             <ul id="formControl">
                 <li className="wd50">

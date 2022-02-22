@@ -99,7 +99,7 @@ class ReserveConfirmController extends AppController
         }
 
         // viewはeditと共通
-        return view('staff.reserve_confirm.edit', compact('reserveItinerary', 'estimateNumber', 'reserveNumber', 'itineraryNumber', 'applicationStep'));
+        return view('staff.reserve_confirm.edit', compact('reserve', 'reserveItinerary', 'estimateNumber', 'reserveNumber', 'itineraryNumber', 'applicationStep'));
     }
 
     /**
@@ -142,7 +142,7 @@ class ReserveConfirmController extends AppController
         // 行程情報。ViewComposerで使うので、変数にセット
         $reserveItinerary = $reserveConfirm->reserve_itinerary;
 
-        return view('staff.reserve_confirm.edit', compact('reserveConfirm', 'estimateNumber', 'reserveNumber', 'itineraryNumber', 'confirmNumber', 'applicationStep', 'reserveItinerary'));
+        return view('staff.reserve_confirm.edit', compact('reserve', 'reserveConfirm', 'estimateNumber', 'reserveNumber', 'itineraryNumber', 'confirmNumber', 'applicationStep', 'reserveItinerary'));
     }
 
 }

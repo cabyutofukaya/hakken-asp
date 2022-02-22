@@ -32733,7 +32733,7 @@ var DepartedList = function DepartedList(_ref) {
       lastPage = _useState4[0],
       setLastPage = _useState4[1];
 
-  var _useState5 = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])("control_number"),
+  var _useState5 = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])("latest_number_issue_at"),
       _useState6 = _slicedToArray(_useState5, 2),
       sort = _useState6[0],
       setSort = _useState6[1];
@@ -32769,7 +32769,7 @@ var DepartedList = function DepartedList(_ref) {
 
 
   var _useState17 = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])({
-    control_number: "desc",
+    latest_number_issue_at: "desc",
     status: "desc",
     "manager.name": "desc",
     departure_date: "desc",
@@ -32954,7 +32954,7 @@ var DepartedList = function DepartedList(_ref) {
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("table", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("thead", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("tr", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("th", {
     className: "sort",
     onClick: function onClick(e) {
-      return handleSortClick("control_number");
+      return handleSortClick("latest_number_issue_at");
     }
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", null, "\u4E88\u7D04\u756A\u53F7")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("th", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", null, "\u72B6\u6CC1")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("th", {
     className: "sort",

@@ -14,6 +14,7 @@ const WebEstimateDetail = ({
     defaultValue,
     formSelects,
     consts,
+    constsCommon,
     permission
 }) => {
     // 現在、有効化中の行程番号
@@ -79,6 +80,7 @@ const WebEstimateDetail = ({
                 hasOriginalDocumentQuoteTemplate={
                     consts?.hasOriginalDocumentQuoteTemplate
                 }
+                constsCommon={constsCommon}
             />
             {permission.management_read && (
                 <AccountPayableArea
