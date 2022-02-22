@@ -36616,7 +36616,7 @@ var AgencyEdit = function AgencyEdit(_ref) {
     className: "selectBox wd20"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("select", {
     name: "prefecture_code",
-    value: prefectureCode
+    value: prefectureCode !== null && prefectureCode !== void 0 ? prefectureCode : ""
   }, (formSelects === null || formSelects === void 0 ? void 0 : formSelects.prefectureCodes) && Object.keys(formSelects.prefectureCodes).sort().map(function (k) {
     return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("option", {
       value: k,
@@ -36626,7 +36626,7 @@ var AgencyEdit = function AgencyEdit(_ref) {
     type: "text",
     name: "address1",
     className: "wd80",
-    value: address1,
+    value: address1 !== null && address1 !== void 0 ? address1 : "",
     onChange: function onChange(e) {
       return setAddress1(e.target.value);
     }
@@ -36702,7 +36702,7 @@ var AgencyEdit = function AgencyEdit(_ref) {
     type: "text",
     name: "capital",
     maxLength: 10,
-    value: capital,
+    value: capital !== null && capital !== void 0 ? capital : "",
     handleChange: function handleChange(e) {
       return setCapital(e.target.value);
     }
@@ -36716,7 +36716,7 @@ var AgencyEdit = function AgencyEdit(_ref) {
     type: "text",
     name: "employees_number",
     maxLength: 10,
-    value: employeesNumber,
+    value: employeesNumber !== null && employeesNumber !== void 0 ? employeesNumber : "",
     handleChange: function handleChange(e) {
       return setEmployeesNumber(e.target.value);
     }
@@ -36756,7 +36756,7 @@ var AgencyEdit = function AgencyEdit(_ref) {
     className: "selectBox"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("select", {
     name: "business_scope",
-    value: businessScope,
+    value: businessScope !== null && businessScope !== void 0 ? businessScope : "",
     onChange: function onChange(e) {
       return setBusinessScope(e.target.value);
     }
@@ -36783,7 +36783,7 @@ var AgencyEdit = function AgencyEdit(_ref) {
     className: "selectBox"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("select", {
     name: "registration_type",
-    value: registrationType,
+    value: registrationType !== null && registrationType !== void 0 ? registrationType : "",
     onChange: function onChange(e) {
       return setRegistrationType(e.target.value);
     }
@@ -36810,7 +36810,7 @@ var AgencyEdit = function AgencyEdit(_ref) {
     className: "selectBox"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("select", {
     name: "travel_agency_association",
-    value: travelAgencyAssociation,
+    value: travelAgencyAssociation !== null && travelAgencyAssociation !== void 0 ? travelAgencyAssociation : "",
     onChange: function onChange(e) {
       return setTravelAgencyAssociation(e.target.value);
     }

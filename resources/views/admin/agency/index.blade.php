@@ -123,7 +123,8 @@
             <th class="sort" data-sort="company_name"><span>社名</span></th>
             <th class="sort" data-sort="address"><span>住所</span></th>
             <th class="sort" data-sort="tel"><span>電話番号</span></th>
-            <th class="sort txtalc"><span>契約状況</span></th>
+            {{-- <th class="sort txtalc"><span>契約状況</span></th> --}}
+            <th class="sort txtalc" data-sort="status"><span>状況</span></th>
             <th class="sort txtalc"><span>開始日</span></th>
             <th class="sort txtalc"><span>終了日</span></th>
             <th class="sort txtalc" data-sort="business_scope"><span>業務範囲</span></th>
@@ -143,7 +144,9 @@
             <td>{{ $agency->company_name }}</td>
             <td>{{ $agency->address_label }}</td>
             <td>{{ $agency->tel }}</td>
-            <td class="txtalc"><span class="status green">--</span></td>
+            <td class="txtalc"><span class="status
+              @if($agency->status) green @else gray @endif"
+              >{{ $agency->status_label }}</span></td>
             <td class="txtalc">---/--/--</td>
             <td class="txtalc">----/--/--</td>
             <td class="txtalc">{{ $agency->business_scope_label }}</td>
