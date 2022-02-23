@@ -61,7 +61,15 @@ class EditFormComposer
         );
 
         //////////////// form初期値を設定 ////////////////
-        $defaultValue = array_merge($user->toArray(), session()->getOldInput());
+
+        $userArr = $user->toArray();
+        if (!isset($userArr['userable'])) {
+            $userArr['userable'] = []; // 念の為初期化
+        }
+        // 名前はオリジナルのものに書き換えておく
+        $userArr['userable']['name'] = $userArr['userable']['org_name'];
+
+        $defaultValue = array_merge($userArr, session()->getOldInput());
 
         // 当該レコードに設定されたカスタム項目値
         $vUserCustomValues = $user->v_user_custom_values;

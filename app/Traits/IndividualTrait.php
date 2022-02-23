@@ -48,7 +48,7 @@ trait IndividualTrait
     public function getNameAttribute($value): ?string
     {
         if ($value) {
-            if ($this->user && $this->user->trashed()) {
+            if ($this->user && $this->user->trashed()) { // $this->user は親レコードとなるuserオブジェクト
                 return sprintf("%s(削除)", $value);
             } else {
                 if ($this->user && $this->user->status != config('consts.users.STATUS_VALID')) {
@@ -72,7 +72,8 @@ trait IndividualTrait
             return preg_replace('/\(削除\)$/', '', $this->name);
         }
         if ($this->name && $this->user && $this->user->status != config('consts.users.STATUS_VALID')) {
-            return preg_replace('/\(無効\)$/', '', $this->name);
+            $statuses = get_const_item('users', 'status');
+            return preg_replace('/\('. Arr::get($statuses, $this->user->status) .'\)$/', '', $this->name);
         }
         return $this->name;
     }

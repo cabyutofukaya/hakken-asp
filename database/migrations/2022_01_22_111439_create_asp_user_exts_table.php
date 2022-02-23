@@ -15,6 +15,7 @@ class CreateAspUserExtsTable extends Migration
     {
         Schema::create('asp_user_exts', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->unsignedInteger('agency_id')->comment('会社ID'); // リレーションには特に使わないがweb_user_extsテーブルと構造を合わせるために設置
             $table->unsignedBigInteger('asp_user_id')->comment('ASPユーザーID');
             $table->tinyInteger('age')->nullable()->comment('年齢');
             $table->string('age_kbn', 3)->nullable()->comment('年齢区分');
@@ -26,15 +27,20 @@ class CreateAspUserExtsTable extends Migration
             $table->timestamps();
             $table->softDeletes();
 
+            $table->foreign('agency_id')
+                ->references('id')
+                ->on('agencies')
+                ->onDelete('cascade');
+
             $table->foreign('asp_user_id')
-            ->references('id')
-            ->on('asp_users')
-            ->onDelete('cascade');
+                ->references('id')
+                ->on('asp_users')
+                ->onDelete('cascade');
 
             $table->foreign('manager_id')
-            ->references('id')
-            ->on('staffs')
-            ->onDelete('set null');
+                ->references('id')
+                ->on('staffs')
+                ->onDelete('set null');
 
         });
     }

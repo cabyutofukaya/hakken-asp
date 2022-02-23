@@ -17,6 +17,7 @@ class WebUserExt extends Model
      * @var array
      */
     protected $fillable = [
+        'agency_id',
         'web_user_id',
         'age',
         'age_kbn',

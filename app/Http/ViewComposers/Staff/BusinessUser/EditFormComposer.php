@@ -63,7 +63,6 @@ class EditFormComposer
         //////////////// form初期値を設定 ////////////////
         // 基本項目
         foreach ([
-            'name',
             'name_kana',
             'name_roman',
             'tel',
@@ -80,6 +79,9 @@ class EditFormComposer
             ] as $f) {
                 $defaultValue[$f] = old($f, data_get($businessUser, $f));
         }
+        // 名前はオリジナルのものに書き換えておく
+        $defaultValue['name'] = old('name', data_get($businessUser, 'org_name'));
+
 
         // 当該レコードに設定されたカスタム項目値
         $vBusinessUserCustomValues = $businessUser->v_business_user_custom_values;

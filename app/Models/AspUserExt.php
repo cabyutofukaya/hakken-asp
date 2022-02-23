@@ -17,6 +17,7 @@ class AspUserExt extends Model
      * @var array
      */
     protected $fillable = [
+        'agency_id',
         'asp_user_id',
         'age',
         'age_kbn',

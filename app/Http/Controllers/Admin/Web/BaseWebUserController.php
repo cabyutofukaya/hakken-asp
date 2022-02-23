@@ -3,19 +3,19 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Admin\Web;
 
-use App\Models\WebUser;
+use App\Models\BaseWebUser;
 use App\Http\Controllers\Controller;
-use App\Services\WebUserService;
+use App\Services\BaseWebUserService;
 use App\Http\Requests\Admin\WebUserUpdateRequest;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Gate;
 
-class WebUserController extends Controller
+class BaseWebUserController extends Controller
 {
-    public function __construct(WebUserService $webUserService)
+    public function __construct(BaseWebUserService $baseWebUserService)
     {
-        $this->webUserService = $webUserService;
+        $this->baseWebUserService = $baseWebUserService;
     }
 
     /**
@@ -23,13 +23,13 @@ class WebUserController extends Controller
      */
     public function index(): View
     {
-        $response = Gate::inspect('viewAny', [new WebUser]);
+        $response = Gate::inspect('viewAny', [new BaseWebUser]);
         if (!$response->allowed()) {
             abort(403);
         }// 認可チェック
 
         return view("admin.web.web_user.index", [
-            'webUsers' => $this->webUserService->paginate([], 30),
+            'webUsers' => $this->baseWebUserService->paginate([], 30),
         ]);
     }
 
@@ -42,7 +42,7 @@ class WebUserController extends Controller
      */
     public function edit(int $id)
     {
-        $webUser = $this->webUserService->find($id);
+        $webUser = $this->baseWebUserService->find($id);
 
         $response = Gate::inspect('update', [$webUser]);
         if (!$response->allowed()) {
@@ -57,13 +57,13 @@ class WebUserController extends Controller
      */
     public function update(WebUserUpdateRequest $request, int $id)
     {
-        $webUser = $this->webUserService->find($id);
+        $webUser = $this->baseWebUserService->find($id);
         $response = Gate::inspect('update', [$webUser]);
         if (!$response->allowed()) {
             return back()->withInput()->withErrors(array('auth_error' => $response->message()));
         }// 認可チェック
 
-        if ($webUser = $this->webUserService->update($id, $request->all())) {
+        if ($webUser = $this->baseWebUserService->update($id, $request->all())) {
             return redirect()->route('admin.web.web_users.edit', $id)->with('success_message', "顧客: {$webUser->web_user_number} を更新しました");
         }
         abort(409);

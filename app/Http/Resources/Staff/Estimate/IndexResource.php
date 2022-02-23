@@ -36,7 +36,8 @@ class IndexResource extends JsonResource
                 'val' => $this->travel_types->isNotEmpty() ? $this->travel_types[0]->val : null
             ],
             "status" => [ // 見積ステータス
-                'val' => $this->estimate_statuses->isNotEmpty() ? $this->estimate_statuses[0]->val : null
+                // 'val' => $this->estimate_statuses->isNotEmpty() ? $this->estimate_statuses[0]->val : null
+                'val' => optional($this->estimate_status)->val,
             ],
             "application_type" => [ // 申込種別
                 'val' => optional($this->application_type)->val,
@@ -45,8 +46,8 @@ class IndexResource extends JsonResource
                 'val' => $this->application_dates->isNotEmpty() ? $this->application_dates[0]->val : null
             ],
             "applicant" => [ // 申込者
-                'name' => $this->applicantable ? optional($this->applicantable->userable)->name : null,
-                'is_deleted' => $this->applicantable ? optional($this->applicantable->userable)->trashed() : false,
+                'name' => $this->applicant_searchable ? optional($this->applicant_searchable)->name : null,
+                'is_deleted' => $this->applicant_searchable ? optional($this->applicant_searchable)->trashed() : false,
             ],
             "representative" => [ // 代表者
                 'state_inc_name' => $this->representatives->isNotEmpty() ? $this->representatives[0]->state_inc_name : null,

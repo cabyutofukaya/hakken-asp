@@ -58290,10 +58290,10 @@ function toPostFormat(str) {
 } // 「都道府県+住所1+住所2」の文字列を生成
 
 function concatAdress(obj) {
-  var _obj$userable, _obj$userable$prefect, _obj$userable2, _obj$userable3, _obj$userable$prefect2, _obj$userable4, _obj$userable4$prefec, _obj$userable$address, _obj$userable5, _obj$userable$address2, _obj$userable6;
+  var _obj$prefecture, _obj$prefecture$name, _obj$prefecture2, _obj$address, _obj$address2;
 
-  if (!(obj !== null && obj !== void 0 && (_obj$userable = obj.userable) !== null && _obj$userable !== void 0 && (_obj$userable$prefect = _obj$userable.prefecture) !== null && _obj$userable$prefect !== void 0 && _obj$userable$prefect.name) && !(obj !== null && obj !== void 0 && (_obj$userable2 = obj.userable) !== null && _obj$userable2 !== void 0 && _obj$userable2.address1) && !(obj !== null && obj !== void 0 && (_obj$userable3 = obj.userable) !== null && _obj$userable3 !== void 0 && _obj$userable3.address2)) return "-";
-  return ((_obj$userable$prefect2 = obj === null || obj === void 0 ? void 0 : (_obj$userable4 = obj.userable) === null || _obj$userable4 === void 0 ? void 0 : (_obj$userable4$prefec = _obj$userable4.prefecture) === null || _obj$userable4$prefec === void 0 ? void 0 : _obj$userable4$prefec.name) !== null && _obj$userable$prefect2 !== void 0 ? _obj$userable$prefect2 : "") + ((_obj$userable$address = obj === null || obj === void 0 ? void 0 : (_obj$userable5 = obj.userable) === null || _obj$userable5 === void 0 ? void 0 : _obj$userable5.address1) !== null && _obj$userable$address !== void 0 ? _obj$userable$address : "") + ((_obj$userable$address2 = obj === null || obj === void 0 ? void 0 : (_obj$userable6 = obj.userable) === null || _obj$userable6 === void 0 ? void 0 : _obj$userable6.address2) !== null && _obj$userable$address2 !== void 0 ? _obj$userable$address2 : "");
+  if (!(obj !== null && obj !== void 0 && (_obj$prefecture = obj.prefecture) !== null && _obj$prefecture !== void 0 && _obj$prefecture.name) && !(obj !== null && obj !== void 0 && obj.address1) && !(obj !== null && obj !== void 0 && obj.address2)) return "-";
+  return ((_obj$prefecture$name = obj === null || obj === void 0 ? void 0 : (_obj$prefecture2 = obj.prefecture) === null || _obj$prefecture2 === void 0 ? void 0 : _obj$prefecture2.name) !== null && _obj$prefecture$name !== void 0 ? _obj$prefecture$name : "") + ((_obj$address = obj === null || obj === void 0 ? void 0 : obj.address1) !== null && _obj$address !== void 0 ? _obj$address : "") + ((_obj$address2 = obj === null || obj === void 0 ? void 0 : obj.address2) !== null && _obj$address2 !== void 0 ? _obj$address2 : "");
 } // 改行コードをbrに変換
 
 function nl2br(str) {
@@ -58484,14 +58484,14 @@ var BusinessUserShowArea = function BusinessUserShowArea(_ref) {
     onClick: function onClick(e) {
       return handleTabChange(e, tabCodes.tab_consultation);
     }
-  }, "\u76F8\u8AC7\u4E00\u89A7")))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_components_BusinessUser_CustomerArea__WEBPACK_IMPORTED_MODULE_4__["default"], {
+  }, "\u76F8\u8AC7\u4E00\u89A7")))), permission.customer.read && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_components_BusinessUser_CustomerArea__WEBPACK_IMPORTED_MODULE_4__["default"], {
     isShow: currentTab === tabCodes.tab_customer_info,
     user: user,
     formSelects: formSelects === null || formSelects === void 0 ? void 0 : formSelects[tabCodes.tab_customer_info],
     customFields: customFields === null || customFields === void 0 ? void 0 : customFields[tabCodes.tab_customer_info],
     consts: consts === null || consts === void 0 ? void 0 : consts[tabCodes.tab_customer_info],
     permission: permission.customer
-  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_components_BusinessUser_HistoryArea__WEBPACK_IMPORTED_MODULE_5__["default"], {
+  }), permission.history.read && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_components_BusinessUser_HistoryArea__WEBPACK_IMPORTED_MODULE_5__["default"], {
     isShow: currentTab === tabCodes.tab_usage_history,
     userNumber: user === null || user === void 0 ? void 0 : user.user_number,
     permission: permission === null || permission === void 0 ? void 0 : permission.history,

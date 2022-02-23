@@ -72,6 +72,7 @@ class AuthServiceProvider extends ServiceProvider
         'App\Models\ReserveReceipt' => 'App\Policies\ReserveReceiptPolicy',
         'App\Models\ReserveBundleReceipt' => 'App\Policies\ReserveBundleReceiptPolicy',
         //
+        'App\Models\BaseWebUser' => 'App\Policies\BaseWebUserPolicy',
         'App\Models\WebUser' => 'App\Policies\WebUserPolicy',
         'App\Models\WebCompany' => 'App\Policies\WebCompanyPolicy',
         'App\Models\WebProfile' => 'App\Policies\WebProfilePolicy',

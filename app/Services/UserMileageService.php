@@ -87,6 +87,12 @@ class UserMileageService
             throw new ExclusiveLockException;
         }
 
+        // カスタム項目
+        $customFields = $this->customFieldsExtraction($data); // 入力データからカスタムフィールドを抽出
+        if ($customFields) {
+            $this->userMileageCustomValueService->upsertCustomFileds($customFields, $userMileage->id); // カスタムフィールド保存
+        }
+
         return $this->userMileageRepository->update($id, $data);
     }
 

@@ -13,8 +13,8 @@ Route::domain(env('ADMIN_DOMAIN', 'cab.hakken-tour.com'))->namespace('Admin\Api'
     Route::put('agency/{id}/status', 'AgencyController@updateStatus'); // 会社削除
     Route::delete('agency/{id}', 'AgencyController@destroy'); // 会社削除
 
-    Route::put('web_user/{id}/status', 'WebUserController@updateStatus'); // ステータスを更新
-    Route::delete('web_user/{id}', 'WebUserController@destroy'); // ユーザー削除
+    Route::put('web_user/{id}/status', 'BaseWebUserController@updateStatus'); // ステータスを更新
+    Route::delete('web_user/{id}', 'BaseWebUserController@destroy'); // ユーザー削除
 
   });
 });

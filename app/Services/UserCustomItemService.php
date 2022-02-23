@@ -165,7 +165,7 @@ class UserCustomItemService
                 'seq' => 5,
                 'fixed_item' => true,
                 'undelete_item' => true,
-                'unedit_item' => false,
+                'unedit_item' => true,
                 'list' => config('consts.user_custom_items.CODE_APPLICATION_TRAVEL_TYPE_DEFAULT_LIST'),
                 'protect_list' => config('consts.user_custom_items.CODE_APPLICATION_TRAVEL_TYPE_DEFAULT_LIST_PROTECT'),
             ], // 旅行種別
@@ -207,7 +207,7 @@ class UserCustomItemService
                 'seq' => 20,
                 'fixed_item' => true,
                 'undelete_item' => true,
-                'unedit_item' => false,
+                'unedit_item' => true,
                 'list' => config('consts.user_custom_items.CODE_APPLICATION_KBN_DEFAULT_LIST'),
                 'protect_list' => [],
             ], // 区分
@@ -221,7 +221,7 @@ class UserCustomItemService
                 'seq' => 25,
                 'fixed_item' => true,
                 'undelete_item' => true,
-                'unedit_item' => false,
+                'unedit_item' => true,
                 'list' => config('consts.user_custom_items.CODE_APPLICATION_TYPE_DEFAULT_LIST'),
                 'protect_list' => [],
             ], // 申込種別
@@ -235,7 +235,7 @@ class UserCustomItemService
                 'seq' => 30,
                 'fixed_item' => true,
                 'undelete_item' => true,
-                'unedit_item' => false,
+                'unedit_item' => true,
                 'list' => config('consts.user_custom_items.CODE_APPLICATION_CLASS_DEFAULT_LIST'),
                 'protect_list' => [],
             ], // 分類
@@ -308,7 +308,7 @@ class UserCustomItemService
                 'seq' => 5,
                 'fixed_item' => true,
                 'undelete_item' => true,
-                'unedit_item' => false,
+                'unedit_item' => true,
                 'list' => [],
                 'protect_list' => [],
             ], // 顧客区分
@@ -322,7 +322,7 @@ class UserCustomItemService
                 'seq' => 10,
                 'fixed_item' => true,
                 'undelete_item' => true,
-                'unedit_item' => false,
+                'unedit_item' => true,
                 'list' => [],
                 'protect_list' => [],
             ], // 顧客ランク
@@ -336,7 +336,7 @@ class UserCustomItemService
                 'seq' => 15,
                 'fixed_item' => true,
                 'undelete_item' => true,
-                'unedit_item' => false,
+                'unedit_item' => true,
                 'list' => [],
                 'protect_list' => [],
             ], // 受付担当者
@@ -350,7 +350,7 @@ class UserCustomItemService
                 'seq' => 20,
                 'fixed_item' => true,
                 'undelete_item' => true,
-                'unedit_item' => false,
+                'unedit_item' => true,
                 'list' => config('consts.user_custom_items.CODE_USER_CUSTOMER_AIRPLANE_COMPANY_DEFAULT_LIST'),
                 'protect_list' => [],
             ], // マイレージ航空会社
@@ -366,7 +366,7 @@ class UserCustomItemService
                 'seq' => 5,
                 'fixed_item' => true,
                 'undelete_item' => true,
-                'unedit_item' => false,
+                'unedit_item' => true,
                 'list' => [],
                 'protect_list' => [],
             ], // 顧客区分
@@ -380,7 +380,7 @@ class UserCustomItemService
                 'seq' => 10,
                 'fixed_item' => true,
                 'undelete_item' => true,
-                'unedit_item' => false,
+                'unedit_item' => true,
                 'list' => [],
                 'protect_list' => [],
             ], // 顧客ランク
@@ -396,7 +396,7 @@ class UserCustomItemService
                 'seq' => 5,
                 'fixed_item' => true,
                 'undelete_item' => true,
-                'unedit_item' => false,
+                'unedit_item' => true,
                 'list' => [],
                 'protect_list' => [],
             ], // 所属
@@ -412,7 +412,7 @@ class UserCustomItemService
                 'seq' => 5,
                 'fixed_item' => true,
                 'undelete_item' => true,
-                'unedit_item' => false,
+                'unedit_item' => true,
                 'list' => config('consts.user_custom_items.CODE_SUBJECT_OPTION_KBN_DEFAULT_LIST'),
                 'protect_list' => [],
             ], // 区分
@@ -427,7 +427,7 @@ class UserCustomItemService
             'seq' => 5,
             'fixed_item' => true,
             'undelete_item' => true,
-            'unedit_item' => false,
+            'unedit_item' => true,
             'list' => config('consts.user_custom_items.CODE_SUBJECT_HOTEL_KBN_DEFAULT_LIST'),
             'protect_list' => [],
         ], // 区分
@@ -441,7 +441,7 @@ class UserCustomItemService
             'seq' => 10,
             'fixed_item' => true,
             'undelete_item' => true,
-            'unedit_item' => false,
+            'unedit_item' => true,
             'list' => config('consts.user_custom_items.CODE_SUBJECT_HOTEL_ROOM_TYPE_DEFAULT_LIST'),
             'protect_list' => [],
         ], // 部屋タイプ
@@ -455,7 +455,7 @@ class UserCustomItemService
             'seq' => 15,
             'fixed_item' => true,
             'undelete_item' => true,
-            'unedit_item' => false,
+            'unedit_item' => true,
             'list' => config('consts.user_custom_items.CODE_SUBJECT_HOTEL_MEAL_TYPE_DEFAULT_LIST'),
             'protect_list' => [],
         ], // 食事タイプ
@@ -470,7 +470,7 @@ class UserCustomItemService
             'seq' => 5,
             'fixed_item' => true,
             'undelete_item' => true,
-            'unedit_item' => false,
+            'unedit_item' => true,
             'list' => config('consts.user_custom_items.CODE_SUBJECT_AIRPLANE_COMPANY_DEFAULT_LIST'),
             'protect_list' => [],
         ], // 航空会社
@@ -486,7 +486,7 @@ class UserCustomItemService
             'seq' => 5,
             'fixed_item' => true,
             'undelete_item' => true,
-            'unedit_item' => false,
+            'unedit_item' => true,
             'list' => config('consts.user_custom_items.CODE_MANAGEMENT_WITHDRAWAL_METHOD_DEFAULT_LIST'),
             'protect_list' => config('consts.user_custom_items.CODE_MANAGEMENT_WITHDRAWAL_METHOD_DEFAULT_LIST_PROTECT'),
         ], // 出金方法
@@ -500,7 +500,7 @@ class UserCustomItemService
             'seq' => 10,
             'fixed_item' => true,
             'undelete_item' => true,
-            'unedit_item' => false,
+            'unedit_item' => true,
             'list' => config('consts.user_custom_items.CODE_MANAGEMENT_DEPOSIT_METHOD_DEFAULT_LIST'),
             'protect_list' => config('consts.user_custom_items.CODE_MANAGEMENT_DEPOSIT_METHOD_DEFAULT_LIST_PROTECT'),
         ], // 入金方法

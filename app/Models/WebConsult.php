@@ -30,7 +30,7 @@ class WebConsult extends Model
     // 受付可能数に達しているか
     public function is_reach_consult_max() : bool
     {
-        return WebReserveExt::where('web_consult_id', $this->id)->whereNotNull('consent_at')->count();
+        return WebReserveExt::where('web_consult_id', $this->id)->whereNotNull('consent_at')->count() >= config('consts.const.WEB_CONSULT_MAX_UNDERTAKE');
     }
     
     // ミューテタ

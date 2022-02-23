@@ -83,10 +83,15 @@ class User extends Model implements AppUser, ApplicantInterface
         // userableがモデルによって削除処理が異なるのでsoftCascadeは使わずに手動削除
         static::deleting(function ($user) {
             $user->userable()->each(function ($r) {
-                if (get_class($r) === 'App\Models\AspUser') { //WebUserは削除不可
+                if (get_class($r) === 'App\Models\AspUser') { //asp_usersレコードは削除
                     $r->delete();
+                } else if(get_class($r) === 'App\Models\WebUser'){ // web_usersレコードは削除不可。ただし、web_usersレコードに紐づくweb_user_extsは削除する
+                    $r->user_ext()->each(function ($s) {
+                        $s->delete();
+                    });
                 }
             });
+            // 以下の処理を変える場合はBaseWebUserモデルの削除処理も変更が必要か確認
             $user->user_visas()->each(function ($r) {
                 $r->delete();
             });
@@ -112,7 +117,7 @@ class User extends Model implements AppUser, ApplicantInterface
      */
     public function userable()
     {
-        return $this->morphTo();
+        return $this->morphTo()->withTrashed(); // 削除済みも取得
     }
 
     // ビザ情報
