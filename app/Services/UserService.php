@@ -157,7 +157,8 @@ class UserService
         $userable = $this->aspUserService->create($userableData);
 
         // user_extリレーションを作成
-        $userable->user_ext()->create($userExtData);
+        $userable->user_ext()->create(array_merge($userExtData, ['agency_id' => $userData['agency_id']])); // 会社IDを付与
+        
 
         // usersを作成
         $user = $this->userRepository->create(

@@ -101,12 +101,31 @@ class BaseWebUser extends Model
 
 
         static::deleting(function ($webUser) {
-            // 各会社に紐づく当該webユーザーを全削除
-            \App\Models\User::where('userable_type', 'App\Models\WebUser')->where('userable_id', $webUser->id)->delete();
+            // 各会社に紐づく当該webユーザーを全削除。user_extsリレーションが若干特殊な形式につき、$userのdeleteメソッドを実行してもうまく行かないので(agency_id情報が必要)、各種リレーションを手動削除
+
+            // usersに紐づくリレーションを削除
+            foreach(\App\Models\User::where('userable_type', 'App\Models\WebUser')->where('userable_id', $webUser->id)->get() as $user){
+                // 以下の処理を変える場合は、Userモデルの削除処理も変更が必要か確認
+                $user->user_visas()->each(function ($r) {
+                    $r->delete();
+                });
+                $user->user_mileages()->each(function ($r) {
+                    $r->delete();
+                });
+                $user->user_member_cards()->each(function ($r) {
+                    $r->delete();
+                });
+                $user->agency_consultations()->each(function ($r) {
+                    $r->delete();
+                });
+            }
 
             $webUser->user_exts()->each(function ($r) {
                 $r->delete();
             });
+
+            // 最後にuserを削除
+            \App\Models\User::where('userable_type', 'App\Models\WebUser')->where('userable_id', $webUser->id)->delete();
         });
     }
 

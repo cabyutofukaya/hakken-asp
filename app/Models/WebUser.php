@@ -98,24 +98,13 @@ class WebUser extends Model implements AppUser
     {
         parent::boot();
         self::saveModelLog();
-
-
-        static::deleting(function ($webUser) {
-            
-            // 各会社に紐づく当該webユーザーを全削除
-            \App\Models\User::where('userable_type', 'App\Models\WebUser')->where('userable_id', $webUser->id)->delete();
-
-            $webUser->user_ext()->each(function ($r) {
-                $r->delete();
-            });
-        });
     }
 
     // usersレコード(親)
     public function user()
     {
         // agency_idの条件が"重要"。User対AspUserの関係は1対1だが、User対WebUserの関係は1対多になるので会社IDの条件で1対1の関係にする
-        return $this->morphOne('App\Models\User', 'userable')->where('agency_id', auth('staff')->user()->agency_id);
+        return $this->morphOne('App\Models\User', 'userable')->where('agency_id', auth('staff')->user()->agency_id)->withTrashed(); //削除済みも取得
     }
 
     /**

@@ -68,8 +68,8 @@ class IndexResource extends JsonResource
                 'val' => optional($this->application_date)->val
             ],
             "applicant" => [ // 申込者
-                'name' => $this->applicantable ? $this->applicantable->userable->name : null,
-                'is_deleted' => $this->applicantable ? $this->applicantable->userable->trashed() : false,
+                'name' => $this->applicantable ? optional($this->applicantable->userable)->name : null,
+                'is_deleted' => $this->applicantable ? optional($this->applicantable->userable)->trashed() : false,
             ],
             "representative" => [ // 代表者
                 'state_inc_name' => $this->representatives->isNotEmpty() ? $this->representatives[0]->state_inc_name : null,
