@@ -94,8 +94,9 @@ class UserMileageController extends Controller
             abort(403);
         }
 
-        $input = $request->all();
         try {
+            $input = $request->all();
+
             if ($userMileage = $this->userMileageService->update($userMileage->id, $input)) {
                 return new IndexResource($userMileage);
             }
