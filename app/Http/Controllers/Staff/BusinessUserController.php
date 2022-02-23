@@ -98,7 +98,7 @@ class BusinessUserController extends AppController
         // 認可チェック
         $response = Gate::inspect('view', [$businessUser]);
         if (!$response->allowed()) {
-            return $this->forbiddenRedirect($response->message());
+            abort(403);
         }
 
         return view('staff.business_user.show', compact('businessUser'));
