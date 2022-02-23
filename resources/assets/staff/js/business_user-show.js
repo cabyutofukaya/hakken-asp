@@ -126,20 +126,24 @@ const BusinessUserShowArea = ({
                     </li>
                 </ul>
             </div>
-            <CustomerArea
-                isShow={currentTab === tabCodes.tab_customer_info}
-                user={user}
-                formSelects={formSelects?.[tabCodes.tab_customer_info]}
-                customFields={customFields?.[tabCodes.tab_customer_info]}
-                consts={consts?.[tabCodes.tab_customer_info]}
-                permission={permission.customer}
-            />
-            <HistoryArea
-                isShow={currentTab === tabCodes.tab_usage_history}
-                userNumber={user?.user_number}
-                permission={permission?.history}
-                consts={consts[tabCodes.tab_usage_history]}
-            />
+            {permission.customer.read && (
+                <CustomerArea
+                    isShow={currentTab === tabCodes.tab_customer_info}
+                    user={user}
+                    formSelects={formSelects?.[tabCodes.tab_customer_info]}
+                    customFields={customFields?.[tabCodes.tab_customer_info]}
+                    consts={consts?.[tabCodes.tab_customer_info]}
+                    permission={permission.customer}
+                />
+            )}
+            {permission.history.read && (
+                <HistoryArea
+                    isShow={currentTab === tabCodes.tab_usage_history}
+                    userNumber={user?.user_number}
+                    permission={permission?.history}
+                    consts={consts[tabCodes.tab_usage_history]}
+                />
+            )}
             {permission.consultation.read && (
                 <ConsultationArea
                     isShow={currentTab === tabCodes.tab_consultation}

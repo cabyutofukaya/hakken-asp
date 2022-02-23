@@ -165,7 +165,7 @@ const CustomerArea = ({
                                     {toPostFormat(user.userable.zip_code) ??
                                         "-"}
                                     <br />
-                                    {concatAdress(user)}
+                                    {concatAdress(user?.userable)}
                                 </td>
                             </tr>
                             <tr>

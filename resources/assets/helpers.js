@@ -51,15 +51,15 @@ export function toPostFormat(str) {
 // 「都道府県+住所1+住所2」の文字列を生成
 export function concatAdress(obj) {
     if (
-        !obj?.userable?.prefecture?.name &&
-        !obj?.userable?.address1 &&
-        !obj?.userable?.address2
+        !obj?.prefecture?.name &&
+        !obj?.address1 &&
+        !obj?.address2
     )
         return "-";
     return (
-        (obj?.userable?.prefecture?.name ?? "") +
-        (obj?.userable?.address1 ?? "") +
-        (obj?.userable?.address2 ?? "")
+        (obj?.prefecture?.name ?? "") +
+        (obj?.address1 ?? "") +
+        (obj?.address2 ?? "")
     );
 }
 
