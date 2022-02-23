@@ -18,6 +18,8 @@ class AspUser extends Model implements AppUser
 
     protected $touches = ['user'];
 
+    protected $appends = ['org_name']; // "削除"などの状態フレーズのないオリジナルの名前
+
     protected $softCascade = [
         'user_ext',
     ];
@@ -91,6 +93,11 @@ class AspUser extends Model implements AppUser
     public function agency()
     {
         return $this->belongsTo('App\Models\Agency')->withDefault();
+    }
+
+    public function user()
+    {
+        return $this->morphOne('App\Models\User', 'userable');
     }
 
     /**

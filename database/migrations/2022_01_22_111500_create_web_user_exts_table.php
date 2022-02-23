@@ -15,6 +15,7 @@ class CreateWebUserExtsTable extends Migration
     {
         Schema::create('web_user_exts', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->unsignedInteger('agency_id')->comment('会社ID');
             $table->unsignedBigInteger('web_user_id')->comment('WEBユーザーID');
             $table->tinyInteger('age')->nullable()->comment('年齢');
             $table->string('age_kbn', 3)->nullable()->comment('年齢区分');
@@ -26,15 +27,20 @@ class CreateWebUserExtsTable extends Migration
             $table->timestamps();
             $table->softDeletes();
 
+            $table->foreign('agency_id')
+                ->references('id')
+                ->on('agencies')
+                ->onDelete('cascade');
+
             $table->foreign('web_user_id')
-            ->references('id')
-            ->on('web_users')
-            ->onDelete('cascade');
+                ->references('id')
+                ->on('web_users')
+                ->onDelete('cascade');
 
             $table->foreign('manager_id')
-            ->references('id')
-            ->on('staffs')
-            ->onDelete('set null');
+                ->references('id')
+                ->on('staffs')
+                ->onDelete('set null');
         });
     }
 

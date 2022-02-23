@@ -65,7 +65,7 @@ Route::domain(env('ADMIN_DOMAIN', 'cab.hakken-tour.com'))->namespace('Admin')->n
 
         // HAKKEN機能
         Route::namespace('Web')->name('web.')->group(function () {
-            Route::resource('web_users', 'WebUserController');
+            Route::resource('web_users', 'BaseWebUserController');
             Route::resource('purposes', 'PurposeController');
             Route::resource('', 'InterestController');
 

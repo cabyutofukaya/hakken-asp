@@ -3,15 +3,15 @@
 namespace App\Http\Controllers\Admin\Api;
 
 use App\Http\Controllers\Controller;
-use App\Services\WebUserService;
+use App\Services\BaseWebUserService;
 use App\Http\Requests\Admin\WebUserStatusUpdateRequest;
 use Illuminate\Http\Request;
 
-class WebUserController extends Controller
+class BaseWebUserController extends Controller
 {
-    public function __construct(WebUserService $webUserService)
+    public function __construct(BaseWebUserService $baseWebUserService)
     {
-        $this->webUserService = $webUserService;
+        $this->baseWebUserService = $baseWebUserService;
     }
 
     /**
@@ -21,7 +21,7 @@ class WebUserController extends Controller
      */
     public function updateStatus(WebUserStatusUpdateRequest $request, int $webUserId)
     {
-        $webUser = $this->webUserService->find($webUserId);
+        $webUser = $this->baseWebUserService->find($webUserId);
 
         if (!$webUser) {
             return response("データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 404);
@@ -33,7 +33,7 @@ class WebUserController extends Controller
             abort(403);
         }
 
-        $this->webUserService->updateField($webUser->id, ['status' => $request->input("status")]);
+        $this->baseWebUserService->updateField($webUser->id, ['status' => $request->input("status")]);
 
         return response('', 200);
     }
@@ -45,7 +45,7 @@ class WebUserController extends Controller
      */
     public function destroy(Request $request, string $webUserId)
     {
-        $webUser = $this->webUserService->find($webUserId);
+        $webUser = $this->baseWebUserService->find($webUserId);
 
         if (!$webUser) {
             return response("データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 404);
@@ -57,7 +57,7 @@ class WebUserController extends Controller
             abort(403);
         }
         
-        if ($this->webUserService->delete($webUserId, true)) { // 論理削除
+        if ($this->baseWebUserService->delete($webUserId, true)) { // 論理削除
             if ($request->input("set_message")) {
                 $request->session()->flash('decline_message', "「{$webUser->web_user_number}」の削除が完了しました。"); // set_messageは処理成功のフラッシュメッセージのセットを要求するパラメータ
             }

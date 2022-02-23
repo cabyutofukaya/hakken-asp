@@ -193,7 +193,7 @@
         <input type="tel" name="workspace_tel" value="{{ old('workspace_tel', $webUser->workspace_tel) }}">
       </li>
       <li class="wd100">
-        <span class="inputLabel">備考</span>
+        <span class="inputLabel">備考 ※ユーザー、会社側にも表示されます</span>
         <textarea rows="3" name="workspace_note">{{ old('workspace_note', $webUser->workspace_note) }}</textarea>
       </li>
     </ul>

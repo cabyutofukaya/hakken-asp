@@ -18,46 +18,46 @@ class WebUserService
         $this->webUserRepository = $webUserRepository;
     }
 
-    /**
-     * 1件取得
-     */
-    public function find(int $id, array $with = [], array $select=[], bool $getDeleted = false) : WebUser
-    {
-        return $this->webUserRepository->find($id, $with, $select, $getDeleted);
-    }
+    // /**
+    //  * 1件取得
+    //  */
+    // public function find(int $id, array $with = [], array $select=[], bool $getDeleted = false) : WebUser
+    // {
+    //     return $this->webUserRepository->find($id, $with, $select, $getDeleted);
+    // }
 
-    /**
-     * 更新
-     *
-     * @param int $id ユーザーID
-     * @param array $data 編集データ
-     * @return WebUser
-     */
-    public function update(int $id, array $data) : WebUser
-    {
-        // 顧客番号、メールアドレスは更新不可
-        $data = Arr::except($data, ['user_number','email']);
+    // /**
+    //  * 更新
+    //  *
+    //  * @param int $id ユーザーID
+    //  * @param array $data 編集データ
+    //  * @return WebUser
+    //  */
+    // public function update(int $id, array $data) : WebUser
+    // {
+    //     // 顧客番号、メールアドレスは更新不可
+    //     $data = Arr::except($data, ['user_number','email']);
 
-        return $this->webUserRepository->update($id, $data);
-    }
+    //     return $this->webUserRepository->update($id, $data);
+    // }
 
-    /**
-     * フィールド更新
-     */
-    public function updateField(int $id, array $params) : bool
-    {
-        return $this->webUserRepository->updateField($id, $params);
-    }
+    // /**
+    //  * フィールド更新
+    //  */
+    // public function updateField(int $id, array $params) : bool
+    // {
+    //     return $this->webUserRepository->updateField($id, $params);
+    // }
 
-    /**
-     * ページネーションで取得
-     */
-    public function paginate(array $params, int $limit, array $with=[], array $select = []) : LengthAwarePaginator
-    {
-        $params = collect(request()->query())->only(['user_number', 'name', 'name_kana', 'name_roman'])->toArray(); // 検索パラメータ
+    // /**
+    //  * ページネーションで取得
+    //  */
+    // public function paginate(array $params, int $limit, array $with=[], array $select = []) : LengthAwarePaginator
+    // {
+    //     $params = collect(request()->query())->only(['user_number', 'name', 'name_kana', 'name_roman'])->toArray(); // 検索パラメータ
 
-        return $this->webUserRepository->paginate($params, $limit, $with, $select);
-    }
+    //     return $this->webUserRepository->paginate($params, $limit, $with, $select);
+    // }
 
     /**
      * 定数データを取得

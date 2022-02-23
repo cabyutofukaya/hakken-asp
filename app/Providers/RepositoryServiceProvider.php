@@ -392,6 +392,10 @@ class RepositoryServiceProvider extends ServiceProvider
         //     \App\Repositories\WebUserSequence\WebUserSequenceRepository::class
         // );
         $this->app->bind(
+            \App\Repositories\BaseWebUser\BaseWebUserRepositoryInterface::class,
+            \App\Repositories\BaseWebUser\BaseWebUserRepository::class
+        );
+        $this->app->bind(
             \App\Repositories\WebUser\WebUserRepositoryInterface::class,
             \App\Repositories\WebUser\WebUserRepository::class
         );

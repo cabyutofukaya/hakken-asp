@@ -289,7 +289,7 @@ class UserService
         if ($user->userable->user_ext) {
             $user->userable->user_ext->update($userExtData);
         } else {
-            $user->userable->user_ext()->create($userExtData);
+            $user->userable->user_ext()->create(array_merge($userExtData, ['agency_id' => $user->agency_id])); // 会社IDを付与
         }
 
 
@@ -375,7 +375,7 @@ class UserService
 
     /**
      * user_extsレコードのageカラムをアップサート
-     * 
+     *
      * @param int $age 年齢
      * @param int $userId ユーザーID
      */

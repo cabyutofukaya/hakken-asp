@@ -9,14 +9,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Kyslik\ColumnSortable\Sortable;
 
-class WebUser extends Model implements AppUser
+/**
+ * キャブさん用 web_usersテーブル
+ */
+class BaseWebUser extends Model
 {
-    protected $touches = ['user'];
-    
-    protected $appends = ['org_name']; // "削除"などの状態フレーズのないオリジナルの名前
+    protected $table = 'web_users';
 
-    use SoftDeletes,Sortable,ModelLogTrait,IndividualTrait;
-
+    use SoftDeletes,Sortable,ModelLogTrait;
 
     /**
      * The attributes that are mass assignable.
@@ -101,30 +101,21 @@ class WebUser extends Model implements AppUser
 
 
         static::deleting(function ($webUser) {
-            
             // 各会社に紐づく当該webユーザーを全削除
             \App\Models\User::where('userable_type', 'App\Models\WebUser')->where('userable_id', $webUser->id)->delete();
 
-            $webUser->user_ext()->each(function ($r) {
+            $webUser->user_exts()->each(function ($r) {
                 $r->delete();
             });
         });
     }
 
-    // usersレコード(親)
-    public function user()
-    {
-        // agency_idの条件が"重要"。User対AspUserの関係は1対1だが、User対WebUserの関係は1対多になるので会社IDの条件で1対1の関係にする
-        return $this->morphOne('App\Models\User', 'userable')->where('agency_id', auth('staff')->user()->agency_id);
-    }
-
     /**
      * 拡張データ
      */
-    public function user_ext()
+    public function user_exts()
     {
-        // WebUserを親としているので、1対1の関係にするためにagency_idの条件で絞る
-        return $this->hasOne('App\Models\WebUserExt')->where('agency_id', auth('staff')->user()->agency_id);
+        return $this->hasMany('App\Models\WebUserExt', 'web_user_id');
     }
 
     /**

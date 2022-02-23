@@ -14,6 +14,8 @@ class BusinessUser extends Model
 {
     use SoftDeletes,Sortable,ModelLogTrait,SoftCascadeTrait;
 
+    protected $appends = ['org_name']; // "削除"などの状態フレーズのないオリジナルの名前
+
     protected $softCascade = [
         'agency_consultations', // 当該会社を消したら相談履歴も削除する
         'business_user_managers'
@@ -188,6 +190,23 @@ class BusinessUser extends Model
             }
         }
         return $value;
+    }
+
+    /**
+     * 名前
+     *
+     * 削除済、無効ユーザーでも名前の末尾に同表記を付けたくないときに使用
+     */
+    public function getOrgNameAttribute($value): ?string
+    {
+        if ($this->trashed()) {
+            return preg_replace('/\(削除\)$/', '', $this->name);
+        }
+        if ($this->name && $this->status != config('consts.business_users.STATUS_VALID')) {
+            $statuses = get_const_item('business_users', 'status');
+            return preg_replace('/\('. Arr::get($statuses, $this->status) .'\)$/', '', $this->name);
+        }
+        return $this->name;
     }
 
     /**
