@@ -67,11 +67,11 @@
         </button>
       </li>
       @can('update', $userCustomItem)
-        @if(!$userCustomItem->unedit_item)
+        {{-- @if(!$userCustomItem->unedit_item) リスト形式の場合は編集不可フラグOnでもitemの追加が必要なので保存ボタンは有効に--}}
         <li class="wd50">
           <button class="blueBtn doubleBan"><span class="material-icons">save</span> この内容で保存する</button>
         </li>
-        @endif
+        {{-- @endif --}}
       @endcan
     </ul>
   </form>
