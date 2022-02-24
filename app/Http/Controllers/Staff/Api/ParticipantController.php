@@ -205,7 +205,7 @@ class ParticipantController extends Controller
                 $res = $this->participantService->update($participant->id, $input);
 
                 // 参加者情報を更新してもマスターとなるusersレコードとは連動させないが、ageカラムがusersで編集できる箇所がないので例外的に更新
-                $this->userService->upsertAgeByUserId(Arr::get($input, 'age', null), $res->user_id);
+                $this->userService->upsertAgeByUserId(Arr::get($input, 'age', null), $res->user_id, $res->agency_id);
 
                 if ($participant->representative) { // 当該参加者が代表者の場合
 
