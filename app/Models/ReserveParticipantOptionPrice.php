@@ -24,6 +24,7 @@ class ReserveParticipantOptionPrice extends Model implements ParticipantPriceInt
      * @var array
      */
     protected $fillable = [
+        'reserve_id',
         'reserve_itinerary_id',
         'reserve_purchasing_subject_option_id',
         'agency_id',
@@ -38,6 +39,8 @@ class ReserveParticipantOptionPrice extends Model implements ParticipantPriceInt
         'net',
         'zei_kbn',
         'gross_profit',
+        'cancel_charge',
+        'is_cancel',
     ];
 
     protected $guarded = [
@@ -70,6 +73,7 @@ class ReserveParticipantOptionPrice extends Model implements ParticipantPriceInt
         'commission_rate' => 'integer',
         'net' => 'integer',
         'gross_profit' => 'integer',
+        'cancel_charge' => 'integer',
     ];
 
     protected $dates = [

@@ -158,11 +158,14 @@ class ReserveService extends ReserveEstimateService
      * 予約キャンセル
      *
      * @param int $id 予約ID
+     * @param bool $cancelCharge キャンセルチャージの有無
+     * @return boolean
      */
-    public function cancel(int $id) : Reserve
+    public function cancel(int $id, bool $cancelCharge) : bool
     {
-        return $this->reserveRepository->updateField($id, [
-            'cancel_at' => date('Y-m-d H:i:s')
+        return $this->reserveRepository->updateFields($id, [
+            'cancel_at' => date('Y-m-d H:i:s'),
+            'cancel_charge' => $cancelCharge
         ]);
     }
 }

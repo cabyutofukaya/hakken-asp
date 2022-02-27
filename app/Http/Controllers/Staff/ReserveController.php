@@ -7,26 +7,36 @@ use App\Events\ReserveChangeRepresentativeEvent;
 use App\Events\ReserveEvent;
 use App\Events\UpdatedReserveEvent;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Staff\CancelChargeUpdateRequest;
 use App\Http\Requests\Staff\ReserveStoretRequest;
 use App\Http\Requests\Staff\ReserveUpdateRequest;
 use App\Models\Reserve;
 use App\Services\ReserveInvoiceService;
+use App\Services\ReserveParticipantAirplanePriceService;
+use App\Services\ReserveParticipantHotelPriceService;
+use App\Services\ReserveParticipantOptionPriceService;
+use App\Services\ReserveParticipantPriceService;
 use App\Services\ReserveService;
 use App\Traits\ReserveControllerTrait;
 use DB;
 use Exception;
 use Gate;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Log;
 
 class ReserveController extends AppController
 {
     use ReserveControllerTrait;
 
-    public function __construct(ReserveService $reserveService, ReserveInvoiceService $reserveInvoiceService)
+    public function __construct(ReserveService $reserveService, ReserveInvoiceService $reserveInvoiceService, ReserveParticipantPriceService $reserveParticipantPriceService, ReserveParticipantOptionPriceService $reserveParticipantOptionPriceService, ReserveParticipantAirplanePriceService $reserveParticipantAirplanePriceService, ReserveParticipantHotelPriceService $reserveParticipantHotelPriceService)
     {
         $this->reserveService = $reserveService;
         $this->reserveInvoiceService = $reserveInvoiceService;
+        $this->reserveParticipantPriceService = $reserveParticipantPriceService;
+        $this->reserveParticipantOptionPriceService = $reserveParticipantOptionPriceService;
+        $this->reserveParticipantAirplanePriceService = $reserveParticipantAirplanePriceService;
+        $this->reserveParticipantHotelPriceService = $reserveParticipantHotelPriceService;
     }
 
     public function index()
@@ -180,5 +190,89 @@ class ReserveController extends AppController
             Log::error($e);
         }
         abort(500);
+    }
+
+    /**
+     * キャンセルチャージ設定ページ
+     */
+    public function cancelCharge(string $agencyAccount, string $controlNumber)
+    {
+        $reserve = $this->reserveService->findByControlNumber($controlNumber, $agencyAccount);
+
+        // 認可チェック
+        $response = Gate::inspect('cancel', [$reserve]);
+        if (!$response->allowed()) {
+            abort(403);
+        }
+
+        // 念の為、予約状態であることを確認
+        if ($reserve->application_step != config('consts.reserves.APPLICATION_STEP_RESERVE')) {
+            abort(404);
+        }
+
+        // 仕入の有効・無効に関係なく全ての仕入情報を引っ張る
+        $purchasingList = $this->reserveParticipantPriceService->getParticipantPriceFormDataByReserveId($reserve->id);
+
+        // キャンセルチャージを新たに設定(store時)する場合はis_cancelカラムはtrueで初期化
+        if (!$reserve->cancel_charge) {
+            foreach ($purchasingList as $key => $row) {
+                $purchasingList[$key]['is_cancel'] = 1;
+            }
+        }
+
+        return view('staff.reserve.cancel_charge', compact('reserve', 'purchasingList'));
+    }
+
+    /**
+     * キャンセルチャージ処理
+     */
+    public function cancelChargeUpdate(CancelChargeUpdateRequest $request, string $agencyAccount, string $controlNumber)
+    {
+        $reserve = $this->reserveService->findByControlNumber($controlNumber, $agencyAccount);
+
+        // 認可チェック
+        $response = Gate::inspect('cancel', [$reserve]);
+        if (!$response->allowed()) {
+            abort(403);
+        }
+
+        try {
+
+            $input = $request->validated();
+
+            DB::transaction(function () use ($input, $reserve) {
+
+                // キャンセルチャージ料金を保存
+                foreach ($input['rows'] as $key => $row) { // $keyは [科目名]_(仕入ID_...)という形式
+                    $info = explode(config('consts.const.CANCEL_CHARGE_DATA_DELIMITER'), $key);
+    
+                    $subject = $info[0]; // $infoの1番目の配列は科目名
+                    $ids = array_slice($info, 1); // idリスト
+
+                    $cancelCharge = ($row['cancel_charge'] ?? 0) / $row['quantity']; // 数量で割って1商品あたりのキャンセルチャージを求める
+
+                    if ($subject == config('consts.subject_categories.SUBJECT_CATEGORY_OPTION')) { // オプション科目
+                        $this->reserveParticipantOptionPriceService->setCancelChargeByIds($cancelCharge, Arr::get($row, 'is_cancel') == 1, $ids);
+    
+                    } elseif ($subject == config('consts.subject_categories.SUBJECT_CATEGORY_AIRPLANE')) { // 航空券科目
+                        $this->reserveParticipantAirplanePriceService->setCancelChargeByIds($cancelCharge, Arr::get($row, 'is_cancel') == 1, $ids);
+    
+                    } elseif ($subject == config('consts.subject_categories.SUBJECT_CATEGORY_HOTEL')) { // ホテル科目
+                        $this->reserveParticipantHotelPriceService->setCancelChargeByIds($cancelCharge, Arr::get($row, 'is_cancel') == 1, $ids);
+    
+                    }
+                }
+                
+                $this->reserveService->cancel($reserve->id, true);
+            });
+
+            // TODO リダイレクト先はひとまず予約詳細ページにしているが、変更する可能性あり
+            return redirect()->route('staff.asp.estimates.reserve.show', [$agencyAccount, $controlNumber])->with('success_message', "「{$controlNumber}」のキャンセルチャージ処理が完了しました");
+
+        } catch (Exception $e) {
+            Log::error($e);
+        }
+        abort(500);
+
     }
 }

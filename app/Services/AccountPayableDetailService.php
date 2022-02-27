@@ -47,13 +47,22 @@ class AccountPayableDetailService
      * @param int $limit
      * @param array $with
      * @param bool $isValid 有効にチェックが入っている仕入のみ対象の場合はtrue
-     * @param 
+     * @param
      */
     public function paginateByAgencyAccount(string $agencyAccount, array $params, int $limit, bool $isValid = true, ?string $applicationStep = null, array $with = [], array $select=[]) : LengthAwarePaginator
     {
         $agencyId = $this->agencyRepository->getIdByAccount($agencyAccount);
         return $this->accountPayableDetailRepository->paginateByAgencyId($agencyId, $params, $limit, $isValid, $applicationStep, $with, $select);
     }
+
+    // /**
+    //  * 当該予約に対するaccount_payment_detailsを取得
+    //  */
+    // public function getByReserveNumber(string $reserveNumber, string $agencyAccount, ?string $applicationStep = null, array $with = [], array $select=[]) : Collection
+    // {
+    //     $agencyId = $this->agencyRepository->getIdByAccount($agencyAccount);
+    //     return $this->accountPayableDetailRepository->getByReserveNumber($reserveNumber, $agencyId, $applicationStep, $with, $select);
+    // }
 
     /**
      * 更新

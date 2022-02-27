@@ -52,4 +52,63 @@ class ReserveParticipantOptionPriceRepository implements ReserveParticipantOptio
             ->whereHas("account_payable_detail.agency_withdrawals")
             ->exists();
     }
+
+    /**
+     * 条件で全取得
+     */
+    public function getWhere(array $where, array $with = [], array $select = [], bool $getDeleted = false): Collection
+    {
+        $query = $this->reserveParticipantOptionPrice;
+        $query = $getDeleted ? $query->withTrashed() : $query;
+        $query = $with ? $query->with($with) : $query;
+        $query = $select ? $query->select($select) : $query;
+
+        foreach ($where as $key => $val) {
+            $query = $query->where($key, $val);
+        }
+        return $query->get();
+    }
+
+    /**
+     * IDリストのレコードを更新
+     *
+     * @param array $update
+     * @param array $ids
+     * @return boolean
+     */
+    public function updateIds(array $update, array $ids) : bool
+    {
+        foreach ($this->reserveParticipantOptionPrice->whereIn('id', $ids)->get() as $row) {
+            foreach ($update as $key => $val) {
+                $row->{$key} = $val;
+            }
+            $row->save();
+        }
+        return true;
+
+        // $this->reserveParticipantOptionPrice->whereIn('id', $ids)->update($update);
+        // return true;
+    }
+
+    /**
+     * 条件にマッチするレコードを更新
+     *
+     * @param array $update
+     * @param array $ids
+     * @return boolean
+     */
+    public function updateWhere(array $update, array $where) : bool
+    {
+        $query = $this->reserveParticipantOptionPrice;
+        foreach ($where as $key => $val) {
+            $query = $query->where($key, $val);
+        }
+        foreach ($query->get() as $row) {
+            foreach ($update as $key => $val) {
+                $row->{$key} = $val;
+            }
+            $row->save();
+        }
+        return true;
+    }
 }

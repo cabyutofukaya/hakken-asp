@@ -1,16 +1,4 @@
-(window["webpackJsonp"] = window["webpackJsonp"] || []).push([["/staff/js/web-estimate-request"],{
-
-/***/ "./node_modules/@babel/runtime/regenerator/index.js":
-/*!**********************************************************!*\
-  !*** ./node_modules/@babel/runtime/regenerator/index.js ***!
-  \**********************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__(/*! regenerator-runtime */ "./node_modules/regenerator-runtime/runtime.js");
-
-
-/***/ }),
+(window["webpackJsonp"] = window["webpackJsonp"] || []).push([["/staff/js/cancel_charge-create"],{
 
 /***/ "./node_modules/classnames/index.js":
 /*!******************************************!*\
@@ -27330,765 +27318,6 @@ if (false) {} else {
 
 /***/ }),
 
-/***/ "./node_modules/regenerator-runtime/runtime.js":
-/*!*****************************************************!*\
-  !*** ./node_modules/regenerator-runtime/runtime.js ***!
-  \*****************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-/**
- * Copyright (c) 2014-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-
-var runtime = (function (exports) {
-  "use strict";
-
-  var Op = Object.prototype;
-  var hasOwn = Op.hasOwnProperty;
-  var undefined; // More compressible than void 0.
-  var $Symbol = typeof Symbol === "function" ? Symbol : {};
-  var iteratorSymbol = $Symbol.iterator || "@@iterator";
-  var asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator";
-  var toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag";
-
-  function define(obj, key, value) {
-    Object.defineProperty(obj, key, {
-      value: value,
-      enumerable: true,
-      configurable: true,
-      writable: true
-    });
-    return obj[key];
-  }
-  try {
-    // IE 8 has a broken Object.defineProperty that only works on DOM objects.
-    define({}, "");
-  } catch (err) {
-    define = function(obj, key, value) {
-      return obj[key] = value;
-    };
-  }
-
-  function wrap(innerFn, outerFn, self, tryLocsList) {
-    // If outerFn provided and outerFn.prototype is a Generator, then outerFn.prototype instanceof Generator.
-    var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator;
-    var generator = Object.create(protoGenerator.prototype);
-    var context = new Context(tryLocsList || []);
-
-    // The ._invoke method unifies the implementations of the .next,
-    // .throw, and .return methods.
-    generator._invoke = makeInvokeMethod(innerFn, self, context);
-
-    return generator;
-  }
-  exports.wrap = wrap;
-
-  // Try/catch helper to minimize deoptimizations. Returns a completion
-  // record like context.tryEntries[i].completion. This interface could
-  // have been (and was previously) designed to take a closure to be
-  // invoked without arguments, but in all the cases we care about we
-  // already have an existing method we want to call, so there's no need
-  // to create a new function object. We can even get away with assuming
-  // the method takes exactly one argument, since that happens to be true
-  // in every case, so we don't have to touch the arguments object. The
-  // only additional allocation required is the completion record, which
-  // has a stable shape and so hopefully should be cheap to allocate.
-  function tryCatch(fn, obj, arg) {
-    try {
-      return { type: "normal", arg: fn.call(obj, arg) };
-    } catch (err) {
-      return { type: "throw", arg: err };
-    }
-  }
-
-  var GenStateSuspendedStart = "suspendedStart";
-  var GenStateSuspendedYield = "suspendedYield";
-  var GenStateExecuting = "executing";
-  var GenStateCompleted = "completed";
-
-  // Returning this object from the innerFn has the same effect as
-  // breaking out of the dispatch switch statement.
-  var ContinueSentinel = {};
-
-  // Dummy constructor functions that we use as the .constructor and
-  // .constructor.prototype properties for functions that return Generator
-  // objects. For full spec compliance, you may wish to configure your
-  // minifier not to mangle the names of these two functions.
-  function Generator() {}
-  function GeneratorFunction() {}
-  function GeneratorFunctionPrototype() {}
-
-  // This is a polyfill for %IteratorPrototype% for environments that
-  // don't natively support it.
-  var IteratorPrototype = {};
-  IteratorPrototype[iteratorSymbol] = function () {
-    return this;
-  };
-
-  var getProto = Object.getPrototypeOf;
-  var NativeIteratorPrototype = getProto && getProto(getProto(values([])));
-  if (NativeIteratorPrototype &&
-      NativeIteratorPrototype !== Op &&
-      hasOwn.call(NativeIteratorPrototype, iteratorSymbol)) {
-    // This environment has a native %IteratorPrototype%; use it instead
-    // of the polyfill.
-    IteratorPrototype = NativeIteratorPrototype;
-  }
-
-  var Gp = GeneratorFunctionPrototype.prototype =
-    Generator.prototype = Object.create(IteratorPrototype);
-  GeneratorFunction.prototype = Gp.constructor = GeneratorFunctionPrototype;
-  GeneratorFunctionPrototype.constructor = GeneratorFunction;
-  GeneratorFunction.displayName = define(
-    GeneratorFunctionPrototype,
-    toStringTagSymbol,
-    "GeneratorFunction"
-  );
-
-  // Helper for defining the .next, .throw, and .return methods of the
-  // Iterator interface in terms of a single ._invoke method.
-  function defineIteratorMethods(prototype) {
-    ["next", "throw", "return"].forEach(function(method) {
-      define(prototype, method, function(arg) {
-        return this._invoke(method, arg);
-      });
-    });
-  }
-
-  exports.isGeneratorFunction = function(genFun) {
-    var ctor = typeof genFun === "function" && genFun.constructor;
-    return ctor
-      ? ctor === GeneratorFunction ||
-        // For the native GeneratorFunction constructor, the best we can
-        // do is to check its .name property.
-        (ctor.displayName || ctor.name) === "GeneratorFunction"
-      : false;
-  };
-
-  exports.mark = function(genFun) {
-    if (Object.setPrototypeOf) {
-      Object.setPrototypeOf(genFun, GeneratorFunctionPrototype);
-    } else {
-      genFun.__proto__ = GeneratorFunctionPrototype;
-      define(genFun, toStringTagSymbol, "GeneratorFunction");
-    }
-    genFun.prototype = Object.create(Gp);
-    return genFun;
-  };
-
-  // Within the body of any async function, `await x` is transformed to
-  // `yield regeneratorRuntime.awrap(x)`, so that the runtime can test
-  // `hasOwn.call(value, "__await")` to determine if the yielded value is
-  // meant to be awaited.
-  exports.awrap = function(arg) {
-    return { __await: arg };
-  };
-
-  function AsyncIterator(generator, PromiseImpl) {
-    function invoke(method, arg, resolve, reject) {
-      var record = tryCatch(generator[method], generator, arg);
-      if (record.type === "throw") {
-        reject(record.arg);
-      } else {
-        var result = record.arg;
-        var value = result.value;
-        if (value &&
-            typeof value === "object" &&
-            hasOwn.call(value, "__await")) {
-          return PromiseImpl.resolve(value.__await).then(function(value) {
-            invoke("next", value, resolve, reject);
-          }, function(err) {
-            invoke("throw", err, resolve, reject);
-          });
-        }
-
-        return PromiseImpl.resolve(value).then(function(unwrapped) {
-          // When a yielded Promise is resolved, its final value becomes
-          // the .value of the Promise<{value,done}> result for the
-          // current iteration.
-          result.value = unwrapped;
-          resolve(result);
-        }, function(error) {
-          // If a rejected Promise was yielded, throw the rejection back
-          // into the async generator function so it can be handled there.
-          return invoke("throw", error, resolve, reject);
-        });
-      }
-    }
-
-    var previousPromise;
-
-    function enqueue(method, arg) {
-      function callInvokeWithMethodAndArg() {
-        return new PromiseImpl(function(resolve, reject) {
-          invoke(method, arg, resolve, reject);
-        });
-      }
-
-      return previousPromise =
-        // If enqueue has been called before, then we want to wait until
-        // all previous Promises have been resolved before calling invoke,
-        // so that results are always delivered in the correct order. If
-        // enqueue has not been called before, then it is important to
-        // call invoke immediately, without waiting on a callback to fire,
-        // so that the async generator function has the opportunity to do
-        // any necessary setup in a predictable way. This predictability
-        // is why the Promise constructor synchronously invokes its
-        // executor callback, and why async functions synchronously
-        // execute code before the first await. Since we implement simple
-        // async functions in terms of async generators, it is especially
-        // important to get this right, even though it requires care.
-        previousPromise ? previousPromise.then(
-          callInvokeWithMethodAndArg,
-          // Avoid propagating failures to Promises returned by later
-          // invocations of the iterator.
-          callInvokeWithMethodAndArg
-        ) : callInvokeWithMethodAndArg();
-    }
-
-    // Define the unified helper method that is used to implement .next,
-    // .throw, and .return (see defineIteratorMethods).
-    this._invoke = enqueue;
-  }
-
-  defineIteratorMethods(AsyncIterator.prototype);
-  AsyncIterator.prototype[asyncIteratorSymbol] = function () {
-    return this;
-  };
-  exports.AsyncIterator = AsyncIterator;
-
-  // Note that simple async functions are implemented on top of
-  // AsyncIterator objects; they just return a Promise for the value of
-  // the final result produced by the iterator.
-  exports.async = function(innerFn, outerFn, self, tryLocsList, PromiseImpl) {
-    if (PromiseImpl === void 0) PromiseImpl = Promise;
-
-    var iter = new AsyncIterator(
-      wrap(innerFn, outerFn, self, tryLocsList),
-      PromiseImpl
-    );
-
-    return exports.isGeneratorFunction(outerFn)
-      ? iter // If outerFn is a generator, return the full iterator.
-      : iter.next().then(function(result) {
-          return result.done ? result.value : iter.next();
-        });
-  };
-
-  function makeInvokeMethod(innerFn, self, context) {
-    var state = GenStateSuspendedStart;
-
-    return function invoke(method, arg) {
-      if (state === GenStateExecuting) {
-        throw new Error("Generator is already running");
-      }
-
-      if (state === GenStateCompleted) {
-        if (method === "throw") {
-          throw arg;
-        }
-
-        // Be forgiving, per 25.3.3.3.3 of the spec:
-        // https://people.mozilla.org/~jorendorff/es6-draft.html#sec-generatorresume
-        return doneResult();
-      }
-
-      context.method = method;
-      context.arg = arg;
-
-      while (true) {
-        var delegate = context.delegate;
-        if (delegate) {
-          var delegateResult = maybeInvokeDelegate(delegate, context);
-          if (delegateResult) {
-            if (delegateResult === ContinueSentinel) continue;
-            return delegateResult;
-          }
-        }
-
-        if (context.method === "next") {
-          // Setting context._sent for legacy support of Babel's
-          // function.sent implementation.
-          context.sent = context._sent = context.arg;
-
-        } else if (context.method === "throw") {
-          if (state === GenStateSuspendedStart) {
-            state = GenStateCompleted;
-            throw context.arg;
-          }
-
-          context.dispatchException(context.arg);
-
-        } else if (context.method === "return") {
-          context.abrupt("return", context.arg);
-        }
-
-        state = GenStateExecuting;
-
-        var record = tryCatch(innerFn, self, context);
-        if (record.type === "normal") {
-          // If an exception is thrown from innerFn, we leave state ===
-          // GenStateExecuting and loop back for another invocation.
-          state = context.done
-            ? GenStateCompleted
-            : GenStateSuspendedYield;
-
-          if (record.arg === ContinueSentinel) {
-            continue;
-          }
-
-          return {
-            value: record.arg,
-            done: context.done
-          };
-
-        } else if (record.type === "throw") {
-          state = GenStateCompleted;
-          // Dispatch the exception by looping back around to the
-          // context.dispatchException(context.arg) call above.
-          context.method = "throw";
-          context.arg = record.arg;
-        }
-      }
-    };
-  }
-
-  // Call delegate.iterator[context.method](context.arg) and handle the
-  // result, either by returning a { value, done } result from the
-  // delegate iterator, or by modifying context.method and context.arg,
-  // setting context.delegate to null, and returning the ContinueSentinel.
-  function maybeInvokeDelegate(delegate, context) {
-    var method = delegate.iterator[context.method];
-    if (method === undefined) {
-      // A .throw or .return when the delegate iterator has no .throw
-      // method always terminates the yield* loop.
-      context.delegate = null;
-
-      if (context.method === "throw") {
-        // Note: ["return"] must be used for ES3 parsing compatibility.
-        if (delegate.iterator["return"]) {
-          // If the delegate iterator has a return method, give it a
-          // chance to clean up.
-          context.method = "return";
-          context.arg = undefined;
-          maybeInvokeDelegate(delegate, context);
-
-          if (context.method === "throw") {
-            // If maybeInvokeDelegate(context) changed context.method from
-            // "return" to "throw", let that override the TypeError below.
-            return ContinueSentinel;
-          }
-        }
-
-        context.method = "throw";
-        context.arg = new TypeError(
-          "The iterator does not provide a 'throw' method");
-      }
-
-      return ContinueSentinel;
-    }
-
-    var record = tryCatch(method, delegate.iterator, context.arg);
-
-    if (record.type === "throw") {
-      context.method = "throw";
-      context.arg = record.arg;
-      context.delegate = null;
-      return ContinueSentinel;
-    }
-
-    var info = record.arg;
-
-    if (! info) {
-      context.method = "throw";
-      context.arg = new TypeError("iterator result is not an object");
-      context.delegate = null;
-      return ContinueSentinel;
-    }
-
-    if (info.done) {
-      // Assign the result of the finished delegate to the temporary
-      // variable specified by delegate.resultName (see delegateYield).
-      context[delegate.resultName] = info.value;
-
-      // Resume execution at the desired location (see delegateYield).
-      context.next = delegate.nextLoc;
-
-      // If context.method was "throw" but the delegate handled the
-      // exception, let the outer generator proceed normally. If
-      // context.method was "next", forget context.arg since it has been
-      // "consumed" by the delegate iterator. If context.method was
-      // "return", allow the original .return call to continue in the
-      // outer generator.
-      if (context.method !== "return") {
-        context.method = "next";
-        context.arg = undefined;
-      }
-
-    } else {
-      // Re-yield the result returned by the delegate method.
-      return info;
-    }
-
-    // The delegate iterator is finished, so forget it and continue with
-    // the outer generator.
-    context.delegate = null;
-    return ContinueSentinel;
-  }
-
-  // Define Generator.prototype.{next,throw,return} in terms of the
-  // unified ._invoke helper method.
-  defineIteratorMethods(Gp);
-
-  define(Gp, toStringTagSymbol, "Generator");
-
-  // A Generator should always return itself as the iterator object when the
-  // @@iterator function is called on it. Some browsers' implementations of the
-  // iterator prototype chain incorrectly implement this, causing the Generator
-  // object to not be returned from this call. This ensures that doesn't happen.
-  // See https://github.com/facebook/regenerator/issues/274 for more details.
-  Gp[iteratorSymbol] = function() {
-    return this;
-  };
-
-  Gp.toString = function() {
-    return "[object Generator]";
-  };
-
-  function pushTryEntry(locs) {
-    var entry = { tryLoc: locs[0] };
-
-    if (1 in locs) {
-      entry.catchLoc = locs[1];
-    }
-
-    if (2 in locs) {
-      entry.finallyLoc = locs[2];
-      entry.afterLoc = locs[3];
-    }
-
-    this.tryEntries.push(entry);
-  }
-
-  function resetTryEntry(entry) {
-    var record = entry.completion || {};
-    record.type = "normal";
-    delete record.arg;
-    entry.completion = record;
-  }
-
-  function Context(tryLocsList) {
-    // The root entry object (effectively a try statement without a catch
-    // or a finally block) gives us a place to store values thrown from
-    // locations where there is no enclosing try statement.
-    this.tryEntries = [{ tryLoc: "root" }];
-    tryLocsList.forEach(pushTryEntry, this);
-    this.reset(true);
-  }
-
-  exports.keys = function(object) {
-    var keys = [];
-    for (var key in object) {
-      keys.push(key);
-    }
-    keys.reverse();
-
-    // Rather than returning an object with a next method, we keep
-    // things simple and return the next function itself.
-    return function next() {
-      while (keys.length) {
-        var key = keys.pop();
-        if (key in object) {
-          next.value = key;
-          next.done = false;
-          return next;
-        }
-      }
-
-      // To avoid creating an additional object, we just hang the .value
-      // and .done properties off the next function object itself. This
-      // also ensures that the minifier will not anonymize the function.
-      next.done = true;
-      return next;
-    };
-  };
-
-  function values(iterable) {
-    if (iterable) {
-      var iteratorMethod = iterable[iteratorSymbol];
-      if (iteratorMethod) {
-        return iteratorMethod.call(iterable);
-      }
-
-      if (typeof iterable.next === "function") {
-        return iterable;
-      }
-
-      if (!isNaN(iterable.length)) {
-        var i = -1, next = function next() {
-          while (++i < iterable.length) {
-            if (hasOwn.call(iterable, i)) {
-              next.value = iterable[i];
-              next.done = false;
-              return next;
-            }
-          }
-
-          next.value = undefined;
-          next.done = true;
-
-          return next;
-        };
-
-        return next.next = next;
-      }
-    }
-
-    // Return an iterator with no values.
-    return { next: doneResult };
-  }
-  exports.values = values;
-
-  function doneResult() {
-    return { value: undefined, done: true };
-  }
-
-  Context.prototype = {
-    constructor: Context,
-
-    reset: function(skipTempReset) {
-      this.prev = 0;
-      this.next = 0;
-      // Resetting context._sent for legacy support of Babel's
-      // function.sent implementation.
-      this.sent = this._sent = undefined;
-      this.done = false;
-      this.delegate = null;
-
-      this.method = "next";
-      this.arg = undefined;
-
-      this.tryEntries.forEach(resetTryEntry);
-
-      if (!skipTempReset) {
-        for (var name in this) {
-          // Not sure about the optimal order of these conditions:
-          if (name.charAt(0) === "t" &&
-              hasOwn.call(this, name) &&
-              !isNaN(+name.slice(1))) {
-            this[name] = undefined;
-          }
-        }
-      }
-    },
-
-    stop: function() {
-      this.done = true;
-
-      var rootEntry = this.tryEntries[0];
-      var rootRecord = rootEntry.completion;
-      if (rootRecord.type === "throw") {
-        throw rootRecord.arg;
-      }
-
-      return this.rval;
-    },
-
-    dispatchException: function(exception) {
-      if (this.done) {
-        throw exception;
-      }
-
-      var context = this;
-      function handle(loc, caught) {
-        record.type = "throw";
-        record.arg = exception;
-        context.next = loc;
-
-        if (caught) {
-          // If the dispatched exception was caught by a catch block,
-          // then let that catch block handle the exception normally.
-          context.method = "next";
-          context.arg = undefined;
-        }
-
-        return !! caught;
-      }
-
-      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
-        var entry = this.tryEntries[i];
-        var record = entry.completion;
-
-        if (entry.tryLoc === "root") {
-          // Exception thrown outside of any try block that could handle
-          // it, so set the completion value of the entire function to
-          // throw the exception.
-          return handle("end");
-        }
-
-        if (entry.tryLoc <= this.prev) {
-          var hasCatch = hasOwn.call(entry, "catchLoc");
-          var hasFinally = hasOwn.call(entry, "finallyLoc");
-
-          if (hasCatch && hasFinally) {
-            if (this.prev < entry.catchLoc) {
-              return handle(entry.catchLoc, true);
-            } else if (this.prev < entry.finallyLoc) {
-              return handle(entry.finallyLoc);
-            }
-
-          } else if (hasCatch) {
-            if (this.prev < entry.catchLoc) {
-              return handle(entry.catchLoc, true);
-            }
-
-          } else if (hasFinally) {
-            if (this.prev < entry.finallyLoc) {
-              return handle(entry.finallyLoc);
-            }
-
-          } else {
-            throw new Error("try statement without catch or finally");
-          }
-        }
-      }
-    },
-
-    abrupt: function(type, arg) {
-      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
-        var entry = this.tryEntries[i];
-        if (entry.tryLoc <= this.prev &&
-            hasOwn.call(entry, "finallyLoc") &&
-            this.prev < entry.finallyLoc) {
-          var finallyEntry = entry;
-          break;
-        }
-      }
-
-      if (finallyEntry &&
-          (type === "break" ||
-           type === "continue") &&
-          finallyEntry.tryLoc <= arg &&
-          arg <= finallyEntry.finallyLoc) {
-        // Ignore the finally entry if control is not jumping to a
-        // location outside the try/catch block.
-        finallyEntry = null;
-      }
-
-      var record = finallyEntry ? finallyEntry.completion : {};
-      record.type = type;
-      record.arg = arg;
-
-      if (finallyEntry) {
-        this.method = "next";
-        this.next = finallyEntry.finallyLoc;
-        return ContinueSentinel;
-      }
-
-      return this.complete(record);
-    },
-
-    complete: function(record, afterLoc) {
-      if (record.type === "throw") {
-        throw record.arg;
-      }
-
-      if (record.type === "break" ||
-          record.type === "continue") {
-        this.next = record.arg;
-      } else if (record.type === "return") {
-        this.rval = this.arg = record.arg;
-        this.method = "return";
-        this.next = "end";
-      } else if (record.type === "normal" && afterLoc) {
-        this.next = afterLoc;
-      }
-
-      return ContinueSentinel;
-    },
-
-    finish: function(finallyLoc) {
-      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
-        var entry = this.tryEntries[i];
-        if (entry.finallyLoc === finallyLoc) {
-          this.complete(entry.completion, entry.afterLoc);
-          resetTryEntry(entry);
-          return ContinueSentinel;
-        }
-      }
-    },
-
-    "catch": function(tryLoc) {
-      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
-        var entry = this.tryEntries[i];
-        if (entry.tryLoc === tryLoc) {
-          var record = entry.completion;
-          if (record.type === "throw") {
-            var thrown = record.arg;
-            resetTryEntry(entry);
-          }
-          return thrown;
-        }
-      }
-
-      // The context.catch method must only be called with a location
-      // argument that corresponds to a known catch block.
-      throw new Error("illegal catch attempt");
-    },
-
-    delegateYield: function(iterable, resultName, nextLoc) {
-      this.delegate = {
-        iterator: values(iterable),
-        resultName: resultName,
-        nextLoc: nextLoc
-      };
-
-      if (this.method === "next") {
-        // Deliberately forget the last sent value so that we don't
-        // accidentally pass it on to the delegate.
-        this.arg = undefined;
-      }
-
-      return ContinueSentinel;
-    }
-  };
-
-  // Regardless of whether this script is executing as a CommonJS module
-  // or not, return the runtime object so that we can declare the variable
-  // regeneratorRuntime in the outer scope, which allows this module to be
-  // injected easily by `bin/regenerator --include-runtime script.js`.
-  return exports;
-
-}(
-  // If this script is executing as a CommonJS module, use module.exports
-  // as the regeneratorRuntime namespace. Otherwise create a new empty
-  // object. Either way, the resulting object will be used to initialize
-  // the regeneratorRuntime variable at the top of this file.
-   true ? module.exports : undefined
-));
-
-try {
-  regeneratorRuntime = runtime;
-} catch (accidentalStrictMode) {
-  // This module should not be running in strict mode, so the above
-  // assignment should always work unless something is misconfigured. Just
-  // in case runtime.js accidentally runs in strict mode, we can escape
-  // strict mode using a global Function call. This could conceivably fail
-  // if a Content Security Policy forbids using Function, but in that case
-  // the proper solution is to fix the accidental strict mode problem. If
-  // you've misconfigured your bundler to force strict mode and applied a
-  // CSP to forbid Function, and you're not willing to fix either of those
-  // problems, please detail your unique predicament in a GitHub issue.
-  Function("r", "regeneratorRuntime = r")(runtime);
-}
-
-
-/***/ }),
-
 /***/ "./node_modules/scheduler/cjs/scheduler-tracing.development.js":
 /*!*********************************************************************!*\
   !*** ./node_modules/scheduler/cjs/scheduler-tracing.development.js ***!
@@ -29354,28 +28583,462 @@ if (false) {} else {
 
 /***/ }),
 
-/***/ "./resources/assets/hooks/useMountedRef.js":
-/*!*************************************************!*\
-  !*** ./resources/assets/hooks/useMountedRef.js ***!
-  \*************************************************/
-/*! exports provided: useMountedRef */
+/***/ "./node_modules/webpack/buildin/global.js":
+/*!***********************************!*\
+  !*** (webpack)/buildin/global.js ***!
+  \***********************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+var g;
+
+// This works in non-strict mode
+g = (function() {
+	return this;
+})();
+
+try {
+	// This works if eval is allowed (see CSP)
+	g = g || new Function("return this")();
+} catch (e) {
+	// This works if the window reference is available
+	if (typeof window === "object") g = window;
+}
+
+// g can still be undefined, but nothing to do about it...
+// We return undefined, instead of nothing here, so it's
+// easier to handle this case. if(!global) { ...}
+
+module.exports = g;
+
+
+/***/ }),
+
+/***/ "./node_modules/webpack/buildin/module.js":
+/*!***********************************!*\
+  !*** (webpack)/buildin/module.js ***!
+  \***********************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = function(module) {
+	if (!module.webpackPolyfill) {
+		module.deprecate = function() {};
+		module.paths = [];
+		// module.parent = undefined by default
+		if (!module.children) module.children = [];
+		Object.defineProperty(module, "loaded", {
+			enumerable: true,
+			get: function() {
+				return module.l;
+			}
+		});
+		Object.defineProperty(module, "id", {
+			enumerable: true,
+			get: function() {
+				return module.i;
+			}
+		});
+		module.webpackPolyfill = 1;
+	}
+	return module;
+};
+
+
+/***/ }),
+
+/***/ "./resources/assets/staff/js/BrText.js":
+/*!*********************************************!*\
+  !*** ./resources/assets/staff/js/BrText.js ***!
+  \*********************************************/
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "useMountedRef", function() { return useMountedRef; });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+ // 改行コードをbrタグにして出力するコンポーネント
 
-function useMountedRef() {
-  var mounted = Object(react__WEBPACK_IMPORTED_MODULE_0__["useRef"])(false);
-  Object(react__WEBPACK_IMPORTED_MODULE_0__["useEffect"])(function () {
-    mounted.current = true;
-    return function () {
-      return mounted.current = false;
-    };
+var BrText = function BrText(_ref) {
+  var text = _ref.text;
+  var texts = text.split(/(\n)/).map(function (item, index) {
+    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, {
+      key: index
+    }, item.match(/\n/) ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("br", null) : item);
   });
-  return mounted;
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", null, texts);
+};
+
+/* harmony default export */ __webpack_exports__["default"] = (BrText);
+
+/***/ }),
+
+/***/ "./resources/assets/staff/js/cancel_charge-create.js":
+/*!***********************************************************!*\
+  !*** ./resources/assets/staff/js/cancel_charge-create.js ***!
+  \***********************************************************/
+/*! no exports provided */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
+/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(lodash__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _components_ConstApp__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./components/ConstApp */ "./resources/assets/staff/js/components/ConstApp.js");
+/* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
+/* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(react_dom__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _components_OnlyNumberInput__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./components/OnlyNumberInput */ "./resources/assets/staff/js/components/OnlyNumberInput.js");
+/* harmony import */ var _components_ErrorMessage__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./components/ErrorMessage */ "./resources/assets/staff/js/components/ErrorMessage.js");
+/* harmony import */ var _libs__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./libs */ "./resources/assets/staff/js/libs.js");
+/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! classnames */ "./node_modules/classnames/index.js");
+/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(classnames__WEBPACK_IMPORTED_MODULE_7__);
+function _toConsumableArray(arr) {
+  return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread();
+}
+
+function _nonIterableSpread() {
+  throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+
+function _iterableToArray(iter) {
+  if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter);
+}
+
+function _arrayWithoutHoles(arr) {
+  if (Array.isArray(arr)) return _arrayLikeToArray(arr);
+}
+
+function ownKeys(object, enumerableOnly) {
+  var keys = Object.keys(object);
+
+  if (Object.getOwnPropertySymbols) {
+    var symbols = Object.getOwnPropertySymbols(object);
+    if (enumerableOnly) symbols = symbols.filter(function (sym) {
+      return Object.getOwnPropertyDescriptor(object, sym).enumerable;
+    });
+    keys.push.apply(keys, symbols);
+  }
+
+  return keys;
+}
+
+function _objectSpread(target) {
+  for (var i = 1; i < arguments.length; i++) {
+    var source = arguments[i] != null ? arguments[i] : {};
+
+    if (i % 2) {
+      ownKeys(Object(source), true).forEach(function (key) {
+        _defineProperty(target, key, source[key]);
+      });
+    } else if (Object.getOwnPropertyDescriptors) {
+      Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
+    } else {
+      ownKeys(Object(source)).forEach(function (key) {
+        Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+      });
+    }
+  }
+
+  return target;
+}
+
+function _defineProperty(obj, key, value) {
+  if (key in obj) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+  } else {
+    obj[key] = value;
+  }
+
+  return obj;
+}
+
+function _slicedToArray(arr, i) {
+  return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();
+}
+
+function _nonIterableRest() {
+  throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+
+function _unsupportedIterableToArray(o, minLen) {
+  if (!o) return;
+  if (typeof o === "string") return _arrayLikeToArray(o, minLen);
+  var n = Object.prototype.toString.call(o).slice(8, -1);
+  if (n === "Object" && o.constructor) n = o.constructor.name;
+  if (n === "Map" || n === "Set") return Array.from(o);
+  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
+}
+
+function _arrayLikeToArray(arr, len) {
+  if (len == null || len > arr.length) len = arr.length;
+
+  for (var i = 0, arr2 = new Array(len); i < len; i++) {
+    arr2[i] = arr[i];
+  }
+
+  return arr2;
+}
+
+function _iterableToArrayLimit(arr, i) {
+  if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return;
+  var _arr = [];
+  var _n = true;
+  var _d = false;
+  var _e = undefined;
+
+  try {
+    for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+      _arr.push(_s.value);
+
+      if (i && _arr.length === i) break;
+    }
+  } catch (err) {
+    _d = true;
+    _e = err;
+  } finally {
+    try {
+      if (!_n && _i["return"] != null) _i["return"]();
+    } finally {
+      if (_d) throw _e;
+    }
+  }
+
+  return _arr;
+}
+
+function _arrayWithHoles(arr) {
+  if (Array.isArray(arr)) return arr;
+}
+
+
+
+
+
+
+
+
+
+
+var csrfToken = document.head.querySelector('meta[name="csrf-token"]').content;
+/**
+ *
+ * @returns
+ */
+
+var CancelChargeArea = function CancelChargeArea(_ref) {
+  var defaultValue = _ref.defaultValue,
+      consts = _ref.consts,
+      errors = _ref.errors;
+
+  var _useContext = Object(react__WEBPACK_IMPORTED_MODULE_1__["useContext"])(_components_ConstApp__WEBPACK_IMPORTED_MODULE_2__["ConstContext"]),
+      agencyAccount = _useContext.agencyAccount,
+      documentZeiKbns = _useContext.documentZeiKbns;
+
+  var _useState = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])(_objectSpread({}, defaultValue["rows"])),
+      _useState2 = _slicedToArray(_useState, 2),
+      lists = _useState2[0],
+      setLists = _useState2[1];
+
+  var _useState3 = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])(errors),
+      _useState4 = _slicedToArray(_useState3, 2),
+      errorObj = _useState4[0],
+      setErrorObj = _useState4[1]; // エラー文言を保持
+
+
+  var _useState5 = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])([]),
+      _useState6 = _slicedToArray(_useState5, 2),
+      cancelChargeErrors = _useState6[0],
+      setCancelChargeErrors = _useState6[1]; // キャンセルチャージでエラーがある枠のlists配列キー値を保持
+  // 入力制御
+
+
+  var _handleChange = function handleChange(e, key, name) {
+    var row = lists[key];
+    row[name] = e.target.value;
+    lists[key] = row;
+    setLists(_objectSpread({}, lists));
+  }; // キャンセル料の有無checkbox制御
+
+
+  var handleCancelCheck = function handleCancelCheck(e, key, name) {
+    var row = lists[key]; // チェックボックスの入力制御
+
+    var currentVal = row[name]; // 現在の値
+
+    row[name] = currentVal == 1 ? 0 : 1;
+    lists[key] = row;
+    setLists(_objectSpread({}, lists));
+  }; // 送信制御
+
+
+  var handleSubmit = function handleSubmit(e) {
+    e.preventDefault();
+    var errMsg = {};
+    var err = []; // キャンセル料の入力値チェック → キャンセル料金が数量で割り切れない場合はエラーを出す
+
+    Object.keys(lists).map(function (key) {
+      var cancelCharge = Number(lists[key].cancel_charge);
+      var quantity = lists[key].quantity;
+
+      if (cancelCharge > 0 && !Number.isInteger(cancelCharge / quantity)) {
+        // エラーのあったlists配列のキー値を保存
+        err = [].concat(_toConsumableArray(err), [key]);
+      }
+    });
+    setCancelChargeErrors(_toConsumableArray(err));
+
+    if (err.length > 0) {
+      errMsg["cancel_charge"] = ["キャンセル料金は数量で割り切れる金額を設定してください。"];
+    }
+
+    setErrorObj(errMsg); // エラーがなければform送信
+
+    if (Object(_libs__WEBPACK_IMPORTED_MODULE_6__["isEmptyObject"])(errMsg)) {
+      document.cancelChargeForm.submit();
+    }
+  }; // 「キャンセルせずに戻る」ボタン
+
+
+  var handleBack = function handleBack(e) {
+    e.preventDefault();
+    location.href = consts === null || consts === void 0 ? void 0 : consts.reserveUrl;
+  };
+
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_1___default.a.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_components_ErrorMessage__WEBPACK_IMPORTED_MODULE_5__["default"], {
+    errorObj: errorObj
+  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("h2", {
+    className: "subTit"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", {
+    className: "material-icons"
+  }, " subject "), "\u4ED5\u5165\u308C\u5148\u60C5\u5831"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("form", {
+    name: "cancelChargeForm",
+    action: consts.cancelChargeUpdateUrl,
+    method: "post",
+    onSubmit: handleSubmit
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("input", {
+    type: "hidden",
+    name: "_token",
+    value: csrfToken
+  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
+    id: "inputArea"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
+    className: "tableWrap"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
+    className: "tableCont"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("table", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("thead", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("tr", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("th", {
+    className: "txtalc wd10"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", null, "\u30AD\u30E3\u30F3\u30BB\u30EB\u6599\u306E\u6709\u7121")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("th", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", null, "\u5546\u54C1\u540D")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("th", {
+    className: "txtalc"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", null, "\u6570\u91CF")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("th", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", null, "\u30AD\u30E3\u30F3\u30BB\u30EB\u6599\u91D1")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("th", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", null, "GRS\u5358\u4FA1")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("th", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", null, "\u4ED5\u5165\u5024")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("th", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", null, "\u624B\u6570\u6599\u7387")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("th", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", null, "NET\u5358\u4FA1")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("th", {
+    className: "txtalc"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", null, "\u7A0E\u533A\u5206")))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("tbody", null, lists && Object.keys(lists).map(function (key) {
+    var _lists$key, _lists$key2, _lists$key$name, _lists$key3, _lists$key$name2, _lists$key4, _lists$key$quantity, _lists$key5, _lists$key$quantity2, _lists$key6, _lists$key$cancel_cha, _lists$key7, _lists$key$gross, _lists$key8, _lists$key$gross2, _lists$key9, _lists$key$cost, _lists$key10, _lists$key$cost2, _lists$key11, _lists$key$commission, _lists$key12, _lists$key$commission2, _lists$key13, _lists$key$net, _lists$key14, _lists$key$net2, _lists$key15, _documentZeiKbns$list, _lists$key16, _lists$key$zei_kbn, _lists$key17;
+
+    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("tr", {
+      key: key,
+      className: classnames__WEBPACK_IMPORTED_MODULE_7___default()({
+        done: ((_lists$key = lists[key]) === null || _lists$key === void 0 ? void 0 : _lists$key.valid) == 0
+      })
+    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", {
+      className: "txtalc checkBox"
+    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("input", {
+      type: "checkbox",
+      id: "cancel_".concat(key),
+      value: "1",
+      name: "rows[".concat(key, "][is_cancel]"),
+      onChange: function onChange(e) {
+        return handleCancelCheck(e, key, "is_cancel");
+      },
+      checked: ((_lists$key2 = lists[key]) === null || _lists$key2 === void 0 ? void 0 : _lists$key2.is_cancel) == 1
+    }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("label", {
+      htmlFor: "cancel_".concat(key)
+    }, "\xA0")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", null, (_lists$key$name = (_lists$key3 = lists[key]) === null || _lists$key3 === void 0 ? void 0 : _lists$key3.name) !== null && _lists$key$name !== void 0 ? _lists$key$name : "-", /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("input", {
+      type: "hidden",
+      name: "rows[".concat(key, "][name]"),
+      value: (_lists$key$name2 = (_lists$key4 = lists[key]) === null || _lists$key4 === void 0 ? void 0 : _lists$key4.name) !== null && _lists$key$name2 !== void 0 ? _lists$key$name2 : ""
+    })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", {
+      className: "txtalc"
+    }, (_lists$key$quantity = (_lists$key5 = lists[key]) === null || _lists$key5 === void 0 ? void 0 : _lists$key5.quantity) !== null && _lists$key$quantity !== void 0 ? _lists$key$quantity : 0, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("input", {
+      type: "hidden",
+      name: "rows[".concat(key, "][quantity]"),
+      value: (_lists$key$quantity2 = (_lists$key6 = lists[key]) === null || _lists$key6 === void 0 ? void 0 : _lists$key6.quantity) !== null && _lists$key$quantity2 !== void 0 ? _lists$key$quantity2 : 0
+    })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", {
+      className: "slimInput"
+    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_components_OnlyNumberInput__WEBPACK_IMPORTED_MODULE_4__["default"], {
+      name: "rows[".concat(key, "][cancel_charge]"),
+      value: (_lists$key$cancel_cha = (_lists$key7 = lists[key]) === null || _lists$key7 === void 0 ? void 0 : _lists$key7.cancel_charge) !== null && _lists$key$cancel_cha !== void 0 ? _lists$key$cancel_cha : 0,
+      negativeValuePermit: false,
+      handleChange: function handleChange(e) {
+        return _handleChange(e, key, "cancel_charge");
+      },
+      className: lodash__WEBPACK_IMPORTED_MODULE_0___default.a.indexOf(cancelChargeErrors, key) !== -1 ? "error" : ""
+    })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", null, "\uFFE5", ((_lists$key$gross = (_lists$key8 = lists[key]) === null || _lists$key8 === void 0 ? void 0 : _lists$key8.gross) !== null && _lists$key$gross !== void 0 ? _lists$key$gross : 0).toLocaleString(), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("input", {
+      type: "hidden",
+      name: "rows[".concat(key, "][gross]"),
+      value: (_lists$key$gross2 = (_lists$key9 = lists[key]) === null || _lists$key9 === void 0 ? void 0 : _lists$key9.gross) !== null && _lists$key$gross2 !== void 0 ? _lists$key$gross2 : 0
+    })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", null, "\uFFE5", ((_lists$key$cost = (_lists$key10 = lists[key]) === null || _lists$key10 === void 0 ? void 0 : _lists$key10.cost) !== null && _lists$key$cost !== void 0 ? _lists$key$cost : 0).toLocaleString(), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("input", {
+      type: "hidden",
+      name: "rows[".concat(key, "][cost]"),
+      value: (_lists$key$cost2 = (_lists$key11 = lists[key]) === null || _lists$key11 === void 0 ? void 0 : _lists$key11.cost) !== null && _lists$key$cost2 !== void 0 ? _lists$key$cost2 : 0
+    })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", null, ((_lists$key$commission = (_lists$key12 = lists[key]) === null || _lists$key12 === void 0 ? void 0 : _lists$key12.commission_rate) !== null && _lists$key$commission !== void 0 ? _lists$key$commission : 0).toLocaleString(), "%", /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("input", {
+      type: "hidden",
+      name: "rows[".concat(key, "][commission_rate]"),
+      value: (_lists$key$commission2 = (_lists$key13 = lists[key]) === null || _lists$key13 === void 0 ? void 0 : _lists$key13.commission_rate) !== null && _lists$key$commission2 !== void 0 ? _lists$key$commission2 : 0
+    })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", null, "\uFFE5", ((_lists$key$net = (_lists$key14 = lists[key]) === null || _lists$key14 === void 0 ? void 0 : _lists$key14.net) !== null && _lists$key$net !== void 0 ? _lists$key$net : 0).toLocaleString(), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("input", {
+      type: "hidden",
+      name: "rows[".concat(key, "][net]"),
+      value: (_lists$key$net2 = (_lists$key15 = lists[key]) === null || _lists$key15 === void 0 ? void 0 : _lists$key15.net) !== null && _lists$key$net2 !== void 0 ? _lists$key$net2 : 0
+    })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", {
+      className: "txtalc"
+    }, (_documentZeiKbns$list = documentZeiKbns === null || documentZeiKbns === void 0 ? void 0 : documentZeiKbns[(_lists$key16 = lists[key]) === null || _lists$key16 === void 0 ? void 0 : _lists$key16.zei_kbn]) !== null && _documentZeiKbns$list !== void 0 ? _documentZeiKbns$list : "-", /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("input", {
+      type: "hidden",
+      name: "rows[".concat(key, "][zei_kbn]"),
+      value: (_lists$key$zei_kbn = (_lists$key17 = lists[key]) === null || _lists$key17 === void 0 ? void 0 : _lists$key17.zei_kbn) !== null && _lists$key$zei_kbn !== void 0 ? _lists$key$zei_kbn : 0
+    })));
+  })))))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("ul", {
+    id: "formControl"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("li", {
+    className: "wd50"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("button", {
+    className: "grayBtn",
+    onClick: handleBack
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", {
+    className: "material-icons"
+  }, "arrow_back_ios"), "\u30AD\u30E3\u30F3\u30BB\u30EB\u305B\u305A\u306B\u623B\u308B")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("li", {
+    className: "wd50"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("button", {
+    className: "redBtn"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", {
+    className: "material-icons"
+  }, "save"), " ", "\u3053\u306E\u5185\u5BB9\u3067\u30AD\u30E3\u30F3\u30BB\u30EB\u3059\u308B")))));
+};
+
+var Element = document.getElementById("cancelChargeArea");
+
+if (Element) {
+  var jsVars = Element.getAttribute("jsVars");
+  var parsedJsVars = jsVars && JSON.parse(jsVars);
+  var consts = Element.getAttribute("consts");
+  var parsedConsts = consts && JSON.parse(consts);
+  var defaultValue = Element.getAttribute("defaultValue");
+  var parsedDefaultValue = defaultValue && JSON.parse(defaultValue);
+  var errors = Element.getAttribute("errors");
+  var parsedErrors = errors && JSON.parse(errors);
+  Object(react_dom__WEBPACK_IMPORTED_MODULE_3__["render"])( /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_components_ConstApp__WEBPACK_IMPORTED_MODULE_2__["default"], {
+    jsVars: parsedJsVars
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(CancelChargeArea, {
+    consts: parsedConsts,
+    defaultValue: parsedDefaultValue,
+    errors: parsedErrors
+  })), document.getElementById("cancelChargeArea"));
 }
 
 /***/ }),
@@ -29454,10 +29117,10 @@ var ConstApp = function ConstApp(props) {
 
 /***/ }),
 
-/***/ "./resources/assets/staff/js/portal/DeclineMessage.js":
-/*!************************************************************!*\
-  !*** ./resources/assets/staff/js/portal/DeclineMessage.js ***!
-  \************************************************************/
+/***/ "./resources/assets/staff/js/components/ErrorMessage.js":
+/*!**************************************************************!*\
+  !*** ./resources/assets/staff/js/components/ErrorMessage.js ***!
+  \**************************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -29465,94 +29128,14 @@ var ConstApp = function ConstApp(props) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
-/* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_dom__WEBPACK_IMPORTED_MODULE_1__);
-
-
-
-var DeclineMessage = function DeclineMessage(_ref) {
-  var show = _ref.show,
-      message = _ref.message;
-  return /*#__PURE__*/react_dom__WEBPACK_IMPORTED_MODULE_1___default.a.createPortal( /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
-    id: "declineMessage",
-    style: {
-      display: show ? "" : "none"
-    }
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", {
-    className: "material-icons"
-  }, "do_not_disturb_on"), "\xA0", message), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", {
-    className: "material-icons closeIcon"
-  }, "cancel")), document.getElementById("declineMessageArea"));
-};
-
-/* harmony default export */ __webpack_exports__["default"] = (DeclineMessage);
-
-/***/ }),
-
-/***/ "./resources/assets/staff/js/web-estimate-request.js":
-/*!***********************************************************!*\
-  !*** ./resources/assets/staff/js/web-estimate-request.js ***!
-  \***********************************************************/
-/*! no exports provided */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
-/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
-/* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(react_dom__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _components_ConstApp__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./components/ConstApp */ "./resources/assets/staff/js/components/ConstApp.js");
-/* harmony import */ var _hooks_useMountedRef__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../hooks/useMountedRef */ "./resources/assets/hooks/useMountedRef.js");
-/* harmony import */ var _portal_DeclineMessage__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./portal/DeclineMessage */ "./resources/assets/staff/js/portal/DeclineMessage.js");
-/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! classnames */ "./node_modules/classnames/index.js");
-/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(classnames__WEBPACK_IMPORTED_MODULE_6__);
-
-
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
-  try {
-    var info = gen[key](arg);
-    var value = info.value;
-  } catch (error) {
-    reject(error);
-    return;
-  }
-
-  if (info.done) {
-    resolve(value);
-  } else {
-    Promise.resolve(value).then(_next, _throw);
-  }
+/* harmony import */ var _BrText__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../BrText */ "./resources/assets/staff/js/BrText.js");
+/* harmony import */ var _libs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../libs */ "./resources/assets/staff/js/libs.js");
+function _toConsumableArray(arr) {
+  return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread();
 }
 
-function _asyncToGenerator(fn) {
-  return function () {
-    var self = this,
-        args = arguments;
-    return new Promise(function (resolve, reject) {
-      var gen = fn.apply(self, args);
-
-      function _next(value) {
-        asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);
-      }
-
-      function _throw(err) {
-        asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);
-      }
-
-      _next(undefined);
-    });
-  };
-}
-
-function _slicedToArray(arr, i) {
-  return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();
-}
-
-function _nonIterableRest() {
-  throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+function _nonIterableSpread() {
+  throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
 
 function _unsupportedIterableToArray(o, minLen) {
@@ -29562,6 +29145,14 @@ function _unsupportedIterableToArray(o, minLen) {
   if (n === "Object" && o.constructor) n = o.constructor.name;
   if (n === "Map" || n === "Set") return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
+}
+
+function _iterableToArray(iter) {
+  if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter);
+}
+
+function _arrayWithoutHoles(arr) {
+  if (Array.isArray(arr)) return _arrayLikeToArray(arr);
 }
 
 function _arrayLikeToArray(arr, len) {
@@ -29574,373 +29165,260 @@ function _arrayLikeToArray(arr, len) {
   return arr2;
 }
 
-function _iterableToArrayLimit(arr, i) {
-  if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return;
-  var _arr = [];
-  var _n = true;
-  var _d = false;
-  var _e = undefined;
 
-  try {
-    for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
-      _arr.push(_s.value);
 
-      if (i && _arr.length === i) break;
-    }
-  } catch (err) {
-    _d = true;
-    _e = err;
-  } finally {
-    try {
-      if (!_n && _i["return"] != null) _i["return"]();
-    } finally {
-      if (_d) throw _e;
-    }
+
+
+var ErrorMessage = function ErrorMessage(_ref) {
+  var errorObj = _ref.errorObj;
+  var msgs = [];
+
+  if (!Object(_libs__WEBPACK_IMPORTED_MODULE_2__["isEmptyObject"])(errorObj)) {
+    Object.keys(errorObj).map(function (k) {
+      msgs = [].concat(_toConsumableArray(msgs), [errorObj[k]]);
+    });
   }
 
-  return _arr;
-}
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, msgs.length > 0 ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+    id: "errorMessage"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_BrText__WEBPACK_IMPORTED_MODULE_1__["default"], {
+    text: msgs.join("\n")
+  }))) : null);
+};
 
-function _arrayWithHoles(arr) {
-  if (Array.isArray(arr)) return arr;
-}
+/* harmony default export */ __webpack_exports__["default"] = (ErrorMessage);
 
+/***/ }),
 
+/***/ "./resources/assets/staff/js/components/OnlyNumberInput.js":
+/*!*****************************************************************!*\
+  !*** ./resources/assets/staff/js/components/OnlyNumberInput.js ***!
+  \*****************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-
-
-
-
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 
 /**
+ * 数字のみ入力可のinput
  *
- * @param {string} rejectionAt 辞退日時
- * @param {string} requstNumber 管理番号
+ * @param {boolean} negativeValuePermit 負数の入力を許可する場合はtrue
  * @returns
  */
 
-var FormControl = function FormControl(_ref) {
-  var rejectionAt = _ref.rejectionAt,
-      requstNumber = _ref.requstNumber;
-  var mounted = Object(_hooks_useMountedRef__WEBPACK_IMPORTED_MODULE_4__["useMountedRef"])(); // マウント・アンマウント制御
+var OnlyNumberInput = function OnlyNumberInput() {
+  var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+      name = _ref.name,
+      value = _ref.value,
+      handleChange = _ref.handleChange,
+      _ref$handleFocus = _ref.handleFocus,
+      handleFocus = _ref$handleFocus === void 0 ? function (e) {} : _ref$handleFocus,
+      _ref$handleBlur = _ref.handleBlur,
+      handleBlur = _ref$handleBlur === void 0 ? function (e) {} : _ref$handleBlur,
+      _ref$negativeValuePer = _ref.negativeValuePermit,
+      negativeValuePermit = _ref$negativeValuePer === void 0 ? true : _ref$negativeValuePer,
+      _ref$maxLength = _ref.maxLength,
+      maxLength = _ref$maxLength === void 0 ? 10 : _ref$maxLength,
+      _ref$placeholder = _ref.placeholder,
+      placeholder = _ref$placeholder === void 0 ? "" : _ref$placeholder,
+      _ref$className = _ref.className,
+      className = _ref$className === void 0 ? "" : _ref$className;
 
-  var _useContext = Object(react__WEBPACK_IMPORTED_MODULE_1__["useContext"])(_components_ConstApp__WEBPACK_IMPORTED_MODULE_3__["ConstContext"]),
-      agencyAccount = _useContext.agencyAccount; // 辞退関連
+  var changeValue = function changeValue(e) {
+    e.target.value = e.target.value.replace(/[０-９]/g, function (s) {
+      return String.fromCharCode(s.charCodeAt(0) - 0xfee0);
+    }); // 全角数字→半角変換
 
-
-  var _useState = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])(rejectionAt),
-      _useState2 = _slicedToArray(_useState, 2),
-      isRejectionAt = _useState2[0],
-      setIsRejectionAt = _useState2[1]; // 辞退日時
-
-
-  var _useState3 = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])(false),
-      _useState4 = _slicedToArray(_useState3, 2),
-      isRejectinig = _useState4[0],
-      setIsRejectinig = _useState4[1]; // 辞退処理中か否か
-  // 承諾関連
-
-
-  var _useState5 = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])(""),
-      _useState6 = _slicedToArray(_useState5, 2),
-      consentMessage = _useState6[0],
-      setConsentMessage = _useState6[1]; // 一言メッセージ
-
-
-  var _useState7 = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])(false),
-      _useState8 = _slicedToArray(_useState7, 2),
-      isConsenting = _useState8[0],
-      setIsConsenting = _useState8[1]; // 承諾処理中か否か
-
-
-  var _useState9 = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])(false),
-      _useState10 = _slicedToArray(_useState9, 2),
-      showDeclineMessage = _useState10[0],
-      setShowDeclineMessage = _useState10[1];
-
-  var _useState11 = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])(""),
-      _useState12 = _slicedToArray(_useState11, 2),
-      declineMessage = _useState12[0],
-      setDeclineMessage = _useState12[1]; // メッセージ入力制御
-
-
-  var handleChangeConsenMessage = function handleChangeConsenMessage(e) {
-    setConsentMessage(e.target.value);
-  }; //承諾ダイアログclose
-
-
-  var handleCloseConsent = function handleCloseConsent(e) {
-    $(".js-modal-close").trigger("click");
-    setConsentMessage(""); // 入力メッセージ初期化
-  }; // 辞退ボタンを押した時の挙動
-
-
-  var handlRejection = Object(react__WEBPACK_IMPORTED_MODULE_1__["useCallback"])( /*#__PURE__*/function () {
-    var _ref2 = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(e) {
-      var _response$data;
-
-      var response;
-      return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
-        while (1) {
-          switch (_context.prev = _context.next) {
-            case 0:
-              if (mounted.current) {
-                _context.next = 2;
-                break;
-              }
-
-              return _context.abrupt("return");
-
-            case 2:
-              if (!isRejectinig) {
-                _context.next = 4;
-                break;
-              }
-
-              return _context.abrupt("return");
-
-            case 4:
-              setIsRejectinig(true);
-              _context.next = 7;
-              return axios.post("/api/".concat(agencyAccount, "/web/estimate/").concat(requstNumber, "/reject"), {
-                _method: "put"
-              })["finally"](function () {
-                $(".js-modal-close").trigger("click"); // 辞退モーダルclose
-
-                setTimeout(function () {
-                  if (mounted.current) {
-                    setIsRejectinig(false);
-                  }
-                }, 3000);
-              });
-
-            case 7:
-              response = _context.sent;
-
-              if (mounted.current && response !== null && response !== void 0 && (_response$data = response.data) !== null && _response$data !== void 0 && _response$data.data) {
-                setIsRejectionAt(response.data.data.rejection_at); // 辞退日時On → 辞退ボタン非表示
-
-                setShowDeclineMessage(true); // decline Messageエリア表示
-
-                setDeclineMessage("\u30AA\u30F3\u30E9\u30A4\u30F3\u76F8\u8AC7\u4F9D\u983C\u300C".concat(requstNumber, "\u300D\u3092\u8F9E\u9000\u3057\u307E\u3057\u305F\u3002"));
-              }
-
-            case 9:
-            case "end":
-              return _context.stop();
-          }
-        }
-      }, _callee);
-    }));
-
-    return function (_x) {
-      return _ref2.apply(this, arguments);
-    };
-  }(), []); // 承諾ボタンを押した時の挙動
-
-  var handlConsent = Object(react__WEBPACK_IMPORTED_MODULE_1__["useCallback"])( /*#__PURE__*/function () {
-    var _ref3 = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2(e) {
-      var _response$data2;
-
-      var response;
-      return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
-        while (1) {
-          switch (_context2.prev = _context2.next) {
-            case 0:
-              if (!(consentMessage.trim().length === 0)) {
-                _context2.next = 3;
-                break;
-              }
-
-              alert("一言メッセージが入力されていません。");
-              return _context2.abrupt("return");
-
-            case 3:
-              if (mounted.current) {
-                _context2.next = 5;
-                break;
-              }
-
-              return _context2.abrupt("return");
-
-            case 5:
-              if (!isConsenting) {
-                _context2.next = 7;
-                break;
-              }
-
-              return _context2.abrupt("return");
-
-            case 7:
-              setIsConsenting(true);
-              _context2.next = 10;
-              return axios.post("/api/".concat(agencyAccount, "/web/estimate/").concat(requstNumber, "/consent"), {
-                message: consentMessage,
-                set_message: 1,
-                _method: "put"
-              })["finally"](function () {
-                $(".js-modal-close").trigger("click"); // モーダルclose
-
-                setTimeout(function () {
-                  if (mounted.current) {
-                    setIsConsenting(false);
-                  }
-                }, 3000);
-              });
-
-            case 10:
-              response = _context2.sent;
-
-              if (!(mounted.current && response !== null && response !== void 0 && (_response$data2 = response.data) !== null && _response$data2 !== void 0 && _response$data2.data)) {
-                _context2.next = 15;
-                break;
-              }
-
-              setConsentMessage(""); // 入力フィールド初期化
-              // 見積もりページへ転送
-
-              location.href = "/".concat(agencyAccount, "/estimates/web/normal/").concat(response.data.data.estimate_number);
-              return _context2.abrupt("return");
-
-            case 15:
-            case "end":
-              return _context2.stop();
-          }
-        }
-      }, _callee2);
-    }));
-
-    return function (_x2) {
-      return _ref3.apply(this, arguments);
-    };
-  }(), [consentMessage]);
-  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_1___default.a.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_portal_DeclineMessage__WEBPACK_IMPORTED_MODULE_5__["default"], {
-    message: declineMessage
-  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("li", {
-    className: "wd20"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("button", {
-    className: "grayBtn",
-    onClick: function onClick(e) {
-      e.preventDefault();
-      history.back();
+    if (negativeValuePermit) {
+      // 負数の入力OK
+      if (e.target.value === "" || e.target.value === "-" || /[0-9]+$/.test(e.target.value)) {
+        handleChange(e);
+      }
+    } else {
+      // 正数のみ
+      if (e.target.value === "" || /[0-9]+$/.test(e.target.value)) {
+        handleChange(e);
+      }
     }
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", {
-    className: "material-icons"
-  }, "arrow_back_ios"), "\u623B\u308B")), !isRejectionAt && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_1___default.a.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("li", {
-    className: "wd30"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("button", {
-    className: "redBtn js-modal-open",
-    "data-target": "mdDecline",
-    disabled: isRejectinig
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", {
-    className: "material-icons"
-  }, "cancel"), "\u8F9E\u9000\u3059\u308B")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("li", {
-    className: "wd50"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("button", {
-    className: "blueBtn js-modal-open",
-    "data-target": "mdAccept"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", {
-    className: "material-icons"
-  }, "check_circle"), "\u76F8\u8AC7\u3092\u53D7\u3051\u4ED8\u3051\u308B"))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
-    id: "mdDecline",
-    className: "modal js-modal",
-    style: {
-      position: "fixed",
-      left: 0,
-      top: 0
-    }
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
-    className: classnames__WEBPACK_IMPORTED_MODULE_6___default()("modal__bg", {
-      "js-modal-close": !isRejectinig
-    })
-  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
-    className: "modal__content"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("p", {
-    className: "mdTit mb20"
-  }, "\u3053\u306E\u4F9D\u983C\u3092\u8F9E\u9000\u3057\u307E\u3059\u304B\uFF1F"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("ul", {
-    className: "sideList"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("li", {
-    className: "wd50"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("button", {
-    className: "grayBtn js-modal-close",
-    disabled: isRejectinig
-  }, "\u9589\u3058\u308B")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("li", {
-    className: "wd50 mr00"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("button", {
-    className: "redBtn",
-    onClick: handlRejection,
-    disabled: isRejectinig
-  }, "\u8F9E\u9000\u3059\u308B"))))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
-    id: "mdAccept",
-    className: "modal js-modal",
-    style: {
-      position: "fixed",
-      left: 0,
-      top: 0
-    }
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
-    className: classnames__WEBPACK_IMPORTED_MODULE_6___default()("modal__bg", {
-      "js-modal-close": !isConsenting
-    })
-  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
-    className: "modal__content"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("p", {
-    className: "mdTit mb20"
-  }, "\u3053\u306E\u4F9D\u983C\u3092\u53D7\u3051\u4ED8\u3051\u307E\u3059\u304B\uFF1F"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("ul", {
-    className: "baseList mb20"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("li", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", {
-    className: "inputLabel"
-  }, "\u4E00\u8A00\u30E1\u30C3\u30BB\u30FC\u30B8(50\u6587\u5B57\u4EE5\u5185)"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("textarea", {
-    maxLength: "50",
-    value: consentMessage,
-    onChange: handleChangeConsenMessage
-  }))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("ul", {
-    className: "sideList"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("li", {
-    className: "wd50"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("button", {
-    className: "grayBtn",
-    disabled: isConsenting,
-    onClick: handleCloseConsent
-  }, "\u9589\u3058\u308B")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("li", {
-    className: "wd50 mr00"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("button", {
-    className: "blueBtn",
-    disabled: isConsenting,
-    onClick: handlConsent
-  }, "\u53D7\u3051\u4ED8\u3051\u308B"))))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_portal_DeclineMessage__WEBPACK_IMPORTED_MODULE_5__["default"], {
-    show: showDeclineMessage,
-    message: declineMessage
-  }));
+  }; // フォーカス時に全選択状態に
+
+
+  var focusFunc = Object(react__WEBPACK_IMPORTED_MODULE_0__["useCallback"])(function (e) {
+    e.target.select();
+    handleFocus(e);
+  }, []); // フォーカス外れた時
+
+  var blurFunc = Object(react__WEBPACK_IMPORTED_MODULE_0__["useCallback"])(function (e) {
+    handleBlur(e);
+  });
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
+    type: "text",
+    name: name,
+    value: value,
+    onChange: changeValue,
+    maxLength: maxLength,
+    className: className,
+    placeholder: placeholder,
+    onFocus: focusFunc,
+    onBlur: blurFunc
+  });
 };
 
-var Element = document.getElementById("formControl");
+/* harmony default export */ __webpack_exports__["default"] = (OnlyNumberInput);
 
-if (Element) {
-  var jsVars = Element.getAttribute("jsVars");
-  var parsedJsVars = jsVars && JSON.parse(jsVars);
-  var rejectionAt = Element.getAttribute("rejectionAt");
-  var requstNumber = Element.getAttribute("requstNumber");
-  Object(react_dom__WEBPACK_IMPORTED_MODULE_2__["render"])( /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_components_ConstApp__WEBPACK_IMPORTED_MODULE_3__["default"], {
-    jsVars: parsedJsVars
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(FormControl, {
-    rejectionAt: rejectionAt,
-    requstNumber: requstNumber
-  })), document.getElementById("formControl"));
+/***/ }),
+
+/***/ "./resources/assets/staff/js/libs.js":
+/*!*******************************************!*\
+  !*** ./resources/assets/staff/js/libs.js ***!
+  \*******************************************/
+/*! exports provided: calcTaxInclud, calcNet, calcGrossProfit, calcProfitRate, getAgencyAccountFromUrl, getParam, getNameExObj, getPathFromBracketName, isEmptyObject */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "calcTaxInclud", function() { return calcTaxInclud; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "calcNet", function() { return calcNet; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "calcGrossProfit", function() { return calcGrossProfit; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "calcProfitRate", function() { return calcProfitRate; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getAgencyAccountFromUrl", function() { return getAgencyAccountFromUrl; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getParam", function() { return getParam; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getNameExObj", function() { return getNameExObj; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getPathFromBracketName", function() { return getPathFromBracketName; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isEmptyObject", function() { return isEmptyObject; });
+/**
+ * 税込価格を計算
+ * 小数点以下は四捨五入
+ * @param {*} nonTaxed 税抜き価格
+ * @param {*} taxRate 税率
+ */
+function calcTaxInclud(nonTaxed, taxRate) {
+  if (/^[-]?\d*$/.test(nonTaxed) && /^[-]?\d*$/.test(taxRate)) {
+    // 引数がともに数字であれば処理
+    var tax = 1 + Number(taxRate) / 100;
+    var num = Number(nonTaxed) * tax;
+    return Math.round(num);
+  }
+
+  return nonTaxed;
+}
+/**
+ * Net単価を計算
+ * 小数点以下は四捨五入
+ * @param {*} cost 仕入
+ * @param {*} commissionRate 手数料率
+ */
+
+function calcNet(cost, commissionRate) {
+  if (/^[-]?\d*$/.test(cost) && /^[-]?\d*$/.test(commissionRate)) {
+    // 引数がともに数字であれば処理
+    var rate = Number(commissionRate) / 100;
+    var num = Number(cost) * rate;
+    return cost - Math.round(num);
+  }
+
+  return cost;
+}
+/**
+ * 粗利を計算
+ * 小数点以下は四捨五入でOK（確認済）
+ * @param {*} gross 税込単価
+ * @param {*} net NET単価
+ */
+
+function calcGrossProfit(gross, net) {
+  if (/^[-]?\d*$/.test(gross) && /^[-]?\d*$/.test(net)) {
+    // 引数がともに数字であれば処理
+    return Number(gross) - Number(net);
+  }
+
+  return gross;
+}
+/**
+ * 利益率を計算
+ *
+ * @param {*} profit
+ * @param {*} Sales
+ */
+
+function calcProfitRate(profit, sales) {
+  if (sales === 0) return 0;
+  return profit / sales * 100;
+}
+/**
+ * URLから会社アカウントを取得
+ *
+ * @returns
+ */
+
+function getAgencyAccountFromUrl() {
+  var path = location.pathname.replace(/^\/+|\/+$/g, ""); // pathnameの前後のスラッシュを削除
+
+  var arr = path.split("/");
+  return arr[0] ? arr[0] : null;
+}
+/**
+ * GETパラメータを取得
+ *
+ * @param {*} name
+ * @param {*} url
+ * @returns
+ */
+
+function getParam(name, url) {
+  if (!url) url = window.location.href;
+  name = name.replace(/[\[\]]/g, "\\$&");
+  var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+      results = regex.exec(url);
+  if (!results) return null;
+  if (!results[2]) return "";
+  return decodeURIComponent(results[2].replace(/\+/g, " "));
+} // name_exのjsonをobjectに変換
+
+function getNameExObj(str) {
+  try {
+    var obj = JSON.parse(str);
+    return {
+      label: "".concat(obj.code, " ").concat(obj.name),
+      value: obj.id
+    };
+  } catch (error) {}
+
+  return {
+    label: "",
+    value: ""
+  };
+}
+/**
+ * ブラケットの配列表記をドットに直してパス文字列を作成
+ * 前後の[]をトリムして、 ][ と [ 、 ] をドットに置換
+ *
+ * aaa[bbb][ccc] → aaa.bbb.cccs
+ */
+
+function getPathFromBracketName(name) {
+  return name.replace(/^\[|\]$/, "").replace(/\]\[/g, ".").replace(/\[|\]/g, ".");
+} //オブジェクトが空かどうか
+
+function isEmptyObject(obj) {
+  return !Object.keys(obj).length;
 }
 
 /***/ }),
 
-/***/ 88:
+/***/ 80:
 /*!*****************************************************************!*\
-  !*** multi ./resources/assets/staff/js/web-estimate-request.js ***!
+  !*** multi ./resources/assets/staff/js/cancel_charge-create.js ***!
   \*****************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! /Users/takaryon/Documents/vm/hakken-system/data/asp/resources/assets/staff/js/web-estimate-request.js */"./resources/assets/staff/js/web-estimate-request.js");
+module.exports = __webpack_require__(/*! /Users/takaryon/Documents/vm/hakken-system/data/asp/resources/assets/staff/js/cancel_charge-create.js */"./resources/assets/staff/js/cancel_charge-create.js");
 
 
 /***/ })
 
-},[[88,"/js/manifest"]]]);
+},[[80,"/js/manifest","/js/vendor"]]]);

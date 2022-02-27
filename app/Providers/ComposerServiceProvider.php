@@ -91,6 +91,9 @@ class ComposerServiceProvider extends ServiceProvider
         View::composer('staff.reserve_bundle_receipt.edit', VCStaff\ReserveBundleReceipt\EditFormComposer::class); // 作成・編集ページ
         View::composer('staff.reserve_bundle_receipt.pdf', VCStaff\ReserveBundleReceipt\PdfComposer::class); // PDFページ
 
+        // キャンセルチャージ
+        View::composer('staff.reserve.cancel_charge', VCStaff\ReserveEstimate\CancelChargeFormComposer::class); // 作成ページ
+
 
         // 経理業務
         View::composer('staff.management_invoice.index', VCStaff\ManagementInvoice\IndexFormComposer::class); // 請求管理一覧

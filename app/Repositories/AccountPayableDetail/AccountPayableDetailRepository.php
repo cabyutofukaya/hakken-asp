@@ -132,7 +132,7 @@ class AccountPayableDetailRepository implements AccountPayableDetailRepositoryIn
                     $q->where('key', $key)->where('val', 'like', "%$val%");
                 });
             } elseif ($key === 'reserve_number') { // 予約番号
-                $query = $query->whereHas('reserve', function ($q) use ($key, $val) {
+                $query = $query->whereHas('reserve', function ($q) use ($val) {
                     $q->where('control_number', 'like', "%$val%");
                 });
             } elseif ($key === 'payable_number') { // 買い掛け金番号
@@ -152,6 +152,26 @@ class AccountPayableDetailRepository implements AccountPayableDetailRepositoryIn
 
         return $query->where('account_payable_details.agency_id', $agencyId)->sortable()->paginate($limit); // sortableする際にagency_idがリレーション先のテーブルにも存在するのでエラー回避のために明示的にagency_idを指定する
     }
+
+    // /**
+    //  * 当該予約に対するaccount_payment_detailsを取得
+    //  * paginateByAgencyIdメソッドを予約番号で検索した場合の結果とほぼ同じ
+    //  * 
+    //  * @param ?string $applicationStep 申し込み段階。全レコード対象の場合はnull
+    //  */
+    // public function getByReserveNumber(string $reserveNumber, int $agencyId, ?string $applicationStep = null, array $with = [], array $select=[]) : Collection
+    // {
+    //     $query = $applicationStep === config('consts.reserves.APPLICATION_STEP_RESERVE') ? $this->accountPayableDetail->decided() : $this->accountPayableDetail; // スコープを設定
+        
+    //     $query = $with ? $query->with($with) : $query;
+    //     $query = $select ? $query->select($select) : $query;
+
+    //     $query = $query->whereHas('reserve', function ($q) use ($reserveNumber) {
+    //         $q->where('control_number', $reserveNumber);
+    //     });
+
+    //     return $query->where('account_payable_details.agency_id', $agencyId)->sortable()->get(); // sortableする際にagency_idがリレーション先のテーブルにも存在するのでエラー回避のために明示的にagency_idを指定する
+    // }
 
     /**
      * 削除

@@ -16,6 +16,7 @@ use App\Services\ReserveService;
 use App\Services\UserCustomItemService;
 use App\Services\UserService;
 use App\Services\VAreaService;
+use App\Services\ReserveParticipantPriceService;
 use DB;
 use Exception;
 use Gate;
@@ -24,7 +25,7 @@ use Log;
 
 class ReserveController extends Controller
 {
-    public function __construct(UserService $userService, BusinessUserManagerService $businessUserManagerService, VAreaService $vAreaService, ReserveService $reserveService, ReserveCustomValueService $reserveCustomValueService, UserCustomItemService $userCustomItemService)
+    public function __construct(UserService $userService, BusinessUserManagerService $businessUserManagerService, VAreaService $vAreaService, ReserveService $reserveService, ReserveCustomValueService $reserveCustomValueService, UserCustomItemService $userCustomItemService, ReserveParticipantPriceService $reserveParticipantPriceService)
     {
         $this->reserveService = $reserveService;
         $this->userService = $userService;
@@ -32,6 +33,7 @@ class ReserveController extends Controller
         $this->vAreaService = $vAreaService;
         $this->reserveCustomValueService = $reserveCustomValueService;
         $this->userCustomItemService = $userCustomItemService;
+        $this->reserveParticipantPriceService = $reserveParticipantPriceService;
     }
 
     // 一件取得
@@ -149,11 +151,11 @@ class ReserveController extends Controller
     }
 
     /**
-     * キャンセル
+     * キャンセルチャージナシでキャンセル
      *
      * @param string $reserveNumber 予約番号
      */
-    public function cancel($agencyAccount, $reserveNumber)
+    public function noCancelChargeCancel($agencyAccount, $reserveNumber)
     {
         $reserve = $this->reserveService->findByControlNumber($reserveNumber, $agencyAccount);
 
@@ -162,15 +164,26 @@ class ReserveController extends Controller
         }
 
         // 認可チェック
-        $response = Gate::inspect('update', [$reserve]);
+        $response = Gate::inspect('cancel', [$reserve]);
         if (!$response->allowed()) {
             abort(403, $response->message());
         }
 
-        if ($this->reserveService->cancel($reserve->id)) {
-            return response('', 200);
+        try {
+            $result = \DB::transaction(function () use ($reserve) {
+                $this->reserveParticipantPriceService->cancelChargeReset($reserve->id); // キャンセルチャージをリセット
+                $this->reserveService->cancel($reserve->id, false);
+                return true;
+            });
+
+            if ($result) {
+                return response('', 200);
+            }
+    
+        } catch (Exception $e) {
+            Log::error($e);
         }
-        abort(500);
+        return abort(500);
     }
 
     /**

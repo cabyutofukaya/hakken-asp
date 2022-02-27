@@ -46,7 +46,7 @@ class CreateSubjectOptionsTable extends Migration
             $table->softDeletes();
             $table->timestamps();
 
-            $table->unique(['agency_id', 'code']);
+            $table->unique(['agency_id', 'code']); // codeはIDとして使っているので論理削除含め絶対に重複不可
 
             $table->foreign('agency_id')
             ->references('id')->on('agencies')

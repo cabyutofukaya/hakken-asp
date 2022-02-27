@@ -28,6 +28,7 @@
     "/staff/js/business_user-edit.js": "/staff/js/business_user-edit.js",
     "/staff/js/business_user-index.js": "/staff/js/business_user-index.js",
     "/staff/js/business_user-show.js": "/staff/js/business_user-show.js",
+    "/staff/js/cancel_charge-create.js": "/staff/js/cancel_charge-create.js",
     "/staff/js/city-create-edit.js": "/staff/js/city-create-edit.js",
     "/staff/js/city-index.js": "/staff/js/city-index.js",
     "/staff/js/common.js": "/staff/js/common.js",

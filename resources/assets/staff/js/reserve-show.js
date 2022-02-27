@@ -11,6 +11,7 @@ import { useMountedRef } from "../../hooks/useMountedRef";
 import SmallDangerModal from "./components/SmallDangerModal";
 import classNames from "classnames";
 import TopControlBox from "./components/Reserve/TopControlBox";
+import CancelModal from "./components/Reserve/CancelModal";
 
 /**
  *
@@ -48,8 +49,15 @@ const ReserveShowArea = ({
         setCurrentTab(tab);
     };
 
-    // キャンセル処理
-    const handleCancel = async () => {
+    // キャンセル処理(チャージあり→チャージ設定ページへ遷移)
+    const handleCharge = () => {
+        if (!mounted.current) return;
+        setIsCanceling(false); // 一応、処理フラグを無効にしておく
+        $(".js-modal-close").trigger("click"); // モーダルクローズ
+        location.href = consts?.common?.cancelChargeUrl;
+    };
+    // キャンセル処理(ノンチャージ)
+    const handleNonCharge = async () => {
         if (!mounted.current) return;
         if (isCanceling) return;
 
@@ -57,7 +65,7 @@ const ReserveShowArea = ({
 
         const response = await axios
             .post(
-                `/api/${agencyAccount}/reserve/${reserve?.control_number}/cancel`,
+                `/api/${agencyAccount}/reserve/${reserve?.control_number}/no-cancel-charge/cancel`,
                 {
                     _method: "put"
                 }
@@ -328,11 +336,10 @@ const ReserveShowArea = ({
                 }
             />
             {/* キャンセルモーダル */}
-            <SmallDangerModal
+            <CancelModal
                 id="mdCxl"
-                title="この予約を取り消しますか？"
-                actionLabel="取り消す"
-                handleAction={handleCancel}
+                nonChargeAction={handleNonCharge}
+                chargeAction={handleCharge}
                 isActioning={isCanceling}
             />
             {/* 削除モーダル */}

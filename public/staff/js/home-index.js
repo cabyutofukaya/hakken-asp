@@ -28678,7 +28678,7 @@ if (document.getElementById("app")) {
 
 /***/ }),
 
-/***/ 83:
+/***/ 84:
 /*!*************************************************************!*\
   !*** multi ./resources/assets/staff/react-js/home/index.js ***!
   \*************************************************************/
@@ -28690,4 +28690,4 @@ module.exports = __webpack_require__(/*! /Users/takaryon/Documents/vm/hakken-sys
 
 /***/ })
 
-},[[83,"/js/manifest"]]]);
+},[[84,"/js/manifest"]]]);

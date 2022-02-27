@@ -46928,13 +46928,25 @@ var CustomField = function CustomField() {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
- // 数字のみ入力可のinput
+
+/**
+ * 数字のみ入力可のinput
+ *
+ * @param {boolean} negativeValuePermit 負数の入力を許可する場合はtrue
+ * @returns
+ */
 
 var OnlyNumberInput = function OnlyNumberInput() {
   var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
       name = _ref.name,
       value = _ref.value,
       handleChange = _ref.handleChange,
+      _ref$handleFocus = _ref.handleFocus,
+      handleFocus = _ref$handleFocus === void 0 ? function (e) {} : _ref$handleFocus,
+      _ref$handleBlur = _ref.handleBlur,
+      handleBlur = _ref$handleBlur === void 0 ? function (e) {} : _ref$handleBlur,
+      _ref$negativeValuePer = _ref.negativeValuePermit,
+      negativeValuePermit = _ref$negativeValuePer === void 0 ? true : _ref$negativeValuePer,
       _ref$maxLength = _ref.maxLength,
       maxLength = _ref$maxLength === void 0 ? 10 : _ref$maxLength,
       _ref$placeholder = _ref.placeholder,
@@ -46947,15 +46959,28 @@ var OnlyNumberInput = function OnlyNumberInput() {
       return String.fromCharCode(s.charCodeAt(0) - 0xfee0);
     }); // 全角数字→半角変換
 
-    if (e.target.value === "" || e.target.value === "-" || /[0-9]+$/.test(e.target.value)) {
-      handleChange(e);
+    if (negativeValuePermit) {
+      // 負数の入力OK
+      if (e.target.value === "" || e.target.value === "-" || /[0-9]+$/.test(e.target.value)) {
+        handleChange(e);
+      }
+    } else {
+      // 正数のみ
+      if (e.target.value === "" || /[0-9]+$/.test(e.target.value)) {
+        handleChange(e);
+      }
     }
   }; // フォーカス時に全選択状態に
 
 
-  var handleForcus = Object(react__WEBPACK_IMPORTED_MODULE_0__["useCallback"])(function (e) {
+  var focusFunc = Object(react__WEBPACK_IMPORTED_MODULE_0__["useCallback"])(function (e) {
     e.target.select();
-  }, []);
+    handleFocus(e);
+  }, []); // フォーカス外れた時
+
+  var blurFunc = Object(react__WEBPACK_IMPORTED_MODULE_0__["useCallback"])(function (e) {
+    handleBlur(e);
+  });
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
     type: "text",
     name: name,
@@ -46964,7 +46989,8 @@ var OnlyNumberInput = function OnlyNumberInput() {
     maxLength: maxLength,
     className: className,
     placeholder: placeholder,
-    onFocus: handleForcus
+    onFocus: focusFunc,
+    onBlur: blurFunc
   });
 };
 
@@ -48498,7 +48524,7 @@ var CustomerSelect = function CustomerSelect(_ref) {
     className: "selectBox"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("select", {
     name: "participant_type",
-    value: customerType,
+    value: customerType !== null && customerType !== void 0 ? customerType : "",
     onChange: handleSelectChange
   }, customerTypes && Object.keys(customerTypes).map(function (val, index) {
     return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("option", {
@@ -48512,7 +48538,7 @@ var CustomerSelect = function CustomerSelect(_ref) {
   }, "\u9867\u5BA2\u756A\u53F7"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("input", {
     type: "text",
     name: "search_user_number",
-    value: searchUserNumber,
+    value: searchUserNumber !== null && searchUserNumber !== void 0 ? searchUserNumber : "",
     onChange: handleChange,
     placeholder: "ID111"
   })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("li", {
@@ -48524,7 +48550,7 @@ var CustomerSelect = function CustomerSelect(_ref) {
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("input", {
     type: "text",
     name: "search_user_name",
-    value: searchUserName,
+    value: searchUserName !== null && searchUserName !== void 0 ? searchUserName : "",
     onChange: handleChange,
     className: "mr10",
     placeholder: "\u30E4\u30DE\u30C0\u30BF\u30ED\u30A6"
@@ -48569,7 +48595,7 @@ var CustomerSelect = function CustomerSelect(_ref) {
   }))), isLoaded && !rows.length && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("tr", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", {
     colSpan: customerType === customerKbns.business ? 9 : 11
   }, "\u691C\u7D22\u7D50\u679C\u304C\u3042\u308A\u307E\u305B\u3093")), isLoaded && customerType === customerKbns.business && rows.map(function (row, index) {
-    var _row$business_user$us, _row$business_user, _row$business_user$na, _row$business_user2, _row$name, _row$department_name, _row$business_user$pr, _row$business_user3, _row$email, _row$tel, _row$business_user$kb, _row$business_user4, _row$business_user4$k;
+    var _row$user_number, _row$business_user$us, _row$business_user, _row$business_user$na, _row$business_user2, _row$name, _row$department_name, _row$business_user$pr, _row$business_user3, _row$email, _row$tel, _row$business_user$kb, _row$business_user4, _row$business_user4$k;
 
     return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_1___default.a.Fragment, {
       key: index
@@ -48579,7 +48605,7 @@ var CustomerSelect = function CustomerSelect(_ref) {
       type: "radio",
       id: "daihyou".concat(index),
       name: "applicant_user_number",
-      value: row === null || row === void 0 ? void 0 : row.user_number,
+      value: (_row$user_number = row === null || row === void 0 ? void 0 : row.user_number) !== null && _row$user_number !== void 0 ? _row$user_number : "",
       onChange: handleChange,
       checked: userNumber == (row === null || row === void 0 ? void 0 : row.user_number)
     }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("label", {
@@ -48594,7 +48620,7 @@ var CustomerSelect = function CustomerSelect(_ref) {
       })
     }, (_row$name = row === null || row === void 0 ? void 0 : row.name) !== null && _row$name !== void 0 ? _row$name : "-"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", null, (_row$department_name = row === null || row === void 0 ? void 0 : row.department_name) !== null && _row$department_name !== void 0 ? _row$department_name : "-"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", null, (_row$business_user$pr = row === null || row === void 0 ? void 0 : (_row$business_user3 = row.business_user) === null || _row$business_user3 === void 0 ? void 0 : _row$business_user3.prefecture_name) !== null && _row$business_user$pr !== void 0 ? _row$business_user$pr : "-"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", null, (_row$email = row === null || row === void 0 ? void 0 : row.email) !== null && _row$email !== void 0 ? _row$email : "-"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", null, (_row$tel = row === null || row === void 0 ? void 0 : row.tel) !== null && _row$tel !== void 0 ? _row$tel : "-"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", null, (_row$business_user$kb = row === null || row === void 0 ? void 0 : (_row$business_user4 = row.business_user) === null || _row$business_user4 === void 0 ? void 0 : (_row$business_user4$k = _row$business_user4.kbn) === null || _row$business_user4$k === void 0 ? void 0 : _row$business_user4$k.val) !== null && _row$business_user$kb !== void 0 ? _row$business_user$kb : "-")));
   }), !isLoading && customerType === customerKbns.person && rows.map(function (row, index) {
-    var _row$user_number, _row$userable$name, _row$userable, _row$userable$name_ka, _row$userable2, _row$userable$name_ro, _row$userable3, _row$userable$sex_lab, _row$userable4, _row$userable5, _row$userable$user_ex, _row$userable6, _row$userable6$user_e, _row$userable$passpor, _row$userable7, _row$userable$passpor2, _row$userable8, _row$userable$mobile_, _row$userable9;
+    var _row$user_number2, _row$user_number3, _row$userable$name, _row$userable, _row$userable$name_ka, _row$userable2, _row$userable$name_ro, _row$userable3, _row$userable$sex_lab, _row$userable4, _row$userable5, _row$userable$user_ex, _row$userable6, _row$userable6$user_e, _row$userable$passpor, _row$userable7, _row$userable$passpor2, _row$userable8, _row$userable$mobile_, _row$userable9;
 
     return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_1___default.a.Fragment, {
       key: index
@@ -48604,12 +48630,12 @@ var CustomerSelect = function CustomerSelect(_ref) {
       type: "radio",
       id: "daihyou".concat(index),
       name: "applicant_user_number",
-      value: row === null || row === void 0 ? void 0 : row.user_number,
+      value: (_row$user_number2 = row === null || row === void 0 ? void 0 : row.user_number) !== null && _row$user_number2 !== void 0 ? _row$user_number2 : "",
       onChange: handleChange,
       checked: userNumber == (row === null || row === void 0 ? void 0 : row.user_number)
     }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("label", {
       htmlFor: "daihyou".concat(index)
-    }, "\xA0")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", null, (_row$user_number = row.user_number) !== null && _row$user_number !== void 0 ? _row$user_number : "-"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", {
+    }, "\xA0")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", null, (_row$user_number3 = row.user_number) !== null && _row$user_number3 !== void 0 ? _row$user_number3 : "-"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("td", {
       className: classnames__WEBPACK_IMPORTED_MODULE_6___default()({
         txcGray: row.is_deleted
       })
@@ -48644,7 +48670,7 @@ var CustomerSelect = function CustomerSelect(_ref) {
 /*!*******************************************!*\
   !*** ./resources/assets/staff/js/libs.js ***!
   \*******************************************/
-/*! exports provided: calcTaxInclud, calcNet, calcGrossProfit, calcProfitRate, getAgencyAccountFromUrl, getParam, getNameExObj, getPathFromBracketName */
+/*! exports provided: calcTaxInclud, calcNet, calcGrossProfit, calcProfitRate, getAgencyAccountFromUrl, getParam, getNameExObj, getPathFromBracketName, isEmptyObject */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -48657,6 +48683,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getParam", function() { return getParam; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getNameExObj", function() { return getNameExObj; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getPathFromBracketName", function() { return getPathFromBracketName; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isEmptyObject", function() { return isEmptyObject; });
 /**
  * 税込価格を計算
  * 小数点以下は四捨五入
@@ -48769,6 +48796,10 @@ function getNameExObj(str) {
 
 function getPathFromBracketName(name) {
   return name.replace(/^\[|\]$/, "").replace(/\]\[/g, ".").replace(/\[|\]/g, ".");
+} //オブジェクトが空かどうか
+
+function isEmptyObject(obj) {
+  return !Object.keys(obj).length;
 }
 
 /***/ }),

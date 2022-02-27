@@ -107,3 +107,8 @@ export function getPathFromBracketName(name) {
         .replace(/\]\[/g, ".")
         .replace(/\[|\]/g, ".");
 }
+
+//オブジェクトが空かどうか
+export function isEmptyObject(obj) {
+    return !Object.keys(obj).length;
+}

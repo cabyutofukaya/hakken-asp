@@ -14,10 +14,10 @@ class ReserveParticipantAirplanePriceRepository implements ReserveParticipantAir
     /**
      * 検索して全件取得
      */
-    public function getWhere(array $where, array $with=[], array $select=[]) : Collection
+    public function getWhere(array $where, array $with=[], array $select=[], bool $getDeleted = false) : Collection
     {
         $query = $this->reserveParticipantAirplanePrice;
-        
+        $query = $getDeleted ? $query->withTrashed() : $query;
         $query = $with ? $query->with($with) : $query;
         $query = $select ? $query->select($select) : $query;
 
@@ -67,5 +67,48 @@ class ReserveParticipantAirplanePriceRepository implements ReserveParticipantAir
             ->where('reserve_purchasing_subject_airplane_id', $reservePurchasingSubjectAirplaneId)
             ->whereHas("account_payable_detail.agency_withdrawals")
             ->exists();
+    }
+
+    /**
+     * IDリストのレコードを更新
+     * 
+     * @param array $update
+     * @param array $ids
+     * @return boolean
+     */
+    public function updateIds(array $update, array $ids) : bool
+    {
+        foreach ($this->reserveParticipantAirplanePrice->whereIn('id', $ids)->get() as $row) {
+            foreach ($update as $key => $val) {
+                $row->{$key} = $val;
+            }
+            $row->save();
+        }
+        return true;
+
+        // $this->reserveParticipantAirplanePrice->whereIn('id', $ids)->update($update);
+        // return true;
+    }
+
+    /**
+     * 条件にマッチするレコードを更新
+     *
+     * @param array $update
+     * @param array $ids
+     * @return boolean
+     */
+    public function updateWhere(array $update, array $where) : bool
+    {
+        $query = $this->reserveParticipantAirplanePrice;
+        foreach ($where as $key => $val) {
+            $query = $query->where($key, $val);
+        }
+        foreach ($query->get() as $row) {
+            foreach ($update as $key => $val) {
+                $row->{$key} = $val;
+            }
+            $row->save();
+        }
+        return true;
     }
 }

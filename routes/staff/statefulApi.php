@@ -32,7 +32,7 @@ Route::domain(env('STAFF_DOMAIN', 'api.hakken-tour.com'))->namespace('Staff\Api'
         Route::get('reserve/{reserveNumber}', 'ReserveController@show'); // 詳細
         Route::get('participant/search', 'ParticipantController@participantSearch'); // 顧客検索
         Route::delete('reserve/{reserveNumber}', 'ReserveController@destroy'); // 削除
-        Route::put('reserve/{reserveNumber}/cancel', 'ReserveController@cancel'); // キャンセル
+        Route::put('reserve/{reserveNumber}/no-cancel-charge/cancel', 'ReserveController@noCancelChargeCancel'); // キャンセル
         Route::get('v_area/search', 'ReserveController@vAreaSearch'); // 国・地域検索
         Route::put('reserve/{reserveNumber}/status', 'ReserveController@statusUpdate'); // ステータスを更新
 

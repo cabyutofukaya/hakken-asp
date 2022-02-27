@@ -24,6 +24,7 @@ class ReserveParticipantAirplanePrice extends Model implements ParticipantPriceI
      * @var array
      */
     protected $fillable = [
+        'reserve_id',
         'reserve_itinerary_id',
         'reserve_purchasing_subject_airplane_id',
         'agency_id',
@@ -38,6 +39,8 @@ class ReserveParticipantAirplanePrice extends Model implements ParticipantPriceI
         'net',
         'zei_kbn',
         'gross_profit',
+        'cancel_charge',
+        'is_cancel',
     ];
 
     protected $guarded = [
@@ -71,6 +74,7 @@ class ReserveParticipantAirplanePrice extends Model implements ParticipantPriceI
         'commission_rate' => 'integer',
         'net' => 'integer',
         'gross_profit' => 'integer',
+        'cancel_charge' => 'integer',
     ];
 
     protected $dates = [

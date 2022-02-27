@@ -61037,7 +61037,7 @@ if (Element) {
 
 /***/ }),
 
-/***/ 86:
+/***/ 87:
 /*!**************************************************************!*\
   !*** multi ./resources/assets/staff/js/web-reserve-index.js ***!
   \**************************************************************/
@@ -61049,4 +61049,4 @@ module.exports = __webpack_require__(/*! /Users/takaryon/Documents/vm/hakken-sys
 
 /***/ })
 
-},[[86,"/js/manifest","/js/vendor"]]]);
+},[[87,"/js/manifest","/js/vendor"]]]);

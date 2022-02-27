@@ -211,6 +211,7 @@ class ShowFormComposer
         $estimateIndexUrl = route('staff.asp.estimates.normal.index', [$agencyAccount]);
         $reserveIndexUrl = route('staff.asp.estimates.reserve.index', [$agencyAccount]);
         $departedIndexUrl = route('staff.estimates.departed.index', $agencyAccount); // 催行済
+        $cancelChargeUrl = $applicationStep === config('consts.reserves.APPLICATION_STEP_RESERVE') ? route('staff.asp.estimates.reserve.cancel_charge.edit', [$agencyAccount, $reserve->control_number]) : ''; // 予約状態の場合はキャンセルチャージ
 
         // 各種定数値。タブ毎にセット
         $consts = [
@@ -229,6 +230,7 @@ class ShowFormComposer
                 'estimateIndexUrl' => $estimateIndexUrl,
                 'reserveIndexUrl' => $reserveIndexUrl,
                 'departedIndexUrl' => $departedIndexUrl,
+                'cancelChargeUrl' => $cancelChargeUrl,
             ],
             // 基本情報
             config('consts.reserves.TAB_BASIC_INFO') =>

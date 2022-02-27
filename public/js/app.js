@@ -9211,7 +9211,7 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
 /***/ }),
 
-/***/ 97:
+/***/ 98:
 /*!***********************************!*\
   !*** multi ./resources/js/app.js ***!
   \***********************************/
@@ -9223,4 +9223,4 @@ module.exports = __webpack_require__(/*! /Users/takaryon/Documents/vm/hakken-sys
 
 /***/ })
 
-},[[97,"/js/manifest","/js/vendor"]]]);
+},[[98,"/js/manifest","/js/vendor"]]]);
