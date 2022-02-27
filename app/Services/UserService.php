@@ -379,14 +379,15 @@ class UserService
      *
      * @param int $age 年齢
      * @param int $userId ユーザーID
+     * @param int $agencyId 会社ID
      */
-    public function upsertAgeByUserId(?int $age, int $userId) : bool
+    public function upsertAgeByUserId(?int $age, int $userId, int $agencyId) : bool
     {
         $user = $this->userRepository->find($userId);
         if ($user->userable_type === 'App\Models\AspUser') {
-            $user->userable->user_ext()->updateOrCreate(['asp_user_id' => $user->userable_id], ['age' => $age]);
+            $user->userable->user_ext()->updateOrCreate(['asp_user_id' => $user->userable_id, 'agency_id' => $agencyId], ['age' => $age]);
         } elseif ($user->userable_type === 'App\Models\WebUser') {
-            $user->userable->user_ext()->updateOrCreate(['web_user_id' => $user->userable_id], ['age' => $age]);
+            $user->userable->user_ext()->updateOrCreate(['web_user_id' => $user->userable_id, 'agency_id' => $agencyId], ['age' => $age]);
         }
         return true;
     }
