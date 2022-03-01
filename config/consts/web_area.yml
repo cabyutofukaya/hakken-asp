@@ -4,19 +4,19 @@
     - code: J001A
       name: 北海道全域
     - code: J01_道央
-      name: 道央
-    - code: J01_道南
-      name: 道南
+      name: 道央（札幌・ニセコ・室蘭・日高など）
     - code: J01_道北
-      name: 道北
-    - code: J01_道東
-      name: 道東
-    - code: J01_奥尻島
-      name: 奥尻島
-    - code: J01_利尻島
-      name: 利尻島
+      name: 道北（旭川・富良野・稚内・留萌など）
     - code: J01_礼文島
       name: 礼文島
+    - code: J01_利尻島
+      name: 利尻島
+    - code: J01_道東
+      name: 道東（網走・帯広・釧路・根室など）
+    - code: J01_道南
+      name: 道南（函館・松前・江差・長万部など）
+    - code: J01_奥尻島
+      name: 奥尻島
 - code: J002
   name: 東北
   areas:
@@ -24,12 +24,12 @@
       name: 東北全域
     - code: J02
       name: 青森県
+    - code: J05
+      name: 秋田県
     - code: J03
       name: 岩手県
     - code: J04
       name: 宮城県
-    - code: J05
-      name: 秋田県
     - code: J06
       name: 山形県
     - code: J07
@@ -58,16 +58,16 @@
       name: 東京都
     - code: J13_大島
       name: 大島
-    - code: J13_三宅島
-      name: 三宅島
-    - code: J13_青ヶ島
-      name: 青ヶ島
     - code: J13_式根島
       name: 式根島
-    - code: J13_小笠原諸島
-      name: 小笠原諸島
     - code: J13_神津島
       name: 神津島
+    - code: J13_三宅島
+      name: 三宅島
+    - code: J13_小笠原諸島
+      name: 小笠原諸島
+    - code: J13_青ヶ島
+      name: 青ヶ島
     - code: J14
       name: 神奈川県
 - code: J005
@@ -99,12 +99,12 @@
   areas:
     - code: J007A
       name: 東海全域
-    - code: J21
-      name: 岐阜県
     - code: J22
       name: 静岡県
     - code: J23
       name: 愛知県
+    - code: J21
+      name: 岐阜県
 - code: J008
   name: 近畿
   areas:
@@ -125,7 +125,7 @@
     - code: J28_淡路島
       name: 淡路島
     - code: J28_その他
-      name: その他
+      name: その他（兵庫）
     - code: J29
       name: 奈良県
     - code: J30
@@ -152,8 +152,6 @@
   areas:
     - code: J0010A
       name: 四国全域
-    - code: J36
-      name: 徳島県
     - code: J37
       name: 香川県
     - code: J37_小豆島
@@ -163,7 +161,9 @@
     - code: J37_豊島
       name: 豊島
     - code: J37_その他
-      name: その他
+      name: その他（香川）
+    - code: J36
+      name: 徳島県
     - code: J38
       name: 愛媛県
     - code: J39
@@ -179,10 +179,10 @@
       name: 佐賀県
     - code: J42
       name: 長崎県
-    - code: J42_壱岐
-      name: 壱岐
     - code: J42_五島列島
       name: 五島列島
+    - code: J42_壱岐
+      name: 壱岐
     - code: J42_対馬
       name: 対馬
     - code: J43
@@ -197,16 +197,14 @@
       name: 鹿児島県
     - code: J46_種子島
       name: 種子島
-    - code: J46_奄美大島
-      name: 奄美大島
-    - code: J46_沖永良部島
-      name: 沖永良部島
     - code: J46_屋久島
       name: 屋久島
+    - code: J46_奄美大島
+      name: 奄美大島
     - code: J46_徳之島
       name: 徳之島
-    - code: J46_徳之島
-      name: 徳之島
+    - code: J46_沖永良部島
+      name: 沖永良部島
     - code: J46_与論島
       name: 与論島
 - code: J0012
@@ -218,14 +216,14 @@
       name: 本島
     - code: J47_久米島
       name: 久米島
-    - code: J47_石垣島・竹富島
-      name: 石垣島・竹富島
-    - code: J47_西表島
-      name: 西表島
     - code: J47_宮古島
       name: 宮古島
+    - code: J47_石垣島・竹富島
+      name: 石垣島・竹富島
     - code: J47_小浜島
       name: 小浜島
+    - code: J47_西表島
+      name: 西表島
     - code: J47_与那国島
       name: 与那国島
     - code: J47_その他
