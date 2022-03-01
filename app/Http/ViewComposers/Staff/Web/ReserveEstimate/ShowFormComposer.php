@@ -220,6 +220,7 @@ class ShowFormComposer
         $estimateIndexUrl = route('staff.web.estimates.normal.index', $agencyAccount); // 見積
         $reserveIndexUrl = route('staff.web.estimates.reserve.index', $agencyAccount); // 予約
         $departedIndexUrl = route('staff.estimates.departed.index', $agencyAccount); // 催行済
+        $cancelChargeUrl = $applicationStep === config('consts.reserves.APPLICATION_STEP_RESERVE') ? route('staff.web.estimates.reserve.cancel_charge.edit', [$agencyAccount, $reserve->control_number]) : ''; // 予約状態の場合はキャンセルチャージ
 
         // 各種定数値。タブ毎にセット
         $consts = [
@@ -235,12 +236,13 @@ class ShowFormComposer
                     'tab_reserve_detail' => config('consts.reserves.TAB_RESERVE_DETAIL'),
                     'tab_consultation' => config('consts.reserves.TAB_CONSULTATION'),
                 ],
+                'senderTypes' => config('consts.web_online_schedules.SENDER_TYPE_LIST'),
+                'onlineRequestStatuses' => config('consts.web_online_schedules.ONLINE_REQUEST_STATUS_LIST'),
                 'existPurchaseData' => $this->reserveParticipantPriceService->isExistsPurchaseDataByReserveId($reserve->id, false), // 仕入情報がある場合はtrue
                 'estimateIndexUrl' => $estimateIndexUrl,
                 'reserveIndexUrl' => $reserveIndexUrl,
                 'departedIndexUrl' => $departedIndexUrl,
-                'senderTypes' => config('consts.web_online_schedules.SENDER_TYPE_LIST'),
-                'onlineRequestStatuses' => config('consts.web_online_schedules.ONLINE_REQUEST_STATUS_LIST'),
+                'cancelChargeUrl' => $cancelChargeUrl,
             ],
             // 基本情報
             config('consts.reserves.TAB_BASIC_INFO') =>

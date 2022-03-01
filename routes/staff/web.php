@@ -340,6 +340,8 @@ Route::domain(env('STAFF_DOMAIN', 'asp.hakken-tour.com'))->namespace('Staff')->n
                 // 領収書
                 Route::get('/{reserveNumber}/receipt', 'ReserveReceiptController@edit')->name('receipt.edit'); // 新規作成＆編集ページ
 
+                Route::get('{reserveNumber}/cancel_charge', 'ReserveController@cancelCharge')->name('cancel_charge.edit'); // キャンセルチャージページ(新規・編集共通)
+                Route::post('{reserveNumber}/cancel_charge', 'ReserveController@cancelChargeUpdate')->name('cancel_charge.update'); // キャンセルチャージ処理
             });
 
             // 見積管理

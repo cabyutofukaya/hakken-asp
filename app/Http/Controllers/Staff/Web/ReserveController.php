@@ -119,4 +119,20 @@ class ReserveController extends AppController
         }
         abort(500);
     }
+
+    /**
+     * キャンセルチャージ設定ページ
+     */
+    public function cancelCharge(string $agencyAccount, string $controlNumber)
+    {
+        //
+    }
+
+    /**
+     * キャンセルチャージ処理
+     */
+    public function cancelChargeUpdate(CancelChargeUpdateRequest $request, string $agencyAccount, string $controlNumber)
+    {
+        //
+    }
 }
