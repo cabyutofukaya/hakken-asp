@@ -18,8 +18,6 @@ class VDirectionRepository implements VDirectionRepositoryInterface
     /**
      * 当該UUIDを取得
      *
-     * データがない場合は 404ステータス
-     *
      * @param int $id
      */
     public function findByUuid(string $uuid, array $select=[]) : ?VDirection
