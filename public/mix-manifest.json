@@ -1,4 +1,6 @@
 {
+    "/js/manifest.js": "/js/manifest.js",
+    "/js/vendor.js": "/js/vendor.js",
     "/admin/js/address_search.js": "/admin/js/address_search.js",
     "/admin/js/agencies-create.js": "/admin/js/agencies-create.js",
     "/admin/js/agencies-edit.js": "/admin/js/agencies-edit.js",
@@ -17,8 +19,6 @@
     "/admin/js/web_user-edit.js": "/admin/js/web_user-edit.js",
     "/admin/js/web_user-index.js": "/admin/js/web_user-index.js",
     "/js/app.js": "/js/app.js",
-    "/js/manifest.js": "/js/manifest.js",
-    "/js/vendor.js": "/js/vendor.js",
     "/staff/js/agency_role-create.js": "/staff/js/agency_role-create.js",
     "/staff/js/agency_role-edit.js": "/staff/js/agency_role-edit.js",
     "/staff/js/agency_role-index.js": "/staff/js/agency_role-index.js",
