@@ -1,5 +1,5 @@
 import _ from "lodash";
-import React, { useState } from "react";
+import React, { useState, useContext, useRef } from "react";
 import { render } from "react-dom";
 import OptionSearchBox from "./components/Subject/SearchBox/Option";
 import AirplaneSearchBox from "./components/Subject/SearchBox/Airplane";
@@ -8,9 +8,11 @@ import OptionIndex from "./components/Subject/IndexList/Option";
 import AirplaneIndex from "./components/Subject/IndexList/Airplane";
 import HotelIndex from "./components/Subject/IndexList/Hotel";
 import ConstApp from "./components/ConstApp";
+import { ConstContext } from "./components/ConstApp";
+import { useMountedRef } from "../../hooks/useMountedRef";
+import SmallDangerModal from "./components/SmallDangerModal";
 
 const SubjectIndexArea = ({
-    agencyAccount,
     customCategoryCode,
     defaultTab,
     createLinks,
@@ -21,6 +23,15 @@ const SubjectIndexArea = ({
     permission,
     successMessage
 }) => {
+    const mounted = useMountedRef(); // マウント・アンマウント制御
+
+    // 親から各タブのコンポーネントの削除メソッドを呼ぶのに使用
+    const optionRef = useRef(); // オプション科目
+    const airplaneRef = useRef(); // 航空券科目
+    const hotelRef = useRef(); // ホテル科目
+
+    const { agencyAccount, subjectCategories } = useContext(ConstContext);
+
     const [currentTab, setCurrentTab] = useState(defaultTab); //選択中のタブ
 
     const [optionInput, setOptionInput] = useState({}); // オプション科目 検索パラメータ
@@ -32,9 +43,31 @@ const SubjectIndexArea = ({
     const [hotelInput, setHotelInput] = useState({}); // ホテル科目 検索パラメータ
     const [hotelRequestId, setHotelRequestId] = useState(null); // 検索を実行させるためのトリガーパラメータ
 
+    const [isDeleting, setIsDeleting] = useState(false); // 削除処理中か否か
+    const [deleteInfo, setDeleteInfo] = useState({}); // 削除対象レコード情報(id、科目名)を管理
+
+    // 削除ボタンを押した時の挙動
+    const handleDelete = e => {
+        if (deleteInfo?.subject == subjectCategories.subject_category_option) {
+            // オプション科目削除
+            optionRef.current.handleDelete();
+        } else if (
+            deleteInfo?.subject == subjectCategories.subject_category_airplane
+        ) {
+            // 航空券科目削除
+            airplaneRef.current.handleDelete();
+        } else if (
+            deleteInfo?.subject == subjectCategories.subject_category_hotel
+        ) {
+            // ホテル科目削除
+            hotelRef.current.handleDelete();
+        }
+    };
+
     // タブクリック
     const handleTabChange = (e, tab) => {
         e.preventDefault();
+        if (isDeleting) return; // 削除処理中の場合は、念の為タブの切り替え不可
         setCurrentTab(tab);
     };
 
@@ -196,6 +229,11 @@ const SubjectIndexArea = ({
                     searchParam={optionInput}
                     requestId={optionRequestId}
                     successMsg={successMessage}
+                    isDeleting={isDeleting}
+                    setIsDeleting={setIsDeleting}
+                    deleteInfo={deleteInfo}
+                    setDeleteInfo={setDeleteInfo}
+                    ref={optionRef}
                 />
             )}
             {currentTab === subjectCategoryCodes.subject_category_airplane && (
@@ -204,6 +242,11 @@ const SubjectIndexArea = ({
                     searchParam={airplaneInput}
                     requestId={airplaneRequestId}
                     successMsg={successMessage}
+                    isDeleting={isDeleting}
+                    setIsDeleting={setIsDeleting}
+                    deleteInfo={deleteInfo}
+                    setDeleteInfo={setDeleteInfo}
+                    ref={airplaneRef}
                 />
             )}
             {currentTab === subjectCategoryCodes.subject_category_hotel && (
@@ -212,8 +255,19 @@ const SubjectIndexArea = ({
                     searchParam={hotelInput}
                     requestId={hotelRequestId}
                     successMsg={successMessage}
+                    isDeleting={isDeleting}
+                    setIsDeleting={setIsDeleting}
+                    deleteInfo={deleteInfo}
+                    setDeleteInfo={setDeleteInfo}
+                    ref={hotelRef}
                 />
             )}
+            <SmallDangerModal
+                id="mdDeleteSubject"
+                title="この項目を削除しますか？"
+                handleAction={handleDelete}
+                isActioning={isDeleting}
+            />
         </>
     );
 };
@@ -244,7 +298,6 @@ if (Element) {
     render(
         <ConstApp jsVars={parsedJsVars}>
             <SubjectIndexArea
-                agencyAccount={agencyAccount}
                 customCategoryCode={customCategoryCode}
                 defaultTab={defaultTab}
                 createLinks={parsedCreateLinks}

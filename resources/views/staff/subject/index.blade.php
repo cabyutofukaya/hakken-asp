@@ -3,7 +3,6 @@
 @section('content')
 <main 
   id="subjectIndexArea" 
-  agencyAccount="{{$agencyAccount}}" 
   customCategoryCode="{{$customCategoryCode}}"
   defaultTab="{{ $defaultTab }}"
   createLinks='@json($createLinks)'
