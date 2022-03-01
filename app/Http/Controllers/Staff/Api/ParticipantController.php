@@ -29,6 +29,9 @@ use App\Services\UserService;
 use App\Services\WebEstimateService;
 use App\Services\WebReserveEstimateService;
 use App\Services\WebReserveService;
+use App\Services\ReserveParticipantOptionPriceService;
+use App\Services\ReserveParticipantAirplanePriceService;
+use App\Services\ReserveParticipantHotelPriceService;
 use App\Traits\ReserveTrait;
 use DB;
 use Exception;
@@ -50,7 +53,10 @@ class ParticipantController extends Controller
         UserService $userService,
         WebEstimateService $webEstimateService,
         WebReserveEstimateService $webReserveEstimateService,
-        WebReserveService $webReserveService
+        WebReserveService $webReserveService,
+        ReserveParticipantOptionPriceService $reserveParticipantOptionPriceService,
+        ReserveParticipantAirplanePriceService $reserveParticipantAirplanePriceService,
+        ReserveParticipantHotelPriceService $reserveParticipantHotelPriceService
     ) {
         $this->businessUserManagerService = $businessUserManagerService;
         $this->estimateService = $estimateService;
@@ -61,6 +67,9 @@ class ParticipantController extends Controller
         $this->webEstimateService = $webEstimateService;
         $this->webReserveEstimateService = $webReserveEstimateService;
         $this->webReserveService = $webReserveService;
+        $this->reserveParticipantOptionPriceService = $reserveParticipantOptionPriceService;
+        $this->reserveParticipantAirplanePriceService = $reserveParticipantAirplanePriceService;
+        $this->reserveParticipantHotelPriceService = $reserveParticipantHotelPriceService;
     }
 
     /**
