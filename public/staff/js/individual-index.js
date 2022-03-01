@@ -32733,7 +32733,7 @@ if (element) {
 
 /***/ }),
 
-/***/ 84:
+/***/ 85:
 /*!*******************************************************************!*\
   !*** multi ./resources/assets/staff/react-js/individual/index.js ***!
   \*******************************************************************/
@@ -32745,4 +32745,4 @@ module.exports = __webpack_require__(/*! /Users/takaryon/Documents/vm/hakken-sys
 
 /***/ })
 
-},[[84,"/js/manifest"]]]);
+},[[85,"/js/manifest"]]]);

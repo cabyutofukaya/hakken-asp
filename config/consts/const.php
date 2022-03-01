@@ -39,4 +39,6 @@ return [
   'AREA_CSV_UPLOAD_FIELDS' => 5, // 国・地域マスタCSVアップロードフィールド数
   
   'MASTER_AGENCY_ID' => 0, // v_directionsテーブルに設定するマスターレコード用のagency_id
+
+  'CANCEL_CHARGE_DATA_DELIMITER' => "_", // キャンセルチャージデータ区切り文字
 ];

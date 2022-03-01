@@ -28526,13 +28526,25 @@ if (false) {} else {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
- // 数字のみ入力可のinput
+
+/**
+ * 数字のみ入力可のinput
+ *
+ * @param {boolean} negativeValuePermit 負数の入力を許可する場合はtrue
+ * @returns
+ */
 
 var OnlyNumberInput = function OnlyNumberInput() {
   var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
       name = _ref.name,
       value = _ref.value,
       handleChange = _ref.handleChange,
+      _ref$handleFocus = _ref.handleFocus,
+      handleFocus = _ref$handleFocus === void 0 ? function (e) {} : _ref$handleFocus,
+      _ref$handleBlur = _ref.handleBlur,
+      handleBlur = _ref$handleBlur === void 0 ? function (e) {} : _ref$handleBlur,
+      _ref$negativeValuePer = _ref.negativeValuePermit,
+      negativeValuePermit = _ref$negativeValuePer === void 0 ? true : _ref$negativeValuePer,
       _ref$maxLength = _ref.maxLength,
       maxLength = _ref$maxLength === void 0 ? 10 : _ref$maxLength,
       _ref$placeholder = _ref.placeholder,
@@ -28545,15 +28557,28 @@ var OnlyNumberInput = function OnlyNumberInput() {
       return String.fromCharCode(s.charCodeAt(0) - 0xfee0);
     }); // 全角数字→半角変換
 
-    if (e.target.value === "" || e.target.value === "-" || /[0-9]+$/.test(e.target.value)) {
-      handleChange(e);
+    if (negativeValuePermit) {
+      // 負数の入力OK
+      if (e.target.value === "" || e.target.value === "-" || /[0-9]+$/.test(e.target.value)) {
+        handleChange(e);
+      }
+    } else {
+      // 正数のみ
+      if (e.target.value === "" || /[0-9]+$/.test(e.target.value)) {
+        handleChange(e);
+      }
     }
   }; // フォーカス時に全選択状態に
 
 
-  var handleForcus = Object(react__WEBPACK_IMPORTED_MODULE_0__["useCallback"])(function (e) {
+  var focusFunc = Object(react__WEBPACK_IMPORTED_MODULE_0__["useCallback"])(function (e) {
     e.target.select();
-  }, []);
+    handleFocus(e);
+  }, []); // フォーカス外れた時
+
+  var blurFunc = Object(react__WEBPACK_IMPORTED_MODULE_0__["useCallback"])(function (e) {
+    handleBlur(e);
+  });
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
     type: "text",
     name: name,
@@ -28562,7 +28587,8 @@ var OnlyNumberInput = function OnlyNumberInput() {
     maxLength: maxLength,
     className: className,
     placeholder: placeholder,
-    onFocus: handleForcus
+    onFocus: focusFunc,
+    onBlur: blurFunc
   });
 };
 
@@ -28978,7 +29004,7 @@ var PriceArea = function PriceArea(_ref) {
 /*!*******************************************!*\
   !*** ./resources/assets/staff/js/libs.js ***!
   \*******************************************/
-/*! exports provided: calcTaxInclud, calcNet, calcGrossProfit, calcProfitRate, getAgencyAccountFromUrl, getParam, getNameExObj, getPathFromBracketName */
+/*! exports provided: calcTaxInclud, calcNet, calcGrossProfit, calcProfitRate, getAgencyAccountFromUrl, getParam, getNameExObj, getPathFromBracketName, isEmptyObject */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -28991,6 +29017,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getParam", function() { return getParam; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getNameExObj", function() { return getNameExObj; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getPathFromBracketName", function() { return getPathFromBracketName; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isEmptyObject", function() { return isEmptyObject; });
 /**
  * 税込価格を計算
  * 小数点以下は四捨五入
@@ -29103,6 +29130,10 @@ function getNameExObj(str) {
 
 function getPathFromBracketName(name) {
   return name.replace(/^\[|\]$/, "").replace(/\]\[/g, ".").replace(/\[|\]/g, ".");
+} //オブジェクトが空かどうか
+
+function isEmptyObject(obj) {
+  return !Object.keys(obj).length;
 }
 
 /***/ }),

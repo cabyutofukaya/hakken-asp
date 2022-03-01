@@ -22,6 +22,8 @@ interface AccountPayableDetailRepositoryInterface
 
   public function paginateByAgencyId(int $agencyId, array $params, int $limit, bool $isValid = true, ?string $applicationStep, array $with, array $select) : LengthAwarePaginator;
 
+  // public function getByReserveNumber(string $reserveNumber, int $agencyId, ?string $applicationStep = null, array $with = [], array $select=[]) : Collection;
+
   public function updateOrCreate(array $where, array $params) : AccountPayableDetail;
 
   public function delete(int $id, bool $isSoftDelete): bool;

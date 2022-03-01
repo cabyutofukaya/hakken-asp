@@ -11,6 +11,8 @@ import { useMountedRef } from "../../hooks/useMountedRef";
 import SmallDangerModal from "./components/SmallDangerModal";
 import classNames from "classnames";
 import TopControlBox from "./components/Reserve/TopControlBox";
+import CancelChargeModal from "./components/Reserve/CancelChargeModal";
+import CancelModal from "./components/Reserve/CancelModal";
 
 /**
  *
@@ -48,8 +50,15 @@ const ReserveShowArea = ({
         setCurrentTab(tab);
     };
 
-    // キャンセル処理
-    const handleCancel = async () => {
+    // キャンセル処理(チャージあり→チャージ設定ページへ遷移)
+    const handleCharge = () => {
+        if (!mounted.current) return;
+        setIsCanceling(false); // 一応、処理フラグを無効にしておく
+        $(".js-modal-close").trigger("click"); // モーダルクローズ
+        location.href = consts?.common?.cancelChargeUrl;
+    };
+    // キャンセル処理(ノンチャージ)
+    const handleNonCharge = async () => {
         if (!mounted.current) return;
         if (isCanceling) return;
 
@@ -57,7 +66,7 @@ const ReserveShowArea = ({
 
         const response = await axios
             .post(
-                `/api/${agencyAccount}/reserve/${reserve?.control_number}/cancel`,
+                `/api/${agencyAccount}/reserve/${reserve?.control_number}/no-cancel-charge/cancel`,
                 {
                     _method: "put"
                 }
@@ -327,14 +336,31 @@ const ReserveShowArea = ({
                         ?.statuses
                 }
             />
-            {/* キャンセルモーダル */}
-            <SmallDangerModal
-                id="mdCxl"
-                title="この予約を取り消しますか？"
-                actionLabel="取り消す"
-                handleAction={handleCancel}
-                isActioning={isCanceling}
-            />
+
+            {/* キャンセルモーダル。仕入情報があればキャンセルチャージ選択モーダル。なければ選択機能ナシのモーダルを表示 */}
+            {consts.common.existPurchaseData && (
+                <CancelChargeModal
+                    id="mdCxl"
+                    defaultCheck={defaultValue.common.cancel_charge}
+                    nonChargeAction={handleNonCharge}
+                    chargeAction={handleCharge}
+                    isActioning={isCanceling}
+                    title={
+                        reserve?.cancel_at
+                            ? "キャンセルチャージを設定しますか？"
+                            : "この予約を取り消しますか？"
+                    }
+                    positiveLabel={reserve?.cancel_at ? "設定する" : "取り消す"}
+                />
+            )}
+            {!consts.common.existPurchaseData && (
+                <CancelModal
+                    id="mdCxl"
+                    nonChargeAction={handleNonCharge}
+                    isActioning={isCanceling}
+                />
+            )}
+
             {/* 削除モーダル */}
             <SmallDangerModal
                 id="mdDelete"

@@ -102,6 +102,7 @@ class Reserve extends Model
         'sum_gross',
         'sum_withdrawal',
         'latest_number_issue_at',
+        'cancel_charge',
     ];
 
     protected $guarded = [

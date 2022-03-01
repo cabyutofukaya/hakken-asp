@@ -173,7 +173,7 @@ const CustomerSelect = ({
                     <div className="selectBox">
                         <select
                             name="participant_type"
-                            value={customerType}
+                            value={customerType ?? ""}
                             onChange={handleSelectChange}
                         >
                             {customerTypes &&
@@ -190,7 +190,7 @@ const CustomerSelect = ({
                     <input
                         type="text"
                         name="search_user_number"
-                        value={searchUserNumber}
+                        value={searchUserNumber ?? ""}
                         onChange={handleChange}
                         placeholder="ID111"
                     />
@@ -201,7 +201,7 @@ const CustomerSelect = ({
                         <input
                             type="text"
                             name="search_user_name"
-                            value={searchUserName}
+                            value={searchUserName ?? ""}
                             onChange={handleChange}
                             className="mr10"
                             placeholder="ヤマダタロウ"
@@ -353,7 +353,9 @@ const CustomerSelect = ({
                                                     type="radio"
                                                     id={`daihyou${index}`}
                                                     name="applicant_user_number"
-                                                    value={row?.user_number}
+                                                    value={
+                                                        row?.user_number ?? ""
+                                                    }
                                                     onChange={handleChange}
                                                     checked={
                                                         userNumber ==
@@ -413,7 +415,9 @@ const CustomerSelect = ({
                                                     type="radio"
                                                     id={`daihyou${index}`}
                                                     name="applicant_user_number"
-                                                    value={row?.user_number}
+                                                    value={
+                                                        row?.user_number ?? ""
+                                                    }
                                                     onChange={handleChange}
                                                     checked={
                                                         userNumber ==

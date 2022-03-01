@@ -324,7 +324,7 @@ class ReserveItineraryService
                                                 ['id' => Arr::get($participantPrice, 'id')],
                                                 array_merge(
                                                     $participantPrice,
-                                                    ['agency_id' => $agencyId, 'reserve_itinerary_id' => $reserveItinerary->id]
+                                                    ['agency_id' => $agencyId, 'reserve_itinerary_id' => $reserveItinerary->id, 'reserve_id' => $reserveItinerary->reserve_id]
                                                 )
                                             );
 
@@ -365,7 +365,7 @@ class ReserveItineraryService
                                                 ['id' => Arr::get($participantPrice, 'id')],
                                                 array_merge(
                                                     $participantPrice,
-                                                    ['agency_id' => $agencyId, 'reserve_itinerary_id' => $reserveItinerary->id]
+                                                    ['agency_id' => $agencyId, 'reserve_itinerary_id' => $reserveItinerary->id, 'reserve_id' => $reserveItinerary->reserve_id]
                                                 )
                                             );
 
@@ -406,7 +406,7 @@ class ReserveItineraryService
                                                 ['id' => Arr::get($participantPrice, 'id')],
                                                 array_merge(
                                                     $participantPrice,
-                                                    ['agency_id' => $agencyId, 'reserve_itinerary_id' => $reserveItinerary->id]
+                                                    ['agency_id' => $agencyId, 'reserve_itinerary_id' => $reserveItinerary->id, 'reserve_id' => $reserveItinerary->reserve_id]
                                                 )
                                             );
 

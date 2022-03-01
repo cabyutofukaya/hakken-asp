@@ -29755,7 +29755,7 @@ if (Element) {
 
 /***/ }),
 
-/***/ 91:
+/***/ 92:
 /*!*****************************************************************!*\
   !*** multi ./resources/assets/staff/js/web_modelcourse-show.js ***!
   \*****************************************************************/
@@ -29767,4 +29767,4 @@ module.exports = __webpack_require__(/*! /Users/takaryon/Documents/vm/hakken-sys
 
 /***/ })
 
-},[[91,"/js/manifest"]]]);
+},[[92,"/js/manifest"]]]);

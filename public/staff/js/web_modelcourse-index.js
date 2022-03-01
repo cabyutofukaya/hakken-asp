@@ -54937,7 +54937,7 @@ if (Element) {
 
 /***/ }),
 
-/***/ 92:
+/***/ 93:
 /*!******************************************************************!*\
   !*** multi ./resources/assets/staff/js/web_modelcourse-index.js ***!
   \******************************************************************/
@@ -54949,4 +54949,4 @@ module.exports = __webpack_require__(/*! /Users/takaryon/Documents/vm/hakken-sys
 
 /***/ })
 
-},[[92,"/js/manifest","/js/vendor"]]]);
+},[[93,"/js/manifest","/js/vendor"]]]);
