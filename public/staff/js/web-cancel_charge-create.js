@@ -1,4 +1,4 @@
-(window["webpackJsonp"] = window["webpackJsonp"] || []).push([["/staff/js/cancel_charge-create"],{
+(window["webpackJsonp"] = window["webpackJsonp"] || []).push([["/staff/js/web-cancel_charge-create"],{
 
 /***/ "./node_modules/classnames/index.js":
 /*!******************************************!*\
@@ -28610,47 +28610,6 @@ var BrText = function BrText(_ref) {
 
 /***/ }),
 
-/***/ "./resources/assets/staff/js/cancel_charge-create.js":
-/*!***********************************************************!*\
-  !*** ./resources/assets/staff/js/cancel_charge-create.js ***!
-  \***********************************************************/
-/*! no exports provided */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _components_ConstApp__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./components/ConstApp */ "./resources/assets/staff/js/components/ConstApp.js");
-/* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
-/* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(react_dom__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _components_Reserve_CancelChargeArea__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./components/Reserve/CancelChargeArea */ "./resources/assets/staff/js/components/Reserve/CancelChargeArea.js");
-
-
-
-
-var Element = document.getElementById("cancelChargeArea");
-
-if (Element) {
-  var jsVars = Element.getAttribute("jsVars");
-  var parsedJsVars = jsVars && JSON.parse(jsVars);
-  var consts = Element.getAttribute("consts");
-  var parsedConsts = consts && JSON.parse(consts);
-  var defaultValue = Element.getAttribute("defaultValue");
-  var parsedDefaultValue = defaultValue && JSON.parse(defaultValue);
-  var errors = Element.getAttribute("errors");
-  var parsedErrors = errors && JSON.parse(errors);
-  Object(react_dom__WEBPACK_IMPORTED_MODULE_2__["render"])( /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_components_ConstApp__WEBPACK_IMPORTED_MODULE_1__["default"], {
-    jsVars: parsedJsVars
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_components_Reserve_CancelChargeArea__WEBPACK_IMPORTED_MODULE_3__["default"], {
-    consts: parsedConsts,
-    defaultValue: parsedDefaultValue,
-    errors: parsedErrors
-  })), document.getElementById("cancelChargeArea"));
-}
-
-/***/ }),
-
 /***/ "./resources/assets/staff/js/components/ConstApp.js":
 /*!**********************************************************!*\
   !*** ./resources/assets/staff/js/components/ConstApp.js ***!
@@ -29374,16 +29333,57 @@ function isEmptyObject(obj) {
 
 /***/ }),
 
-/***/ 80:
-/*!*****************************************************************!*\
-  !*** multi ./resources/assets/staff/js/cancel_charge-create.js ***!
-  \*****************************************************************/
+/***/ "./resources/assets/staff/js/web-cancel_charge-create.js":
+/*!***************************************************************!*\
+  !*** ./resources/assets/staff/js/web-cancel_charge-create.js ***!
+  \***************************************************************/
+/*! no exports provided */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _components_ConstApp__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./components/ConstApp */ "./resources/assets/staff/js/components/ConstApp.js");
+/* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
+/* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(react_dom__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _components_Reserve_CancelChargeArea__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./components/Reserve/CancelChargeArea */ "./resources/assets/staff/js/components/Reserve/CancelChargeArea.js");
+
+
+
+
+var Element = document.getElementById("cancelChargeArea");
+
+if (Element) {
+  var jsVars = Element.getAttribute("jsVars");
+  var parsedJsVars = jsVars && JSON.parse(jsVars);
+  var consts = Element.getAttribute("consts");
+  var parsedConsts = consts && JSON.parse(consts);
+  var defaultValue = Element.getAttribute("defaultValue");
+  var parsedDefaultValue = defaultValue && JSON.parse(defaultValue);
+  var errors = Element.getAttribute("errors");
+  var parsedErrors = errors && JSON.parse(errors);
+  Object(react_dom__WEBPACK_IMPORTED_MODULE_2__["render"])( /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_components_ConstApp__WEBPACK_IMPORTED_MODULE_1__["default"], {
+    jsVars: parsedJsVars
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_components_Reserve_CancelChargeArea__WEBPACK_IMPORTED_MODULE_3__["default"], {
+    consts: parsedConsts,
+    defaultValue: parsedDefaultValue,
+    errors: parsedErrors
+  })), document.getElementById("cancelChargeArea"));
+}
+
+/***/ }),
+
+/***/ 98:
+/*!*********************************************************************!*\
+  !*** multi ./resources/assets/staff/js/web-cancel_charge-create.js ***!
+  \*********************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! /Users/takaryon/Documents/vm/hakken-system/data/asp/resources/assets/staff/js/cancel_charge-create.js */"./resources/assets/staff/js/cancel_charge-create.js");
+module.exports = __webpack_require__(/*! /Users/takaryon/Documents/vm/hakken-system/data/asp/resources/assets/staff/js/web-cancel_charge-create.js */"./resources/assets/staff/js/web-cancel_charge-create.js");
 
 
 /***/ })
 
-},[[80,"/js/manifest"]]]);
+},[[98,"/js/manifest"]]]);

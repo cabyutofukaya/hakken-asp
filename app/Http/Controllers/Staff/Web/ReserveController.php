@@ -6,10 +6,16 @@ use App\Events\UpdatedReserveEvent;
 use App\Exceptions\ExclusiveLockException;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Staff\AppController;
+use App\Http\Requests\Staff\CancelChargeUpdateRequest;
 use App\Http\Requests\Staff\ReserveUpdateRequest;
 use App\Models\Reserve;
 use App\Services\ReserveInvoiceService;
+use App\Services\ReserveParticipantAirplanePriceService;
+use App\Services\ReserveParticipantHotelPriceService;
+use App\Services\ReserveParticipantOptionPriceService;
+use App\Services\ReserveParticipantPriceService;
 use App\Services\WebReserveService;
+use App\Traits\CancelChargeTrait;
 use App\Traits\ReserveControllerTrait;
 use Gate;
 use Illuminate\Http\Request;
@@ -19,12 +25,17 @@ use Illuminate\Http\Request;
  */
 class ReserveController extends AppController
 {
-    use ReserveControllerTrait;
+    use ReserveControllerTrait, CancelChargeTrait;
 
-    public function __construct(WebReserveService $webReserveService, ReserveInvoiceService $reserveInvoiceService)
+    public function __construct(WebReserveService $webReserveService, ReserveInvoiceService $reserveInvoiceService, ReserveParticipantPriceService $reserveParticipantPriceService, ReserveParticipantOptionPriceService $reserveParticipantOptionPriceService, ReserveParticipantHotelPriceService $reserveParticipantHotelPriceService, ReserveParticipantAirplanePriceService $reserveParticipantAirplanePriceService)
     {
         $this->webReserveService = $webReserveService;
         $this->reserveInvoiceService = $reserveInvoiceService;
+        $this->reserveParticipantPriceService = $reserveParticipantPriceService;
+        // traitで使用
+        $this->reserveParticipantOptionPriceService = $reserveParticipantOptionPriceService;
+        $this->reserveParticipantHotelPriceService = $reserveParticipantHotelPriceService;
+        $this->reserveParticipantAirplanePriceService = $reserveParticipantAirplanePriceService;
     }
 
     /**
@@ -125,7 +136,23 @@ class ReserveController extends AppController
      */
     public function cancelCharge(string $agencyAccount, string $controlNumber)
     {
-        //
+        $reserve = $this->webReserveService->findByControlNumber($controlNumber, $agencyAccount);
+
+        // 認可チェック
+        $response = Gate::inspect('cancel', [$reserve]);
+        if (!$response->allowed()) {
+            abort(403);
+        }
+
+        // 念の為、予約状態であることを確認
+        if ($reserve->application_step != config('consts.reserves.APPLICATION_STEP_RESERVE')) {
+            abort(404);
+        }
+
+        // 支払い情報を取得
+        $purchasingList = $this->getPurchasingList($reserve);
+
+        return view('staff.web.reserve.cancel_charge', compact('reserve', 'purchasingList'));
     }
 
     /**
@@ -133,6 +160,32 @@ class ReserveController extends AppController
      */
     public function cancelChargeUpdate(CancelChargeUpdateRequest $request, string $agencyAccount, string $controlNumber)
     {
-        //
+        $reserve = $this->webReserveService->findByControlNumber($controlNumber, $agencyAccount);
+
+        // 認可チェック
+        $response = Gate::inspect('cancel', [$reserve]);
+        if (!$response->allowed()) {
+            abort(403);
+        }
+
+        try {
+
+            $input = $request->validated();
+
+            \DB::transaction(function () use ($input, $reserve) {
+
+                // キャンセルチャージ料金を保存
+                $this->setCancelCharge($input);
+                
+                $this->webReserveService->cancel($reserve->id, true);
+            });
+
+            // TODO リダイレクト先はひとまず予約詳細ページにしているが、変更する可能性あり
+            return redirect()->route('staff.web.estimates.reserve.show', [$agencyAccount, $controlNumber])->with('success_message', "「{$controlNumber}」のキャンセルチャージ処理が完了しました");
+
+        } catch (\Exception $e) {
+            \Log::error($e);
+        }
+        abort(500);
     }
 }
