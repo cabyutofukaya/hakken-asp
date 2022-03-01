@@ -18,4 +18,6 @@ interface ReserveParticipantHotelPriceRepositoryInterface
   public function updateIds(array $update, array $ids) : bool;
 
   public function updateWhere(array $update, array $where) : bool;
+
+  public function whereExists(array $where, bool $getDeleted = false) : bool;
 }

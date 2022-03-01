@@ -49,6 +49,14 @@ class ReserveParticipantHotelPriceService implements ReserveParticipantPriceInte
     }
 
     /**
+     * 当該予約IDに紐づく仕入データがある場合はtrue
+     */
+    public function isExistsDataByReserveId(int $reserveId, bool $getDeleted = false) : bool
+    {
+        return $this->reserveParticipantHotelPriceRepository->whereExists(['reserve_id' => $reserveId], $getDeleted);
+    }
+
+    /**
      * 当該予約IDに紐づく仕入一覧を取得
      *
      * @param bool $isValid 有効・無効フラグ。Nullの場合は指定ナシ

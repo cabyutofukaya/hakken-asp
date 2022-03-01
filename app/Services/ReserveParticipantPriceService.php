@@ -34,11 +34,26 @@ class ReserveParticipantPriceService
     }
 
     /**
+     * 当該予約IDに紐づく仕入データがある場合はtrue
+     * (getPurchaseFormDataByReserveId メソッドと違い、実際のリストを取得するのではなく値があるかどうかをチェックしたバージョン)
+     */
+    public function isExistsPurchaseDataByReserveId(int $reserveId, bool $getDeleted = false) : bool
+    {
+        $res1 = $this->reserveParticipantOptionPriceService->isExistsDataByReserveId($reserveId, $getDeleted); // オプション科目
+
+        $res2 = $this->reserveParticipantAirplanePriceService->isExistsDataByReserveId($reserveId, $getDeleted); // 航空券科目
+
+        $res3 = $this->reserveParticipantHotelPriceService->isExistsDataByReserveId($reserveId, $getDeleted); // ホテル科目
+
+        return $res1 || $res2 || $res3;
+    }
+
+    /**
      * キャンセルチャージページで使う当該予約の仕入リストを(form項目に合わせたデータ形式で)取得
      *
      * @return array
      */
-    public function getParticipantPriceFormDataByReserveId(int $reserveId, bool $getDeleted = false) : array
+    public function getPurchaseFormDataByReserveId(int $reserveId, bool $getDeleted = false) : array
     {
         $options = $this->reserveParticipantOptionPriceService->getByReserveId($reserveId, null, ['reserve_purchasing_subject_option.supplier'], [], $getDeleted); // is_validの値に関係なく全て取得
 

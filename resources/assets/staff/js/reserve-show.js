@@ -11,6 +11,7 @@ import { useMountedRef } from "../../hooks/useMountedRef";
 import SmallDangerModal from "./components/SmallDangerModal";
 import classNames from "classnames";
 import TopControlBox from "./components/Reserve/TopControlBox";
+import CancelChargeModal from "./components/Reserve/CancelChargeModal";
 import CancelModal from "./components/Reserve/CancelModal";
 
 /**
@@ -335,13 +336,31 @@ const ReserveShowArea = ({
                         ?.statuses
                 }
             />
-            {/* キャンセルモーダル */}
-            <CancelModal
-                id="mdCxl"
-                nonChargeAction={handleNonCharge}
-                chargeAction={handleCharge}
-                isActioning={isCanceling}
-            />
+
+            {/* キャンセルモーダル。仕入情報があればキャンセルチャージ選択モーダル。なければ選択機能ナシのモーダルを表示 */}
+            {consts.common.existPurchaseData && (
+                <CancelChargeModal
+                    id="mdCxl"
+                    defaultCheck={defaultValue.common.cancel_charge}
+                    nonChargeAction={handleNonCharge}
+                    chargeAction={handleCharge}
+                    isActioning={isCanceling}
+                    title={
+                        reserve?.cancel_at
+                            ? "キャンセルチャージを設定しますか？"
+                            : "この予約を取り消しますか？"
+                    }
+                    positiveLabel={reserve?.cancel_at ? "設定する" : "取り消す"}
+                />
+            )}
+            {!consts.common.existPurchaseData && (
+                <CancelModal
+                    id="mdCxl"
+                    nonChargeAction={handleNonCharge}
+                    isActioning={isCanceling}
+                />
+            )}
+
             {/* 削除モーダル */}
             <SmallDangerModal
                 id="mdDelete"

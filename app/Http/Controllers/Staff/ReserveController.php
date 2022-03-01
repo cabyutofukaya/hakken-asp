@@ -211,7 +211,7 @@ class ReserveController extends AppController
         }
 
         // 仕入の有効・無効に関係なく全ての仕入情報を引っ張る
-        $purchasingList = $this->reserveParticipantPriceService->getParticipantPriceFormDataByReserveId($reserve->id);
+        $purchasingList = $this->reserveParticipantPriceService->getPurchaseFormDataByReserveId($reserve->id);
 
         // キャンセルチャージを新たに設定(store時)する場合はis_cancelカラムはtrueで初期化
         if (!$reserve->cancel_charge) {

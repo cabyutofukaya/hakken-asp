@@ -78046,6 +78046,231 @@ var BackToIndexButton = function BackToIndexButton(_ref) {
 
 /***/ }),
 
+/***/ "./resources/assets/staff/js/components/Reserve/CancelChargeModal.js":
+/*!***************************************************************************!*\
+  !*** ./resources/assets/staff/js/components/Reserve/CancelChargeModal.js ***!
+  \***************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! classnames */ "./node_modules/classnames/index.js");
+/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(classnames__WEBPACK_IMPORTED_MODULE_1__);
+function _slicedToArray(arr, i) {
+  return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();
+}
+
+function _nonIterableRest() {
+  throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+
+function _unsupportedIterableToArray(o, minLen) {
+  if (!o) return;
+  if (typeof o === "string") return _arrayLikeToArray(o, minLen);
+  var n = Object.prototype.toString.call(o).slice(8, -1);
+  if (n === "Object" && o.constructor) n = o.constructor.name;
+  if (n === "Map" || n === "Set") return Array.from(o);
+  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
+}
+
+function _arrayLikeToArray(arr, len) {
+  if (len == null || len > arr.length) len = arr.length;
+
+  for (var i = 0, arr2 = new Array(len); i < len; i++) {
+    arr2[i] = arr[i];
+  }
+
+  return arr2;
+}
+
+function _iterableToArrayLimit(arr, i) {
+  if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return;
+  var _arr = [];
+  var _n = true;
+  var _d = false;
+  var _e = undefined;
+
+  try {
+    for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+      _arr.push(_s.value);
+
+      if (i && _arr.length === i) break;
+    }
+  } catch (err) {
+    _d = true;
+    _e = err;
+  } finally {
+    try {
+      if (!_n && _i["return"] != null) _i["return"]();
+    } finally {
+      if (_d) throw _e;
+    }
+  }
+
+  return _arr;
+}
+
+function _arrayWithHoles(arr) {
+  if (Array.isArray(arr)) return arr;
+}
+
+
+
+/**
+ * 予約キャンセルモーダル(キャンセルチャージ選択付き)
+ *
+ * @param {int} defaultCheck キャンセルチャージの有無デフォルト選択
+ * @param {*} nonChargeAction チャージなし時のアクション
+ * @param {*} chargeAction チャージあり時のアクション
+ * @returns
+ */
+
+var CancelChargeModal = function CancelChargeModal(_ref) {
+  var id = _ref.id,
+      defaultCheck = _ref.defaultCheck,
+      nonChargeAction = _ref.nonChargeAction,
+      chargeAction = _ref.chargeAction,
+      _ref$isActioning = _ref.isActioning,
+      isActioning = _ref$isActioning === void 0 ? false : _ref$isActioning,
+      title = _ref.title,
+      positiveLabel = _ref.positiveLabel;
+
+  var _useState = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(defaultCheck),
+      _useState2 = _slicedToArray(_useState, 2),
+      value = _useState2[0],
+      setValue = _useState2[1];
+
+  var handleChange = function handleChange(e) {
+    setValue(e.target.value);
+  };
+
+  var handleSubmit = function handleSubmit(e) {
+    //チャージの有無でアクションを分岐
+    value == 1 ? chargeAction(e) : nonChargeAction(e);
+  };
+
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+    id: id,
+    className: "modal js-modal",
+    style: {
+      position: "fixed",
+      left: 0,
+      top: 0
+    }
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+    className: classnames__WEBPACK_IMPORTED_MODULE_1___default()("modal__bg", {
+      "js-modal-close": !isActioning
+    })
+  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+    className: "modal__content"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", {
+    className: "mdTit mb20"
+  }, title), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("ul", {
+    className: "sideList baseRadio mb20 central"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("li", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
+    type: "radio",
+    name: "cancel_charge",
+    id: "charge_n",
+    value: "0",
+    onChange: handleChange,
+    checked: value == 0
+  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("label", {
+    htmlFor: "charge_n"
+  }, "\u30AD\u30E3\u30F3\u30BB\u30EB\u30C1\u30E3\u30FC\u30B8\u306A\u3057")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("li", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
+    type: "radio",
+    name: "cancel_charge",
+    id: "charge_y",
+    value: "1",
+    onChange: handleChange,
+    checked: value == 1
+  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("label", {
+    htmlFor: "charge_y"
+  }, "\u30AD\u30E3\u30F3\u30BB\u30EB\u30C1\u30E3\u30FC\u30B8\u3042\u308A"))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("ul", {
+    className: "sideList"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("li", {
+    className: "wd50"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+    className: "grayBtn js-modal-close",
+    disabled: isActioning
+  }, "\u9589\u3058\u308B")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("li", {
+    className: "wd50 mr00"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+    className: "redBtn",
+    onClick: handleSubmit,
+    disabled: isActioning
+  }, positiveLabel)))));
+};
+
+/* harmony default export */ __webpack_exports__["default"] = (CancelChargeModal);
+
+/***/ }),
+
+/***/ "./resources/assets/staff/js/components/Reserve/CancelModal.js":
+/*!*********************************************************************!*\
+  !*** ./resources/assets/staff/js/components/Reserve/CancelModal.js ***!
+  \*********************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! classnames */ "./node_modules/classnames/index.js");
+/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(classnames__WEBPACK_IMPORTED_MODULE_1__);
+
+
+/**
+ * 予約キャンセルモーダル(キャンセルチャージ選択ナシ)
+ *
+ * @param {*} nonChargeAction チャージなし時のアクション
+ * @returns
+ */
+
+var CancelModal = function CancelModal(_ref) {
+  var id = _ref.id,
+      nonChargeAction = _ref.nonChargeAction,
+      _ref$isActioning = _ref.isActioning,
+      isActioning = _ref$isActioning === void 0 ? false : _ref$isActioning;
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+    id: id,
+    className: "modal js-modal",
+    style: {
+      position: "fixed",
+      left: 0,
+      top: 0
+    }
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+    className: classnames__WEBPACK_IMPORTED_MODULE_1___default()("modal__bg", {
+      "js-modal-close": !isActioning
+    })
+  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+    className: "modal__content"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", {
+    className: "mdTit mb20"
+  }, "\u3053\u306E\u4E88\u7D04\u3092\u53D6\u308A\u6D88\u3057\u307E\u3059\u304B\uFF1F"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("ul", {
+    className: "sideList"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("li", {
+    className: "wd50"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+    className: "grayBtn js-modal-close",
+    disabled: isActioning
+  }, "\u9589\u3058\u308B")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("li", {
+    className: "wd50 mr00"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+    className: "redBtn",
+    onClick: nonChargeAction,
+    disabled: isActioning
+  }, "\u53D6\u308A\u6D88\u3059")))));
+};
+
+/* harmony default export */ __webpack_exports__["default"] = (CancelModal);
+
+/***/ }),
+
 /***/ "./resources/assets/staff/js/components/Reserve/DocumentArea.js":
 /*!**********************************************************************!*\
   !*** ./resources/assets/staff/js/components/Reserve/DocumentArea.js ***!
@@ -82307,6 +82532,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_Reserve_WebConsultationArea__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./components/Reserve/WebConsultationArea */ "./resources/assets/staff/js/components/Reserve/WebConsultationArea.js");
 /* harmony import */ var _components_Reserve_WebReserveDetail__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./components/Reserve/WebReserveDetail */ "./resources/assets/staff/js/components/Reserve/WebReserveDetail.js");
 /* harmony import */ var _components_Reserve_TopControlBox__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./components/Reserve/TopControlBox */ "./resources/assets/staff/js/components/Reserve/TopControlBox.js");
+/* harmony import */ var _components_Reserve_CancelModal__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./components/Reserve/CancelModal */ "./resources/assets/staff/js/components/Reserve/CancelModal.js");
+/* harmony import */ var _components_Reserve_CancelChargeModal__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./components/Reserve/CancelChargeModal */ "./resources/assets/staff/js/components/Reserve/CancelChargeModal.js");
 
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
@@ -82417,6 +82644,8 @@ function _arrayWithHoles(arr) {
 
 
 
+
+
 /**
  *
  * @param {array} formSelects form選択値（配列はタブ毎に保持）
@@ -82425,7 +82654,7 @@ function _arrayWithHoles(arr) {
  */
 
 var ReserveShowArea = function ReserveShowArea(_ref) {
-  var _defaultValue$consts$, _consts$common$tabCod, _defaultValue$consts$2, _consts$common$tabCod2, _consts$common, _consts$common2, _permission$basic, _permission$basic2, _formSelects$consts$c, _consts$common$tabCod3;
+  var _defaultValue$consts$, _consts$common$tabCod, _defaultValue$consts$2, _consts$common$tabCod2, _consts$common2, _consts$common3, _permission$basic, _permission$basic2, _formSelects$consts$c, _consts$common$tabCod3;
 
   var defaultTab = _ref.defaultTab,
       targetConsultationNumber = _ref.targetConsultationNumber,
@@ -82470,10 +82699,22 @@ var ReserveShowArea = function ReserveShowArea(_ref) {
   var handleTabChange = function handleTabChange(e, tab) {
     e.preventDefault();
     setCurrentTab(tab);
-  }; // キャンセル処理
+  }; // キャンセル処理(チャージあり→チャージ設定ページへ遷移)
 
 
-  var handleCancel = /*#__PURE__*/function () {
+  var handleCharge = function handleCharge() {
+    var _consts$common;
+
+    if (!mounted.current) return;
+    setIsCanceling(false); // 一応、処理フラグを無効にしておく
+
+    $(".js-modal-close").trigger("click"); // モーダルクローズ
+
+    location.href = consts === null || consts === void 0 ? void 0 : (_consts$common = consts.common) === null || _consts$common === void 0 ? void 0 : _consts$common.cancelChargeUrl;
+  }; // キャンセル処理(ノンチャージ)
+
+
+  var handleNonCharge = /*#__PURE__*/function () {
     var _ref2 = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
       var response;
       return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
@@ -82498,7 +82739,7 @@ var ReserveShowArea = function ReserveShowArea(_ref) {
             case 4:
               setIsCanceling(true);
               _context.next = 7;
-              return axios.post("/api/".concat(agencyAccount, "/reserve/").concat(reserve === null || reserve === void 0 ? void 0 : reserve.control_number, "/cancel"), {
+              return axios.post("/api/".concat(agencyAccount, "/web/reserve/").concat(reserve === null || reserve === void 0 ? void 0 : reserve.control_number, "/no-cancel-charge/cancel"), {
                 _method: "put"
               })["finally"](function () {
                 $(".js-modal-close").trigger("click"); // 削除モーダルclose
@@ -82526,7 +82767,7 @@ var ReserveShowArea = function ReserveShowArea(_ref) {
       }, _callee);
     }));
 
-    return function handleCancel() {
+    return function handleNonCharge() {
       return _ref2.apply(this, arguments);
     };
   }(); // 削除処理
@@ -82640,8 +82881,8 @@ var ReserveShowArea = function ReserveShowArea(_ref) {
     className: "breadCrumbs"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(IndexBreadcrumb, {
     isDeparted: reserve === null || reserve === void 0 ? void 0 : reserve.is_departed,
-    reserveIndexUrl: consts === null || consts === void 0 ? void 0 : (_consts$common = consts.common) === null || _consts$common === void 0 ? void 0 : _consts$common.reserveIndexUrl,
-    departedIndexUrl: consts === null || consts === void 0 ? void 0 : (_consts$common2 = consts.common) === null || _consts$common2 === void 0 ? void 0 : _consts$common2.departedIndexUrl
+    reserveIndexUrl: consts === null || consts === void 0 ? void 0 : (_consts$common2 = consts.common) === null || _consts$common2 === void 0 ? void 0 : _consts$common2.reserveIndexUrl,
+    departedIndexUrl: consts === null || consts === void 0 ? void 0 : (_consts$common3 = consts.common) === null || _consts$common3 === void 0 ? void 0 : _consts$common3.departedIndexUrl
   }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement("li", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement("span", null, "\u4E88\u7D04\u60C5\u5831 ", reserve === null || reserve === void 0 ? void 0 : reserve.control_number))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_components_Reserve_TopControlBox__WEBPACK_IMPORTED_MODULE_13__["default"], {
     reserve: reserve,
     isCanceling: isCanceling,
@@ -82713,11 +82954,17 @@ var ReserveShowArea = function ReserveShowArea(_ref) {
     status: status,
     changeStatus: setStatus,
     statuses: formSelects === null || formSelects === void 0 ? void 0 : (_formSelects$consts$c = formSelects[(_consts$common$tabCod3 = consts.common.tabCodes) === null || _consts$common$tabCod3 === void 0 ? void 0 : _consts$common$tabCod3.tab_basic_info]) === null || _formSelects$consts$c === void 0 ? void 0 : _formSelects$consts$c.statuses
-  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_components_SmallDangerModal__WEBPACK_IMPORTED_MODULE_7__["default"], {
+  }), consts.common.existPurchaseData && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_components_Reserve_CancelChargeModal__WEBPACK_IMPORTED_MODULE_15__["default"], {
     id: "mdCxl",
-    title: "\u3053\u306E\u4E88\u7D04\u3092\u53D6\u308A\u6D88\u3057\u307E\u3059\u304B\uFF1F",
-    actionLabel: "\u53D6\u308A\u6D88\u3059",
-    handleAction: handleCancel,
+    defaultCheck: defaultValue.common.cancel_charge,
+    nonChargeAction: handleNonCharge,
+    chargeAction: handleCharge,
+    isActioning: isCanceling,
+    title: reserve !== null && reserve !== void 0 && reserve.cancel_at ? "キャンセルチャージを設定しますか？" : "この予約を取り消しますか？",
+    positiveLabel: reserve !== null && reserve !== void 0 && reserve.cancel_at ? "設定する" : "取り消す"
+  }), !consts.common.existPurchaseData && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_components_Reserve_CancelModal__WEBPACK_IMPORTED_MODULE_14__["default"], {
+    id: "mdCxl",
+    nonChargeAction: handleNonCharge,
     isActioning: isCanceling
   }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_components_SmallDangerModal__WEBPACK_IMPORTED_MODULE_7__["default"], {
     id: "mdDelete",

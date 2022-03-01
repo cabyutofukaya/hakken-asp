@@ -22,6 +22,8 @@ const CancelChargeArea = ({ defaultValue, consts, errors }) => {
     const [errorObj, setErrorObj] = useState(errors); // エラー文言を保持
     const [cancelChargeErrors, setCancelChargeErrors] = useState([]); // キャンセルチャージでエラーがある枠のlists配列キー値を保持
 
+    const [isSubmitting, setIsSubmitting] = useState(false); // form送信中
+
     // 入力制御
     const handleChange = (e, key, name) => {
         const row = lists[key];
@@ -73,6 +75,7 @@ const CancelChargeArea = ({ defaultValue, consts, errors }) => {
         // エラーがなければform送信
         if (isEmptyObject(errMsg)) {
             document.cancelChargeForm.submit();
+            setIsSubmitting(true); // form送信中
         }
     };
 
@@ -307,7 +310,11 @@ const CancelChargeArea = ({ defaultValue, consts, errors }) => {
 
                 <ul id="formControl">
                     <li className="wd50">
-                        <button className="grayBtn" onClick={handleBack}>
+                        <button
+                            className="grayBtn"
+                            onClick={handleBack}
+                            disabled={isSubmitting}
+                        >
                             <span className="material-icons">
                                 arrow_back_ios
                             </span>
@@ -315,7 +322,7 @@ const CancelChargeArea = ({ defaultValue, consts, errors }) => {
                         </button>
                     </li>
                     <li className="wd50">
-                        <button className="redBtn">
+                        <button className="redBtn" disabled={isSubmitting}>
                             <span className="material-icons">save</span>{" "}
                             この内容でキャンセルする
                         </button>

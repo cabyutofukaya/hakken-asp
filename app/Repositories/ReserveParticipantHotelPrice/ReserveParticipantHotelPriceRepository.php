@@ -91,6 +91,23 @@ class ReserveParticipantHotelPriceRepository implements ReserveParticipantHotelP
     }
 
     /**
+     * 条件にマッチするレコードが存在するか否か
+     * 
+     * @param array $where
+     * @param bool $getDeleted
+     * @return bool
+     */
+    public function whereExists(array $where, bool $getDeleted = false) : bool
+    {
+        $query = $this->reserveParticipantHotelPrice;
+        $query = $getDeleted ? $query->withTrashed() : $query;
+        foreach ($where as $key => $val) {
+            $query = $query->where($key, $val);
+        }
+        return $query->exists();
+    }
+
+    /**
      * 条件にマッチするレコードを更新
      *
      * @param array $update

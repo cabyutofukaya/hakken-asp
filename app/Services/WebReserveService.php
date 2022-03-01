@@ -47,4 +47,25 @@ class WebReserveService extends WebReserveEstimateService
         );
     }
 
+    /**
+     * 予約キャンセル
+     *
+     * @param int $id 予約ID
+     * @param bool $cancelCharge キャンセルチャージの有無
+     * @return boolean
+     */
+    public function cancel(int $id, bool $cancelCharge) : bool
+    {
+        $reserve = $this->webReserveRepository->find($id);
+        if (!$reserve->cancel_at) { // cancel_atカラムの値をセットするのは初回のみ
+            return $this->webReserveRepository->updateFields($id, [
+                'cancel_at' => date('Y-m-d H:i:s'),
+                'cancel_charge' => $cancelCharge
+            ]);
+        } else {
+            return $this->webReserveRepository->updateFields($id, [
+                'cancel_charge' => $cancelCharge
+            ]);
+        }
+    }
 }

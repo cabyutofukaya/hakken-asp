@@ -163,9 +163,16 @@ class ReserveService extends ReserveEstimateService
      */
     public function cancel(int $id, bool $cancelCharge) : bool
     {
-        return $this->reserveRepository->updateFields($id, [
-            'cancel_at' => date('Y-m-d H:i:s'),
-            'cancel_charge' => $cancelCharge
-        ]);
+        $reserve = $this->reserveRepository->find($id);
+        if (!$reserve->cancel_at) { // cancel_atカラムの値をセットするのは初回のみ
+            return $this->reserveRepository->updateFields($id, [
+                'cancel_at' => date('Y-m-d H:i:s'),
+                'cancel_charge' => $cancelCharge
+            ]);
+        } else {
+            return $this->reserveRepository->updateFields($id, [
+                'cancel_charge' => $cancelCharge
+            ]);
+        }
     }
 }

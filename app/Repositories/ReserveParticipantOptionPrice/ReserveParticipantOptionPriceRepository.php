@@ -70,6 +70,23 @@ class ReserveParticipantOptionPriceRepository implements ReserveParticipantOptio
     }
 
     /**
+     * 条件にマッチするレコードが存在するか否か
+     * 
+     * @param array $where
+     * @param bool $getDeleted
+     * @return bool
+     */
+    public function whereExists(array $where, bool $getDeleted = false) : bool
+    {
+        $query = $this->reserveParticipantOptionPrice;
+        $query = $getDeleted ? $query->withTrashed() : $query;
+        foreach ($where as $key => $val) {
+            $query = $query->where($key, $val);
+        }
+        return $query->exists();
+    }
+
+    /**
      * IDリストのレコードを更新
      *
      * @param array $update

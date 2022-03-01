@@ -28857,6 +28857,12 @@ var CancelChargeArea = function CancelChargeArea(_ref) {
       _useState6 = _slicedToArray(_useState5, 2),
       cancelChargeErrors = _useState6[0],
       setCancelChargeErrors = _useState6[1]; // キャンセルチャージでエラーがある枠のlists配列キー値を保持
+
+
+  var _useState7 = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])(false),
+      _useState8 = _slicedToArray(_useState7, 2),
+      isSubmitting = _useState8[0],
+      setIsSubmitting = _useState8[1]; // form送信中
   // 入力制御
 
 
@@ -28903,6 +28909,7 @@ var CancelChargeArea = function CancelChargeArea(_ref) {
 
     if (Object(_libs__WEBPACK_IMPORTED_MODULE_6__["isEmptyObject"])(errMsg)) {
       document.cancelChargeForm.submit();
+      setIsSubmitting(true); // form送信中
     }
   }; // 「キャンセルせずに戻る」ボタン
 
@@ -29009,13 +29016,15 @@ var CancelChargeArea = function CancelChargeArea(_ref) {
     className: "wd50"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("button", {
     className: "grayBtn",
-    onClick: handleBack
+    onClick: handleBack,
+    disabled: isSubmitting
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", {
     className: "material-icons"
   }, "arrow_back_ios"), "\u30AD\u30E3\u30F3\u30BB\u30EB\u305B\u305A\u306B\u623B\u308B")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("li", {
     className: "wd50"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("button", {
-    className: "redBtn"
+    className: "redBtn",
+    disabled: isSubmitting
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", {
     className: "material-icons"
   }, "save"), " ", "\u3053\u306E\u5185\u5BB9\u3067\u30AD\u30E3\u30F3\u30BB\u30EB\u3059\u308B")))));
