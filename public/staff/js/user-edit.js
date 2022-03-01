@@ -60386,7 +60386,7 @@ var VisaInputArea = function VisaInputArea(_ref) {
 /*!*******************************************!*\
   !*** ./resources/assets/staff/js/libs.js ***!
   \*******************************************/
-/*! exports provided: calcTaxInclud, calcNet, calcGrossProfit, calcProfitRate, getAgencyAccountFromUrl, getParam, getNameExObj, getPathFromBracketName */
+/*! exports provided: calcTaxInclud, calcNet, calcGrossProfit, calcProfitRate, getAgencyAccountFromUrl, getParam, getNameExObj, getPathFromBracketName, isEmptyObject */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -60399,6 +60399,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getParam", function() { return getParam; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getNameExObj", function() { return getNameExObj; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getPathFromBracketName", function() { return getPathFromBracketName; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isEmptyObject", function() { return isEmptyObject; });
 /**
  * 税込価格を計算
  * 小数点以下は四捨五入
@@ -60511,6 +60512,10 @@ function getNameExObj(str) {
 
 function getPathFromBracketName(name) {
   return name.replace(/^\[|\]$/, "").replace(/\]\[/g, ".").replace(/\[|\]/g, ".");
+} //オブジェクトが空かどうか
+
+function isEmptyObject(obj) {
+  return !Object.keys(obj).length;
 }
 
 /***/ }),

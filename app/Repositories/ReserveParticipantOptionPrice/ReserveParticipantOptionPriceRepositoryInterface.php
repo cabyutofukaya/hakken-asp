@@ -12,4 +12,12 @@ interface ReserveParticipantOptionPriceRepositoryInterface
   public function deleteByParticipantId(int $participantId, bool $ifExistWithdrawalDelete = false, bool $isSoftDelete=true): bool;
 
   public function existWithdrawalHistoryByReservePurchasingSubjectOptionId(int $reservePurchasingSubjectOptionId) : bool;
+
+  public function getWhere(array $where, array $with = [], array $select = [], bool $getDeleted = false): Collection;
+
+  public function updateIds(array $update, array $ids) : bool;
+
+  public function updateWhere(array $update, array $where) : bool;
+
+  public function whereExists(array $where, bool $getDeleted = false) : bool;
 }

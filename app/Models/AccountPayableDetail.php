@@ -50,7 +50,7 @@ class AccountPayableDetail extends Model
         'amount_billed',
         'amount_payment',
         'unpaid_balance',
-        'official',
+        'official', // ←使っていないかも
         'last_manager_id',
         'status',
         'last_note',

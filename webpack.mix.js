@@ -150,6 +150,7 @@ mix.react("resources/js/app.js", "public/js")
         "resources/assets/staff/js/reserve_bundle_receipt-create-edit.js",
         "public/staff/js"
     )
+    .js("resources/assets/staff/js/cancel_charge-create.js", "public/staff/js")
     .js(
         "resources/assets/staff/js/management_invoice-index.js",
         "public/staff/js"
@@ -191,4 +192,8 @@ mix.react("resources/js/app.js", "public/js")
     .js("resources/assets/staff/js/web-estimate-show.js", "public/staff/js")
     .js("resources/assets/staff/js/web-reserve-show.js", "public/staff/js")
     .js("resources/assets/staff/js/web-reserve-edit.js", "public/staff/js")
+    .js(
+        "resources/assets/staff/js/web-cancel_charge-create.js",
+        "public/staff/js"
+    )
     .extract(["jquery", "lodash"]);

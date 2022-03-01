@@ -4,10 +4,11 @@ namespace App\Http\ViewComposers\Staff\ReserveEstimate;
 use App\Models\AccountPayable;
 use App\Models\AgencyConsultation;
 use App\Services\CountryService;
+use App\Services\DocumentQuoteService;
+use App\Services\ReserveParticipantPriceService;
 use App\Services\StaffService;
 use App\Services\UserCustomItemService;
 use App\Services\UserService;
-use App\Services\DocumentQuoteService;
 use App\Traits\JsConstsTrait;
 use Auth;
 use Illuminate\Support\Arr;
@@ -25,13 +26,15 @@ class ShowFormComposer
         StaffService $staffService,
         UserCustomItemService $userCustomItemService,
         UserService $userService,
-        DocumentQuoteService $documentQuoteService
+        DocumentQuoteService $documentQuoteService,
+        ReserveParticipantPriceService $reserveParticipantPriceService
     ) {
         $this->countryService = $countryService;
         $this->staffService = $staffService;
         $this->userCustomItemService = $userCustomItemService;
         $this->userService = $userService;
         $this->documentQuoteService = $documentQuoteService;
+        $this->reserveParticipantPriceService = $reserveParticipantPriceService;
     }
 
     /**
@@ -73,7 +76,12 @@ class ShowFormComposer
         }
 
         // 初期入力値。タブ毎に値をセット
-        $defaultValue = [ // 基本情報
+        $defaultValue = [
+            // 共通
+            'common' => [
+                'cancel_charge' => $reserve->cancel_charge, // キャンセルチャージの有無
+            ],
+            // 基本情報
             config('consts.reserves.TAB_BASIC_INFO') => [
                 'status' => $status, // ステータス値
                 'reserveStatus' => $reserveStatus, // 状況
@@ -211,6 +219,7 @@ class ShowFormComposer
         $estimateIndexUrl = route('staff.asp.estimates.normal.index', [$agencyAccount]);
         $reserveIndexUrl = route('staff.asp.estimates.reserve.index', [$agencyAccount]);
         $departedIndexUrl = route('staff.estimates.departed.index', $agencyAccount); // 催行済
+        $cancelChargeUrl = $applicationStep === config('consts.reserves.APPLICATION_STEP_RESERVE') ? route('staff.asp.estimates.reserve.cancel_charge.edit', [$agencyAccount, $reserve->control_number]) : ''; // 予約状態の場合はキャンセルチャージ
 
         // 各種定数値。タブ毎にセット
         $consts = [
@@ -226,9 +235,11 @@ class ShowFormComposer
                     'tab_reserve_detail' => config('consts.reserves.TAB_RESERVE_DETAIL'),
                     'tab_consultation' => config('consts.reserves.TAB_CONSULTATION'),
                 ],
+                'existPurchaseData' => $this->reserveParticipantPriceService->isExistsPurchaseDataByReserveId($reserve->id, false), // 仕入情報がある場合はtrue
                 'estimateIndexUrl' => $estimateIndexUrl,
                 'reserveIndexUrl' => $reserveIndexUrl,
                 'departedIndexUrl' => $departedIndexUrl,
+                'cancelChargeUrl' => $cancelChargeUrl,
             ],
             // 基本情報
             config('consts.reserves.TAB_BASIC_INFO') =>
