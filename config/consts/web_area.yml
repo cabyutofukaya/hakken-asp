@@ -218,8 +218,10 @@
       name: 久米島
     - code: J47_宮古島
       name: 宮古島
-    - code: J47_石垣島・竹富島
-      name: 石垣島・竹富島
+    - code: J47_石垣島
+      name: 石垣島
+    - code: J47_竹富島
+      name: 竹富島
     - code: J47_小浜島
       name: 小浜島
     - code: J47_西表島
