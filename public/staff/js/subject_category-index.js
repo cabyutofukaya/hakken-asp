@@ -36664,6 +36664,32 @@ module.exports = function(module) {
 
 /***/ }),
 
+/***/ "./resources/assets/hooks/useMountedRef.js":
+/*!*************************************************!*\
+  !*** ./resources/assets/hooks/useMountedRef.js ***!
+  \*************************************************/
+/*! exports provided: useMountedRef */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "useMountedRef", function() { return useMountedRef; });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+
+function useMountedRef() {
+  var mounted = Object(react__WEBPACK_IMPORTED_MODULE_0__["useRef"])(false);
+  Object(react__WEBPACK_IMPORTED_MODULE_0__["useEffect"])(function () {
+    mounted.current = true;
+    return function () {
+      return mounted.current = false;
+    };
+  });
+  return mounted;
+}
+
+/***/ }),
+
 /***/ "./resources/assets/staff/js/components/ConstApp.js":
 /*!**********************************************************!*\
   !*** ./resources/assets/staff/js/components/ConstApp.js ***!
@@ -37089,12 +37115,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _PageNation__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../PageNation */ "./resources/assets/staff/js/components/PageNation.js");
-/* harmony import */ var _SmallDangerModal__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../SmallDangerModal */ "./resources/assets/staff/js/components/SmallDangerModal.js");
+/* harmony import */ var _ConstApp__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../ConstApp */ "./resources/assets/staff/js/components/ConstApp.js");
+/* harmony import */ var _PageNation__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../PageNation */ "./resources/assets/staff/js/components/PageNation.js");
 /* harmony import */ var react_loading__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react-loading */ "./node_modules/react-loading/dist/react-loading.js");
 /* harmony import */ var react_loading__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(react_loading__WEBPACK_IMPORTED_MODULE_4__);
 /* harmony import */ var _DeclineMessage__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../DeclineMessage */ "./resources/assets/staff/js/components/DeclineMessage.js");
 /* harmony import */ var _SuccessMessage__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../SuccessMessage */ "./resources/assets/staff/js/components/SuccessMessage.js");
+/* harmony import */ var _hooks_useMountedRef__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../../../../hooks/useMountedRef */ "./resources/assets/hooks/useMountedRef.js");
 
 
 function ownKeys(object, enumerableOnly) {
@@ -37247,11 +37274,21 @@ function _arrayWithHoles(arr) {
 
 
 
-var Airplane = function Airplane(_ref) {
-  var agencyAccount = _ref.agencyAccount,
-      searchParam = _ref.searchParam,
+var Airplane = /*#__PURE__*/Object(react__WEBPACK_IMPORTED_MODULE_1__["forwardRef"])(function (_ref, ref) {
+  var searchParam = _ref.searchParam,
       requestId = _ref.requestId,
-      successMsg = _ref.successMsg; // ページャー関連変数
+      successMsg = _ref.successMsg,
+      isDeleting = _ref.isDeleting,
+      setIsDeleting = _ref.setIsDeleting,
+      deleteInfo = _ref.deleteInfo,
+      setDeleteInfo = _ref.setDeleteInfo;
+
+  var _useContext = Object(react__WEBPACK_IMPORTED_MODULE_1__["useContext"])(_ConstApp__WEBPACK_IMPORTED_MODULE_2__["ConstContext"]),
+      agencyAccount = _useContext.agencyAccount,
+      subjectCategories = _useContext.subjectCategories;
+
+  var mounted = Object(_hooks_useMountedRef__WEBPACK_IMPORTED_MODULE_7__["useMountedRef"])(); // マウント・アンマウント制御
+  // ページャー関連変数
 
   var _useState = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])(1),
       _useState2 = _slicedToArray(_useState, 2),
@@ -37286,24 +37323,18 @@ var Airplane = function Airplane(_ref) {
       setIsLoading = _useState12[1]; // 重複読み込み防止
 
 
-  var _useState13 = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])(false),
+  var _useState13 = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])(successMsg),
       _useState14 = _slicedToArray(_useState13, 2),
-      isDeleting = _useState14[0],
-      setIsDeleting = _useState14[1]; // 削除処理中か否か
+      successMessage = _useState14[0],
+      setSuccessMessage = _useState14[1]; // 登録・編集処理完了メッセージ
 
 
-  var _useState15 = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])(successMsg),
+  var _useState15 = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])(""),
       _useState16 = _slicedToArray(_useState15, 2),
-      successMessage = _useState16[0],
-      setSuccessMessage = _useState16[1]; // 登録・編集処理完了メッセージ
+      declineMessage = _useState16[0],
+      setDeclineMessage = _useState16[1];
 
-
-  var _useState17 = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])(""),
-      _useState18 = _slicedToArray(_useState17, 2),
-      declineMessage = _useState18[0],
-      setDeclineMessage = _useState18[1];
-
-  var _useState19 = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])({
+  var _useState17 = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])({
     id: "asc",
     code: "asc",
     airline: "asc",
@@ -37314,20 +37345,14 @@ var Airplane = function Airplane(_ref) {
     ad_net: "asc",
     "supplier.name": "asc"
   }),
+      _useState18 = _slicedToArray(_useState17, 2),
+      sortParam = _useState18[0],
+      setSortParam = _useState18[1];
+
+  var _useState19 = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])([]),
       _useState20 = _slicedToArray(_useState19, 2),
-      sortParam = _useState20[0],
-      setSortParam = _useState20[1];
-
-  var _useState21 = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])([]),
-      _useState22 = _slicedToArray(_useState21, 2),
-      lists = _useState22[0],
-      setLists = _useState22[1]; //一覧
-
-
-  var _useState23 = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])(null),
-      _useState24 = _slicedToArray(_useState23, 2),
-      deleteId = _useState24[0],
-      setDeleteId = _useState24[1]; // 削除対象ID
+      lists = _useState20[0],
+      setLists = _useState20[1]; //一覧
 
 
   var fetch = /*#__PURE__*/function () {
@@ -37337,7 +37362,7 @@ var Airplane = function Airplane(_ref) {
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
-              if (!isLoading) {
+              if (mounted.current) {
                 _context.next = 2;
                 break;
               }
@@ -37345,8 +37370,16 @@ var Airplane = function Airplane(_ref) {
               return _context.abrupt("return");
 
             case 2:
+              if (!isLoading) {
+                _context.next = 4;
+                break;
+              }
+
+              return _context.abrupt("return");
+
+            case 4:
               setIsLoading(true);
-              _context.next = 5;
+              _context.next = 7;
               return axios.get("/api/".concat(agencyAccount, "/subject/airplane/list"), {
                 params: _objectSpread(_objectSpread({}, searchParam), {}, {
                   page: page,
@@ -37358,7 +37391,7 @@ var Airplane = function Airplane(_ref) {
                 setIsLoading(false);
               });
 
-            case 5:
+            case 7:
               response = _context.sent;
 
               if (response) {
@@ -37369,7 +37402,7 @@ var Airplane = function Airplane(_ref) {
                 setTotal(response.data.meta.total);
               }
 
-            case 7:
+            case 9:
             case "end":
               return _context.stop();
           }
@@ -37389,67 +37422,89 @@ var Airplane = function Airplane(_ref) {
   var handlePagerClick = function handlePagerClick(e, targetPage) {
     e.preventDefault();
     setPage(targetPage);
-  }; // 削除ボタンを押した時の挙動
+  }; // 親コンポーネント(subject_category-index.js)から呼び出される
 
 
-  var handleDelete = /*#__PURE__*/function () {
-    var _ref3 = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2(e) {
-      var response, newTotal, newPage;
-      return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
-        while (1) {
-          switch (_context2.prev = _context2.next) {
-            case 0:
-              if (!isDeleting) {
-                _context2.next = 2;
-                break;
-              }
-
-              return _context2.abrupt("return");
-
-            case 2:
-              setIsDeleting(true);
-              _context2.next = 5;
-              return axios["delete"]("/api/".concat(agencyAccount, "/subject/airplane/").concat(deleteId))["finally"](function () {
-                $(".js-modal-close").trigger("click"); // 削除モーダルclose
-
-                setTimeout(function () {
+  Object(react__WEBPACK_IMPORTED_MODULE_1__["useImperativeHandle"])(ref, function () {
+    return {
+      handleDelete: function () {
+        var _handleDelete = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2(e) {
+          var response, newTotal, newPage;
+          return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
+            while (1) {
+              switch (_context2.prev = _context2.next) {
+                case 0:
                   if (mounted.current) {
-                    setIsDeleting(false);
+                    _context2.next = 2;
+                    break;
                   }
-                }, 3000);
-              });
 
-            case 5:
-              response = _context2.sent;
+                  return _context2.abrupt("return");
 
-              if (response) {
-                newTotal = total - 1; // 削除処理後の件数
+                case 2:
+                  if (!isDeleting) {
+                    _context2.next = 4;
+                    break;
+                  }
 
-                newPage = Math.ceil(newTotal / perPage);
+                  return _context2.abrupt("return");
 
-                if (newPage < page) {
-                  // 現在のページ番号よりも総ページ数が少なくなった場合はページ番号を再設定。totalはapiにより更新される
-                  setPage(newPage);
-                } else {
-                  fetch(); // トータルのみの変更は手動fetch
-                }
+                case 4:
+                  if (!(deleteInfo.subject != subjectCategories.subject_category_airplane)) {
+                    _context2.next = 6;
+                    break;
+                  }
 
-                setDeclineMessage("項目の削除が完了しました");
+                  return _context2.abrupt("return");
+
+                case 6:
+                  // 念の為、削除対象の科目カテゴリを確認
+                  setIsDeleting(true);
+                  _context2.next = 9;
+                  return axios["delete"]("/api/".concat(agencyAccount, "/subject/airplane/").concat(deleteInfo === null || deleteInfo === void 0 ? void 0 : deleteInfo.id))["finally"](function () {
+                    $(".js-modal-close").trigger("click"); // 削除モーダルclose
+
+                    setTimeout(function () {
+                      if (mounted.current) {
+                        setIsDeleting(false);
+                      }
+                    }, 3000);
+                  });
+
+                case 9:
+                  response = _context2.sent;
+
+                  if (mounted.current && response) {
+                    newTotal = total - 1; // 削除処理後の件数
+
+                    newPage = Math.ceil(newTotal / perPage);
+
+                    if (newPage < page) {
+                      // 現在のページ番号よりも総ページ数が少なくなった場合はページ番号を再設定。totalはapiにより更新される
+                      setPage(newPage);
+                    } else {
+                      fetch(); // トータルのみの変更は手動fetch
+                    }
+
+                    setDeclineMessage("項目の削除が完了しました");
+                  }
+
+                case 11:
+                case "end":
+                  return _context2.stop();
               }
+            }
+          }, _callee2);
+        }));
 
-            case 7:
-            case "end":
-              return _context2.stop();
-          }
+        function handleDelete(_x) {
+          return _handleDelete.apply(this, arguments);
         }
-      }, _callee2);
-    }));
 
-    return function handleDelete(_x) {
-      return _ref3.apply(this, arguments);
+        return handleDelete;
+      }()
     };
-  }(); // 並び替えリンクをクリックした挙動
-
+  }); // 並び替えリンクをクリックした挙動
 
   var handleSortClick = function handleSortClick(column) {
     var direction = sortParam[column] === "asc" ? "desc" : "asc";
@@ -37541,23 +37596,20 @@ var Airplane = function Airplane(_ref) {
       className: "txtalc"
     }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", {
       className: "material-icons js-modal-open",
-      "data-target": "mdDeleteAirplane",
+      "data-target": "mdDeleteSubject",
       onClick: function onClick() {
-        return setDeleteId(row === null || row === void 0 ? void 0 : row.id);
+        return setDeleteInfo({
+          id: row === null || row === void 0 ? void 0 : row.id,
+          subject: subjectCategories.subject_category_airplane
+        });
       }
     }, "delete")));
-  }))), lastPage > 1 && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_PageNation__WEBPACK_IMPORTED_MODULE_2__["default"], {
+  }))), lastPage > 1 && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_PageNation__WEBPACK_IMPORTED_MODULE_3__["default"], {
     currentPage: page,
     lastPage: lastPage,
     onClick: handlePagerClick
-  }))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_SmallDangerModal__WEBPACK_IMPORTED_MODULE_3__["default"], {
-    id: "mdDeleteAirplane",
-    title: "\u3053\u306E\u9805\u76EE\u3092\u524A\u9664\u3057\u307E\u3059\u304B\uFF1F",
-    handleAction: handleDelete,
-    isActioning: isDeleting
-  }));
-};
-
+  }))));
+});
 /* harmony default export */ __webpack_exports__["default"] = (Airplane);
 
 /***/ }),
@@ -37575,12 +37627,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _PageNation__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../PageNation */ "./resources/assets/staff/js/components/PageNation.js");
-/* harmony import */ var _SmallDangerModal__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../SmallDangerModal */ "./resources/assets/staff/js/components/SmallDangerModal.js");
+/* harmony import */ var _ConstApp__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../ConstApp */ "./resources/assets/staff/js/components/ConstApp.js");
+/* harmony import */ var _PageNation__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../PageNation */ "./resources/assets/staff/js/components/PageNation.js");
 /* harmony import */ var react_loading__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react-loading */ "./node_modules/react-loading/dist/react-loading.js");
 /* harmony import */ var react_loading__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(react_loading__WEBPACK_IMPORTED_MODULE_4__);
 /* harmony import */ var _DeclineMessage__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../DeclineMessage */ "./resources/assets/staff/js/components/DeclineMessage.js");
 /* harmony import */ var _SuccessMessage__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../SuccessMessage */ "./resources/assets/staff/js/components/SuccessMessage.js");
+/* harmony import */ var _hooks_useMountedRef__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../../../../hooks/useMountedRef */ "./resources/assets/hooks/useMountedRef.js");
 
 
 function ownKeys(object, enumerableOnly) {
@@ -37733,11 +37786,21 @@ function _arrayWithHoles(arr) {
 
 
 
-var Hotel = function Hotel(_ref) {
-  var agencyAccount = _ref.agencyAccount,
-      searchParam = _ref.searchParam,
+var Hotel = /*#__PURE__*/Object(react__WEBPACK_IMPORTED_MODULE_1__["forwardRef"])(function (_ref, ref) {
+  var searchParam = _ref.searchParam,
       requestId = _ref.requestId,
-      successMsg = _ref.successMsg; // ページャー関連変数
+      successMsg = _ref.successMsg,
+      isDeleting = _ref.isDeleting,
+      setIsDeleting = _ref.setIsDeleting,
+      deleteInfo = _ref.deleteInfo,
+      setDeleteInfo = _ref.setDeleteInfo;
+
+  var _useContext = Object(react__WEBPACK_IMPORTED_MODULE_1__["useContext"])(_ConstApp__WEBPACK_IMPORTED_MODULE_2__["ConstContext"]),
+      agencyAccount = _useContext.agencyAccount,
+      subjectCategories = _useContext.subjectCategories;
+
+  var mounted = Object(_hooks_useMountedRef__WEBPACK_IMPORTED_MODULE_7__["useMountedRef"])(); // マウント・アンマウント制御
+  // ページャー関連変数
 
   var _useState = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])(1),
       _useState2 = _slicedToArray(_useState, 2),
@@ -37772,24 +37835,18 @@ var Hotel = function Hotel(_ref) {
       setIsLoading = _useState12[1]; // 重複読み込み防止
 
 
-  var _useState13 = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])(false),
+  var _useState13 = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])(successMsg),
       _useState14 = _slicedToArray(_useState13, 2),
-      isDeleting = _useState14[0],
-      setIsDeleting = _useState14[1]; // 削除処理中か否か
+      successMessage = _useState14[0],
+      setSuccessMessage = _useState14[1]; // 登録・編集処理完了メッセージ
 
 
-  var _useState15 = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])(successMsg),
+  var _useState15 = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])(""),
       _useState16 = _slicedToArray(_useState15, 2),
-      successMessage = _useState16[0],
-      setSuccessMessage = _useState16[1]; // 登録・編集処理完了メッセージ
+      declineMessage = _useState16[0],
+      setDeclineMessage = _useState16[1];
 
-
-  var _useState17 = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])(""),
-      _useState18 = _slicedToArray(_useState17, 2),
-      declineMessage = _useState18[0],
-      setDeclineMessage = _useState18[1];
-
-  var _useState19 = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])({
+  var _useState17 = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])({
     id: "asc",
     code: "asc",
     kbn: "asc",
@@ -37801,20 +37858,14 @@ var Hotel = function Hotel(_ref) {
     ad_net: "asc",
     "supplier.name": "asc"
   }),
+      _useState18 = _slicedToArray(_useState17, 2),
+      sortParam = _useState18[0],
+      setSortParam = _useState18[1];
+
+  var _useState19 = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])([]),
       _useState20 = _slicedToArray(_useState19, 2),
-      sortParam = _useState20[0],
-      setSortParam = _useState20[1];
-
-  var _useState21 = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])([]),
-      _useState22 = _slicedToArray(_useState21, 2),
-      lists = _useState22[0],
-      setLists = _useState22[1]; //一覧
-
-
-  var _useState23 = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])(null),
-      _useState24 = _slicedToArray(_useState23, 2),
-      deleteId = _useState24[0],
-      setDeleteId = _useState24[1]; // 削除対象ID
+      lists = _useState20[0],
+      setLists = _useState20[1]; //一覧
 
 
   var fetch = /*#__PURE__*/function () {
@@ -37824,7 +37875,7 @@ var Hotel = function Hotel(_ref) {
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
-              if (!isLoading) {
+              if (mounted.current) {
                 _context.next = 2;
                 break;
               }
@@ -37832,8 +37883,16 @@ var Hotel = function Hotel(_ref) {
               return _context.abrupt("return");
 
             case 2:
+              if (!isLoading) {
+                _context.next = 4;
+                break;
+              }
+
+              return _context.abrupt("return");
+
+            case 4:
               setIsLoading(true);
-              _context.next = 5;
+              _context.next = 7;
               return axios.get("/api/".concat(agencyAccount, "/subject/hotel/list"), {
                 params: _objectSpread(_objectSpread({}, searchParam), {}, {
                   page: page,
@@ -37845,7 +37904,7 @@ var Hotel = function Hotel(_ref) {
                 setIsLoading(false);
               });
 
-            case 5:
+            case 7:
               response = _context.sent;
 
               if (response) {
@@ -37856,7 +37915,7 @@ var Hotel = function Hotel(_ref) {
                 setTotal(response.data.meta.total);
               }
 
-            case 7:
+            case 9:
             case "end":
               return _context.stop();
           }
@@ -37876,67 +37935,89 @@ var Hotel = function Hotel(_ref) {
   var handlePagerClick = function handlePagerClick(e, targetPage) {
     e.preventDefault();
     setPage(targetPage);
-  }; // 削除ボタンを押した時の挙動
+  }; // 親コンポーネント(subject_category-index.js)から呼び出される
 
 
-  var handleDelete = /*#__PURE__*/function () {
-    var _ref3 = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2(e) {
-      var response, newTotal, newPage;
-      return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
-        while (1) {
-          switch (_context2.prev = _context2.next) {
-            case 0:
-              if (!isDeleting) {
-                _context2.next = 2;
-                break;
-              }
-
-              return _context2.abrupt("return");
-
-            case 2:
-              setIsDeleting(true);
-              _context2.next = 5;
-              return axios["delete"]("/api/".concat(agencyAccount, "/subject/hotel/").concat(deleteId))["finally"](function () {
-                $(".js-modal-close").trigger("click"); // 削除モーダルclose
-
-                setTimeout(function () {
+  Object(react__WEBPACK_IMPORTED_MODULE_1__["useImperativeHandle"])(ref, function () {
+    return {
+      handleDelete: function () {
+        var _handleDelete = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2(e) {
+          var response, newTotal, newPage;
+          return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
+            while (1) {
+              switch (_context2.prev = _context2.next) {
+                case 0:
                   if (mounted.current) {
-                    setIsDeleting(false);
+                    _context2.next = 2;
+                    break;
                   }
-                }, 3000);
-              });
 
-            case 5:
-              response = _context2.sent;
+                  return _context2.abrupt("return");
 
-              if (response) {
-                newTotal = total - 1; // 削除処理後の件数
+                case 2:
+                  if (!isDeleting) {
+                    _context2.next = 4;
+                    break;
+                  }
 
-                newPage = Math.ceil(newTotal / perPage);
+                  return _context2.abrupt("return");
 
-                if (newPage < page) {
-                  // 現在のページ番号よりも総ページ数が少なくなった場合はページ番号を再設定。totalはapiにより更新される
-                  setPage(newPage);
-                } else {
-                  fetch(); // トータルのみの変更は手動fetch
-                }
+                case 4:
+                  if (!(deleteInfo.subject != subjectCategories.subject_category_hotel)) {
+                    _context2.next = 6;
+                    break;
+                  }
 
-                setDeclineMessage("項目の削除が完了しました");
+                  return _context2.abrupt("return");
+
+                case 6:
+                  // 念の為、削除対象の科目カテゴリを確認
+                  setIsDeleting(true);
+                  _context2.next = 9;
+                  return axios["delete"]("/api/".concat(agencyAccount, "/subject/hotel/").concat(deleteInfo === null || deleteInfo === void 0 ? void 0 : deleteInfo.id))["finally"](function () {
+                    $(".js-modal-close").trigger("click"); // 削除モーダルclose
+
+                    setTimeout(function () {
+                      if (mounted.current) {
+                        setIsDeleting(false);
+                      }
+                    }, 3000);
+                  });
+
+                case 9:
+                  response = _context2.sent;
+
+                  if (mounted.current && response) {
+                    newTotal = total - 1; // 削除処理後の件数
+
+                    newPage = Math.ceil(newTotal / perPage);
+
+                    if (newPage < page) {
+                      // 現在のページ番号よりも総ページ数が少なくなった場合はページ番号を再設定。totalはapiにより更新される
+                      setPage(newPage);
+                    } else {
+                      fetch(); // トータルのみの変更は手動fetch
+                    }
+
+                    setDeclineMessage("項目の削除が完了しました");
+                  }
+
+                case 11:
+                case "end":
+                  return _context2.stop();
               }
+            }
+          }, _callee2);
+        }));
 
-            case 7:
-            case "end":
-              return _context2.stop();
-          }
+        function handleDelete(_x) {
+          return _handleDelete.apply(this, arguments);
         }
-      }, _callee2);
-    }));
 
-    return function handleDelete(_x) {
-      return _ref3.apply(this, arguments);
+        return handleDelete;
+      }()
     };
-  }(); // 並び替えリンクをクリックした挙動
-
+  }); // 並び替えリンクをクリックした挙動
 
   var handleSortClick = function handleSortClick(column) {
     var direction = sortParam[column] === "asc" ? "desc" : "asc";
@@ -38023,23 +38104,20 @@ var Hotel = function Hotel(_ref) {
       className: "txtalc"
     }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", {
       className: "material-icons js-modal-open",
-      "data-target": "mdDeleteHotel",
+      "data-target": "mdDeleteSubject",
       onClick: function onClick() {
-        return setDeleteId(row === null || row === void 0 ? void 0 : row.id);
+        return setDeleteInfo({
+          id: row === null || row === void 0 ? void 0 : row.id,
+          subject: subjectCategories.subject_category_hotel
+        });
       }
     }, "delete")));
-  }))), lastPage > 1 && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_PageNation__WEBPACK_IMPORTED_MODULE_2__["default"], {
+  }))), lastPage > 1 && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_PageNation__WEBPACK_IMPORTED_MODULE_3__["default"], {
     currentPage: page,
     lastPage: lastPage,
     onClick: handlePagerClick
-  }))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_SmallDangerModal__WEBPACK_IMPORTED_MODULE_3__["default"], {
-    id: "mdDeleteHotel",
-    title: "\u3053\u306E\u9805\u76EE\u3092\u524A\u9664\u3057\u307E\u3059\u304B\uFF1F",
-    handleAction: handleDelete,
-    isActioning: isDeleting
-  }));
-};
-
+  }))));
+});
 /* harmony default export */ __webpack_exports__["default"] = (Hotel);
 
 /***/ }),
@@ -38057,12 +38135,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _PageNation__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../PageNation */ "./resources/assets/staff/js/components/PageNation.js");
-/* harmony import */ var _SmallDangerModal__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../SmallDangerModal */ "./resources/assets/staff/js/components/SmallDangerModal.js");
+/* harmony import */ var _ConstApp__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../ConstApp */ "./resources/assets/staff/js/components/ConstApp.js");
+/* harmony import */ var _PageNation__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../PageNation */ "./resources/assets/staff/js/components/PageNation.js");
 /* harmony import */ var react_loading__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react-loading */ "./node_modules/react-loading/dist/react-loading.js");
 /* harmony import */ var react_loading__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(react_loading__WEBPACK_IMPORTED_MODULE_4__);
 /* harmony import */ var _DeclineMessage__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../DeclineMessage */ "./resources/assets/staff/js/components/DeclineMessage.js");
 /* harmony import */ var _SuccessMessage__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../SuccessMessage */ "./resources/assets/staff/js/components/SuccessMessage.js");
+/* harmony import */ var _hooks_useMountedRef__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../../../../hooks/useMountedRef */ "./resources/assets/hooks/useMountedRef.js");
 
 
 function ownKeys(object, enumerableOnly) {
@@ -38215,11 +38294,21 @@ function _arrayWithHoles(arr) {
 
 
 
-var Option = function Option(_ref) {
-  var agencyAccount = _ref.agencyAccount,
-      searchParam = _ref.searchParam,
+var Option = /*#__PURE__*/Object(react__WEBPACK_IMPORTED_MODULE_1__["forwardRef"])(function (_ref, ref) {
+  var searchParam = _ref.searchParam,
       requestId = _ref.requestId,
-      successMsg = _ref.successMsg; // ページャー関連変数
+      successMsg = _ref.successMsg,
+      isDeleting = _ref.isDeleting,
+      setIsDeleting = _ref.setIsDeleting,
+      deleteInfo = _ref.deleteInfo,
+      setDeleteInfo = _ref.setDeleteInfo;
+
+  var _useContext = Object(react__WEBPACK_IMPORTED_MODULE_1__["useContext"])(_ConstApp__WEBPACK_IMPORTED_MODULE_2__["ConstContext"]),
+      agencyAccount = _useContext.agencyAccount,
+      subjectCategories = _useContext.subjectCategories;
+
+  var mounted = Object(_hooks_useMountedRef__WEBPACK_IMPORTED_MODULE_7__["useMountedRef"])(); // マウント・アンマウント制御
+  // ページャー関連変数
 
   var _useState = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])(1),
       _useState2 = _slicedToArray(_useState, 2),
@@ -38254,25 +38343,19 @@ var Option = function Option(_ref) {
       setIsLoading = _useState12[1]; // 重複読み込み防止
 
 
-  var _useState13 = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])(false),
+  var _useState13 = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])(successMsg),
       _useState14 = _slicedToArray(_useState13, 2),
-      isDeleting = _useState14[0],
-      setIsDeleting = _useState14[1]; // 削除処理中か否か
+      successMessage = _useState14[0],
+      setSuccessMessage = _useState14[1]; // 登録・編集処理完了メッセージ
 
 
-  var _useState15 = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])(successMsg),
+  var _useState15 = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])(""),
       _useState16 = _slicedToArray(_useState15, 2),
-      successMessage = _useState16[0],
-      setSuccessMessage = _useState16[1]; // 登録・編集処理完了メッセージ
+      declineMessage = _useState16[0],
+      setDeclineMessage = _useState16[1]; // 削除完了メッセージ
 
 
-  var _useState17 = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])(""),
-      _useState18 = _slicedToArray(_useState17, 2),
-      declineMessage = _useState18[0],
-      setDeclineMessage = _useState18[1]; // 削除完了メッセージ
-
-
-  var _useState19 = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])({
+  var _useState17 = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])({
     id: "asc",
     kbn: "asc",
     code: "asc",
@@ -38282,20 +38365,14 @@ var Option = function Option(_ref) {
     ad_net: "asc",
     "supplier.name": "asc"
   }),
+      _useState18 = _slicedToArray(_useState17, 2),
+      sortParam = _useState18[0],
+      setSortParam = _useState18[1];
+
+  var _useState19 = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])([]),
       _useState20 = _slicedToArray(_useState19, 2),
-      sortParam = _useState20[0],
-      setSortParam = _useState20[1];
-
-  var _useState21 = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])([]),
-      _useState22 = _slicedToArray(_useState21, 2),
-      lists = _useState22[0],
-      setLists = _useState22[1]; //一覧
-
-
-  var _useState23 = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])(null),
-      _useState24 = _slicedToArray(_useState23, 2),
-      deleteId = _useState24[0],
-      setDeleteId = _useState24[1]; // 削除対象ID
+      lists = _useState20[0],
+      setLists = _useState20[1]; //一覧
 
 
   var fetch = /*#__PURE__*/function () {
@@ -38305,7 +38382,7 @@ var Option = function Option(_ref) {
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
-              if (!isLoading) {
+              if (mounted.current) {
                 _context.next = 2;
                 break;
               }
@@ -38313,8 +38390,16 @@ var Option = function Option(_ref) {
               return _context.abrupt("return");
 
             case 2:
+              if (!isLoading) {
+                _context.next = 4;
+                break;
+              }
+
+              return _context.abrupt("return");
+
+            case 4:
               setIsLoading(true);
-              _context.next = 5;
+              _context.next = 7;
               return axios.get("/api/".concat(agencyAccount, "/subject/option/list"), {
                 params: _objectSpread(_objectSpread({}, searchParam), {}, {
                   page: page,
@@ -38326,7 +38411,7 @@ var Option = function Option(_ref) {
                 setIsLoading(false);
               });
 
-            case 5:
+            case 7:
               response = _context.sent;
 
               if (response) {
@@ -38337,7 +38422,7 @@ var Option = function Option(_ref) {
                 setTotal(response.data.meta.total);
               }
 
-            case 7:
+            case 9:
             case "end":
               return _context.stop();
           }
@@ -38357,67 +38442,89 @@ var Option = function Option(_ref) {
   var handlePagerClick = function handlePagerClick(e, targetPage) {
     e.preventDefault();
     setPage(targetPage);
-  }; // 削除ボタンを押した時の挙動
+  }; // 親コンポーネント(subject_category-index.js)から呼び出される
 
 
-  var handleDelete = /*#__PURE__*/function () {
-    var _ref3 = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2(e) {
-      var response, newTotal, newPage;
-      return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
-        while (1) {
-          switch (_context2.prev = _context2.next) {
-            case 0:
-              if (!isDeleting) {
-                _context2.next = 2;
-                break;
-              }
-
-              return _context2.abrupt("return");
-
-            case 2:
-              setIsDeleting(true);
-              _context2.next = 5;
-              return axios["delete"]("/api/".concat(agencyAccount, "/subject/option/").concat(deleteId))["finally"](function () {
-                $(".js-modal-close").trigger("click"); // 削除モーダルclose
-
-                setTimeout(function () {
+  Object(react__WEBPACK_IMPORTED_MODULE_1__["useImperativeHandle"])(ref, function () {
+    return {
+      handleDelete: function () {
+        var _handleDelete = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2(e) {
+          var response, newTotal, newPage;
+          return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
+            while (1) {
+              switch (_context2.prev = _context2.next) {
+                case 0:
                   if (mounted.current) {
-                    setIsDeleting(false);
+                    _context2.next = 2;
+                    break;
                   }
-                }, 3000);
-              });
 
-            case 5:
-              response = _context2.sent;
+                  return _context2.abrupt("return");
 
-              if (response) {
-                newTotal = total - 1; // 削除処理後の件数
+                case 2:
+                  if (!isDeleting) {
+                    _context2.next = 4;
+                    break;
+                  }
 
-                newPage = Math.ceil(newTotal / perPage);
+                  return _context2.abrupt("return");
 
-                if (newPage < page) {
-                  // 現在のページ番号よりも総ページ数が少なくなった場合はページ番号を再設定。totalはapiにより更新される
-                  setPage(newPage);
-                } else {
-                  fetch(); // トータルのみの変更は手動fetch
-                }
+                case 4:
+                  if (!(deleteInfo.subject != subjectCategories.subject_category_option)) {
+                    _context2.next = 6;
+                    break;
+                  }
 
-                setDeclineMessage("項目の削除が完了しました");
+                  return _context2.abrupt("return");
+
+                case 6:
+                  // 念の為、削除対象の科目カテゴリを確認
+                  setIsDeleting(true);
+                  _context2.next = 9;
+                  return axios["delete"]("/api/".concat(agencyAccount, "/subject/option/").concat(deleteInfo === null || deleteInfo === void 0 ? void 0 : deleteInfo.id))["finally"](function () {
+                    $(".js-modal-close").trigger("click"); // 削除モーダルclose
+
+                    setTimeout(function () {
+                      if (mounted.current) {
+                        setIsDeleting(false);
+                      }
+                    }, 3000);
+                  });
+
+                case 9:
+                  response = _context2.sent;
+
+                  if (mounted.current && response) {
+                    newTotal = total - 1; // 削除処理後の件数
+
+                    newPage = Math.ceil(newTotal / perPage);
+
+                    if (newPage < page) {
+                      // 現在のページ番号よりも総ページ数が少なくなった場合はページ番号を再設定。totalはapiにより更新される
+                      setPage(newPage);
+                    } else {
+                      fetch(); // トータルのみの変更は手動fetch
+                    }
+
+                    setDeclineMessage("項目の削除が完了しました");
+                  }
+
+                case 11:
+                case "end":
+                  return _context2.stop();
               }
+            }
+          }, _callee2);
+        }));
 
-            case 7:
-            case "end":
-              return _context2.stop();
-          }
+        function handleDelete(_x) {
+          return _handleDelete.apply(this, arguments);
         }
-      }, _callee2);
-    }));
 
-    return function handleDelete(_x) {
-      return _ref3.apply(this, arguments);
+        return handleDelete;
+      }()
     };
-  }(); // 並び替えリンクをクリックした挙動
-
+  }); // 並び替えリンクをクリックした挙動
 
   var handleSortClick = function handleSortClick(column) {
     var direction = sortParam[column] === "asc" ? "desc" : "asc";
@@ -38490,23 +38597,20 @@ var Option = function Option(_ref) {
       className: "txtalc"
     }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", {
       className: "material-icons js-modal-open",
-      "data-target": "mdDeleteOption",
+      "data-target": "mdDeleteSubject",
       onClick: function onClick() {
-        return setDeleteId(row === null || row === void 0 ? void 0 : row.id);
+        return setDeleteInfo({
+          id: row === null || row === void 0 ? void 0 : row.id,
+          subject: subjectCategories.subject_category_option
+        });
       }
     }, "delete")));
-  }))), lastPage > 1 && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_PageNation__WEBPACK_IMPORTED_MODULE_2__["default"], {
+  }))), lastPage > 1 && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_PageNation__WEBPACK_IMPORTED_MODULE_3__["default"], {
     currentPage: page,
     lastPage: lastPage,
     onClick: handlePagerClick
-  }))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_SmallDangerModal__WEBPACK_IMPORTED_MODULE_3__["default"], {
-    id: "mdDeleteOption",
-    title: "\u3053\u306E\u9805\u76EE\u3092\u524A\u9664\u3057\u307E\u3059\u304B\uFF1F",
-    handleAction: handleDelete,
-    isActioning: isDeleting
-  }));
-};
-
+  }))));
+});
 /* harmony default export */ __webpack_exports__["default"] = (Option);
 
 /***/ }),
@@ -39148,6 +39252,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_Subject_IndexList_Airplane__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./components/Subject/IndexList/Airplane */ "./resources/assets/staff/js/components/Subject/IndexList/Airplane.js");
 /* harmony import */ var _components_Subject_IndexList_Hotel__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./components/Subject/IndexList/Hotel */ "./resources/assets/staff/js/components/Subject/IndexList/Hotel.js");
 /* harmony import */ var _components_ConstApp__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./components/ConstApp */ "./resources/assets/staff/js/components/ConstApp.js");
+/* harmony import */ var _hooks_useMountedRef__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../../hooks/useMountedRef */ "./resources/assets/hooks/useMountedRef.js");
+/* harmony import */ var _components_SmallDangerModal__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./components/SmallDangerModal */ "./resources/assets/staff/js/components/SmallDangerModal.js");
 function _slicedToArray(arr, i) {
   return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();
 }
@@ -39217,11 +39323,13 @@ function _arrayWithHoles(arr) {
 
 
 
+
+
+
 var SubjectIndexArea = function SubjectIndexArea(_ref) {
   var _permission$currentTa;
 
-  var agencyAccount = _ref.agencyAccount,
-      customCategoryCode = _ref.customCategoryCode,
+  var customCategoryCode = _ref.customCategoryCode,
       defaultTab = _ref.defaultTab,
       createLinks = _ref.createLinks,
       formSelects = _ref.formSelects,
@@ -39230,6 +39338,18 @@ var SubjectIndexArea = function SubjectIndexArea(_ref) {
       consts = _ref.consts,
       permission = _ref.permission,
       successMessage = _ref.successMessage;
+  var mounted = Object(_hooks_useMountedRef__WEBPACK_IMPORTED_MODULE_10__["useMountedRef"])(); // マウント・アンマウント制御
+  // 親から各タブのコンポーネントの削除メソッドを呼ぶのに使用
+
+  var optionRef = Object(react__WEBPACK_IMPORTED_MODULE_1__["useRef"])(); // オプション科目
+
+  var airplaneRef = Object(react__WEBPACK_IMPORTED_MODULE_1__["useRef"])(); // 航空券科目
+
+  var hotelRef = Object(react__WEBPACK_IMPORTED_MODULE_1__["useRef"])(); // ホテル科目
+
+  var _useContext = Object(react__WEBPACK_IMPORTED_MODULE_1__["useContext"])(_components_ConstApp__WEBPACK_IMPORTED_MODULE_9__["ConstContext"]),
+      agencyAccount = _useContext.agencyAccount,
+      subjectCategories = _useContext.subjectCategories;
 
   var _useState = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])(defaultTab),
       _useState2 = _slicedToArray(_useState, 2),
@@ -39271,11 +39391,39 @@ var SubjectIndexArea = function SubjectIndexArea(_ref) {
       _useState14 = _slicedToArray(_useState13, 2),
       hotelRequestId = _useState14[0],
       setHotelRequestId = _useState14[1]; // 検索を実行させるためのトリガーパラメータ
-  // タブクリック
+
+
+  var _useState15 = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])(false),
+      _useState16 = _slicedToArray(_useState15, 2),
+      isDeleting = _useState16[0],
+      setIsDeleting = _useState16[1]; // 削除処理中か否か
+
+
+  var _useState17 = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])({}),
+      _useState18 = _slicedToArray(_useState17, 2),
+      deleteInfo = _useState18[0],
+      setDeleteInfo = _useState18[1]; // 削除対象レコード情報(id、科目名)を管理
+  // 削除ボタンを押した時の挙動
+
+
+  var handleDelete = function handleDelete(e) {
+    if ((deleteInfo === null || deleteInfo === void 0 ? void 0 : deleteInfo.subject) == subjectCategories.subject_category_option) {
+      // オプション科目削除
+      optionRef.current.handleDelete();
+    } else if ((deleteInfo === null || deleteInfo === void 0 ? void 0 : deleteInfo.subject) == subjectCategories.subject_category_airplane) {
+      // 航空券科目削除
+      airplaneRef.current.handleDelete();
+    } else if ((deleteInfo === null || deleteInfo === void 0 ? void 0 : deleteInfo.subject) == subjectCategories.subject_category_hotel) {
+      // ホテル科目削除
+      hotelRef.current.handleDelete();
+    }
+  }; // タブクリック
 
 
   var handleTabChange = function handleTabChange(e, tab) {
     e.preventDefault();
+    if (isDeleting) return; // 削除処理中の場合は、念の為タブの切り替え不可
+
     setCurrentTab(tab);
   }; // 新規作成クリック → 新規登録ページへ遷移
 
@@ -39376,17 +39524,37 @@ var SubjectIndexArea = function SubjectIndexArea(_ref) {
     agencyAccount: agencyAccount,
     searchParam: optionInput,
     requestId: optionRequestId,
-    successMsg: successMessage
+    successMsg: successMessage,
+    isDeleting: isDeleting,
+    setIsDeleting: setIsDeleting,
+    deleteInfo: deleteInfo,
+    setDeleteInfo: setDeleteInfo,
+    ref: optionRef
   }), currentTab === subjectCategoryCodes.subject_category_airplane && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_components_Subject_IndexList_Airplane__WEBPACK_IMPORTED_MODULE_7__["default"], {
     agencyAccount: agencyAccount,
     searchParam: airplaneInput,
     requestId: airplaneRequestId,
-    successMsg: successMessage
+    successMsg: successMessage,
+    isDeleting: isDeleting,
+    setIsDeleting: setIsDeleting,
+    deleteInfo: deleteInfo,
+    setDeleteInfo: setDeleteInfo,
+    ref: airplaneRef
   }), currentTab === subjectCategoryCodes.subject_category_hotel && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_components_Subject_IndexList_Hotel__WEBPACK_IMPORTED_MODULE_8__["default"], {
     agencyAccount: agencyAccount,
     searchParam: hotelInput,
     requestId: hotelRequestId,
-    successMsg: successMessage
+    successMsg: successMessage,
+    isDeleting: isDeleting,
+    setIsDeleting: setIsDeleting,
+    deleteInfo: deleteInfo,
+    setDeleteInfo: setDeleteInfo,
+    ref: hotelRef
+  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_components_SmallDangerModal__WEBPACK_IMPORTED_MODULE_11__["default"], {
+    id: "mdDeleteSubject",
+    title: "\u3053\u306E\u9805\u76EE\u3092\u524A\u9664\u3057\u307E\u3059\u304B\uFF1F",
+    handleAction: handleDelete,
+    isActioning: isDeleting
   }));
 };
 
@@ -39414,7 +39582,6 @@ if (Element) {
   Object(react_dom__WEBPACK_IMPORTED_MODULE_2__["render"])( /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_components_ConstApp__WEBPACK_IMPORTED_MODULE_9__["default"], {
     jsVars: parsedJsVars
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(SubjectIndexArea, {
-    agencyAccount: agencyAccount,
     customCategoryCode: customCategoryCode,
     defaultTab: defaultTab,
     createLinks: parsedCreateLinks,

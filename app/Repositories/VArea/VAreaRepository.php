@@ -22,13 +22,11 @@ class VAreaRepository implements VAreaRepositoryInterface
      */
     public function find(int $id, array $select = []): ?VArea
     {
-        return $select ? $this->vArea->select($select)->findOrFail($id) : $this->vArea->first($id);
+        return $select ? $this->vArea->select($select)->find($id) : $this->vArea->first($id);
     }
 
     /**
      * 当該UUIDを取得
-     *
-     * データがない場合は 404ステータス
      *
      * @param int $id
      */
@@ -36,7 +34,7 @@ class VAreaRepository implements VAreaRepositoryInterface
     {
         $query = $this->vArea;
         $query = $select ? $query->select($select) : $query;
-        return $query->where('uuid', $uuid)->firstOrFail();
+        return $query->where('uuid', $uuid)->first();
     }
 
     /**

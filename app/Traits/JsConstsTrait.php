@@ -76,6 +76,8 @@ trait JsConstsTrait
             ],
             // 税区分
             'documentZeiKbns' => get_const_item('subject_categories', 'document_zei_kbn'),
+            // 科目カテゴリ一覧
+            'subjectCategories' => config('consts.subject_categories.SUBJECT_CATEGORY_LIST'),
         ];
     }
 }
