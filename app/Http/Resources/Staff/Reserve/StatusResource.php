@@ -15,8 +15,10 @@ class StatusResource extends JsonResource
     public function toArray($request)
     {
         return [
-            "val" => $this->val,
-            "updated_at" => $this->updated_at,
+            "status" => [ // ステータス
+                'val' => $this->status ? $this->status->val : null
+            ],
+            "updated_at" => $this->updated_at->format('Y-m-d H:i:s'),
         ];
     }
 }

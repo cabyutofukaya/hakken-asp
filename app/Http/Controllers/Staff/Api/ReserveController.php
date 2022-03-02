@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Staff\Api;
 
+use App\Exceptions\ExclusiveLockException;
 use App\Events\ReserveUpdateStatusEvent;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Staff\ReserveStatusUpdateRequest;
@@ -22,6 +23,7 @@ use Exception;
 use Gate;
 use Illuminate\Http\Request;
 use Log;
+use Illuminate\Support\Arr;
 
 class ReserveController extends Controller
 {
@@ -42,7 +44,7 @@ class ReserveController extends Controller
         $reserve = $this->reserveService->findByControlNumber($reserveNumber, $agencyAccount);
 
         if (!$reserve) {
-            return response("データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 404);
+            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
         }
 
         // 認可チェック
@@ -123,9 +125,9 @@ class ReserveController extends Controller
     public function statusUpdate(ReserveStatusUpdateRequest $request, $agencyAccount, $reserveNumber)
     {
         $reserve = $this->reserveService->findByControlNumber($reserveNumber, $agencyAccount);
-
+        
         if (!$reserve) {
-            return response("データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 404);
+            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
         }
 
         $response = Gate::authorize('update', $reserve);
@@ -133,20 +135,31 @@ class ReserveController extends Controller
             abort(403, $response->message());
         }
 
-        $input = $request->all();
+        try {
+            $input = $request->all();
 
-        // ステータスのカスタム項目を取得
-        $customStatus =$this->userCustomItemService->findByCodeForAgency($reserve->agency_id, config('consts.user_custom_items.CODE_APPLICATION_RESERVE_STATUS'), ['key'], null);
+            // ステータスが「キャンセル」になった後にステータス変更されると困るので同時編集チェック
+            if ($reserve->updated_at != Arr::get($input, 'updated_at')) {
+                throw new ExclusiveLockException;
+            }
 
-        if ($customStatus) {
-            $this->reserveCustomValueService->upsertCustomFileds([$customStatus->key => $input['status']], $reserve->id); // カスタムフィールド保存
-
-            // ステータス更新イベント
-            event(new ReserveUpdateStatusEvent($this->reserveService->find($reserve->id)));
-
-            return response('', 200);
+            // ステータスのカスタム項目を取得
+            $customStatus =$this->userCustomItemService->findByCodeForAgency($reserve->agency_id, config('consts.user_custom_items.CODE_APPLICATION_RESERVE_STATUS'), ['key'], null);
+    
+            if ($customStatus) {
+                $this->reserveCustomValueService->upsertCustomFileds([$customStatus->key => $input['status']], $reserve->id); // カスタムフィールド保存
+    
+                // ステータス更新イベント
+                $newReserve = $this->reserveService->find($reserve->id);
+                event(new ReserveUpdateStatusEvent($newReserve));
+                
+                return new StatusResource($newReserve);
+            }
+        } catch (ExclusiveLockException $e) { // 同時編集エラー
+            abort(409, "他のユーザーによる編集済みレコードです。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+        } catch (Exception $e) {
+            Log::error($e);
         }
-
         return abort(500);
     }
 
@@ -160,7 +173,7 @@ class ReserveController extends Controller
         $reserve = $this->reserveService->findByControlNumber($reserveNumber, $agencyAccount);
 
         if (!$reserve) {
-            return response("データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 404);
+            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
         }
 
         // 認可チェック
@@ -213,7 +226,7 @@ class ReserveController extends Controller
         $reserve = $this->reserveService->findByControlNumber($reserveNumber, $agencyAccount);
 
         if (!$reserve) {
-            return response("データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 404);
+            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
         }
 
         // 認可チェック

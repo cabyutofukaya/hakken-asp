@@ -84,6 +84,7 @@ class ShowFormComposer
             config('consts.reserves.TAB_BASIC_INFO') => [
                 'status' => $status, // ステータス値
                 'reserveStatus' => $reserveStatus, // 状況
+                'updatedAt' => $reserve->updated_at->format('Y-m-dH:i:s'), // 予約情報更新日時
             ],
             config('consts.reserves.TAB_RESERVE_DETAIL') => [ // 詳細
                 'sex' => config('consts.participants.DEFAULT_SEX'),

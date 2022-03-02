@@ -6,7 +6,6 @@ import { ConstContext } from "./components/ConstApp";
 import StatusModal from "./components/Reserve/StatusModal";
 import { useMountedRef } from "../../hooks/useMountedRef";
 import SmallDangerModal from "./components/SmallDangerModal";
-import classNames from "classnames";
 import InvalidMessage from "./components/Reserve/InvalidMessage";
 import WebReserveBasicInfoArea from "./components/Reserve/WebReserveBasicInfoArea";
 import WebConsultationArea from "./components/Reserve/WebConsultationArea";
@@ -44,7 +43,10 @@ const ReserveShowArea = ({
 
     const [status, setStatus] = useState(
         defaultValue?.[consts.common.tabCodes?.tab_basic_info]?.status
-    );
+    ); // 予約ステータス
+    const [reserveUpdatedAt, setReserveUpdatedAt] = useState(
+        defaultValue?.[consts.common.tabCodes?.tab_basic_info]?.updatedAt
+    ); // 予約情報更新日時
 
     // タブクリック
     const handleTabChange = (e, tab) => {
@@ -274,6 +276,8 @@ const ReserveShowArea = ({
                     reserveNumber={reserve?.control_number}
                     isDeparted={reserve?.is_departed}
                     status={status}
+                    setStatus={setStatus}
+                    setUpdatedAt={setReserveUpdatedAt}
                     consts={consts?.[consts.common.tabCodes.tab_basic_info]}
                     customFields={
                         customFields?.[consts.common.tabCodes.tab_basic_info]
@@ -334,6 +338,8 @@ const ReserveShowArea = ({
                 apiUrl={`/api/${agencyAccount}/web/reserve/${reserve?.control_number}/status`}
                 status={status}
                 changeStatus={setStatus}
+                updatedAt={reserveUpdatedAt ?? ""}
+                setUpdatedAt={setReserveUpdatedAt}
                 statuses={
                     formSelects?.[consts.common.tabCodes?.tab_basic_info]
                         ?.statuses

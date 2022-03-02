@@ -74,7 +74,7 @@ class ShowResource extends JsonResource
             "sum_unpaid" => $this->sum_unpaid, // 未出金額合計
             "sum_deposit" => $this->sum_deposit, // 入金合計
             "sum_not_deposit" => $this->sum_not_deposit, // 未入金合計
-            "updated_at" => $this->updated_at,
+            "updated_at" => $this->updated_at->format('Y-m-d H:i:s'),
             // 以下、リレーション項目
             "manager" => [ // 自社担当
                 'name' => $this->manager->name,

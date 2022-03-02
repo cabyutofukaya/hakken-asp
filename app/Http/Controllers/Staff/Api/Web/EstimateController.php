@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Staff\Api\Web;
 
 use Hashids;
+use App\Exceptions\ExclusiveLockException;
 use App\Events\ReserveUpdateStatusEvent;
 use App\Events\WebMessageSendEvent;
 use App\Events\CreateItineraryEvent;
@@ -14,6 +15,7 @@ use App\Http\Requests\Staff\EstimateDetermineRequest;
 use App\Http\Requests\Staff\EstimateStatusUpdateRequest;
 use App\Http\Resources\Staff\WebEstimate\IndexResource;
 use App\Http\Resources\Staff\WebEstimate\ShowResource;
+use App\Http\Resources\Staff\WebEstimate\StatusResource;
 use App\Http\Resources\Staff\WebReserveExt\ShowResource as WebReserveExtResource;
 use App\Models\BusinessUserManager;
 use App\Models\Reserve;
@@ -32,6 +34,7 @@ use Exception;
 use Gate;
 use Illuminate\Http\Request;
 use Log;
+use Illuminate\Support\Arr;
 
 class EstimateController extends Controller
 {
@@ -54,7 +57,7 @@ class EstimateController extends Controller
         $estimate = $this->webEstimateService->findByEstimateNumber($estimateNumber, $agencyAccount);
 
         if (!$estimate) {
-            return response("データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 404);
+            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
         }
 
         // 認可チェック
@@ -122,7 +125,7 @@ class EstimateController extends Controller
         $estimate = $this->webEstimateService->findByEstimateNumber($estimateNumber, $agencyAccount);
 
         if (!$estimate) {
-            return response("データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 404);
+            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
         }
 
         // 認可チェック
@@ -177,7 +180,7 @@ class EstimateController extends Controller
         $estimate = $this->webEstimateService->findByEstimateNumber($estimateNumber, $agencyAccount);
 
         if (!$estimate) {
-            return response("データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 404);
+            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
         }
 
         $response = Gate::authorize('update', $estimate);
@@ -185,18 +188,30 @@ class EstimateController extends Controller
             abort(403, $response->message());
         }
 
-        $input = $request->all();
+        try {
+            $input = $request->all();
 
-        // ステータスのカスタム項目を取得
-        $customStatus = $this->userCustomItemService->findByCodeForAgency($estimate->agency_id, config('consts.user_custom_items.CODE_APPLICATION_ESTIMATE_STATUS'), ['key'], null);
+            // ステータスが「キャンセル」になった後にステータス変更されると困るので同時編集チェック
+            if ($estimate->updated_at != Arr::get($input, 'updated_at')) {
+                throw new ExclusiveLockException;
+            }
 
-        if ($customStatus) {
-            $this->reserveCustomValueService->upsertCustomFileds([$customStatus->key => $input['status']], $estimate->id); // カスタムフィールド保存
-
-            // ステータス更新イベント
-            event(new ReserveUpdateStatusEvent($this->webEstimateService->find($estimate->id)));
-
-            return response('', 200);
+            // ステータスのカスタム項目を取得
+            $customStatus = $this->userCustomItemService->findByCodeForAgency($estimate->agency_id, config('consts.user_custom_items.CODE_APPLICATION_ESTIMATE_STATUS'), ['key'], null);
+    
+            if ($customStatus) {
+                $this->reserveCustomValueService->upsertCustomFileds([$customStatus->key => $input['status']], $estimate->id); // カスタムフィールド保存
+    
+                // ステータス更新イベント
+                $newEstimate = $this->webEstimateService->find($estimate->id);
+                event(new ReserveUpdateStatusEvent($newEstimate));
+                
+                return new StatusResource($newEstimate);
+            }
+        } catch (ExclusiveLockException $e) { // 同時編集エラー
+            abort(409, "他のユーザーによる編集済みレコードです。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+        } catch (Exception $e) {
+            Log::error($e);
         }
         return abort(500);
     }
@@ -212,7 +227,7 @@ class EstimateController extends Controller
         $reserve = $this->webEstimateService->find((int)$id);
 
         if (!$reserve) {
-            return response("データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 404);
+            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
         }
 
         // 認可チェック
@@ -243,7 +258,7 @@ class EstimateController extends Controller
         $reserve = $this->webEstimateService->findByRequestNumber($requestNumber, $agencyAccount, ['web_reserve_ext']);
 
         if (!data_get($reserve, 'web_reserve_ext')) {
-            return response("データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 404);
+            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
         }
 
         // 認可チェック(reservesとweb_reserve_exts)
@@ -333,7 +348,7 @@ class EstimateController extends Controller
         $reserve = $this->webEstimateService->findByRequestNumber($requestNumber, $agencyAccount, ['web_reserve_ext']);
 
         if (!data_get($reserve, 'web_reserve_ext')) {
-            return response("データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 404);
+            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
         }
 
         // 認可チェック

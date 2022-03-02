@@ -2,11 +2,18 @@ import React, { useState } from "react";
 import { useMountedRef } from "../../../../hooks/useMountedRef";
 import classNames from "classnames";
 
+/**
+ *
+ * @param {string} updatedAt 予約情報更新日時
+ * @returns
+ */
 const StatusModal = ({
     id = "mdStatus",
     apiUrl,
     status,
     statuses,
+    updatedAt,
+    setUpdatedAt,
     changeStatus
 } = {}) => {
     const mounted = useMountedRef(); // マウント・アンマウント制御
@@ -25,7 +32,6 @@ const StatusModal = ({
     const handleUpdate = async e => {
         if (!mounted.current || value === status || isChanging) {
             // アンマウント、値が変わっていない、処理中の場合は処理ナシ
-            $(".js-modal-close").trigger("click"); // モーダルclose
             return;
         }
 
@@ -34,6 +40,7 @@ const StatusModal = ({
         const response = await axios
             .post(apiUrl, {
                 status: value,
+                updated_at: updatedAt,
                 _method: "put"
             })
             .finally(() => {
@@ -45,9 +52,10 @@ const StatusModal = ({
                 }, 3000);
             });
 
-        if (mounted.current && response?.status == 200) {
+        if (mounted.current && response?.data?.data) {
             // ステータス更新成功
             changeStatus(value);
+            setUpdatedAt(response.data.data.updated_at); // 予約情報更新日時も更新。ステータスの同時編集制御に使用
         }
     };
 

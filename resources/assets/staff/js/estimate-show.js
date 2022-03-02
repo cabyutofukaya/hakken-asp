@@ -34,12 +34,15 @@ const EstimateShowArea = ({
 
     const [currentTab, setCurrentTab] = useState(defaultTab); //選択中のタブ
 
-    const [isCanceling, setIsCanceling] = useState(false); // キャンセル処理中か否か
+    // const [isCanceling, setIsCanceling] = useState(false); // キャンセル処理中か否か
     const [isDeleting, setIsDeleting] = useState(false); // 削除処理中か否か
 
     const [status, setStatus] = useState(
         defaultValue?.[consts.common.tabCodes?.tab_basic_info]?.status
-    );
+    ); // 見積ステータス
+    const [reserveUpdatedAt, setReserveUpdatedAt] = useState(
+        defaultValue?.[consts.common.tabCodes?.tab_basic_info]?.updatedAt
+    ); // 見積情報更新日時
 
     // タブクリック
     const handleTabChange = (e, tab) => {
@@ -199,6 +202,8 @@ const EstimateShowArea = ({
                     }
                     estimateNumber={reserve?.estimate_number}
                     status={status}
+                    setStatus={setStatus}
+                    setUpdatedAt={setReserveUpdatedAt}
                     consts={consts?.[consts.common.tabCodes.tab_basic_info]}
                     customFields={
                         customFields?.[consts.common.tabCodes.tab_basic_info]
@@ -255,6 +260,8 @@ const EstimateShowArea = ({
                 apiUrl={`/api/${agencyAccount}/estimate/${reserve?.estimate_number}/status`}
                 status={status}
                 changeStatus={setStatus}
+                updatedAt={reserveUpdatedAt ?? ""}
+                setUpdatedAt={setReserveUpdatedAt}
                 statuses={
                     formSelects?.[consts.common.tabCodes?.tab_basic_info]
                         ?.statuses
