@@ -25,7 +25,6 @@ const StatusModal = ({
     const handleUpdate = async e => {
         if (!mounted.current || value === status || isChanging) {
             // アンマウント、値が変わっていない、処理中の場合は処理ナシ
-            $(".js-modal-close").trigger("click"); // モーダルclose
             return;
         }
 

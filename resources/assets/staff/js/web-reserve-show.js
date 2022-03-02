@@ -6,7 +6,6 @@ import { ConstContext } from "./components/ConstApp";
 import StatusModal from "./components/Reserve/StatusModal";
 import { useMountedRef } from "../../hooks/useMountedRef";
 import SmallDangerModal from "./components/SmallDangerModal";
-import classNames from "classnames";
 import InvalidMessage from "./components/Reserve/InvalidMessage";
 import WebReserveBasicInfoArea from "./components/Reserve/WebReserveBasicInfoArea";
 import WebConsultationArea from "./components/Reserve/WebConsultationArea";
@@ -274,6 +273,7 @@ const ReserveShowArea = ({
                     reserveNumber={reserve?.control_number}
                     isDeparted={reserve?.is_departed}
                     status={status}
+                    setStatus={setStatus}
                     consts={consts?.[consts.common.tabCodes.tab_basic_info]}
                     customFields={
                         customFields?.[consts.common.tabCodes.tab_basic_info]

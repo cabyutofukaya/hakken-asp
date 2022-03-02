@@ -10,6 +10,7 @@ const ReserveBasicInfoArea = ({
     reserveNumber,
     isDeparted,
     status,
+    setStatus,
     consts,
     constsCommon,
     customFields,
@@ -40,6 +41,7 @@ const ReserveBasicInfoArea = ({
 
         if (mounted.current && response?.data?.data) {
             setData({ ...response.data.data });
+            setStatus(response.data.data.status?.val); // ステータスも更新
         }
     };
     useEffect(() => {

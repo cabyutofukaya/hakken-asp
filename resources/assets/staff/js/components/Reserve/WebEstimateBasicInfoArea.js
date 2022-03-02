@@ -10,6 +10,7 @@ const WebEstimateBasicInfoArea = ({
     isShow,
     estimateNumber,
     status,
+    setStatus,
     consts,
     constsCommon,
     customFields,
@@ -39,6 +40,7 @@ const WebEstimateBasicInfoArea = ({
 
         if (mounted.current && response?.data?.data) {
             setData({ ...response.data.data });
+            setStatus(response.data.data.status?.val); // ステータスも更新
         }
     };
     useEffect(() => {

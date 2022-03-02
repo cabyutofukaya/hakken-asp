@@ -231,6 +231,7 @@ const EstimateShowArea = ({
                     }
                     estimateNumber={reserve?.estimate_number}
                     status={status}
+                    setStatus={setStatus}
                     consts={consts?.[consts.common.tabCodes.tab_basic_info]}
                     customFields={
                         customFields?.[consts.common.tabCodes.tab_basic_info]

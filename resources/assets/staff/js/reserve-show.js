@@ -9,7 +9,6 @@ import ReserveDetail from "./components/Reserve/ReserveDetail";
 import StatusModal from "./components/Reserve/StatusModal";
 import { useMountedRef } from "../../hooks/useMountedRef";
 import SmallDangerModal from "./components/SmallDangerModal";
-import classNames from "classnames";
 import TopControlBox from "./components/Reserve/TopControlBox";
 import CancelChargeModal from "./components/Reserve/CancelChargeModal";
 import CancelModal from "./components/Reserve/CancelModal";
@@ -273,6 +272,7 @@ const ReserveShowArea = ({
                     reserveNumber={reserve?.control_number}
                     isDeparted={reserve?.is_departed}
                     status={status}
+                    setStatus={setStatus}
                     consts={consts?.[consts.common.tabCodes.tab_basic_info]}
                     customFields={
                         customFields?.[consts.common.tabCodes.tab_basic_info]
