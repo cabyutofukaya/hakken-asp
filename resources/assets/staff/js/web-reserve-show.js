@@ -43,7 +43,10 @@ const ReserveShowArea = ({
 
     const [status, setStatus] = useState(
         defaultValue?.[consts.common.tabCodes?.tab_basic_info]?.status
-    );
+    ); // 予約ステータス
+    const [reserveUpdatedAt, setReserveUpdatedAt] = useState(
+        defaultValue?.[consts.common.tabCodes?.tab_basic_info]?.updatedAt
+    ); // 予約情報更新日時
 
     // タブクリック
     const handleTabChange = (e, tab) => {
@@ -274,6 +277,7 @@ const ReserveShowArea = ({
                     isDeparted={reserve?.is_departed}
                     status={status}
                     setStatus={setStatus}
+                    setUpdatedAt={setReserveUpdatedAt}
                     consts={consts?.[consts.common.tabCodes.tab_basic_info]}
                     customFields={
                         customFields?.[consts.common.tabCodes.tab_basic_info]
@@ -334,6 +338,8 @@ const ReserveShowArea = ({
                 apiUrl={`/api/${agencyAccount}/web/reserve/${reserve?.control_number}/status`}
                 status={status}
                 changeStatus={setStatus}
+                updatedAt={reserveUpdatedAt ?? ""}
+                setUpdatedAt={setReserveUpdatedAt}
                 statuses={
                     formSelects?.[consts.common.tabCodes?.tab_basic_info]
                         ?.statuses

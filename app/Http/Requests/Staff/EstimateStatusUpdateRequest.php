@@ -33,6 +33,7 @@ class EstimateStatusUpdateRequest extends FormRequest
         return [
             'estimate_number' => 'required',
             'status' => 'required',
+            'updated_at' => 'required',
         ];
     }
     
@@ -41,6 +42,7 @@ class EstimateStatusUpdateRequest extends FormRequest
         return [
             'estimate_number.required' => '見積番号は必須です。',
             'status.required' => 'ステータスは必須です。',
+            'updated_at.required' => '更新日時は必須です。',
         ];
     }
 }

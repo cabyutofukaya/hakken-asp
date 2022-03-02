@@ -12,6 +12,7 @@ const WebReserveBasicInfoArea = ({
     isDeparted,
     status,
     setStatus,
+    setUpdatedAt,
     consts,
     constsCommon,
     customFields,
@@ -42,7 +43,9 @@ const WebReserveBasicInfoArea = ({
 
         if (mounted.current && response?.data?.data) {
             setData({ ...response.data.data });
-            setStatus(response.data.data.status?.val); // ステータスも更新
+            // 最新ステータスと予約情報更新日時をセット
+            setStatus(response.data.data.status?.val);
+            setUpdatedAt(response.data.data.updated_at);
         }
     };
     useEffect(() => {

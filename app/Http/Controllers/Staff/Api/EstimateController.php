@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers\Staff\Api;
 
-// use App\Events\ReserveUpdateStatusEvent;
+use App\Exceptions\ExclusiveLockException;
+use App\Events\ReserveUpdateStatusEvent;
 use App\Events\CreateItineraryEvent;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Staff\CustomerSearchRequest;
@@ -10,6 +11,7 @@ use App\Http\Requests\Staff\EstimateDetermineRequest;
 use App\Http\Requests\Staff\EstimateStatusUpdateRequest;
 use App\Http\Resources\Staff\Estimate\IndexResource;
 use App\Http\Resources\Staff\Estimate\ShowResource;
+use App\Http\Resources\Staff\Estimate\StatusResource;
 use App\Models\BusinessUserManager;
 use App\Models\Reserve;
 use App\Models\User;
@@ -26,6 +28,7 @@ use Exception;
 use Gate;
 use Illuminate\Http\Request;
 use Log;
+use Illuminate\Support\Arr;
 
 class EstimateController extends Controller
 {
@@ -47,7 +50,7 @@ class EstimateController extends Controller
         $estimate = $this->estimateService->findByEstimateNumber($estimateNumber, $agencyAccount);
 
         if (!$estimate) {
-            return response("データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 404);
+            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
         }
 
         // 認可チェック
@@ -109,12 +112,12 @@ class EstimateController extends Controller
      *
      * @param string $agencyAccount 会社アカウント
      */
-    public function determine(EstimateDetermineRequest $request, $agencyAccount,$estimateNumber)
+    public function determine(EstimateDetermineRequest $request, $agencyAccount, $estimateNumber)
     {
         $estimate = $this->estimateService->findByEstimateNumber($estimateNumber, $agencyAccount);
 
         if (!$estimate) {
-            return response("データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 404);
+            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
         }
 
         // 認可チェック
@@ -126,14 +129,13 @@ class EstimateController extends Controller
         $input = $request->only('updated_at');
         try {
             $reserve = DB::transaction(function () use ($estimate, $input) {
-                
-                if($this->estimateService->determine(
-                    $estimate, 
+                if ($this->estimateService->determine(
+                    $estimate,
                     $input,
                     $this->userCustomItemService,
                     $this->reserveCustomValueService,
                     $this->reserveEstimateService
-                )){
+                )) {
                     $reserve = $this->reserveEstimateService->find($estimate->id);
 
                     // 有効な旅程があれば旅程作成イベントを実行（予約確認書・請求書作成処理）
@@ -142,11 +144,10 @@ class EstimateController extends Controller
                     }
 
                     // ステータス更新イベント Web受付用なので不要
-                    // event(new ReserveUpdateStatusEvent($reserve));
+                    event(new ReserveUpdateStatusEvent($reserve));
 
                     return $reserve;
                 }
-
             });
 
             if ($reserve) {
@@ -169,7 +170,7 @@ class EstimateController extends Controller
         $estimate = $this->estimateService->findByEstimateNumber($estimateNumber, $agencyAccount);
 
         if (!$estimate) {
-            return response("データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 404);
+            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
         }
 
         $response = Gate::authorize('update', $estimate);
@@ -177,18 +178,30 @@ class EstimateController extends Controller
             abort(403, $response->message());
         }
 
-        $input = $request->all();
+        try {
+            $input = $request->all();
 
-        // ステータスのカスタム項目を取得
-        $customStatus =$this->userCustomItemService->findByCodeForAgency($estimate->agency_id, config('consts.user_custom_items.CODE_APPLICATION_ESTIMATE_STATUS'), ['key'], null);
+            // ステータスが「キャンセル」になった後にステータス変更されると困るので同時編集チェック
+            if ($estimate->updated_at != Arr::get($input, 'updated_at')) {
+                throw new ExclusiveLockException;
+            }
 
-        if ($customStatus) {
-            $this->reserveCustomValueService->upsertCustomFileds([$customStatus->key => $input['status']], $estimate->id); // カスタムフィールド保存
+            // ステータスのカスタム項目を取得
+            $customStatus = $this->userCustomItemService->findByCodeForAgency($estimate->agency_id, config('consts.user_custom_items.CODE_APPLICATION_ESTIMATE_STATUS'), ['key'], null);
+    
+            if ($customStatus) {
+                $this->reserveCustomValueService->upsertCustomFileds([$customStatus->key => $input['status']], $estimate->id); // カスタムフィールド保存
 
-            // // ステータス更新イベント Web受付用なので不要
-            // event(new ReserveUpdateStatusEvent($this->estimateService->find($estimate->id)));
-
-            return response('', 200);
+                // ステータス更新イベント
+                $newEstimate = $this->estimateService->find($estimate->id);
+                event(new ReserveUpdateStatusEvent($newEstimate));
+                
+                return new StatusResource($newEstimate);
+            }
+        } catch (ExclusiveLockException $e) { // 同時編集エラー
+            abort(409, "他のユーザーによる編集済みレコードです。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+        } catch (Exception $e) {
+            Log::error($e);
         }
         return abort(500);
     }
@@ -203,7 +216,7 @@ class EstimateController extends Controller
         $reserve = $this->estimateService->findByEstimateNumber($estimateNumber, $agencyAccount);
 
         if (!$reserve) {
-            return response("データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 404);
+            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
         }
 
         // 認可チェック

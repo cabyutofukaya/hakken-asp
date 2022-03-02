@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Resources\Staff\WebReserve;
+namespace App\Http\Resources\Staff\Estimate;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -15,10 +15,10 @@ class StatusResource extends JsonResource
     public function toArray($request)
     {
         return [
-            "status" => [ // ステータス
-                'val' => $this->status ? $this->status->val : null
-            ],
             "updated_at" => $this->updated_at->format('Y-m-d H:i:s'),
+            "status" => [ // ステータス
+                'val' => $this->estimate_status ? $this->estimate_status->val : null
+            ],
         ];
     }
 }
