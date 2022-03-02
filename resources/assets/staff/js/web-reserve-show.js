@@ -111,8 +111,8 @@ const ReserveShowArea = ({
             });
 
         if (response?.status == 200) {
-            // 削除完了後はWeb予約管理一覧ページへ遷移
-            location.href = consts.common.reserveIndexUrl;
+            // 削除完了後は一覧ページへ遷移
+            location.href = consts.common.afterDeletedUrl;
         }
     };
 
@@ -182,7 +182,6 @@ const ReserveShowArea = ({
                     </li>
                 </ol>
                 <TopControlBox
-                    reserve={reserve}
                     isCanceling={isCanceling}
                     isDeleting={isDeleting}
                     updatePermission={permission.basic?.reserve_update}

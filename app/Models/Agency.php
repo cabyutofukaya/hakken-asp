@@ -2,41 +2,43 @@
 
 namespace App\Models;
 
+// use Illuminate\Foundation\Auth\User as Authenticatable;
+// use Illuminate\Notifications\Notifiable;
 use App\Models\AppUser;
 use App\Models\Contract;
 use App\Traits\ModelLogTrait;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Model;
-// use Illuminate\Foundation\Auth\User as Authenticatable;
-// use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Arr;
-use Kyslik\ColumnSortable\Sortable;
 use Askedio\SoftCascade\Traits\SoftCascadeTrait;
 use Carbon\Carbon;
 use DB;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Arr;
+use Kyslik\ColumnSortable\Sortable;
 use Lang;
 
 class Agency extends Model implements AppUser
 {
     use SoftDeletes,Sortable,ModelLogTrait,SoftCascadeTrait;
 
+    // 会社情報を論理削除した際の削除テーブル。
+    // 会社情報が論理削除されていればログインできないので他のテーブルの削除はひとまず不要に
     protected $softCascade = [
-        'contracts',
-        'agency_roles',
-        'staffs',
-        'user_custom_items',
-        'mail_templates',
-        'document_commons',
-        'directions',
-        'areas',
-        'cities',
-        'subject_options',
-        'subject_airplanes',
-        'subject_hotels',
-        'suppliers',
-        'reserve_confirms',
-        'account_payables',
+        // 'contracts',
+        // 'agency_roles',
+        // 'staffs',
+        // 'user_custom_items',
+        // 'mail_templates',
+        // 'document_commons',
+        // 'directions',
+        // 'areas',
+        // 'cities',
+        // 'subject_options',
+        // 'subject_airplanes',
+        // 'subject_hotels',
+        // 'suppliers',
+        // 'reserve_confirms',
+        // 'account_payables',
     ];
 
     public $sortable = [
@@ -191,11 +193,6 @@ class Agency extends Model implements AppUser
     {
         return $this->hasOne('App\Models\Staff')->where('master', true)->withDefault();
     }
-
-    // public function user()
-    // {
-    //     return $this->hasOne('App\Models\User');
-    // }
 
     public function user_custom_items()
     {

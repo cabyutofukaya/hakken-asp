@@ -37,8 +37,8 @@ class Reserve extends Model
     ];
     
     protected $softCascade = [
-        'agency_consultations', // 当該会社を消したら相談履歴も削除する
-        'web_message_histories', // 当該会社を消したらメッセージ履歴も削除する
+        'agency_consultations', // 当該予約を消したら相談履歴も削除する
+        'web_message_histories', // 当該予約を消したらメッセージ履歴も削除する
         // 'reserve_itineraries',
         // 'account_payables', // 不要?
         // 'account_payable_details', // 不要?
