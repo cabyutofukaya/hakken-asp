@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Staff\Api;
 
-// use App\Events\ReserveUpdateStatusEvent;
+use App\Events\ReserveUpdateStatusEvent;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Staff\ReserveStatusUpdateRequest;
 use App\Http\Resources\Staff\Reserve\IndexResource;
@@ -12,11 +12,11 @@ use App\Http\Resources\Staff\Reserve\VAreaResource;
 use App\Models\Reserve;
 use App\Services\BusinessUserManagerService;
 use App\Services\ReserveCustomValueService;
+use App\Services\ReserveParticipantPriceService;
 use App\Services\ReserveService;
 use App\Services\UserCustomItemService;
 use App\Services\UserService;
 use App\Services\VAreaService;
-use App\Services\ReserveParticipantPriceService;
 use DB;
 use Exception;
 use Gate;
@@ -141,8 +141,8 @@ class ReserveController extends Controller
         if ($customStatus) {
             $this->reserveCustomValueService->upsertCustomFileds([$customStatus->key => $input['status']], $reserve->id); // カスタムフィールド保存
 
-            // // ステータス更新イベント Web受付用なので不要
-            // event(new ReserveUpdateStatusEvent($this->reserveService->find($reserve->id)));
+            // ステータス更新イベント
+            event(new ReserveUpdateStatusEvent($this->reserveService->find($reserve->id)));
 
             return response('', 200);
         }
@@ -155,7 +155,7 @@ class ReserveController extends Controller
      *
      * @param string $reserveNumber 予約番号
      */
-    public function noCancelChargeCancel($agencyAccount, $reserveNumber)
+    public function noCancelChargeCancel(Request $request, $agencyAccount, $reserveNumber)
     {
         $reserve = $this->reserveService->findByControlNumber($reserveNumber, $agencyAccount);
 
@@ -173,13 +173,30 @@ class ReserveController extends Controller
             $result = \DB::transaction(function () use ($reserve) {
                 $this->reserveParticipantPriceService->cancelChargeReset($reserve->id); // キャンセルチャージをリセット
                 $this->reserveService->cancel($reserve->id, false);
+
+
+                /**カスタムステータスを「キャンセル」に更新 */
+
+                // ステータスのカスタム項目を取得
+                $customStatus =$this->userCustomItemService->findByCodeForAgency($reserve->agency_id, config('consts.user_custom_items.CODE_APPLICATION_RESERVE_STATUS'), ['key'], null);
+
+                if ($customStatus) {
+                    $this->reserveCustomValueService->upsertCustomFileds([$customStatus->key => config('consts.reserves.RESERVE_CANCEL_STATUS')], $reserve->id);
+
+                    // ステータス更新イベント
+                    event(new ReserveUpdateStatusEvent($this->reserveService->find($reserve->id)));
+                }
+
                 return true;
             });
 
             if ($result) {
+                if ($request->input("set_message")) {
+                    $request->session()->flash('success_message', "{$reserve->control_number}」のキャンセル処理が完了しました。"); // set_messageは処理成功のフラッシュメッセージのセットを要求するパラメータ
+                }
+
                 return response('', 200);
             }
-    
         } catch (Exception $e) {
             Log::error($e);
         }

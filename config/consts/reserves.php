@@ -2,7 +2,8 @@
 
 return [
   'ESTIMATE_DEFAULT_STATUS' => '見積', // 見積のデフォルト値（CODE_APPLICATION_ESTIMATE_STATUS_DEFAULT_LIST にある値から設定）
-  'RESERVE_DEFAULT_STATUS' => '手配中', // 予約のデフォルト値（CODE_APPLICATION_ESTIMATE_STATUS_DEFAULT_LIST にある値から設定）
+  'RESERVE_DEFAULT_STATUS' => '手配中', // 予約のデフォルト値（CODE_APPLICATION_RESERVE_STATUS_DEFAULT_LIST にある値から設定）
+  'RESERVE_CANCEL_STATUS' => 'キャンセル', // キャンセル値（CODE_APPLICATION_RESERVE_STATUS_DEFAULT_LIST にある値から設定）
   // 状態(reservesのスコープに使用)
   'APPLICATION_STEP_CONSULT' => 'consult', // 相談
   'APPLICATION_STEP_DRAFT' => 'normal', // 見積

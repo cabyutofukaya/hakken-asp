@@ -70,6 +70,7 @@ const ReserveShowArea = ({
             .post(
                 `/api/${agencyAccount}/web/reserve/${reserve?.control_number}/no-cancel-charge/cancel`,
                 {
+                    set_message: true, // API処理完了後、flashメッセージセットを要求
                     _method: "put"
                 }
             )
@@ -83,8 +84,7 @@ const ReserveShowArea = ({
             });
 
         if (response) {
-            // TODO 遷移先を実装
-            alert("キャンセル処理が完了しました");
+            location.href = consts.common.afterCancelUrl;
         }
     };
 

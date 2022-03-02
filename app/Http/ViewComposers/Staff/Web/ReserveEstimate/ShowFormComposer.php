@@ -229,6 +229,8 @@ class ShowFormComposer
             $afterDeletedUrl = $estimateIndexUrl;
         }
 
+        $afterCancelUrl = $applicationStep === config('consts.reserves.APPLICATION_STEP_RESERVE') ? route('staff.web.estimates.reserve.show', [$agencyAccount, $reserve->control_number]) : ''; // キャンセル後の転送先(キャンセルチャージナシ時)
+
         // 各種定数値。タブ毎にセット
         $consts = [
             'common' => [
@@ -251,6 +253,7 @@ class ShowFormComposer
                 'departedIndexUrl' => $departedIndexUrl,
                 'cancelChargeUrl' => $cancelChargeUrl,
                 'afterDeletedUrl' => $afterDeletedUrl, // 削除後の転送先
+                'afterCancelUrl' => $afterCancelUrl,
             ],
             // 基本情報
             config('consts.reserves.TAB_BASIC_INFO') =>
