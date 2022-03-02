@@ -82,7 +82,7 @@ const ReserveShowArea = ({
             });
 
         if (response) {
-            window.location.reload(); // リロード
+            location.href = consts.common.afterCancelUrl;
         }
     };
 

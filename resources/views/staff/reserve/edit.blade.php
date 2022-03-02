@@ -45,7 +45,7 @@
   </form>
 
 </main>
-@if(!is_null($reserve->is_cancel)) {{-- 帰着日が過去の場合はform送信時時チェック。ただし、キャンセル予約の場合はチェック不要 --}}
+@if(is_null($reserve->cancel_at)) {{-- 帰着日が過去の場合はform送信時時チェック。ただし、キャンセル予約の場合はチェック不要 --}}
   <script>
   @include("staff.common._check_return_date_js")
   </script>
