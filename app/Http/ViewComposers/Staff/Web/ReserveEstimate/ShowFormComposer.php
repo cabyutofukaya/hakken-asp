@@ -220,7 +220,7 @@ class ShowFormComposer
         $estimateIndexUrl = route('staff.web.estimates.normal.index', $agencyAccount); // 見積
         $reserveIndexUrl = route('staff.web.estimates.reserve.index', $agencyAccount); // 予約
         $departedIndexUrl = route('staff.estimates.departed.index', $agencyAccount); // 催行済
-        $cancelChargeUrl = $applicationStep === config('consts.reserves.APPLICATION_STEP_RESERVE') ? route('staff.web.estimates.reserve.cancel_charge.edit', [$agencyAccount, $reserve->control_number]) : ''; // 予約状態の場合はキャンセルチャージ
+        $cancelChargeUrl = $applicationStep === config('consts.reserves.APPLICATION_STEP_RESERVE') ? route('staff.web.estimates.reserve.cancel_charge.edit', [$agencyAccount, $reserve->control_number]) . $departedQuery : ''; // 予約状態の場合はキャンセルチャージ
 
         // 各種定数値。タブ毎にセット
         $consts = [

@@ -239,7 +239,7 @@ class ShowFormComposer
                 'estimateIndexUrl' => $estimateIndexUrl,
                 'reserveIndexUrl' => $reserveIndexUrl,
                 'departedIndexUrl' => $departedIndexUrl,
-                'cancelChargeUrl' => $cancelChargeUrl,
+                'cancelChargeUrl' => $cancelChargeUrl . $departedQuery,
             ],
             // 基本情報
             config('consts.reserves.TAB_BASIC_INFO') =>
