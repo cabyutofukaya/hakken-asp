@@ -431,7 +431,7 @@ class Reserve extends Model
      */
     public function getIsDepartedAttribute($value) : bool
     {
-        return $this->application_step == config('consts.reserves.APPLICATION_STEP_RESERVE') && date('Y-m-d', strtotime($this->return_date)) < date('Y-m-d');
+        return $this->application_step == config('consts.reserves.APPLICATION_STEP_RESERVE') && is_null($this->cancel_at) && date('Y-m-d', strtotime($this->return_date)) < date('Y-m-d');
     }
 
     // 見積/予約/依頼番号
@@ -627,8 +627,8 @@ class Reserve extends Model
     }
 
     /**
-     * 予約レコード
-     * 申込段階が「予約」、且つ帰着日が本日を過ぎておらずキャンセル状態ではない
+     * 予約レコード(未催行の予約とキャンセル予約が取得対象)
+     * 申込段階が「予約」、且つ帰着日が本日を過ぎていない、もしくはキャンセル
      *
      * @param $query
      * @return mixed
@@ -639,9 +639,8 @@ class Reserve extends Model
             ->where('application_step', config('consts.reserves.APPLICATION_STEP_RESERVE'))
             ->where(function ($q) {
                 $q->where('return_date', '>=', date('Y-m-d'))
-                    ->orWhereNull('return_date');
-            })
-            ->whereNull('cancel_at');
+                ->orWhereNotNull('cancel_at');
+            });
     }
 
     /**
@@ -667,7 +666,7 @@ class Reserve extends Model
      * この条件を変える場合は 「getIsDepartedAttribute」 も変更のこと
      *
      * 条件:
-     * 申込段階(application_step)が「予約」且つ、帰着日が本日を過ぎている
+     * 申込段階(application_step)が「予約」且つ、キャンセルされておらず帰着日が本日を過ぎている
      *
      * @param $query
      * @return mixed
@@ -675,7 +674,9 @@ class Reserve extends Model
     public function scopeDeparted($query)
     {
         return $query
-            ->where('application_step', config('consts.reserves.APPLICATION_STEP_RESERVE'))->where('return_date', '<', date('Y-m-d'));
+            ->where('application_step', config('consts.reserves.APPLICATION_STEP_RESERVE'))
+            ->whereNull('cancel_at')
+            ->where('return_date', '<', date('Y-m-d'));
     }
 
     //////////////////// ローカルスコープ ここまで /////////////////////////

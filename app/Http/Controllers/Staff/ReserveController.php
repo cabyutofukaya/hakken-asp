@@ -5,18 +5,21 @@ namespace App\Http\Controllers\Staff;
 use App\Events\ReserveChangeHeadcountEvent;
 use App\Events\ReserveChangeRepresentativeEvent;
 use App\Events\ReserveEvent;
+use App\Events\ReserveUpdateStatusEvent;
 use App\Events\UpdatedReserveEvent;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Staff\CancelChargeUpdateRequest;
 use App\Http\Requests\Staff\ReserveStoretRequest;
 use App\Http\Requests\Staff\ReserveUpdateRequest;
 use App\Models\Reserve;
+use App\Services\ReserveCustomValueService;
 use App\Services\ReserveInvoiceService;
 use App\Services\ReserveParticipantAirplanePriceService;
 use App\Services\ReserveParticipantHotelPriceService;
 use App\Services\ReserveParticipantOptionPriceService;
 use App\Services\ReserveParticipantPriceService;
 use App\Services\ReserveService;
+use App\Services\UserCustomItemService;
 use App\Traits\CancelChargeTrait;
 use App\Traits\ReserveControllerTrait;
 use DB;
@@ -30,14 +33,16 @@ class ReserveController extends AppController
 {
     use ReserveControllerTrait,CancelChargeTrait;
 
-    public function __construct(ReserveService $reserveService, ReserveInvoiceService $reserveInvoiceService, ReserveParticipantPriceService $reserveParticipantPriceService, ReserveParticipantOptionPriceService $reserveParticipantOptionPriceService, ReserveParticipantAirplanePriceService $reserveParticipantAirplanePriceService, ReserveParticipantHotelPriceService $reserveParticipantHotelPriceService)
+    public function __construct(ReserveService $reserveService, ReserveInvoiceService $reserveInvoiceService, ReserveParticipantPriceService $reserveParticipantPriceService, ReserveParticipantOptionPriceService $reserveParticipantOptionPriceService, ReserveParticipantAirplanePriceService $reserveParticipantAirplanePriceService, ReserveParticipantHotelPriceService $reserveParticipantHotelPriceService, ReserveCustomValueService $reserveCustomValueService, UserCustomItemService $userCustomItemService)
     {
         $this->reserveService = $reserveService;
         $this->reserveInvoiceService = $reserveInvoiceService;
         $this->reserveParticipantPriceService = $reserveParticipantPriceService;
+        $this->reserveCustomValueService = $reserveCustomValueService;
         $this->reserveParticipantOptionPriceService = $reserveParticipantOptionPriceService;
         $this->reserveParticipantAirplanePriceService = $reserveParticipantAirplanePriceService;
         $this->reserveParticipantHotelPriceService = $reserveParticipantHotelPriceService;
+        $this->userCustomItemService = $userCustomItemService;
     }
 
     public function index()
@@ -240,9 +245,21 @@ class ReserveController extends AppController
                 $this->setCancelCharge($input);
                 
                 $this->reserveService->cancel($reserve->id, true);
+
+                /**カスタムステータスを「キャンセル」に更新 */
+
+                // ステータスのカスタム項目を取得
+                $customStatus =$this->userCustomItemService->findByCodeForAgency($reserve->agency_id, config('consts.user_custom_items.CODE_APPLICATION_RESERVE_STATUS'), ['key'], null);
+
+                if ($customStatus) {
+                    $this->reserveCustomValueService->upsertCustomFileds([$customStatus->key => config('consts.reserves.RESERVE_CANCEL_STATUS')], $reserve->id);
+
+                    // ステータス更新イベント
+                    event(new ReserveUpdateStatusEvent($this->reserveService->find($reserve->id)));
+                }
             });
 
-            // TODO リダイレクト先はひとまず予約詳細ページにしているが、変更する可能性あり
+            // 予約詳細ページへリダイレクト
             return redirect()->route('staff.asp.estimates.reserve.show', [$agencyAccount, $controlNumber])->with('success_message', "「{$controlNumber}」のキャンセルチャージ処理が完了しました");
 
         } catch (Exception $e) {
