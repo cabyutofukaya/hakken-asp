@@ -67,7 +67,6 @@ class ShowFormComposer
         $reserveStatus = ''; // 状況
         if ($applicationStep === config('consts.reserves.APPLICATION_STEP_DRAFT')) { // 見積
             $status = $reserve->estimate_status ? $reserve->estimate_status->val : null;
-
         } elseif ($applicationStep === config('consts.reserves.APPLICATION_STEP_RESERVE')) { // 予約
             $status = $reserve->status ? $reserve->status->val : null;
             if ($reserve->is_departed) { // 催行済
@@ -221,6 +220,13 @@ class ShowFormComposer
         $departedIndexUrl = route('staff.estimates.departed.index', $agencyAccount); // 催行済
         $cancelChargeUrl = $applicationStep === config('consts.reserves.APPLICATION_STEP_RESERVE') ? route('staff.asp.estimates.reserve.cancel_charge.edit', [$agencyAccount, $reserve->control_number]) : ''; // 予約状態の場合はキャンセルチャージ
 
+        $afterDeletedUrl = ''; // 予約情報削除後の転送先
+        if ($applicationStep === config('consts.reserves.APPLICATION_STEP_RESERVE')) { // 予約状態
+            $afterDeletedUrl = $reserve->is_departed ? $departedIndexUrl : $reserveIndexUrl;
+        } else { // 予約前状態
+            $afterDeletedUrl = $estimateIndexUrl;
+        }
+
         // 各種定数値。タブ毎にセット
         $consts = [
             'common' => [
@@ -240,6 +246,7 @@ class ShowFormComposer
                 'reserveIndexUrl' => $reserveIndexUrl,
                 'departedIndexUrl' => $departedIndexUrl,
                 'cancelChargeUrl' => $cancelChargeUrl . $departedQuery,
+                'afterDeletedUrl' => $afterDeletedUrl, // 削除後の転送先
             ],
             // 基本情報
             config('consts.reserves.TAB_BASIC_INFO') =>

@@ -79,8 +79,8 @@ const EstimateShowArea = ({
             });
 
         if (response?.status == 200) {
-            // 削除完了後は予約管理一覧ページへ遷移
-            location.href = consts.common.estimateIndexUrl;
+            // 削除完了後は一覧ページへ遷移
+            location.href = consts.common.afterDeletedUrl;
         }
     };
 
