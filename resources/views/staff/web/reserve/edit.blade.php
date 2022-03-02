@@ -17,7 +17,7 @@
   <h2 class="subTit">
     <span class="material-icons"> subject </span>基本情報
   </h2>
-  <form method="post" action="{{ route('staff.web.estimates.reserve.update', [$agencyAccount, $reserve->control_number]) }}" id="editForm">
+  <form method="post" action="{{ route('staff.web.estimates.reserve.update', [$agencyAccount, $reserve->control_number]) }}" id="reserveForm">
     @csrf
     @method('PUT')
     <div id="reserveEditArea"
@@ -42,8 +42,11 @@
     </ul>
   </form>
 </main>
-<script>
-@include("staff.common._check_return_date_js")
-</script>
+
+@if(!is_null($reserve->is_cancel)) {{-- 帰着日が過去の場合はform送信時時チェック。ただし、キャンセル予約の場合はチェック不要 --}}
+  <script>
+  @include("staff.common._check_return_date_js")
+  </script>
+@endif
 <script src="{{ mix('/staff/js/web-reserve-edit.js') }}"></script>
 @endsection
