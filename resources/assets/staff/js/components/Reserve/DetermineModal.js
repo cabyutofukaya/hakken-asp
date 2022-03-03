@@ -13,6 +13,7 @@ const isDeparted = returnDate => {
 const DetermineModal = ({
     id,
     estimate,
+    updatedAt,
     isConfirming,
     setIsConfirming,
     determineUrl,
@@ -34,7 +35,7 @@ const DetermineModal = ({
             .post(determineUrl, {
                 departure_date: estimate?.departure_date, // 予約確定時、出発日が設定されているかバリデーションを行う
                 return_date: estimate?.return_date, // 予約確定時、帰着日が設定されているかバリデーションを行う
-                updated_at: estimate?.updated_at, // 同時編集チェックに使用
+                updated_at: updatedAt, // 同時編集チェックに使用
                 set_message: true, // API処理完了後、flashメッセージセットを要求
                 _method: "put"
             })

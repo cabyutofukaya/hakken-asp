@@ -156,6 +156,9 @@ class EstimateController extends Controller
                 }
                 return response('', 200);
             }
+        } catch (ExclusiveLockException $e) { // 同時編集エラー
+            abort(409, "他のユーザーによる編集済みレコードです。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+            
         } catch (Exception $e) {
             Log::error($e);
         }
