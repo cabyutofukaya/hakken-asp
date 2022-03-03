@@ -174,7 +174,7 @@ class ReserveItineraryService
                 'supplier_name' => $supplier->name,
                 'item_code' => $itemCode,
                 'item_name' => $itemName,
-                'amount_billed' => $participantPrice->gross ?? 0, // 数字なのでnullの場合は0で初期化
+                'amount_billed' => $participantPrice->net ?? 0, // 数字なのでnullの場合は0で初期化
                 'amount_payment' => $participantPrice->cost ?? 0, // 数字なのでnullの場合は0で初期化
                 'use_date' => $useDate,
                 'payment_date' => $paymentDate,

@@ -38,7 +38,7 @@ class ChangePaymentAmountEventLister
         // 支払い額合計（行ロックで取得）
         $withdrawalSum = $this->agencyWithdrawalService->getSumAmountByAccountPayableDetailId($accountPayableDetail->id, true);
 
-        $unpaidAmount = $accountPayableDetail->amount_payment - $withdrawalSum; // 未払金額を計算
+        $unpaidAmount = $accountPayableDetail->amount_billed - $withdrawalSum; // 未払金額を計算
 
         if ($accountPayableDetail->amount_billed) { // 請求金額がある場合
             $newStatus = $unpaidAmount > 0 ? config('consts.account_payable_details.STATUS_UNPAID') : config('consts.account_payable_details.STATUS_PAID');

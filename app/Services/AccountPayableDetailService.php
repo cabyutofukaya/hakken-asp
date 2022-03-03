@@ -55,15 +55,6 @@ class AccountPayableDetailService
         return $this->accountPayableDetailRepository->paginateByAgencyId($agencyId, $params, $limit, $isValid, $applicationStep, $with, $select);
     }
 
-    // /**
-    //  * 当該予約に対するaccount_payment_detailsを取得
-    //  */
-    // public function getByReserveNumber(string $reserveNumber, string $agencyAccount, ?string $applicationStep = null, array $with = [], array $select=[]) : Collection
-    // {
-    //     $agencyId = $this->agencyRepository->getIdByAccount($agencyAccount);
-    //     return $this->accountPayableDetailRepository->getByReserveNumber($reserveNumber, $agencyId, $applicationStep, $with, $select);
-    // }
-
     /**
      * 更新
      *

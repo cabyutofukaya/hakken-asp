@@ -51,7 +51,7 @@ const PaymentList = ({
         "last_manager.name": "asc",
         last_note: "asc",
         payment_date: "asc",
-        amount_payment: "asc",
+        amount_billed: "asc",
         unpaid_balance: "asc"
     });
 
@@ -325,7 +325,7 @@ const PaymentList = ({
                                 <th
                                     className="sort txtalc"
                                     onClick={e =>
-                                        handleSortClick("amount_payment")
+                                        handleSortClick("amount_billed")
                                     }
                                 >
                                     <span>仕入額</span>
@@ -474,7 +474,7 @@ const PaymentList = ({
                                         <td>{row?.supplier_name ?? "-"}</td>
                                         <td className="txtalc">
                                             ￥
-                                            {row.amount_payment.toLocaleString()}
+                                            {row.amount_billed.toLocaleString()}
                                         </td>
                                         <td className="txtalc">
                                             <span

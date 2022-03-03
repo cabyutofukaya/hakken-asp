@@ -27,8 +27,8 @@ class CreateAccountPayableDetailsTable extends Migration
             $table->date("payment_date")->nullable()->comment("支払日");
             $table->string("saleable_type")->comment("料金テーブル");
             $table->string("saleable_id")->comment("料金テーブルID");
-            $table->integer('amount_billed')->default(0)->comment('請求金額');
-            $table->integer('amount_payment')->default(0)->comment('支払金額');
+            $table->integer('amount_billed')->default(0)->comment('請求金額(NET)');
+            $table->integer('amount_payment')->default(0)->comment('仕入金額'); // 使ってない？
             $table->integer('unpaid_balance')->default(0)->comment('未払金額');
             $table->boolean('official')->default(false)->comment('正式版フラグ');
             $table->unsignedBigInteger('last_manager_id')->nullable()->comment("担当者(最終更新値)");

@@ -22,8 +22,8 @@ class AccountPayable extends Model
     // ];
     
     protected $appends = [
-        'sum_gross', // 無効仕入含む
-        'sum_enabled_gross', // 無効仕入除く(valid=1)
+        'sum_net', // 無効仕入含む
+        'sum_enabled_net', // 無効仕入除く(valid=1)
         'sum_withdrawal',
     ];
 
@@ -135,17 +135,17 @@ class AccountPayable extends Model
     ///////////////  集計メソッド ここから ///////////////
 
     /**
-     * GROSS合計(無効仕入含む)
+     * NET合計(無効仕入含む)
      */
-    public function getSumGrossAttribute()
+    public function getSumNetAttribute()
     {
         return $this->account_payable_details->sum('amount_billed');
     }
 
     /**
-     * GROSS合計(無効仕入除く)
+     * NET合計(無効仕入除く)
      */
-    public function getSumEnabledGrossAttribute()
+    public function getSumEnabledNetAttribute()
     {
         return $this->enabled_account_payable_details->sum('amount_billed');
     }
