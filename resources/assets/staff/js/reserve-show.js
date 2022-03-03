@@ -10,6 +10,7 @@ import StatusModal from "./components/Reserve/StatusModal";
 import { useMountedRef } from "../../hooks/useMountedRef";
 import SmallDangerModal from "./components/SmallDangerModal";
 import TopControlBox from "./components/Reserve/TopControlBox";
+import TopDeleteBox from "./components/Reserve/TopDeleteBox";
 import CancelChargeModal from "./components/Reserve/CancelChargeModal";
 import CancelModal from "./components/Reserve/CancelModal";
 import TopStatus from "./components/Reserve/TopStatus";
@@ -190,7 +191,9 @@ const ReserveShowArea = ({
                     </li>
                 </ol>
                 <TopControlBox
+                    isCanceled={consts?.common?.isCanceled}
                     isCanceling={isCanceling}
+                    existPurchaseData={consts?.common?.existPurchaseData}
                     isDeleting={isDeleting}
                     updatePermission={permission.basic?.reserve_update}
                     deletePermission={permission.basic?.reserve_delete}

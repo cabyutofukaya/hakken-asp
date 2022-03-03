@@ -184,7 +184,9 @@ const ReserveShowArea = ({
                     </li>
                 </ol>
                 <TopControlBox
+                    isCanceled={consts?.common?.isCanceled}
                     isCanceling={isCanceling}
+                    existPurchaseData={consts?.common?.existPurchaseData}
                     isDeleting={isDeleting}
                     updatePermission={permission.basic?.reserve_update}
                     deletePermission={permission.basic?.reserve_delete}
