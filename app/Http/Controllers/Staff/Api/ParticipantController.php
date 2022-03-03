@@ -99,7 +99,7 @@ class ParticipantController extends Controller
             }
 
             if (!$reserve) {
-                return response("データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 404);
+                abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
             }
     
             return IndexResource::collection($this->reserveEstimateService->getParticipants($reserve->id));
@@ -114,7 +114,7 @@ class ParticipantController extends Controller
             }
 
             if (!$reserve) {
-                return response("データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 404);
+                abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
             }
     
             return IndexResource::collection($this->webReserveEstimateService->getParticipants($reserve->id));
@@ -162,7 +162,7 @@ class ParticipantController extends Controller
         }
 
         if (!$reserve) {
-            return response("データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 404);
+            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
         }
 
         try {
@@ -198,7 +198,7 @@ class ParticipantController extends Controller
     {
         $participant = $this->participantService->find($id);
         if (!$participant) {
-            return response("データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 404);
+            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
         }
 
         // 認可チェック
@@ -236,7 +236,7 @@ class ParticipantController extends Controller
                 return new UpdateResource($result, 200);
             }
         } catch (ExclusiveLockException $e) { // 同時編集エラー
-            return response("他のユーザーによる編集済みレコードです。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 409);
+            abort(409, "他のユーザーによる編集済みレコードです。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
         } catch (Exception $e) {
             Log::error($e);
         }
@@ -255,7 +255,7 @@ class ParticipantController extends Controller
     {
         $participant = $this->participantService->find($request->participant_id);
         if (!$participant) {
-            return response("データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 404);
+            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
         }
 
         // 認可チェック
@@ -302,7 +302,7 @@ class ParticipantController extends Controller
     {
         $oldParticipant = $this->participantService->find($id);
         if (!$oldParticipant) {
-            return response("データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 404);
+            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
         }
 
         // 認可チェック
@@ -354,7 +354,7 @@ class ParticipantController extends Controller
         $participant = $this->participantService->find($id);
 
         if (!$participant) {
-            return response("データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 404);
+            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
         }
 
         // 認可チェック
@@ -370,7 +370,7 @@ class ParticipantController extends Controller
                 // 受付種別で分ける
                 if ($reception === config('consts.const.RECEPTION_TYPE_ASP')) { // ASP受付
                     $result = $this->detachParticipant(
-                        $participant->reserve_id, 
+                        $participant->reserve_id,
                         $participant->id,
                         $this->reserveParticipantOptionPriceService,
                         $this->reserveParticipantAirplanePriceService,
@@ -378,10 +378,9 @@ class ParticipantController extends Controller
                         $this->participantService
                     );
                     $reserve = $this->reserveEstimateService->find($participant->reserve_id);
-
                 } elseif ($reception === config('consts.const.RECEPTION_TYPE_WEB')) { // WEB受付
                     $result = $this->detachParticipant(
-                        $participant->reserve_id, 
+                        $participant->reserve_id,
                         $participant->id,
                         $this->reserveParticipantOptionPriceService,
                         $this->reserveParticipantAirplanePriceService,

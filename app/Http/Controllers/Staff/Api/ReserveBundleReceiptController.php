@@ -24,7 +24,7 @@ class ReserveBundleReceiptController extends Controller
 
     /**
      * 作成or更新
-     * 
+     *
      * @param string $reserveBundleInvoiceHashId 一括請求書ID(ハッシュ)
      */
     public function upsert(ReserveBundleReceiptUpsertRequest $request, string $agencyAccount, string $reserveBundleInvoiceHashId)
@@ -67,7 +67,7 @@ class ReserveBundleReceiptController extends Controller
                 return new UpdateResource($this->reserveBundleReceiptService->find($newReserveBundleReceipt->id), 201);
             }
         } catch (ExclusiveLockException $e) { // 同時編集エラー（保存とpdf出力を同時に行う場所があるので、保存時した内容とpdfの内容が一致していることを担保する意味でもチェック）
-            return response("他のユーザーによる編集済みレコードです。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 409);
+            abort(409, "他のユーザーによる編集済みレコードです。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
         } catch (Exception $e) {
             Log::error($e);
         }

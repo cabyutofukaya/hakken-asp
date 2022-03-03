@@ -48,7 +48,7 @@ class ReserveConsultationController extends Controller
         }
 
         if (!$reserve) {
-            return response("データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 404);
+            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
         }
 
         // 一応検索に使用するパラメータだけに絞る
@@ -64,7 +64,7 @@ class ReserveConsultationController extends Controller
             array_merge($params, [
                 'taxonomy' => config('consts.agency_consultations.TAXONOMY_RESERVE'),
                 'reserve_id' => $reserve->id
-            ]), 
+            ]),
             request()->get("per_page", 5),
             ['manager','v_agency_consultation_custom_values']
         ));
@@ -86,17 +86,15 @@ class ReserveConsultationController extends Controller
         // 見積or予約で処理を分ける
         if ($applicationStep == config("consts.reserves.APPLICATION_STEP_DRAFT")) { // 見積
             $reserve = $this->estimateService->findByEstimateNumber($controlNumber, $agencyAccount);
-
         } elseif ($applicationStep == config("consts.reserves.APPLICATION_STEP_RESERVE")) { // 予約
             $reserve = $this->reserveService->findByControlNumber($controlNumber, $agencyAccount);
-
         } else {
             abort(404);
         }
 
 
         if (!$reserve) {
-            return response("データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 404);
+            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
         }
 
         $input = $request->all();
@@ -119,13 +117,18 @@ class ReserveConsultationController extends Controller
      * @param string $controlNumber 予約/見積番号
      * @param string $consulNumber 相談番号
      */
-    public function update(ReserveConsultationUpdateRequest $request, 
-    string $agencyAccount, string $applicationStep, string $controlNumber, string $consulNumber)
+    public function update(
+        ReserveConsultationUpdateRequest $request,
+        string $agencyAccount,
+        string $applicationStep,
+        string $controlNumber,
+        string $consulNumber
+    )
     {
         $reserveConsultation = $this->agencyConsultationService->findByControlNumber($consulNumber, $agencyAccount);
 
         if (!$reserveConsultation) {
-            return response("データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 404);
+            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
         }
 
         // 認可チェック
@@ -140,7 +143,7 @@ class ReserveConsultationController extends Controller
                 return new IndexResource($reserveConsultation);
             }
         } catch (ExclusiveLockException $e) { // 同時編集エラー
-            return response("他のユーザーによる編集済みレコードです。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 409);
+            abort(409, "他のユーザーによる編集済みレコードです。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
         } catch (Exception $e) {
             Log::error($e);
         }

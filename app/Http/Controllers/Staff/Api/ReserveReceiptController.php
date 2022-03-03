@@ -42,7 +42,7 @@ class ReserveReceiptController extends Controller
         $reserveInvoice = $this->reserveInvoiceService->findByReserveId(data_get($reserve, 'id'));
 
         if (!$reserve || !$reserveInvoice) {
-            return response("データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 404);
+            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
         }
 
         $reserveReceipt = $this->reserveReceiptService->findByReserveInvoiceId($reserveInvoice->id);
@@ -90,7 +90,7 @@ class ReserveReceiptController extends Controller
                 return new UpdateResource($this->reserveReceiptService->find($newReserveReceipt->id), 201);
             }
         } catch (ExclusiveLockException $e) { // 同時編集エラー（保存とpdf出力を同時に行う場所があるので、保存時した内容とpdfの内容が一致していることを担保する意味でもチェック）
-            return response("他のユーザーによる編集済みレコードです。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 409);
+            abort(409, "他のユーザーによる編集済みレコードです。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
         } catch (Exception $e) {
             Log::error($e);
         }

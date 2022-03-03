@@ -52,7 +52,7 @@ class AreaController extends Controller
         $area = $this->areaService->findByUuid($uuid);
 
         if (!$area) {
-            return response("データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 404);
+            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
         }
 
         // 認可チェック

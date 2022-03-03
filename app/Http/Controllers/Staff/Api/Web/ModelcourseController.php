@@ -47,7 +47,7 @@ class ModelcourseController extends Controller
         $webModelcourse = $this->webModelcourseService->find($webModelcourseId);
 
         if (!$webModelcourse) {
-            return response("データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 404);
+            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
         }
 
         $response = \Gate::authorize('update', $webModelcourse);
@@ -88,7 +88,7 @@ class ModelcourseController extends Controller
         $webModelcourse = $this->webModelcourseService->find($webModelcourseId);
 
         if (!$webModelcourse) {
-            return response("データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 404);
+            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
         }
 
         $response = \Gate::authorize('create', new WebModelcourse);
@@ -135,7 +135,7 @@ class ModelcourseController extends Controller
         $webModelcourse = $this->webModelcourseService->find($webModelcourseId);
 
         if (!$webModelcourse) {
-            return response("データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 404);
+            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
         }
 
         // 認可チェック

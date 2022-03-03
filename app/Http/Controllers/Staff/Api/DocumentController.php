@@ -106,7 +106,7 @@ class DocumentController extends Controller
             $documentCommon = $this->documentCommonService->find((int)$decodeId);
 
             if (!$documentCommon) {
-                return response("データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 404);
+                abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
             }
     
             // 認可チェック
@@ -122,7 +122,7 @@ class DocumentController extends Controller
             $documentQuote = $this->documentQuoteService->find((int)$decodeId);
 
             if (!$documentQuote) {
-                return response("データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 404);
+                abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
             }
 
             // 認可チェック
@@ -138,7 +138,7 @@ class DocumentController extends Controller
             $documentRequest = $this->documentRequestService->find((int)$decodeId);
 
             if (!$documentRequest) {
-                return response("データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 404);
+                abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
             }
 
             // 認可チェック
@@ -154,7 +154,7 @@ class DocumentController extends Controller
             $documentRequestAll = $this->documentRequestAllService->find((int)$decodeId);
 
             if (!$documentRequestAll) {
-                return response("データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 404);
+                abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
             }
 
             // 認可チェック
@@ -170,7 +170,7 @@ class DocumentController extends Controller
             $documentReceipt = $this->documentReceiptService->find((int)$decodeId);
 
             if (!$documentReceipt) {
-                return response("データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 404);
+                abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
             }
 
             // 認可チェック
