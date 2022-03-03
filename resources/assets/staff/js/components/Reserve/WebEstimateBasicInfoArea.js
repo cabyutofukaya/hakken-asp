@@ -11,6 +11,7 @@ const WebEstimateBasicInfoArea = ({
     estimateNumber,
     status,
     setStatus,
+    updatedAt,
     setUpdatedAt,
     consts,
     constsCommon,
@@ -253,6 +254,7 @@ const WebEstimateBasicInfoArea = ({
             <DetermineModal
                 id="mdChangeStatus"
                 estimate={data}
+                updatedAt={updatedAt}
                 isConfirming={isConfirming}
                 setIsConfirming={setIsConfirming}
                 determineUrl={consts.determineUrl}

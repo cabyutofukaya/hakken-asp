@@ -132,8 +132,8 @@ const EstimateShowArea = ({
 
             <div id="tabNavi" className="estimateNav">
                 <ul>
-                    <li>
-                        {permission.basic.reserve_read && (
+                    {permission.basic.reserve_read && (
+                        <li>
                             <span
                                 className={
                                     currentTab ===
@@ -150,10 +150,10 @@ const EstimateShowArea = ({
                             >
                                 見積基本情報
                             </span>
-                        )}
-                    </li>
-                    <li>
-                        {permission.detail.reserve_read && (
+                        </li>
+                    )}
+                    {permission.detail.reserve_read && (
+                        <li>
                             <span
                                 className={
                                     currentTab ===
@@ -171,10 +171,10 @@ const EstimateShowArea = ({
                             >
                                 見積詳細
                             </span>
-                        )}
-                    </li>
-                    <li>
-                        {permission.consultation.consultation_read && (
+                        </li>
+                    )}
+                    {permission.consultation.consultation_read && (
+                        <li>
                             <span
                                 className={
                                     currentTab ===
@@ -191,8 +191,8 @@ const EstimateShowArea = ({
                             >
                                 相談一覧
                             </span>
-                        )}
-                    </li>
+                        </li>
+                    )}
                 </ul>
             </div>
             {permission.basic.reserve_read && (
@@ -203,6 +203,7 @@ const EstimateShowArea = ({
                     estimateNumber={reserve?.estimate_number}
                     status={status}
                     setStatus={setStatus}
+                    updatedAt={reserveUpdatedAt}
                     setUpdatedAt={setReserveUpdatedAt}
                     consts={consts?.[consts.common.tabCodes.tab_basic_info]}
                     customFields={

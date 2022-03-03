@@ -5,11 +5,13 @@ import { useMountedRef } from "../../../../hooks/useMountedRef";
 import ReserveAmountBreakdown from "./ReserveAmountBreakdown";
 import WebReserveBasicInfoLeft from "./WebReserveBasicInfoLeft";
 import BackToIndexButton from "./BackToIndexButton";
+import UnderStatus from "./UnderStatus";
 
 const WebReserveBasicInfoArea = ({
     isShow,
     reserveNumber,
     isDeparted,
+    isCancel,
     status,
     setStatus,
     setUpdatedAt,
@@ -149,15 +151,10 @@ const WebReserveBasicInfoArea = ({
                             <tr>
                                 <th>ステータス</th>
                                 <td>
-                                    <span
-                                        className="status blue js-modal-open"
-                                        data-target="mdStatus"
-                                    >
-                                        {status}
-                                        <span className="material-icons settingIcon">
-                                            settings
-                                        </span>
-                                    </span>
+                                    <UnderStatus
+                                        isCancel={isCancel}
+                                        status={status}
+                                    />
                                 </td>
                             </tr>
                             {/*  カスタム項目（左列） */}

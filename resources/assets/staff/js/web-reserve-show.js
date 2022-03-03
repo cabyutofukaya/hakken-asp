@@ -13,6 +13,7 @@ import WebReserveDetail from "./components/Reserve/WebReserveDetail";
 import TopControlBox from "./components/Reserve/TopControlBox";
 import CancelModal from "./components/Reserve/CancelModal";
 import CancelChargeModal from "./components/Reserve/CancelChargeModal";
+import TopStatus from "./components/Reserve/TopStatus";
 
 /**
  *
@@ -118,21 +119,21 @@ const ReserveShowArea = ({
         }
     };
 
-    // 上部ステータス部(催行済みか否かで出し分け)
-    const TopStatus = ({ reserve, status, reserveStatus }) => {
-        if (reserve?.is_departed) {
-            return <span className="status gray fix">{reserveStatus}</span>;
-        } else {
-            return (
-                <span
-                    className="status blue js-modal-open"
-                    data-target="mdStatus"
-                >
-                    {status}
-                </span>
-            );
-        }
-    };
+    // // 上部ステータス部(催行済みか否かで出し分け)
+    // const TopStatus = ({ reserve, status, reserveStatus }) => {
+    //     if (reserve?.is_departed) {
+    //         return <span className="status gray fix">{reserveStatus}</span>;
+    //     } else {
+    //         return (
+    //             <span
+    //                 className="status blue js-modal-open"
+    //                 data-target="mdStatus"
+    //             >
+    //                 {status}
+    //             </span>
+    //         );
+    //     }
+    // };
 
     // パンクズリストindex部(催行済みか否かで出し分け)
     const IndexBreadcrumb = ({
@@ -161,7 +162,6 @@ const ReserveShowArea = ({
                 <h1>
                     <span className="material-icons">event_note</span>予約情報
                     {reserve?.control_number}
-                    {/**催行済か否かで出し分け */}
                     <TopStatus
                         reserve={reserve}
                         status={status}
@@ -205,8 +205,8 @@ const ReserveShowArea = ({
 
             <div id="tabNavi" className="estimateNav">
                 <ul>
-                    <li>
-                        {permission.basic.reserve_read && (
+                    {permission.basic.reserve_read && (
+                        <li>
                             <span
                                 className={
                                     currentTab ===
@@ -223,10 +223,10 @@ const ReserveShowArea = ({
                             >
                                 予約基本情報
                             </span>
-                        )}
-                    </li>
-                    <li>
-                        {permission.detail.reserve_read && (
+                        </li>
+                    )}
+                    {permission.detail.reserve_read && (
+                        <li>
                             <span
                                 className={
                                     currentTab ===
@@ -244,10 +244,10 @@ const ReserveShowArea = ({
                             >
                                 予約詳細
                             </span>
-                        )}
-                    </li>
-                    <li>
-                        {permission.consultation.consultation_read && (
+                        </li>
+                    )}
+                    {permission.consultation.consultation_read && (
+                        <li>
                             <span
                                 className={
                                     currentTab ===
@@ -264,8 +264,8 @@ const ReserveShowArea = ({
                             >
                                 相談一覧
                             </span>
-                        )}
-                    </li>
+                        </li>
+                    )}
                 </ul>
             </div>
             {permission.basic.reserve_read && (
@@ -275,6 +275,7 @@ const ReserveShowArea = ({
                     }
                     reserveNumber={reserve?.control_number}
                     isDeparted={reserve?.is_departed}
+                    isCancel={reserve?.cancel_at ? true : false}
                     status={status}
                     setStatus={setStatus}
                     setUpdatedAt={setReserveUpdatedAt}
