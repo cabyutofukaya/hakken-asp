@@ -3,43 +3,45 @@
       <span class="material-icons">arrow_left</span>
    </div>
    <ul>
-      @if(auth('staff')->user()->is_reserve_setting_read_permission){{-- 予約/見積閲覧権限 --}}
-         <li class="current @if(strpos(\Route::current()->getName(), 'staff.asp.estimates.') !== false || strpos(\Route::current()->getName(), 'staff.web.estimates.') !== false || strpos(\Route::current()->getName(), 'staff.estimates.') !== false) active @endif">
-            <a href="#">
-               <span class="material-icons">edit_calendar</span>予約/見積
-            </a>
-            <ul class="subNavi">
-               <li class="
-                  @if(!request()->get(config('consts.const.DEPARTED_QUERY')) && (strpos(\Route::current()->getName(), 'staff.asp.estimates.reserve.') !== false || (strpos(\Route::current()->getName(), 'staff.asp.estimates') !== false && \Route::current()->parameter('applicationStep') === config("consts.reserves.APPLICATION_STEP_RESERVE")))) stay 
-                  @endif">{{-- 催行済みを示すGETパラメータがないことが前提 --}}
-                  <a href="{{ route('staff.asp.estimates.reserve.index', $agencyAccount) }}">
-                     <span class="material-icons">event_note</span>予約管理
-                  </a>
-               </li>
-               <li class="
-                  @if(strpos(\Route::current()->getName(), 'staff.asp.estimates.normal.') !== false || (strpos(\Route::current()->getName(), 'staff.asp.estimates') !== false && \Route::current()->parameter('applicationStep') === config("consts.reserves.APPLICATION_STEP_DRAFT"))) stay 
-                  @endif">
-                  <a href="{{ route('staff.asp.estimates.normal.index', $agencyAccount) }}">
-                     <span class="material-icons">event_note</span>見積管理
-                  </a>
-               </li>
-               <li class="
-                  @if(!request()->get(config('consts.const.DEPARTED_QUERY')) && (strpos(\Route::current()->getName(), 'staff.web.estimates.reserve.') !== false || (strpos(\Route::current()->getName(), 'staff.web.estimates') !== false && \Route::current()->parameter('applicationStep') === config("consts.reserves.APPLICATION_STEP_RESERVE")))) stay 
-                  @endif">{{-- 催行済みを示すGETパラメータがないことが前提 --}}
-                  <a href="{{ route('staff.web.estimates.reserve.index', $agencyAccount) }}"><span class="material-icons">language</span>WEB予約管理</a>
-               </li>
-               <li class="
-                  @if(strpos(\Route::current()->getName(), 'staff.web.estimates.normal.') !== false || (strpos(\Route::current()->getName(), 'staff.web.estimates') !== false && \Route::current()->parameter('applicationStep') === config("consts.reserves.APPLICATION_STEP_DRAFT"))) stay 
-                  @endif">
-                  <a href="{{ route('staff.web.estimates.normal.index', $agencyAccount) }}"><span class="material-icons">language</span>WEB見積管理</a>
-               </li>
-               <li class="@if(strpos(\Route::current()->getName(), 'staff.estimates.departed.') !== false || request()->get(config('consts.const.DEPARTED_QUERY'))) stay @endif">{{-- route名とGETクエリパラメータで判定 --}}
-                  <a href="{{ route('staff.estimates.departed.index', $agencyAccount) }}">
-                     <span class="material-icons">event_available</span>催行済み一覧
-                  </a>
-               </li>
-            </ul>
-         </li>
+      @if(env('MIX_OPEN_MODE') === 'grand-open') {{-- グランドオープン時のみ使用 --}}
+         @if(auth('staff')->user()->is_reserve_setting_read_permission){{-- 予約/見積閲覧権限 --}}
+            <li class="current @if(strpos(\Route::current()->getName(), 'staff.asp.estimates.') !== false || strpos(\Route::current()->getName(), 'staff.web.estimates.') !== false || strpos(\Route::current()->getName(), 'staff.estimates.') !== false) active @endif">
+               <a href="#">
+                  <span class="material-icons">edit_calendar</span>予約/見積
+               </a>
+               <ul class="subNavi">
+                  <li class="
+                     @if(!request()->get(config('consts.const.DEPARTED_QUERY')) && (strpos(\Route::current()->getName(), 'staff.asp.estimates.reserve.') !== false || (strpos(\Route::current()->getName(), 'staff.asp.estimates') !== false && \Route::current()->parameter('applicationStep') === config("consts.reserves.APPLICATION_STEP_RESERVE")))) stay 
+                     @endif">{{-- 催行済みを示すGETパラメータがないことが前提 --}}
+                     <a href="{{ route('staff.asp.estimates.reserve.index', $agencyAccount) }}">
+                        <span class="material-icons">event_note</span>予約管理
+                     </a>
+                  </li>
+                  <li class="
+                     @if(strpos(\Route::current()->getName(), 'staff.asp.estimates.normal.') !== false || (strpos(\Route::current()->getName(), 'staff.asp.estimates') !== false && \Route::current()->parameter('applicationStep') === config("consts.reserves.APPLICATION_STEP_DRAFT"))) stay 
+                     @endif">
+                     <a href="{{ route('staff.asp.estimates.normal.index', $agencyAccount) }}">
+                        <span class="material-icons">event_note</span>見積管理
+                     </a>
+                  </li>
+                  <li class="
+                     @if(!request()->get(config('consts.const.DEPARTED_QUERY')) && (strpos(\Route::current()->getName(), 'staff.web.estimates.reserve.') !== false || (strpos(\Route::current()->getName(), 'staff.web.estimates') !== false && \Route::current()->parameter('applicationStep') === config("consts.reserves.APPLICATION_STEP_RESERVE")))) stay 
+                     @endif">{{-- 催行済みを示すGETパラメータがないことが前提 --}}
+                     <a href="{{ route('staff.web.estimates.reserve.index', $agencyAccount) }}"><span class="material-icons">language</span>WEB予約管理</a>
+                  </li>
+                  <li class="
+                     @if(strpos(\Route::current()->getName(), 'staff.web.estimates.normal.') !== false || (strpos(\Route::current()->getName(), 'staff.web.estimates') !== false && \Route::current()->parameter('applicationStep') === config("consts.reserves.APPLICATION_STEP_DRAFT"))) stay 
+                     @endif">
+                     <a href="{{ route('staff.web.estimates.normal.index', $agencyAccount) }}"><span class="material-icons">language</span>WEB見積管理</a>
+                  </li>
+                  <li class="@if(strpos(\Route::current()->getName(), 'staff.estimates.departed.') !== false || request()->get(config('consts.const.DEPARTED_QUERY'))) stay @endif">{{-- route名とGETクエリパラメータで判定 --}}
+                     <a href="{{ route('staff.estimates.departed.index', $agencyAccount) }}">
+                        <span class="material-icons">event_available</span>催行済み一覧
+                     </a>
+                  </li>
+               </ul>
+            </li>
+         @endif
       @endif
 
       @if(auth('staff')->user()->is_user_setting_read_permission || auth('staff')->user()->is_business_user_setting_read_permission){{-- 個人顧客/法人顧客閲覧権限 --}}
@@ -64,8 +66,9 @@
                @endif
             </ul>
          </li>
-         @endif
+      @endif
 
+      @if(env('MIX_OPEN_MODE') === 'grand-open') {{-- グランドオープン時のみ使用 --}}
          @if(auth('staff')->user()->is_management_setting_read_permission){{-- 経理業務閲覧権限 --}}
             <li class="current @if(strpos(\Route::current()->getName(), 'staff.management.') !== false) active @endif">
                <a href="#">
@@ -87,7 +90,9 @@
                </ul>
             </li>
          @endif
+      @endif
 
+      @if(env('MIX_OPEN_MODE') === 'grand-open') {{-- グランドオープン時のみ使用 --}}
          @if(auth('staff')->user()->is_consultation_setting_read_permission){{-- 相談履歴閲覧権限 --}}
             <li class="current @if(strpos(\Route::current()->getName(), 'staff.consultation.') !== false) active @endif">
                <a href="#">
@@ -107,6 +112,7 @@
                </ul>
             </li>
          @endif
+      @endif
 
       @if(auth('staff')->user()->is_master_setting_read_permission){{-- マスタ設定閲覧権限 --}}
          <li class="current @if(strpos(\Route::current()->getName(), 'staff.master.') !== false) active @endif">
@@ -149,11 +155,13 @@
                      <span class="material-icons">manage_accounts</span>ユーザー権限
                   </a>
                </li>
-               <li class="@if(strpos(\Route::current()->getName(), 'staff.system.document.') !== false) stay @endif">
-                  <a href="{{ route('staff.system.document.index', $agencyAccount) }}">
-                     <span class="material-icons">description</span>帳票設定
-                  </a>
-               </li>
+               @if(env('MIX_OPEN_MODE') === 'grand-open') {{-- グランドオープン時のみ使用 --}}
+                  <li class="@if(strpos(\Route::current()->getName(), 'staff.system.document.') !== false) stay @endif">
+                     <a href="{{ route('staff.system.document.index', $agencyAccount) }}">
+                        <span class="material-icons">description</span>帳票設定
+                     </a>
+                  </li>
+               @endif
                {{-- <li class="@if(strpos(\Route::current()->getName(), 'staff.system.mail.') !== false) stay @endif">
                   <a href="{{ route('staff.system.mail.index', $agencyAccount) }}">
                      <span class="material-icons">mark_email_read</span>メール定型文設定

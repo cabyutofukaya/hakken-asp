@@ -62,13 +62,11 @@ const BusinessUserShowArea = ({
                     </li>
                 </ol>
             </div>
-            {/* <div id="errorMessage">
-                <p>エラーメッセージが入ります。</p>
-            </div> */}
+
             <div id="tabNavi" className="userNav">
                 <ul>
-                    <li>
-                        {permission.customer.read && (
+                    {permission.customer.read && (
+                        <li>
                             <span
                                 className={
                                     currentTab === tabCodes.tab_customer_info
@@ -84,29 +82,32 @@ const BusinessUserShowArea = ({
                             >
                                 顧客情報
                             </span>
-                        )}
-                    </li>
-                    <li>
-                        {permission.history.read && (
-                            <span
-                                className={
-                                    currentTab === tabCodes.tab_usage_history
-                                        ? "tab tabstay"
-                                        : "tab"
-                                }
-                                onClick={e =>
-                                    handleTabChange(
-                                        e,
+                        </li>
+                    )}
+                    {/**グランドオープンではない場合はタブ利用不可 */}
+                    {process.env.MIX_OPEN_MODE === "grand-open" &&
+                        permission.history.read && (
+                            <li>
+                                <span
+                                    className={
+                                        currentTab ===
                                         tabCodes.tab_usage_history
-                                    )
-                                }
-                            >
-                                利用履歴
-                            </span>
+                                            ? "tab tabstay"
+                                            : "tab"
+                                    }
+                                    onClick={e =>
+                                        handleTabChange(
+                                            e,
+                                            tabCodes.tab_usage_history
+                                        )
+                                    }
+                                >
+                                    利用履歴
+                                </span>
+                            </li>
                         )}
-                    </li>
-                    <li>
-                        {permission.consultation.read && (
+                    {permission.consultation.read && (
+                        <li>
                             <span
                                 className={
                                     currentTab === tabCodes.tab_consultation
@@ -122,8 +123,8 @@ const BusinessUserShowArea = ({
                             >
                                 相談一覧
                             </span>
-                        )}
-                    </li>
+                        </li>
+                    )}
                 </ul>
             </div>
             {permission.customer.read && (
@@ -136,14 +137,16 @@ const BusinessUserShowArea = ({
                     permission={permission.customer}
                 />
             )}
-            {permission.history.read && (
-                <HistoryArea
-                    isShow={currentTab === tabCodes.tab_usage_history}
-                    userNumber={user?.user_number}
-                    permission={permission?.history}
-                    consts={consts[tabCodes.tab_usage_history]}
-                />
-            )}
+            {/**グランドオープンではない場合はタブ利用不可 */}
+            {process.env.MIX_OPEN_MODE === "grand-open" &&
+                permission.history.read && (
+                    <HistoryArea
+                        isShow={currentTab === tabCodes.tab_usage_history}
+                        userNumber={user?.user_number}
+                        permission={permission?.history}
+                        consts={consts[tabCodes.tab_usage_history]}
+                    />
+                )}
             {permission.consultation.read && (
                 <ConsultationArea
                     isShow={currentTab === tabCodes.tab_consultation}

@@ -8,12 +8,14 @@
       <li><a href="{{ route('staff.front.modelcourse.index',[$agencyAccount]) }}">モデルコース管理</a></li>
       <li><span>モデルコース {{ $courseNo }}</span></li>
     </ol>
-    <ul class="estimateControl" id="controlArea"
-      jsVars='@json($jsVars)' 
-      modelcourseId='{{ $id }}'
-      previewUrl='{{ $formSelects['previewUrl'] }}'
-      >
-    </ul>
+    @if(env('MIX_OPEN_MODE') === 'grand-open') {{-- プレビューはブランドオープン時に有効に --}}
+      <ul class="estimateControl" id="controlArea"
+        jsVars='@json($jsVars)' 
+        modelcourseId='{{ $id }}'
+        previewUrl='{{ $formSelects['previewUrl'] }}'
+        >
+      </ul>
+    @endif
   </div>
   <div class="userList show">
     <ul class="sideList half">

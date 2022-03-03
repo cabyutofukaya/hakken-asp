@@ -10,10 +10,11 @@
       <li><a href="{{ route('staff.front.profile.update', [$agencyAccount]) }}">HAKKEN WEBページ管理</a></li>
       <li><span>プロフィール管理</span></li>
     </ol>
-    <div class="deleteControl wd15">
-      <button class="blueBtn" onclick="window.open().location.href='{{ get_webprofile_previewurl(\Hashids::encode($webProfile->staff->id)) }}'">プレビュー</button>
-    </div>
-
+    @if(env('MIX_OPEN_MODE') === 'grand-open') {{-- プレビューはブランドオープン時に有効に --}}
+      <div class="deleteControl wd15">
+        <button class="blueBtn" onclick="window.open().location.href='{{ get_webprofile_previewurl(\Hashids::encode($webProfile->staff->id)) }}'">プレビュー</button>
+      </div>
+    @endif
   </div>
   
   <h2 class="subTit">

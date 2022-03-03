@@ -162,7 +162,7 @@ const InputArea = ({
                                 name="password"
                                 value={data.password ?? ""}
                                 onChange={handleInputChange}
-                                placeholder="半角英数6~12文字で1つ以上の特殊文字(!#$%&=-)"
+                                placeholder="半角英数6~12文字で1つ以上の特殊文字(!#$%&=-等)"
                             />
                         </li>
                         <li className="wd40">

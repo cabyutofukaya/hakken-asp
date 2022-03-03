@@ -22,7 +22,7 @@ class IndexResource extends JsonResource
             'price_per_ad' => is_numeric($this->price_per_ad) ? number_format($this->price_per_ad) : $this->price_per_ad,
             'price_per_ch' => is_numeric($this->price_per_ch) ? number_format($this->price_per_ch) : $this->price_per_ch,
             'price_per_inf' => is_numeric($this->price_per_inf) ? number_format($this->price_per_inf) : $this->price_per_inf,
-            'preview_url' => get_modelcourse_previewurl($request->agencyAccount, $this->course_no),
+            'preview_url' => env('MIX_OPEN_MODE') === 'grand-open' ? get_modelcourse_previewurl($request->agencyAccount, $this->course_no) : '', // プレビューURLはグランドオープン時に有効化
             'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
             // 以下リレーション
             'departure' => [
