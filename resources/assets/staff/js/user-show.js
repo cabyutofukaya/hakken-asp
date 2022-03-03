@@ -80,25 +80,28 @@ const UserShowArea = ({
                             </span>
                         </li>
                     )}
-                    {permission.history.read && (
-                        <li>
-                            <span
-                                className={
-                                    currentTab === tabCodes.tab_usage_history
-                                        ? "tab tabstay"
-                                        : "tab"
-                                }
-                                onClick={e =>
-                                    handleTabChange(
-                                        e,
+                    {/**グランドオープンではない場合はタブ利用不可 */}
+                    {process.env.MIX_OPEN_MODE === "grand-open" &&
+                        permission.history.read && (
+                            <li>
+                                <span
+                                    className={
+                                        currentTab ===
                                         tabCodes.tab_usage_history
-                                    )
-                                }
-                            >
-                                利用履歴
-                            </span>
-                        </li>
-                    )}
+                                            ? "tab tabstay"
+                                            : "tab"
+                                    }
+                                    onClick={e =>
+                                        handleTabChange(
+                                            e,
+                                            tabCodes.tab_usage_history
+                                        )
+                                    }
+                                >
+                                    利用履歴
+                                </span>
+                            </li>
+                        )}
                     {permission.consultation.read && (
                         <li>
                             <span
@@ -131,14 +134,16 @@ const UserShowArea = ({
                     permission={permission.customer}
                 />
             )}
-            {permission.history.read && (
-                <HistoryArea
-                    isShow={currentTab === tabCodes.tab_usage_history}
-                    userNumber={user.user_number}
-                    permission={permission.history}
-                    consts={consts[tabCodes.tab_usage_history]}
-                />
-            )}
+            {/**グランドオープンではない場合はタブ利用不可 */}
+            {process.env.MIX_OPEN_MODE === "grand-open" &&
+                permission.history.read && (
+                    <HistoryArea
+                        isShow={currentTab === tabCodes.tab_usage_history}
+                        userNumber={user.user_number}
+                        permission={permission.history}
+                        consts={consts[tabCodes.tab_usage_history]}
+                    />
+                )}
             {permission.consultation.read && (
                 <ConsultationArea
                     isShow={currentTab === tabCodes.tab_consultation}

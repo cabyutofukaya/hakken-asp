@@ -354,14 +354,18 @@ const ModelcourseList = ({ myId }) => {
                                         )}
                                     </td>
                                     <td className="txtalc">
-                                        <span className="material-icons">
-                                            <a
-                                                href={row.preview_url}
-                                                target="_blank"
-                                            >
-                                                launch
-                                            </a>
-                                        </span>
+                                        {row?.preview_url ? (
+                                            <span className="material-icons">
+                                                <a
+                                                    href={row.preview_url}
+                                                    target="_blank"
+                                                >
+                                                    launch
+                                                </a>
+                                            </span>
+                                        ) : (
+                                            "-"
+                                        )}
                                     </td>
                                     <td className="txtalc">
                                         <span
