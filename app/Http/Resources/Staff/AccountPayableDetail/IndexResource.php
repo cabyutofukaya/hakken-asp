@@ -29,7 +29,7 @@ class IndexResource extends JsonResource
         return [
             'id' => $this->id,
             'reserve_url' => $reserveUrl,
-            'amount_payment' => $this->amount_payment,
+            'amount_billed' => $this->amount_billed,
             'unpaid_balance' => $this->unpaid_balance,
             'payment_date' => $this->payment_date,
             'use_date' => $this->use_date,

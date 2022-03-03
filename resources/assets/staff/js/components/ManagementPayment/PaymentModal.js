@@ -45,7 +45,7 @@ const PaymentModal = ({
     //未払い金額を計算。TODO 依存オブジェクトcurrentPaymentDataの扱いを再考
     const unpaidAmount = useMemo(() => {
         return (
-            currentPaymentData.amount_payment -
+            currentPaymentData.amount_billed -
             _.sumBy(currentPaymentData.agency_withdrawals, "amount")
         );
     }, [currentPaymentData]);
@@ -232,8 +232,8 @@ const PaymentModal = ({
                                     <th>支払金額</th>
                                     <td>
                                         ￥
-                                        {currentPaymentData?.amount_payment &&
-                                            currentPaymentData.amount_payment.toLocaleString()}
+                                        {currentPaymentData?.amount_billed &&
+                                            currentPaymentData.amount_billed.toLocaleString()}
                                     </td>
                                 </tr>
                                 <tr>
