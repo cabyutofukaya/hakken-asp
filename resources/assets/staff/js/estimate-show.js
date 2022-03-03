@@ -10,6 +10,7 @@ import StatusModal from "./components/Reserve/StatusModal";
 import classNames from "classnames";
 import { useMountedRef } from "../../hooks/useMountedRef";
 import SmallDangerModal from "./components/SmallDangerModal";
+import TopDeleteBox from "./components/Reserve/TopDeleteBox";
 
 /**
  *
@@ -107,16 +108,7 @@ const EstimateShowArea = ({
                     </li>
                 </ol>
                 {permission.basic?.reserve_delete && (
-                    <div className="deleteControl">
-                        <button
-                            className={classNames("redBtn", {
-                                "js-modal-open": !isDeleting
-                            })}
-                            data-target="mdDelete"
-                        >
-                            削除
-                        </button>
-                    </div>
+                    <TopDeleteBox isDeleting={isDeleting} />
                 )}
             </div>
 

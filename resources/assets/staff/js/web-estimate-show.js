@@ -14,6 +14,7 @@ import InvalidMessage from "./components/Reserve/InvalidMessage";
 import OnlineRequestModal from "./portal/OnlineRequestModal";
 import VideoTitArea from "./components/Reserve/VideoTitArea";
 import VideoTitAreaLarge from "./components/Reserve/VideoTitAreaLarge";
+import TopDeleteBox from "./components/Reserve/TopDeleteBox";
 
 /**
  *
@@ -125,16 +126,7 @@ const EstimateShowArea = ({
                     </li>
                 </ol>
                 {permission.basic?.reserve_delete && (
-                    <div className="deleteControl">
-                        <button
-                            className={classNames("redBtn", {
-                                "js-modal-open": !isDeleting
-                            })}
-                            data-target="mdDelete"
-                        >
-                            削除
-                        </button>
-                    </div>
+                    <TopDeleteBox isDeleting={isDeleting} />
                 )}
 
                 {reserve.web_reserve_ext.web_online_schedule?.consult_date && (
