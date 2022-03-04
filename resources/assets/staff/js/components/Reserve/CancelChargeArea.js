@@ -1,6 +1,5 @@
 import React, { useState, useContext } from "react";
 import { ConstContext } from "../ConstApp";
-import { render } from "react-dom";
 import OnlyNumberInput from "../OnlyNumberInput";
 import ErrorMessage from "../ErrorMessage";
 import { isEmptyObject } from "../../libs";
@@ -11,14 +10,16 @@ import classNames from "classnames";
  * @returns
  */
 const CancelChargeArea = ({ defaultValue, consts, errors }) => {
-    const { agencyAccount, documentZeiKbns } = useContext(ConstContext);
+    const { documentZeiKbns } = useContext(ConstContext);
 
     const csrfToken = document.head.querySelector('meta[name="csrf-token"]')
         .content;
 
     const [lists, setLists] = useState({ ...defaultValue["rows"] });
     const [errorObj, setErrorObj] = useState(errors); // エラー文言を保持
+
     const [cancelChargeErrors, setCancelChargeErrors] = useState([]); // キャンセルチャージでエラーがある枠のlists配列キー値を保持
+    const [cancelChargeNetErrors, setCancelChargeNetErrors] = useState([]); // 仕入れ先支払料金でエラーがある枠のlists配列キー値を保持
 
     const [isSubmitting, setIsSubmitting] = useState(false); // form送信中
 
@@ -46,8 +47,8 @@ const CancelChargeArea = ({ defaultValue, consts, errors }) => {
         e.preventDefault();
 
         let errMsg = {};
-        let err = [];
 
+        let err = [];
         // キャンセル料の入力値チェック → キャンセル料金が数量で割り切れない場合はエラーを出す
         Object.keys(lists).map(key => {
             const cancelCharge = Number(lists[key].cancel_charge);
@@ -64,7 +65,30 @@ const CancelChargeArea = ({ defaultValue, consts, errors }) => {
         setCancelChargeErrors([...err]);
         if (err.length > 0) {
             errMsg["cancel_charge"] = [
-                "キャンセル料金は数量で割り切れる金額を設定してください。"
+                "「キャンセル料金」は数量で割り切れる金額を設定してください。"
+            ];
+        }
+
+        //////////////
+
+        err = [];
+        // 仕入れ先支払料金の入力値チェック → 仕入れ先支払料金が数量で割り切れない場合はエラーを出す
+        Object.keys(lists).map(key => {
+            const cancelChargeNet = Number(lists[key].cancel_charge_net);
+            const quantity = lists[key].quantity;
+            if (
+                cancelChargeNet > 0 &&
+                !Number.isInteger(cancelChargeNet / quantity)
+            ) {
+                // エラーのあったlists配列のキー値を保存
+                err = [...err, key];
+            }
+        });
+
+        setCancelChargeNetErrors([...err]);
+        if (err.length > 0) {
+            errMsg["cancel_charge_net"] = [
+                "「仕入れ先支払料金」は数量で割り切れる金額を設定してください。"
             ];
         }
 
@@ -114,6 +138,9 @@ const CancelChargeArea = ({ defaultValue, consts, errors }) => {
                                         </th>
                                         <th>
                                             <span>キャンセル料金</span>
+                                        </th>
+                                        <th>
+                                            <span>仕入れ先支払料金</span>
                                         </th>
                                         <th>
                                             <span>GRS単価</span>
@@ -215,6 +242,34 @@ const CancelChargeArea = ({ defaultValue, consts, errors }) => {
                                                             className={
                                                                 _.indexOf(
                                                                     cancelChargeErrors,
+                                                                    key
+                                                                ) !== -1
+                                                                    ? "error"
+                                                                    : ""
+                                                            }
+                                                        />
+                                                    </td>
+                                                    <td className="slimInput">
+                                                        <OnlyNumberInput
+                                                            name={`rows[${key}][cancel_charge_net]`}
+                                                            value={
+                                                                lists[key]
+                                                                    ?.cancel_charge_net ??
+                                                                0
+                                                            }
+                                                            negativeValuePermit={
+                                                                false
+                                                            }
+                                                            handleChange={e =>
+                                                                handleChange(
+                                                                    e,
+                                                                    key,
+                                                                    "cancel_charge_net"
+                                                                )
+                                                            }
+                                                            className={
+                                                                _.indexOf(
+                                                                    cancelChargeNetErrors,
                                                                     key
                                                                 ) !== -1
                                                                     ? "error"

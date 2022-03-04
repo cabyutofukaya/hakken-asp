@@ -64,7 +64,7 @@ class ReserveParticipantPriceService
 
         $list = []; // 結果配列
 
-        $purchasingFields = ['id','valid','gross_ex','gross','cost','commission_rate','net','zei_kbn','gross_profit','cancel_charge','is_cancel'];
+        $purchasingFields = ['id','valid','gross_ex','gross','cost','commission_rate','net','zei_kbn','gross_profit','cancel_charge','cancel_charge_net','is_cancel'];
 
         // オプション科目
         foreach ($options as $row) {
@@ -136,7 +136,7 @@ class ReserveParticipantPriceService
                 $tmp[$col] = Arr::get($rows, "0.{$col}");
             }
 
-            foreach (['gross_ex','gross','cost','commission_rate','net','gross_profit','cancel_charge'] as $col) { // 合計を計算
+            foreach (['gross_ex','gross','cost','commission_rate','net','gross_profit','cancel_charge','cancel_charge_net'] as $col) { // 合計を計算
                 $tmp[$col] = collect($rows)->sum($col);
             }
 

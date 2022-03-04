@@ -40,14 +40,15 @@ trait CancelChargeTrait
             $subject = $info[0]; // $infoの1番目の配列は科目名
             $ids = array_slice($info, 1); // idリスト
 
-            $cancelCharge = ($row['cancel_charge'] ?? 0) / $row['quantity']; // 数量で割って1商品あたりのキャンセルチャージを求める
+            $cancelCharge = ($row['cancel_charge'] ?? 0) / $row['quantity']; // 数量で割って1商品あたりの「キャンセルチャージ」を求める
+            $cancelChargeNet = ($row['cancel_charge_net'] ?? 0) / $row['quantity']; // 数量で割って1商品あたりの「仕入れ先支払料金」を求める
 
             if ($subject == config('consts.subject_categories.SUBJECT_CATEGORY_OPTION')) { // オプション科目
-                $this->reserveParticipantOptionPriceService->setCancelChargeByIds($cancelCharge, Arr::get($row, 'is_cancel') == 1, $ids);
+                $this->reserveParticipantOptionPriceService->setCancelChargeByIds($cancelCharge, $cancelChargeNet, Arr::get($row, 'is_cancel') == 1, $ids);
             } elseif ($subject == config('consts.subject_categories.SUBJECT_CATEGORY_AIRPLANE')) { // 航空券科目
-                $this->reserveParticipantAirplanePriceService->setCancelChargeByIds($cancelCharge, Arr::get($row, 'is_cancel') == 1, $ids);
+                $this->reserveParticipantAirplanePriceService->setCancelChargeByIds($cancelCharge, $cancelChargeNet, Arr::get($row, 'is_cancel') == 1, $ids);
             } elseif ($subject == config('consts.subject_categories.SUBJECT_CATEGORY_HOTEL')) { // ホテル科目
-                $this->reserveParticipantHotelPriceService->setCancelChargeByIds($cancelCharge, Arr::get($row, 'is_cancel') == 1, $ids);
+                $this->reserveParticipantHotelPriceService->setCancelChargeByIds($cancelCharge, $cancelChargeNet, Arr::get($row, 'is_cancel') == 1, $ids);
             }
         }
     }
