@@ -33,7 +33,7 @@ class BusinessUserManagerController extends Controller
         $businessUser = $this->busiessUserService->findByUserNumber($userNumber, $agencyAccount);
 
         if (!$businessUser) {
-            return response("データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 404);
+            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
         }
 
         // 認可チェック
@@ -61,7 +61,7 @@ class BusinessUserManagerController extends Controller
         $businessUser = $this->busiessUserService->findByUserNumber($userNumber, $agencyAccount);
 
         if (!$businessUser) {
-            return response("データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 404);
+            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
         }
 
         $input = $request->all();
@@ -85,7 +85,7 @@ class BusinessUserManagerController extends Controller
         $businessUserManager = $this->businessUserManagerService->find((int)$id);
 
         if (!$businessUserManager) {
-            return response("データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 404);
+            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
         }
 
         // 認可チェック
@@ -101,7 +101,7 @@ class BusinessUserManagerController extends Controller
                 return new IndexResource($businessUserManager);
             }
         } catch (ExclusiveLockException $e) { // 同時編集エラー
-            return response("他のユーザーによる編集済みレコードです。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 409);
+            abort(409, "他のユーザーによる編集済みレコードです。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
         } catch (Exception $e) {
             Log::error($e);
         }
@@ -119,7 +119,7 @@ class BusinessUserManagerController extends Controller
         $businessUserManager = $this->businessUserManagerService->find((int)$id);
 
         if (!$businessUserManager) {
-            return response("データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 404);
+            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
         }
 
         // 認可チェック

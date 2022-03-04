@@ -82,6 +82,7 @@ const StaffList = ({ agencyAccount, searchParam, formSelects }) => {
                     staffs={staffs}
                     statuses={formSelects?.statuses}
                     handleSortClick={handleSortClick}
+                    isLoading={isLoading}
                 />
                 {lastPage > 1 && (
                     <PageNation

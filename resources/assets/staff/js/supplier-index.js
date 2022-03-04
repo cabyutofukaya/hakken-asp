@@ -111,7 +111,7 @@ const SupplierList = ({ searchParam }) => {
         }
     };
 
-    // 並び替えリンクをクリックした挙動（StaffListTable用）
+    // 並び替えリンクをクリックした挙動
     const handleSortClick = column => {
         const direction = sortParam[column] === "asc" ? "desc" : "asc";
         setDirection(direction);

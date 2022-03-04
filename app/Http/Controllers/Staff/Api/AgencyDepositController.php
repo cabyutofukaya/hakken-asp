@@ -41,7 +41,7 @@ class AgencyDepositController extends Controller
 
         // 認可チェック
         if (!$reserveInvoice) {
-            return response("データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 404);
+            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
         }
 
         // agency_depositsテーブルに対するcreate権限をチェックしてもセキュリティ上あまり意味がないので、reserve_invoicesテーブルに対する編集権限をチェック
@@ -105,7 +105,7 @@ class AgencyDepositController extends Controller
         $agencyDeposit = $this->agencyDepositService->find($agencyDepositlId);
 
         if (!$agencyDeposit) {
-            return response("データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 404);
+            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
         }
 
         $response = \Gate::authorize('delete', $agencyDeposit);

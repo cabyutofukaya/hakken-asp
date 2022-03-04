@@ -31,7 +31,7 @@ class AgencyWithdrawalController extends Controller
         // 認可チェック
         
         if (!$accountPayableDetail) {
-            return response("データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 404);
+            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
         }
 
         // agency_withdrawalsテーブルに対するcreate権限をチェックしてもセキュリティ上あまり意味がないので、account_payable_detailsテーブルに対する編集権限をチェック
@@ -65,7 +65,7 @@ class AgencyWithdrawalController extends Controller
                 // return new StoreResource($agencyWithdrawal, 201);
             }
         } catch (ExclusiveLockException $e) { // 同時編集エラー
-            return response("他のユーザーによる編集済みレコードです。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 409);
+            abort(409, "他のユーザーによる編集済みレコードです。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
         } catch (\Exception $e) {
             \Log::error($e);
         }
@@ -80,7 +80,7 @@ class AgencyWithdrawalController extends Controller
         $agencyWithdrawal = $this->agencyWithdrawalService->find((int)$agencyWithdrawalId);
 
         if (!$agencyWithdrawal) {
-            return response("データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 404);
+            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
         }
 
         $response = \Gate::authorize('delete', $agencyWithdrawal);

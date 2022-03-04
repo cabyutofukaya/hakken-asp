@@ -64,7 +64,12 @@
         <ul class="baseList">
           <li><span class="inputLabel">入力形式</span>
             <ul class="baseRadio sideList mt10">
-              @foreach($formSelects['inputTypes'] as $val => $str)
+              <li>
+                {{-- 時間タイプ(type=text)をカレンダータイプにした場合、データが壊れてしまうので変更不可 --}}
+                {{ Arr::get($formSelects['inputTypes'], $userCustomItem->input_type) }}
+                <input type="hidden" name="input_type" value="{{ $userCustomItem->input_type }}"/>
+              </li>
+              {{-- @foreach($formSelects['inputTypes'] as $val => $str)
                 <li><input 
                   type="radio" 
                   id="input_type_{{ $val }}" 
@@ -74,7 +79,7 @@
                   @if($userCustomItem->unedit_item)disabled @endif
                   >
                 <label for="input_type_{{ $val }}">{{ $str }}</label></li>
-              @endforeach
+              @endforeach --}}
             </ul>
           </li>
         </ul>

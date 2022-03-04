@@ -52,5 +52,15 @@
 
 </main>
 
+<link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/airbnb.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script> 
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ja.js"></script> 
+<script>
+    flatpickr.localize(flatpickr.l10ns.ja);
+    flatpickr('.calendar input', {
+        allowInput: true,
+		dateFormat: "Y/m/d"
+    });
+</script>
 <script src="{{ mix('/staff/js/supplier-index.js') }}"></script>
 @endsection
