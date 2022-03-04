@@ -148,7 +148,7 @@ class UserCustomItemRepository implements UserCustomItemRepositoryInterface
     public function update(string $id, $params): UserCustomItem
     {
         $this->userCustomItem->where('id', $id)->update($params);
-        return $this->find($id);
+        return $this->userCustomItem->find($id);
     }
 
     /**
