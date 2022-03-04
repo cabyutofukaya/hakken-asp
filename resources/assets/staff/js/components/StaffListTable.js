@@ -1,11 +1,13 @@
 import React from "react";
 import classNames from "classnames";
+import ReactLoading from "react-loading";
 
 const StaffListTable = ({
     agencyAccount,
     staffs,
     statuses,
-    handleSortClick
+    handleSortClick,
+    isLoading
 }) => {
     return (
         <table>
@@ -47,7 +49,21 @@ const StaffListTable = ({
                 </tr>
             </thead>
             <tbody>
-                {staffs &&
+                {isLoading && (
+                    <tr>
+                        <td colSpan={6}>
+                            <ReactLoading type={"bubbles"} color={"#dddddd"} />
+                        </td>
+                    </tr>
+                )}
+                {!isLoading && staffs.length === 0 && (
+                    <tr>
+                        <td colSpan={6}>ユーザーデータはありません</td>
+                    </tr>
+                )}
+
+                {!isLoading &&
+                    staffs.length > 0 &&
                     staffs.map(staff => (
                         <tr key={staff.id}>
                             <td>

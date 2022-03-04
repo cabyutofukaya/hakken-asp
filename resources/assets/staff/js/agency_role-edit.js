@@ -120,6 +120,7 @@ const StaffIndex = ({ agencyAccount, title, searchParam, formSelects }) => {
                                 staffs={staffs}
                                 statuses={formSelects?.statuses}
                                 handleSortClick={handleSortClick}
+                                isLoading={isLoading}
                             />
                             {lastPage > 1 && (
                                 <PageNation

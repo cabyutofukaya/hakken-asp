@@ -24,7 +24,11 @@
               </select>
             </div>
           @elseif($ucid->type === config('consts.user_custom_items.CUSTOM_ITEM_TYPE_DATE'))
-            <div class="calendar"><input type="text" name="{{ $ucid->key }}" value="{{ Arr::get($searchParam, $ucid->key, '') }}" autocomplete="off"></div>
+            @if($ucid->input_type === config('consts.user_custom_items.INPUT_TYPE_DATE_01')) {{-- カレンダータイプ --}}
+              <div class="calendar"><input type="text" name="{{ $ucid->key }}" value="{{ Arr::get($searchParam, $ucid->key, '') }}" autocomplete="off"></div>
+            @else {{-- カレンダータイプ以外(時刻)はテキストフィールド --}}
+              <input type="text" name="{{ $ucid->key }}" value="{{ Arr::get($searchParam, $ucid->key, '') }}">
+            @endif
           @endif
         </li>
       @endforeach

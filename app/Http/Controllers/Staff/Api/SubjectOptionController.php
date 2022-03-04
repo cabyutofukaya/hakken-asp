@@ -31,7 +31,13 @@ class SubjectOptionController extends Controller
         $params = [];
         foreach (request()->all() as $key => $val) {
             if (in_array($key, ['code','name','supplier_id']) || strpos($key, config('consts.user_custom_items.USER_CUSTOM_ITEM_PREFIX')) === 0) { // カスタム項目はプレフィックスを元に抽出
-                $params[$key] = $val;
+
+                if (strpos($key, config('consts.user_custom_items.USER_CUSTOM_ITEM_CALENDAR_PREFIX')) === 0) { // カレンダーパラメータは日付を（YYYY/MM/DD → YYYY-MM-DD）に整形
+                    $params[$key] = !is_empty($val) ? date('Y-m-d', strtotime($val)) : null;
+                } else {
+                    $params[$key] = $val;
+                }
+
             }
         }
 
