@@ -10,6 +10,7 @@
   jsVars='@json($jsVars)'
   reception='{{ $reception }}'
   isDeparted='{{ $isDeparted }}'
+  isCanceled='{{ $isCanceled }}'
   ></div>
 </main>
 

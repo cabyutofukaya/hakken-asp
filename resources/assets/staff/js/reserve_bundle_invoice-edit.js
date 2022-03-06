@@ -15,6 +15,7 @@ import StatusModal from "./components/BusinessForm/StatusModal";
 import SealSettingArea from "./components/BusinessForm/SealSettingArea";
 import SettingCheckRow from "./components/BusinessForm/SettingCheckRow";
 import classNames from "classnames";
+import SuccessMessage from "./components/SuccessMessage";
 // flatpickr
 import "flatpickr/dist/themes/airbnb.css";
 import { Japanese } from "flatpickr/dist/l10n/ja.js";
@@ -33,6 +34,7 @@ const BundleInvoiceArea = ({
     documentCommonSetting,
     formSelects,
     reservePrices,
+    reserveCancelInfo,
     consts
 }) => {
     const { agencyAccount } = useContext(ConstContext);
@@ -40,6 +42,8 @@ const BundleInvoiceArea = ({
     const mounted = useMountedRef(); // マウント・アンマウント制御
 
     const [input, setInput] = useState({ ...defaultValue });
+
+    const [saveMessage, setSaveMessage] = useState(""); // 保存完了メッセージ
 
     const [documentSetting, setDocumentSetting] = useState({
         ...documentRequestAllSetting
@@ -211,7 +215,8 @@ const BundleInvoiceArea = ({
                         "document_common"
                     ), // 書類設定。共通設定はカット
                     reserve_prices: reservePrices,
-                    set_message: 1,
+                    reserve_cancel_info: reserveCancelInfo,
+                    // set_message: 1,
                     _method: "put"
                 }
             )
@@ -224,10 +229,23 @@ const BundleInvoiceArea = ({
                 }, 3000);
             });
         if (mounted.current && response?.status == 200) {
-            location.href = document.referrer
-                ? document.referrer
-                : `/${agencyAccount}/management/invoice/index`;
-            return;
+            const res = response.data.data;
+            setInput({
+                ...input,
+                updated_at: res.updated_at
+            }); // 更新日時をセットする
+
+            // メッセージエリアをslideDown(表示状態)にした後でメッセージをセット
+            $("#successMessage .closeIcon")
+                .parent()
+                .slideDown();
+            setSaveMessage("請求書データを保存しました");
+
+            // ↓ページ遷移すると慌ただしのでひとまず遷移ナシに
+            // location.href = document.referrer
+            //     ? document.referrer
+            //     : `/${agencyAccount}/management/invoice/index`;
+            // return;
         }
     };
 
@@ -257,7 +275,8 @@ const BundleInvoiceArea = ({
                         "document_common"
                     ), // 書類設定。共通設定はカット
                     reserve_prices: reservePrices,
-                    set_message: 1,
+                    reserve_cancel_info: reserveCancelInfo,
+                    // set_message: 1,
                     create_pdf: 1,
                     _method: "put"
                 }
@@ -358,6 +377,10 @@ const BundleInvoiceArea = ({
                     </li>
                 </ol>
             </div>
+
+            {/**保存完了メッセージ */}
+            <SuccessMessage message={saveMessage} />
+
             <div id="inputArea">
                 <ul className="sideList documentSetting">
                     <li className="wd60 overflowX dragTable">
@@ -543,8 +566,17 @@ const BundleInvoiceArea = ({
                                                         .BREAKDOWN_PRICE
                                                 ] ?? []
                                             }
+                                            reserveCancelInfo={
+                                                reserveCancelInfo
+                                            }
                                             amountTotal={amountTotal}
                                             setAmountTotal={setAmountTotal}
+                                            partnerManagers={formSelects.partnerManagers.filter(
+                                                item =>
+                                                    input.partner_manager_ids.includes(
+                                                        parseInt(item.id, 10)
+                                                    )
+                                            )}
                                         />
                                     )}
                             </div>
@@ -1132,6 +1164,9 @@ if (Element) {
     const parsedFormSelects = formSelects && JSON.parse(formSelects);
     const reservePrices = Element.getAttribute("reservePrices");
     const parsedReservePrices = reservePrices && JSON.parse(reservePrices);
+    const reserveCancelInfo = Element.getAttribute("reserveCancelInfo");
+    const parsedReserveCancelInfo =
+        reserveCancelInfo && JSON.parse(reserveCancelInfo);
     const consts = Element.getAttribute("consts");
     const parsedConsts = consts && JSON.parse(consts);
 
@@ -1144,6 +1179,7 @@ if (Element) {
                 documentCommonSetting={parsedDocumentCommonSetting}
                 formSelects={parsedFormSelects}
                 reservePrices={parsedReservePrices}
+                reserveCancelInfo={parsedReserveCancelInfo}
                 consts={parsedConsts}
             />
         </ConstApp>,

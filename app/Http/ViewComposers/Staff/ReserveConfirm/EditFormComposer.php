@@ -52,6 +52,8 @@ class EditFormComposer
         // 催行済みか否か
         $isDeparted = $reserve->is_departed;
 
+        // キャンセルか否か
+        $isCanceled = $reserve->is_canceled;
 
         if ($reserveConfirm) { // 保存データあり。$reserveConfirmから各種データをセット
 
@@ -223,11 +225,11 @@ class EditFormComposer
         $consts['departedIndexUrl'] = route('staff.estimates.departed.index', $agencyAccount); // 催行済URL
 
         // オプション価格情報、航空券価格情報、ホテル価格情報、宿泊施設情報、宿泊施設連絡先を取得
-        list($optionPrices, $airticketPrices, $hotelPrices, $hotelInfo, $hotelContacts) = $this->getPriceAndHotelInfo($reserveItinerary);
+        list($optionPrices, $airticketPrices, $hotelPrices, $hotelInfo, $hotelContacts) = $this->getPriceAndHotelInfo($reserveItinerary, $isCanceled);
 
         // reactに渡す各種定数
         $jsVars = $this->getJsVars($agencyAccount);
 
-        $view->with(compact('defaultValue', 'formSelects', 'consts', 'documentCommonSetting', 'hotelContacts', 'hotelInfo', 'optionPrices', 'airticketPrices', 'hotelPrices', 'documentSetting', 'jsVars', 'reception', 'isDeparted'));
+        $view->with(compact('defaultValue', 'formSelects', 'consts', 'documentCommonSetting', 'hotelContacts', 'hotelInfo', 'optionPrices', 'airticketPrices', 'hotelPrices', 'documentSetting', 'jsVars', 'reception', 'isDeparted', 'isCanceled'));
     }
 }

@@ -83,10 +83,10 @@ class ReserveParticipantAirplanePriceService implements ReserveParticipantPriceI
     /**
      * 対象予約IDのキャンセルチャージ料金、キャンセルフラグを保存
      */
-    public function setCancelChargeByReserveId(int $cancelCharge, bool $isCancel, int $reserveId) : bool
+    public function setCancelChargeByReserveId(int $cancelCharge, int $cancelChargeNet, bool $isCancel, int $reserveId) : bool
     {
         return $this->reserveParticipantAirplanePriceRepository->updateWhere(
-            ['cancel_charge' => $cancelCharge, 'is_cancel' => $isCancel], 
+            ['cancel_charge' => $cancelCharge, 'cancel_charge_net' => $cancelChargeNet, 'is_cancel' => $isCancel], 
             ['reserve_id' => $reserveId]
         );
     }

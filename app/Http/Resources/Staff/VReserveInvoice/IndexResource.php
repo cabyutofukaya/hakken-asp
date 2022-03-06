@@ -36,9 +36,8 @@ class IndexResource extends JsonResource
 
         } elseif (optional($this->reserve)->reception_type == config('consts.reserves.RECEPTION_TYPE_WEB')) {
             $reserveUrl = route('staff.web.estimates.reserve.show', [$request->agencyAccount, optional($this->reserve)->control_number ?? '']);
-            // TODO ↓以下は実装したらコメント解除
-            // $invoiceUrl = route('staff.web.estimates.reserve.invoice.edit', [$request->agencyAccount, optional($this->reserve)->control_number ?? '']);
-            // $receiptUrl = route('staff.web.estimates.reserve.receipt.edit', [$request->agencyAccount, optional($this->reserve)->control_number ?? '']);
+            $invoiceUrl = route('staff.web.estimates.reserve.invoice.edit', [$request->agencyAccount, optional($this->reserve)->control_number ?? '']);
+            $receiptUrl = route('staff.web.estimates.reserve.receipt.edit', [$request->agencyAccount, optional($this->reserve)->control_number ?? '']);
 
         }
 
@@ -70,6 +69,8 @@ class IndexResource extends JsonResource
             'reserve' => [
                 'control_number' => $this->reserve->control_number,
                 'updated_at' => $this->reserve->updated_at ? $this->reserve->updated_at->format('Y-m-d H:i:s') : null, // 予約情報の変更を検知するために使用
+                'is_deleted' => $this->reserve->trashed(),
+                'is_canceled' => $this->reserve->is_canceled,
             ],
             // 入金リスト（通常/一括請求）
             'combination_deposits' => $deposits,

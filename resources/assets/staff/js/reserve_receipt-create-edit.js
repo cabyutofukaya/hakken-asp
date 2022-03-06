@@ -17,6 +17,7 @@ import OwnCompanyPreviewArea from "./components/BusinessForm/Receipt/OwnCompanyP
 import PersonSuperscriptionPreviewArea from "./components/BusinessForm/Receipt/PersonSuperscriptionPreviewArea";
 import BusinessSuperscriptionPreviewArea from "./components/BusinessForm/Receipt/BusinessSuperscriptionPreviewArea";
 import OnlyNumberInput from "./components/OnlyNumberInput";
+import SuccessMessage from "./components/SuccessMessage";
 
 const ReserveReceiptArea = ({
     reserveNumber,
@@ -27,13 +28,16 @@ const ReserveReceiptArea = ({
     documentCommonSetting,
     formSelects,
     consts,
-    isDeparted
+    isDeparted,
+    isCanceled
 }) => {
     const { agencyAccount, receptionTypes } = useContext(ConstContext);
 
     const mounted = useMountedRef(); // マウント・アンマウント制御
 
     const [input, setInput] = useState({ ...defaultValue });
+
+    const [saveMessage, setSaveMessage] = useState(""); // 保存完了メッセージ
 
     const [documentSetting, setDocumentSetting] = useState({
         ...documentReceiptSetting
@@ -176,7 +180,8 @@ const ReserveReceiptArea = ({
                         documentSetting,
                         "document_common"
                     ), // 書類設定。共通設定はカット
-                    set_message: 1,
+                    is_canceled: isCanceled == 1 ? 1 : 0,
+                    // set_message: 1,
                     _method: "put"
                 }
             )
@@ -189,10 +194,23 @@ const ReserveReceiptArea = ({
                 }, 3000);
             });
         if (mounted.current && response?.status == 200) {
-            location.href = document.referrer
-                ? document.referrer
-                : `/${agencyAccount}/estimates/${reception}/reserve/${reserveNumber}`;
-            return;
+            const res = response.data.data;
+            setInput({
+                ...input,
+                updated_at: res.updated_at
+            }); // 更新日時をセットする
+
+            // メッセージエリアをslideDown(表示状態)にした後でメッセージをセット
+            $("#successMessage .closeIcon")
+                .parent()
+                .slideDown();
+            setSaveMessage("請求書データを保存しました");
+
+            // ↓ページ遷移すると慌ただしのでひとまず遷移ナシに
+            // location.href = document.referrer
+            //     ? document.referrer
+            //     : `/${agencyAccount}/estimates/${reception}/reserve/${reserveNumber}`;
+            // return;
         }
     };
 
@@ -230,7 +248,8 @@ const ReserveReceiptArea = ({
                         documentSetting,
                         "document_common"
                     ), // 書類設定。共通設定はカット
-                    set_message: 1,
+                    is_canceled: isCanceled,
+                    // set_message: 1,
                     create_pdf: 1,
                     _method: "put"
                 }
@@ -357,6 +376,10 @@ const ReserveReceiptArea = ({
                     </li>
                 </ol>
             </div>
+
+            {/**保存完了メッセージ */}
+            <SuccessMessage message={saveMessage} />
+
             <div id="inputArea">
                 <ul className="sideList documentSetting">
                     <li className="wd60 overflowX dragTable">
@@ -673,6 +696,7 @@ if (Element) {
     const consts = Element.getAttribute("consts");
     const parsedConsts = consts && JSON.parse(consts);
     const isDeparted = Element.getAttribute("isDeparted");
+    const isCanceled = Element.getAttribute("isCanceled");
 
     render(
         <ConstApp jsVars={parsedJsVars}>
@@ -686,6 +710,7 @@ if (Element) {
                 formSelects={parsedFormSelects}
                 consts={parsedConsts}
                 isDeparted={isDeparted}
+                isCanceled={isCanceled}
             />
         </ConstApp>,
         document.getElementById("reserveReceiptArea")

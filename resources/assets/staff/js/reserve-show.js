@@ -10,7 +10,6 @@ import StatusModal from "./components/Reserve/StatusModal";
 import { useMountedRef } from "../../hooks/useMountedRef";
 import SmallDangerModal from "./components/SmallDangerModal";
 import TopControlBox from "./components/Reserve/TopControlBox";
-import TopDeleteBox from "./components/Reserve/TopDeleteBox";
 import CancelChargeModal from "./components/Reserve/CancelChargeModal";
 import CancelModal from "./components/Reserve/CancelModal";
 import TopStatus from "./components/Reserve/TopStatus";

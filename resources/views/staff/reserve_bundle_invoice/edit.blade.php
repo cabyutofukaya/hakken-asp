@@ -9,6 +9,7 @@
     documentCommonSetting='@json($documentCommonSetting)'
     formSelects='@json($formSelects)' 
     reservePrices='@json($reservePrices)'
+    reserveCancelInfo='@json($reserveCancelInfo)'
     consts='@json($consts)'
     jsVars='@json($jsVars)'
   ></div>

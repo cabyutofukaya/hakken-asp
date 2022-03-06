@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\ExclusiveLockException;
 use App\Models\Reserve;
 use App\Repositories\Agency\AgencyRepository;
 use App\Repositories\WebReserve\WebReserveRepository;

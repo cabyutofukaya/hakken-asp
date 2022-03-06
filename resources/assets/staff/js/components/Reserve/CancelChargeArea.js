@@ -121,6 +121,11 @@ const CancelChargeArea = ({ defaultValue, consts, errors }) => {
                 onSubmit={handleSubmit}
             >
                 <input type="hidden" name="_token" value={csrfToken} />
+                <input
+                    type="hidden"
+                    name="reserve[updated_at]"
+                    value={defaultValue?.reserve?.updated_at}
+                />
                 <div id="inputArea">
                     <div className="tableWrap">
                         <div className="tableCont">

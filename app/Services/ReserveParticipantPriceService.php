@@ -26,9 +26,9 @@ class ReserveParticipantPriceService
     public function cancelChargeReset(int $reserveId) : bool
     {
         // 当該予約IDのオプション科目・航空券科目・ホテル科目のキャンセルチャージをリセット
-        $this->reserveParticipantOptionPriceService->setCancelChargeByReserveId(0, false, $reserveId);
-        $this->reserveParticipantAirplanePriceService->setCancelChargeByReserveId(0, false, $reserveId);
-        $this->reserveParticipantHotelPriceService->setCancelChargeByReserveId(0, false, $reserveId);
+        $this->reserveParticipantOptionPriceService->setCancelChargeByReserveId(0, 0, false, $reserveId);
+        $this->reserveParticipantAirplanePriceService->setCancelChargeByReserveId(0, 0, false, $reserveId);
+        $this->reserveParticipantHotelPriceService->setCancelChargeByReserveId(0, 0, false, $reserveId);
 
         return true;
     }

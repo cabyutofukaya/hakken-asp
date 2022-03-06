@@ -39,8 +39,8 @@ class ReserveInvoiceController extends Controller
     {
         // 受付種別で分ける
         if ($reception === config('consts.const.RECEPTION_TYPE_ASP')) { // ASP受付
-
             $reserve = $this->reserveService->findByControlNumber($reserveNumber, $agencyAccount);
+            
         } elseif ($reception === config('consts.const.RECEPTION_TYPE_WEB')) { // WEB受付
             $reserve = $this->webReserveService->findByControlNumber($reserveNumber, $agencyAccount);
         } else {
@@ -62,12 +62,12 @@ class ReserveInvoiceController extends Controller
 
         $input = $request->all();
         $input['agency_id'] = $agencyId;
-        
+
         try {
             $newReserveInvoice = \DB::transaction(function () use ($agencyId, $reserveId, $input) {
                 $oldReserveInvoice = $this->reserveInvoiceService->findByReserveId($reserveId);
                 
-                $newReserveInvoice =  $this->reserveInvoiceService->upsert($agencyId, $reserveId, $input);
+                $newReserveInvoice = $this->reserveInvoiceService->upsert($agencyId, $reserveId, $input);
 
                 return $newReserveInvoice;
             });
@@ -133,7 +133,7 @@ class ReserveInvoiceController extends Controller
 
                     // 入金額変更処理。入金済・未入金残高計算等
                     event(new AgencyDepositChangedEvent($agencyDeposit->reserve_invoice));
-                    
+
                     event(new AgencyDepositedEvent($agencyDeposit));
                 });
             }

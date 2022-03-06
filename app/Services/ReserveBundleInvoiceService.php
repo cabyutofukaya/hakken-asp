@@ -154,10 +154,10 @@ class ReserveBundleInvoiceService extends ReserveDocumentService
     public function refreshPriceData(ReserveBundleInvoice $reserveBundleInvoice, Collection $reserveInvoices) : bool
     {
         // 請求データ一覧から担当者IDごとにまとめた配列を作成
-        $reservePrices = $this->getReservePriceInfo($reserveInvoices);
+        list($reservePrices, $reserveCancelInfo) = $this->getReservePriceInfo($reserveInvoices);
 
         // $reservePricesと担当者ID一覧をもとに合計金額を算定
-        $amountTotal = get_reserve_price_total($reserveBundleInvoice->partner_manager_ids, $reservePrices);
+        $amountTotal = get_reserve_price_total($reserveBundleInvoice->partner_manager_ids, $reservePrices, $reserveCancelInfo);
 
         // 合計金額を更新
         $this->updateFields($reserveBundleInvoice->id, [

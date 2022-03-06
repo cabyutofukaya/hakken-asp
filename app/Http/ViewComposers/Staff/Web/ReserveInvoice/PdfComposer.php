@@ -55,6 +55,9 @@ class PdfComposer
 
         $reserve = $reserveInvoice->reserve;
 
+        // キャンセルか否か
+        $isCanceled = $reserve->is_canceled;
+
         // $my = auth("staff")->user();
         // $agencyId = $my->agency_id;
         // $agencyAccount = $my->agency->account;
@@ -118,13 +121,13 @@ class PdfComposer
 
         //////// 料金、ホテル情報
 
-        list($optionPrices, $airticketPrices, $hotelPrices, $hotelInfo, $hotelContacts) = $this->getPriceAndHotelInfoPdf($reserveInvoice, $value['participant_ids']);
+        list($optionPrices, $airticketPrices, $hotelPrices, $hotelInfo, $hotelContacts) = $this->getPriceAndHotelInfoPdf($reserveInvoice, $value['participant_ids'], $isCanceled);
 
         // 数量をまとめた配列を取得（オプション科目/航空券科目/ホテル科目）
         $optionPriceBreakdown = $this->getOptionPriceBreakdown($optionPrices);
         $airticketPriceBreakdown = $this->getAirticketPriceBreakdown($airticketPrices);
         $hotelPriceBreakdown = $this->getHotelPriceBreakdown($hotelPrices);
 
-        $view->with(compact('value', 'formSelects', 'hotelContacts', 'hotelInfo', 'optionPrices', 'airticketPrices', 'hotelPrices', 'optionPriceBreakdown', 'airticketPriceBreakdown', 'hotelPriceBreakdown'));
+        $view->with(compact('value', 'formSelects', 'hotelContacts', 'hotelInfo', 'optionPrices', 'airticketPrices', 'hotelPrices', 'optionPriceBreakdown', 'airticketPriceBreakdown', 'hotelPriceBreakdown', 'isCanceled'));
     }
 }

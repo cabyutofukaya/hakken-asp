@@ -11,7 +11,7 @@
 
   @elseif($applicationStep === config('consts.reserves.APPLICATION_STEP_RESERVE')) {{-- 予約 --}}
 
-    @if($isEnabled) {{-- 予約時は有効行程のみ編集可 --}}
+    @if(!$reserve->is_canceled && $isEnabled) {{-- 予約時は有効行程のみ編集可。キャンセル予約の場合も登録・編集不可 --}}
       <li class="wd50">
         <button class="grayBtn" onClick="event.preventDefault();location.href='{{ $backUrl }}'"><span class="material-icons">arrow_back_ios</span>{{ $mode === 'edit' ? '編集' : '登録' }}せずに戻る</button>
       </li>

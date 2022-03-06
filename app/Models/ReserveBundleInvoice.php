@@ -43,6 +43,7 @@ class ReserveBundleInvoice extends Model implements DocumentPdfInterface
         'document_setting',
         'document_common_setting',
         'reserve_prices',
+        'reserve_cancel_info',
         'amount_total',
         'deposit_amount',
         'not_deposit_amount',
@@ -163,6 +164,19 @@ class ReserveBundleInvoice extends Model implements DocumentPdfInterface
     public function setReservePricesAttribute($value)
     {
         $this->attributes['reserve_prices'] = $value ? json_encode($value) : null;
+    }
+
+    /**
+     * キャンセル予約情報
+     */
+    public function getReserveCancelInfoAttribute($value): ?array
+    {
+        return $value ? json_decode($value, true) : null;
+    }
+
+    public function setReserveCancelInfoAttribute($value)
+    {
+        $this->attributes['reserve_cancel_info'] = $value ? json_encode($value) : null;
     }
 
     ///////////////// 読みやすい文字列に変換するAttribute ここから //////////////

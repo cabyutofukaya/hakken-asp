@@ -167,7 +167,9 @@
 <thead>
   <tr>
     <th>予約番号</th>
-    <th>御社担当</th>
+    @if(in_array("御社担当", Arr::get($value, 'document_setting.setting.'.config('consts.document_request_alls.BREAKDOWN_PRICE'),[])))
+    <th>単価</th>
+    @endif
     @if(in_array("単価・金額", Arr::get($value, 'document_setting.setting.'.config('consts.document_request_alls.BREAKDOWN_PRICE'),[])))
       <th>単価</th>
     @endif
@@ -184,23 +186,51 @@
   @foreach($reservePriceBreakdown as $reserveNumber => $rows)
     @foreach($rows as $row)
       <tr>
-        <td>{{ $reserveNumber }}</td>
-        <td>{{ Arr::get($row, 'partner_manager') }}</td>
+        <td>
+          {{ $reserveNumber }}
+          @if(Arr::get($reserveCancelInfo, $reserveNumber, false)){{ config('consts.const.RESERVE_CANCEL_LABEL') }}@endif {{-- キャンセル予約の場合はキャセルラベルを表記 --}}
+        </td>
+        @if(in_array("御社担当", Arr::get($value, 'document_setting.setting.'.config('consts.document_request_alls.BREAKDOWN_PRICE'),[])))
+          <td>
+            {{ Arr::get($row, 'partner_manager') }} 
+            @if(in_array("御社担当_御社担当(敬称)", Arr::get($value, 'document_setting.setting.'.config('consts.document_request_alls.BREAKDOWN_PRICE'),[])))
+              様
+            @endif {{-- 御社担当敬称 --}}
+          </td>
+        @endif
         @if(in_array("単価・金額", Arr::get($value, 'document_setting.setting.'.config('consts.document_request_alls.BREAKDOWN_PRICE'),[])))
-          <td>￥{{ number_format( Arr::get($row, 'gross_ex', 0) ) }}</td>
+          <td>
+            @if(Arr::get($reserveCancelInfo, $reserveNumber, false)) {{-- キャンセル予約の場合はキャンセルチャージ金額 --}}
+              ￥{{ number_format( Arr::get($row, 'cancel_charge', 0) ) }}
+            @else
+              ￥{{ number_format( Arr::get($row, 'gross_ex', 0) ) }}
+            @endif
+          </td>
         @endif
         <td>{{ number_format( Arr::get($row, 'quantity', 0) ) }}</td>
         @if(in_array("消費税", Arr::get($value, 'document_setting.setting.'.config('consts.document_request_alls.BREAKDOWN_PRICE'),[])))
-          <td>{{ Arr::get($formSelects['zeiKbns'], Arr::get($row, 'zei_kbn'), "-") }}</td>
+          <td>
+            @if(Arr::get($reserveCancelInfo, $reserveNumber, false)) {{-- キャンセル予約の場合は消費税の表記ナシ --}}
+              -
+            @else
+              {{ Arr::get($formSelects['zeiKbns'], Arr::get($row, 'zei_kbn'), "-") }}
+            @endif
+          </td>
         @endif
         @if(in_array("単価・金額", Arr::get($value, 'document_setting.setting.'.config('consts.document_request_alls.BREAKDOWN_PRICE'),[])))
-          <td>￥{{ number_format( Arr::get($row, 'gross', 0)) }}</td>
+          <td>
+            @if(Arr::get($reserveCancelInfo, $reserveNumber, false)) {{-- キャンセル予約の場合はキャンセルチャージ金額 --}}
+              ￥{{ number_format( Arr::get($row, 'cancel_charge', 0) ) }}
+            @else
+              ￥{{ number_format( Arr::get($row, 'gross', 0)) }}
+            @endif
+          </td>
         @endif
       </tr>
     @endforeach
   @endforeach
   <tr class="total">
-    <td colspan="{{ 5 - (in_array("消費税", Arr::get($value, 'document_setting.setting.'.config('consts.document_request_alls.BREAKDOWN_PRICE'),[])) ? 0 : 1) - (in_array("単価・金額", Arr::get($value, 'document_setting.setting.'.config('consts.document_request_alls.BREAKDOWN_PRICE'),[])) ? 0 : 2) }}">合計金額</td>
+    <td colspan="{{ 5 - (in_array("消費税", Arr::get($value, 'document_setting.setting.'.config('consts.document_request_alls.BREAKDOWN_PRICE'),[])) ? 0 : 1) - (in_array("単価・金額", Arr::get($value, 'document_setting.setting.'.config('consts.document_request_alls.BREAKDOWN_PRICE'),[])) ? 0 : 2) - (in_array("御社担当", Arr::get($value, 'document_setting.setting.'.config('consts.document_request_alls.BREAKDOWN_PRICE'),[])) ? 0 : 1) }}">合計金額</td>
     <td>￥{{ number_format(Arr::get($value, 'amount_total', 0)) }}</td>
   </tr></tbody></table>
 </div>
