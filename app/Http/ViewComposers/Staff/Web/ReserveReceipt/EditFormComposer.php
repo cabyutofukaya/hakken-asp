@@ -51,6 +51,8 @@ class EditFormComposer
         // 催行済みか否か
         $isDeparted = $reserve->is_departed;
 
+        // キャンセルか否か
+        $isCanceled = $reserve->is_canceled;
 
         $defaultValue = [];
 
@@ -177,6 +179,6 @@ class EditFormComposer
         // reactに渡す各種定数
         $jsVars = $this->getJsVars($agencyAccount);
 
-        $view->with(compact('maximumAmount', 'defaultValue', 'formSelects', 'consts', 'documentCommonSetting', 'documentSetting', 'jsVars', 'reception', 'reception', 'isDeparted'));
+        $view->with(compact('maximumAmount', 'defaultValue', 'formSelects', 'consts', 'documentCommonSetting', 'documentSetting', 'jsVars', 'reception', 'reception', 'isDeparted', 'isCanceled'));
     }
 }

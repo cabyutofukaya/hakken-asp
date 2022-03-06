@@ -1,18 +1,22 @@
+import _ from "lodash";
 import React, { useEffect, useContext, useState } from "react";
 import { ConstContext } from "../ConstApp";
+import { RESERVE } from "../../constants";
 const md5 = require("md5");
 
 /**
  * 代金内訳プレビュー
  *
- * @param {*} param0
+ * @param {object} reserveCancelInfo キャンセル予約情報
  * @returns
  */
 const ReserveBreakdownPricePreviewArea = ({
     reservePrices,
+    reserveCancelInfo,
     showSetting,
     setAmountTotal,
-    amountTotal
+    amountTotal,
+    partnerManagers
 }) => {
     const { documentZeiKbns } = useContext(ConstContext);
 
@@ -29,7 +33,14 @@ const ReserveBreakdownPricePreviewArea = ({
                     (zeiKbn, k) => {
                         reservePrices[managerId][reserveNumber][zeiKbn].map(
                             (row, l) => {
-                                grossSum += parseInt(row.gross || 0);
+                                // キャンセル予約の場合はcancel_chargeの金額を計算
+                                if (reserveCancelInfo?.[reserveNumber]) {
+                                    grossSum += parseInt(
+                                        row.cancel_charge || 0
+                                    );
+                                } else {
+                                    grossSum += parseInt(row.gross || 0);
+                                }
                             }
                         );
                     }
@@ -56,12 +67,16 @@ const ReserveBreakdownPricePreviewArea = ({
                             gross_ex: 0,
                             quantity: 1,
                             zei_kbn: zeiKbn,
-                            gross: 0
+                            gross: 0,
+                            cancel_charge: 0
                         };
                         reservePrices[managerId][reserveNumber][zeiKbn].map(
                             (row, l) => {
                                 t["gross_ex"] += parseInt(row.gross_ex || 0);
                                 t["gross"] += parseInt(row.gross || 0);
+                                t["cancel_charge"] += parseInt(
+                                    row.cancel_charge || 0
+                                );
                             }
                         );
                         temp[reserveNumber].push(t);
@@ -79,7 +94,7 @@ const ReserveBreakdownPricePreviewArea = ({
                 <thead>
                     <tr>
                         <th>予約番号</th>
-                        <th>御社担当</th>
+                        {showSetting.includes("御社担当") && <th>御社担当</th>}
                         {showSetting.includes("単価・金額") && <th>単価</th>}
                         <th>数量</th>
                         {showSetting.includes("消費税") && <th>消費税</th>}
@@ -93,15 +108,44 @@ const ReserveBreakdownPricePreviewArea = ({
                                 (row, j) => {
                                     return (
                                         <tr key={`row${i}_${j}`}>
-                                            {console.log(row)}
-                                            <td>{reserveNumber}</td>
-                                            <td>{row.partner_manager_id}</td>
+                                            <td>
+                                                {reserveNumber}
+                                                {reserveCancelInfo?.[
+                                                    reserveNumber
+                                                ] && RESERVE.CANCEL_LABEL}
+                                            </td>
+                                            {showSetting.includes(
+                                                "御社担当"
+                                            ) && (
+                                                <td>
+                                                    {_.find(
+                                                        partnerManagers,
+                                                        function(o) {
+                                                            return (
+                                                                o.id ==
+                                                                row?.partner_manager_id
+                                                            );
+                                                        }
+                                                    )?.org_name ?? "-"}
+                                                    {showSetting.includes(
+                                                        "御社担当_御社担当(敬称)"
+                                                    ) && " 様"}
+                                                </td>
+                                            )}
                                             {showSetting.includes(
                                                 "単価・金額"
                                             ) && (
                                                 <td>
+                                                    {/**キャンセルの場合はキャンセルチャージ料金を出力 */}
                                                     ￥
-                                                    {row.gross_ex.toLocaleString()}
+                                                    {reserveCancelInfo?.[
+                                                        reserveNumber
+                                                    ] &&
+                                                        row.cancel_charge.toLocaleString()}
+                                                    {!reserveCancelInfo?.[
+                                                        reserveNumber
+                                                    ] &&
+                                                        row.gross_ex.toLocaleString()}
                                                 </td>
                                             )}
                                             <td>
@@ -109,16 +153,33 @@ const ReserveBreakdownPricePreviewArea = ({
                                             </td>
                                             {showSetting.includes("消費税") && (
                                                 <td>
-                                                    {zeiKbns?.[row.zei_kbn] ??
-                                                        "-"}
+                                                    {/**キャンセル予約の場合は消費税表示ナシ */}
+                                                    {reserveCancelInfo?.[
+                                                        reserveNumber
+                                                    ] && "-"}
+                                                    {!reserveCancelInfo?.[
+                                                        reserveNumber
+                                                    ] &&
+                                                        (zeiKbns?.[
+                                                            row.zei_kbn
+                                                        ] ??
+                                                            "-")}
                                                 </td>
                                             )}
                                             {showSetting.includes(
                                                 "単価・金額"
                                             ) && (
                                                 <td>
+                                                    {/**キャンセル予約の場合はキャンセルチャージの合計がgross */}
                                                     ￥
-                                                    {row.gross.toLocaleString()}
+                                                    {reserveCancelInfo?.[
+                                                        reserveNumber
+                                                    ] &&
+                                                        row.cancel_charge.toLocaleString()}
+                                                    {!reserveCancelInfo?.[
+                                                        reserveNumber
+                                                    ] &&
+                                                        row.gross.toLocaleString()}
                                                 </td>
                                             )}
                                         </tr>
@@ -132,7 +193,8 @@ const ReserveBreakdownPricePreviewArea = ({
                             colSpan={
                                 5 -
                                 (showSetting.includes("消費税") ? 0 : 1) -
-                                (showSetting.includes("単価・金額") ? 0 : 2)
+                                (showSetting.includes("単価・金額") ? 0 : 2) -
+                                (showSetting.includes("御社担当") ? 0 : 1)
                             }
                         >
                             合計金額

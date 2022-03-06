@@ -58,6 +58,9 @@ class PdfComposer
         // 受付種別
         $reception = config('consts.const.RECEPTION_TYPE_WEB');
 
+        // キャンセルか否か
+        $isCanceled = $reserveConfirm->reserve->is_canceled;
+
         foreach ([
             'control_number',
             'confirm_number',
@@ -119,13 +122,13 @@ class PdfComposer
 
         //////// 料金、ホテル情報
 
-        list($optionPrices, $airticketPrices, $hotelPrices, $hotelInfo, $hotelContacts) = $this->getPriceAndHotelInfoPdf($reserveConfirm, $value['participant_ids']);
+        list($optionPrices, $airticketPrices, $hotelPrices, $hotelInfo, $hotelContacts) = $this->getPriceAndHotelInfoPdf($reserveConfirm, $value['participant_ids'], $isCanceled);
 
         // 数量をまとめた配列を取得（オプション科目/航空券科目/ホテル科目）
         $optionPriceBreakdown = $this->getOptionPriceBreakdown($optionPrices);
         $airticketPriceBreakdown = $this->getAirticketPriceBreakdown($airticketPrices);
         $hotelPriceBreakdown = $this->getHotelPriceBreakdown($hotelPrices);
 
-        $view->with(compact('reception', 'value', 'formSelects', 'hotelContacts', 'hotelInfo', 'optionPrices', 'airticketPrices', 'hotelPrices', 'optionPriceBreakdown', 'airticketPriceBreakdown', 'hotelPriceBreakdown'));
+        $view->with(compact('reception', 'value', 'formSelects', 'hotelContacts', 'hotelInfo', 'optionPrices', 'airticketPrices', 'hotelPrices', 'optionPriceBreakdown', 'airticketPriceBreakdown', 'hotelPriceBreakdown', 'isCanceled'));
     }
 }

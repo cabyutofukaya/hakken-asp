@@ -20,9 +20,8 @@ class PdfComposer
 
         //////////////////////////////////
 
-        // $my = auth("staff")->user();
-        // $agencyId = $my->agency_id;
-        // $agencyAccount = $my->agency->account;
+        // キャンセルか否か
+        $isCanceled = $reserveReceipt->reserve->is_canceled;
 
         foreach ([
             'user_receipt_number',
@@ -41,6 +40,6 @@ class PdfComposer
             'honorifics' => get_const_item('documents', 'honorific'), // 敬称
         ];
 
-        $view->with(compact('value', 'formSelects'));
+        $view->with(compact('value', 'formSelects', 'isCanceled'));
     }
 }

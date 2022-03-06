@@ -74,3 +74,8 @@ export const DOCUMENT_REQUEST_ALL = {
     BREAKDOWN_PRICE: "breakdown_price",
     SEAL_LABEL: "検印欄"
 };
+
+export const RESERVE = {
+    DELETE_LABEL: "(削除)",
+    CANCEL_LABEL: "(キャンセル)" //※これを変更する場合は asp/config/consts/const.phpも変更すること
+};

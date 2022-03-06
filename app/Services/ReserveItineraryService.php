@@ -89,23 +89,6 @@ class ReserveItineraryService
         return $this->reserveItineraryRepository->findByReserveItineraryNumber($itineraryNumber, $reserveId, $agencyId, $with, $select, $getDeleted);
     }
 
-    // /**
-    //  * 予約番号と行程番号から行程データを1件取得
-    //  *
-    //  * @param string $reserveNumber 予約番号
-    //  * @param string $itineraryNumber 行程番号
-    //  * @param string $agencyAccount 会社ID
-    //  */
-    // public function findByReserveItineraryNumber(string $reserveNumber, string $itineraryNumber, string $agencyAccount, array $with = [], array $select=[], bool $getDeleted = false) : ?ReserveItinerary
-    // {
-    //     $agencyId = $this->agencyRepository->getIdByAccount($agencyAccount);
-        
-    //     // 予約情報
-    //     $reserve = $this->reserveRepository->findByControlNumber($reserveNumber, $agencyId);
-
-    //     return $this->reserveItineraryRepository->findByReserveItineraryNumber($itineraryNumber, $reserve->id, $agencyId, $with, $select, $getDeleted);
-    // }
-
     /**
      * 作成
      *

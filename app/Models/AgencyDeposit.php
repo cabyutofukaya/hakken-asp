@@ -74,7 +74,7 @@ class AgencyDeposit extends Model
     // 予約
     public function reserve()
     {
-        return $this->belongsTo('App\Models\Reserve')->withDefault();
+        return $this->belongsTo('App\Models\Reserve')->withDefault()->withTrashed(); // 削除済みも取得
     }
 
     // 請求管理

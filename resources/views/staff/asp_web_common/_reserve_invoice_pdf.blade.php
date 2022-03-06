@@ -257,55 +257,130 @@
         <tbody>
           @foreach($optionPriceBreakdown as $row) {{-- オプション科目 --}}
             <tr>
-              <td>{{ Arr::get($row, 'name') }}</td>
+              <td>
+                {{ Arr::get($row, 'name') }}
+                @if($isCanceled){{ config('consts.const.RESERVE_CANCEL_LABEL') }}@endif {{-- キャンセルの場合はキャセルラベルを表記 --}}
+              </td>
               @if(in_array("単価・金額", Arr::get($value, 'document_setting.setting.'.config('consts.document_requests.BREAKDOWN_PRICE'),[])))
-                <td>￥{{ number_format( Arr::get($row, 'gross_ex', 0) ) }}</td>
+                <td>
+                  @if($isCanceled) {{-- キャンセルの場合はキャンセルチャージ金額 --}}
+                    ￥{{ number_format( Arr::get($row, 'cancel_charge', 0) ) }}
+                  @else
+                    ￥{{ number_format( Arr::get($row, 'gross_ex', 0) ) }}
+                  @endif
+                </td>
               @endif
-              <td>{{ number_format( Arr::get($row, 'quantity', 0) ) }}</td>
+              <td>
+                {{ number_format( Arr::get($row, 'quantity', 0) ) }}
+              </td>
               @if(in_array("消費税", Arr::get($value, 'document_setting.setting.'.config('consts.document_requests.BREAKDOWN_PRICE'),[])))
-                <td>{{ Arr::get($formSelects['zeiKbns'], Arr::get($row, 'zei_kbn'), "-") }}</td>
+                <td>
+                  @if($isCanceled) {{-- キャンセルの場合は消費税の表記ナシ --}}
+                    -
+                  @else
+                    {{ Arr::get($formSelects['zeiKbns'], Arr::get($row, 'zei_kbn'), "-") }}
+                  @endif
+                </td>
               @endif
               @if(in_array("単価・金額", Arr::get($value, 'document_setting.setting.'.config('consts.document_requests.BREAKDOWN_PRICE'),[])))
-                <td>￥{{ number_format( Arr::get($row, 'gross', 0) * Arr::get($row, 'quantity', 0) ) }}</td>
+                <td>
+                  @if($isCanceled) {{-- キャンセルの場合はキャンセルチャージ金額で計算 --}}
+                    ￥{{ number_format( Arr::get($row, 'cancel_charge', 0) * Arr::get($row, 'quantity', 0) ) }}
+                  @else
+                   ￥{{ number_format( Arr::get($row, 'gross', 0) * Arr::get($row, 'quantity', 0) ) }}
+                  @endif
+                </td>
               @endif
             </tr>
           @endforeach
 
           @foreach($airticketPriceBreakdown as $row) {{-- 航空券 --}}
             <tr>
-              <td>{{ Arr::get($row, 'name') }} {{ Arr::get($row, 'seat') }}</td>
+              <td>
+                {{ Arr::get($row, 'name') }} {{ Arr::get($row, 'seat') }}
+                @if($isCanceled){{ config('consts.const.RESERVE_CANCEL_LABEL') }}@endif {{-- キャンセルの場合はキャセルラベルを表記 --}}
+              </td>
               @if(in_array("単価・金額", Arr::get($value, 'document_setting.setting.'.config('consts.document_requests.BREAKDOWN_PRICE'),[])))
-                <td>￥{{ number_format( Arr::get($row, 'gross_ex', 0) ) }}</td>
+                <td>
+                  @if($isCanceled) {{-- キャンセルの場合はキャンセルチャージ金額 --}}
+                    ￥{{ number_format( Arr::get($row, 'cancel_charge', 0) ) }}
+                  @else
+                    ￥{{ number_format( Arr::get($row, 'gross_ex', 0) ) }}
+                  @endif
+                </td>
               @endif
-              <td>{{ number_format( Arr::get($row, 'quantity', 0) ) }}</td>
+              <td>
+                {{ number_format( Arr::get($row, 'quantity', 0) ) }}
+              </td>
               @if(in_array("消費税", Arr::get($value, 'document_setting.setting.'.config('consts.document_requests.BREAKDOWN_PRICE'),[])))
-                <td>{{ Arr::get($formSelects['zeiKbns'], Arr::get($row, 'zei_kbn'), "-") }}</td>
+                <td>
+                  @if($isCanceled) {{-- キャンセルの場合は消費税の表記ナシ --}}
+                    -
+                  @else
+                    {{ Arr::get($formSelects['zeiKbns'], Arr::get($row, 'zei_kbn'), "-") }}
+                  @endif
+                </td>
               @endif
               @if(in_array("単価・金額", Arr::get($value, 'document_setting.setting.'.config('consts.document_requests.BREAKDOWN_PRICE'),[])))
-                <td>￥{{ number_format( Arr::get($row, 'gross', 0) * Arr::get($row, 'quantity', 0) ) }}</td>
+                <td>
+                  @if($isCanceled) {{-- キャンセルの場合はキャンセルチャージ金額で計算 --}}
+                    ￥{{ number_format( Arr::get($row, 'cancel_charge', 0) * Arr::get($row, 'quantity', 0) ) }}
+                  @else
+                    ￥{{ number_format( Arr::get($row, 'gross', 0) * Arr::get($row, 'quantity', 0) ) }}
+                  @endif
+                </td>
               @endif
             </tr>
           @endforeach
 
           @foreach($hotelPriceBreakdown as $row) {{-- ホテル --}}
             <tr>
-              <td>{{ Arr::get($row, 'name') }} {{ Arr::get($row, 'room_type') }} {{ Arr::get($row, 'quantity') }}名</td>
+              <td>
+                {{ Arr::get($row, 'name') }} {{ Arr::get($row, 'room_type') }} {{ Arr::get($row, 'quantity') }}名
+                @if($isCanceled){{ config('consts.const.RESERVE_CANCEL_LABEL') }}@endif {{-- キャンセルの場合はキャセルラベルを表記 --}}
+              </td>
               @if(in_array("単価・金額", Arr::get($value, 'document_setting.setting.'.config('consts.document_requests.BREAKDOWN_PRICE'),[])))
-                <td>￥{{ number_format( Arr::get($row, 'gross_ex', 0) ) }}</td>
+                <td>
+                  @if($isCanceled) {{-- キャンセルの場合はキャンセルチャージ金額 --}}
+                    ￥{{ number_format( Arr::get($row, 'cancel_charge', 0) ) }}
+                  @else
+                    ￥{{ number_format( Arr::get($row, 'gross_ex', 0) ) }}
+                  @endif
+                </td>
               @endif
-              <td>{{ number_format( Arr::get($row, 'quantity', 0) ) }}</td>
+              <td>
+                {{ number_format( Arr::get($row, 'quantity', 0) ) }}
+              </td>
               @if(in_array("消費税", Arr::get($value, 'document_setting.setting.'.config('consts.document_requests.BREAKDOWN_PRICE'),[])))
-                <td>{{ Arr::get($formSelects['zeiKbns'], Arr::get($row, 'zei_kbn'), "-") }}</td>
+                <td>
+                  @if($isCanceled) {{-- キャンセルの場合は消費税の表記ナシ --}}
+                    -
+                  @else
+                    {{ Arr::get($formSelects['zeiKbns'], Arr::get($row, 'zei_kbn'), "-") }}
+                  @endif
+                </td>
               @endif
               @if(in_array("単価・金額", Arr::get($value, 'document_setting.setting.'.config('consts.document_requests.BREAKDOWN_PRICE'),[])))
-                <td>￥{{ number_format( Arr::get($row, 'gross', 0) * Arr::get($row, 'quantity', 0) ) }}</td>
+                <td>
+                  @if($isCanceled) {{-- キャンセルの場合はキャンセルチャージ金額で計算 --}}
+                    ￥{{ number_format( Arr::get($row, 'cancel_charge', 0) * Arr::get($row, 'quantity', 0) ) }}
+                  @else
+                    ￥{{ number_format( Arr::get($row, 'gross', 0) * Arr::get($row, 'quantity', 0) ) }}
+                  @endif
+                </td>
               @endif
             </tr>
           @endforeach
 
           <tr className="total">
             <td colSpan="{{ 4 - (in_array("消費税", Arr::get($value, 'document_setting.setting.'.config('consts.document_requests.BREAKDOWN_PRICE'),[])) ? 0 : 1) - (in_array("単価・金額", Arr::get($value, 'document_setting.setting.'.config('consts.document_requests.BREAKDOWN_PRICE'),[])) ? 0 : 2) }}">合計金額</td>
-            <td>￥{{ number_format(collect($optionPrices)->sum('gross') + collect($airticketPrices)->sum('gross') + collect($hotelPrices)->sum('gross')) }}</td>
+            <td>
+              @if($isCanceled) {{-- キャンセルの場合はキャンセルチャージ金額で計算 --}}
+                ￥{{ number_format(collect($optionPrices)->sum('cancel_charge') + collect($airticketPrices)->sum('cancel_charge') + collect($hotelPrices)->sum('cancel_charge')) }}
+              @else
+                ￥{{ number_format(collect($optionPrices)->sum('gross') + collect($airticketPrices)->sum('gross') + collect($hotelPrices)->sum('gross')) }}
+              @endif
+            </td>
           </tr>
         </tbody>
       </table>

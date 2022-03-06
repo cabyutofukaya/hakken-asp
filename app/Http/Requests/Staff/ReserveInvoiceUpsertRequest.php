@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Staff;
 
 use App\Rules\CheckTotalAmount;
+use App\Rules\CheckTotalCancelAmount;
 use App\Rules\ExistBusinessUser;
 use App\Rules\ExistDocumentCommon;
 use App\Rules\ExistDocumentRequest;
@@ -10,7 +11,6 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Arr;
 use Illuminate\Validation\Validator;
 use Illuminate\Validation\Rule;
-
 
 // 予約請求書 作成or更新リクエスト
 class ReserveInvoiceUpsertRequest extends FormRequest
@@ -38,6 +38,15 @@ class ReserveInvoiceUpsertRequest extends FormRequest
         $validator->sometimes('business_user_id', ['required', new ExistBusinessUser(auth('staff')->user()->agency->id)], function () {
             return Arr::get($this->document_address, 'type') === config('consts.reserves.PARTICIPANT_TYPE_BUSINESS');
         });
+
+        // 合計金額検算(キャンセルか否かで計算メソッドを切り替え)
+        $validator->sometimes('amount_total', ['numeric',new CheckTotalAmount($this->participant_ids, $this->option_prices, $this->airticket_prices, $this->hotel_prices)], function ($input) {
+            return !$input->is_canceled;
+        });
+
+        $validator->sometimes('amount_total', ['numeric',new CheckTotalCancelAmount($this->participant_ids, $this->option_prices, $this->airticket_prices, $this->hotel_prices)], function ($input) {
+            return $input->is_canceled;
+        }); // キャンセル予約
     }
 
     /**
@@ -63,7 +72,8 @@ class ReserveInvoiceUpsertRequest extends FormRequest
             'participant_ids' => 'nullable|array',
             'document_common_setting' => 'nullable|array',
             'document_setting' => 'nullable|array',
-            'amount_total' => ['numeric',new CheckTotalAmount($this->participant_ids, $this->option_prices, $this->airticket_prices, $this->hotel_prices)],
+            // 'amount_total' => ['numeric',new CheckTotalAmount($this->participant_ids, $this->option_prices, $this->airticket_prices, $this->hotel_prices)],
+            'is_canceled' => 'boolean',
             'status' => ['nullable',Rule::in(array_values(config("consts.reserve_invoices.STATUS_LIST")))],
             // 代金内訳、ホテル情報等
             'option_prices' => 'nullable|array',
@@ -95,6 +105,7 @@ class ReserveInvoiceUpsertRequest extends FormRequest
             'document_common_setting.array' => '共通設定の入力形式が不正です。',
             'document_setting.array' => '各種表示設定の入力値が不正です。',
             'amount_total.numeric' => '合計金額の入力が不正です。',
+            'is_canceled.boolean' => 'キャンセルフラグの指定が不正です。',
             'status.in' => 'ステータスの入力値が不正です。',
             'option_prices.array' => 'オプション科目の入力形式値が不正です。',
             'airticket_prices.array' => '航空券科目の入力形式値が不正です。',

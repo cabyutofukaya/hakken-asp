@@ -51,7 +51,7 @@ const OwnCompanyPreviewArea = ({ showSetting, company, manager }) => {
                     company?.tel &&
                     `TEL:${company.tel ?? ""}`}
                 {showSetting.includes("FAX") && company?.fax && (
-                    <> / FAX:${company.fax ?? ""}</>
+                    <> / FAX:{company.fax ?? ""}</>
                 )}
             </p>
             <p className="dispManager">

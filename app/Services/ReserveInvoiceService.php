@@ -183,7 +183,7 @@ class ReserveInvoiceService extends ReserveDocumentService implements DocumentAd
         $participantIds = $this->getDefaultParticipantCheckIds($this->reserveService->getParticipants($reserve->id, true));
 
         // オプション価格情報、航空券価格情報、ホテル価格情報、宿泊施設情報、宿泊施設連絡先を取得
-        list($optionPrices, $airticketPrices, $hotelPrices, $hotelInfo, $hotelContacts) = $this->getPriceAndHotelInfo($reserve->enabled_reserve_itinerary->id ? $reserve->enabled_reserve_itinerary : null);
+        list($optionPrices, $airticketPrices, $hotelPrices, $hotelInfo, $hotelContacts) = $this->getPriceAndHotelInfo($reserve->enabled_reserve_itinerary->id ? $reserve->enabled_reserve_itinerary : null, $reserve->is_canceled);
 
         // 請求書書類設定
         $documentRequest = $this->documentRequestService->getDefault($reserve->agency_id);
@@ -254,6 +254,7 @@ class ReserveInvoiceService extends ReserveDocumentService implements DocumentAd
      * 請求書作成or更新後の一括請求レコード作成や請求書レコードとの紐付け処理等
      *
      * @param int $oldReserveBundleInvoiceId 紐付け変更前のreserve_bundle_invoice_id
+     * @param ReserveInvoice $reserveInvoice 最新の請求情報
      */
     public function reserveBundleInvoiceRefresh(?int $oldReserveBundleInvoiceId, ReserveInvoice $reserveInvoice)
     {
@@ -274,7 +275,7 @@ class ReserveInvoiceService extends ReserveDocumentService implements DocumentAd
                 $this->getByReserveBundleInvoiceId(
                     $reserveBundleInvoice->agency->account,
                     $reserveBundleInvoice->id,
-                    ['reserve:id,control_number,applicantable_type,applicantable_id','reserve.applicantable:id,name'],
+                    ['reserve:id,control_number,applicantable_type,applicantable_id,cancel_at','reserve.applicantable:id,name'],
                     ['reserve_id','option_prices','airticket_prices','hotel_prices','participant_ids']
                 )
             );

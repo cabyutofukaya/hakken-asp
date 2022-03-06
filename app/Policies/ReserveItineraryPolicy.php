@@ -65,6 +65,10 @@ class ReserveItineraryPolicy
             return Response::deny('許可されていないリクエストです(403 Forbidden)');
         }
 
+        if ($reserve->is_canceled) {
+            return Response::deny('キャンセル済みの予約は行程の編集ができません(403 Forbidden)'); // キャンセル済み予約で行程を作成・編集できると経理の計算がおかしくなるのでとりあえず不許可
+        }
+
         $model = class_basename(get_class($appUser));
         if ($model === 'Admin') {
             return Response::allow();
@@ -85,6 +89,10 @@ class ReserveItineraryPolicy
      */
     public function update(AppUser $appUser, ReserveItinerary $reserveItinerary)
     {
+        if ($reserveItinerary->reserve->is_canceled) {
+            return Response::deny('キャンセル済みの予約は行程の編集ができません(403 Forbidden)'); // キャンセル済み予約で行程を作成・編集できると経理の計算がおかしくなるのでとりあえず不許可
+        }
+
         $model = class_basename(get_class($appUser));
         if ($model === 'Admin') {
             return Response::allow();

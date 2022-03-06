@@ -63,11 +63,12 @@ class ReserveBundleInvoiceUpdateRequest extends FormRequest
             'partner_manager_ids' => 'nullable|array',
             'document_common_setting' => 'nullable|array',
             'document_setting' => 'nullable|array',
-            'amount_total' => ['numeric',new CheckBundleTotalAmount($this->partner_manager_ids, $this->reserve_prices)],
+            'amount_total' => ['numeric',new CheckBundleTotalAmount($this->partner_manager_ids, $this->reserve_prices, $this->reserve_cancel_info)],
             'status' => ['nullable',Rule::in(array_values(config("consts.reserve_bundle_invoices.STATUS_LIST")))],
             'updated_at' => 'nullable|date',
             // 代金内訳情報等
-            'reserve_prices' => 'nullable|array',
+            'reserve_prices' => 'required|array',
+            'reserve_cancel_info' => 'required|array', // キャンセル予約情報。金額の検算に使用
         ];
     }
     
@@ -93,7 +94,10 @@ class ReserveBundleInvoiceUpdateRequest extends FormRequest
             'document_setting.array' => '各種表示設定の入力値が不正です。',
             'amount_total.numeric' => '合計金額の入力が不正です。',
             'status.in' => 'ステータスの入力値が不正です。',
+            'reserve_prices.required' => '料金内訳データは必須です。',
             'reserve_prices.array' => '料金内訳の入力形式値が不正です。',
+            'reserve_cancel_info.required' => 'キャンセル予約情報は必須です。',
+            'reserve_cancel_info.array' => 'キャンセル予約情報の入力形式値が不正です。',
         ];
     }
 }

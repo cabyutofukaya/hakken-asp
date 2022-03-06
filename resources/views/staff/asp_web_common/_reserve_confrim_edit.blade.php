@@ -2,6 +2,7 @@
   <div id="reserveConfirmArea"
   reception='{{ $reception }}'
   isDeparted='{{ $isDeparted }}'
+  isCanceled='{{ $isCanceled }}'
   applicationStep='{{ $applicationStep }}'
   reserveNumber='{{ $reserveNumber }}'
   estimateNumber='{{ $estimateNumber }}'

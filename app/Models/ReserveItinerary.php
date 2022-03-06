@@ -12,6 +12,8 @@ class ReserveItinerary extends Model
 {
     use ModelLogTrait,SoftDeletes,Sortable,SoftCascadeTrait;
 
+    // protected $touches = ['reserve'];
+
     // 料金レコードの集計に使用
     protected $with = [
         'reserve_participant_option_prices',

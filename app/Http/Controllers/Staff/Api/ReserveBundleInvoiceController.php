@@ -49,7 +49,7 @@ class ReserveBundleInvoiceController extends Controller
 
         $input = $request->all();
         $input['agency_id'] = $agencyId;
-        
+
         try {
             $newReserveBundleInvoice = \DB::transaction(function () use ($reserveBundleInvoiceId, $input, $reserveBundleInvoice) {
                 $newReserveBundleInvoice =  $this->reserveBundleInvoiceService->update($reserveBundleInvoiceId, $input);

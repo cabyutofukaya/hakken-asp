@@ -12,6 +12,8 @@
     ])
   </div>
 
+  @include('staff.common.error_message')
+
   <div id="cancelChargeArea" 
     consts='@json($consts)' 
     jsVars='@json($jsVars)'

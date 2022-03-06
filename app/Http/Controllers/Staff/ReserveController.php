@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Staff;
 
+use App\Exceptions\ExclusiveLockException;
 use App\Events\ReserveChangeHeadcountEvent;
 use App\Events\ReserveChangeRepresentativeEvent;
 use App\Events\ReserveEvent;
@@ -244,7 +245,7 @@ class ReserveController extends AppController
                 // キャンセルチャージ料金を保存
                 $this->setCancelCharge($input);
                 
-                $this->reserveService->cancel($reserve->id, true);
+                $this->reserveService->cancel($reserve->id, true, Arr::get($input, 'reserve.updated_at'));
 
                 /**カスタムステータスを「キャンセル」に更新 */
 
@@ -262,6 +263,9 @@ class ReserveController extends AppController
             // 予約詳細ページへリダイレクト
             return redirect()->route('staff.asp.estimates.reserve.show', [$agencyAccount, $controlNumber])->with('success_message', "「{$controlNumber}」のキャンセルチャージ処理が完了しました");
 
+        } catch (ExclusiveLockException $e) { // 同時編集エラー
+            return back()->withInput()->with('error_message', "他のユーザーによる編集済みレコードです。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+            
         } catch (Exception $e) {
             Log::error($e);
         }

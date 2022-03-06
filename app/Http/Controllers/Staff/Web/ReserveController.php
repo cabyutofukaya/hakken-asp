@@ -21,6 +21,7 @@ use App\Services\WebReserveService;
 use App\Traits\CancelChargeTrait;
 use App\Traits\ReserveControllerTrait;
 use Gate;
+use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
 
 /**
@@ -182,7 +183,7 @@ class ReserveController extends AppController
                 // キャンセルチャージ料金を保存
                 $this->setCancelCharge($input);
                 
-                $this->webReserveService->cancel($reserve->id, true);
+                $this->webReserveService->cancel($reserve->id, true, Arr::get($input, 'reserve.updated_at'));
 
                 /**カスタムステータスを「キャンセル」に更新 */
 
@@ -200,6 +201,8 @@ class ReserveController extends AppController
             // 予約詳細ページへリダイレクト
             return redirect()->route('staff.web.estimates.reserve.show', [$agencyAccount, $controlNumber])->with('success_message', "「{$controlNumber}」のキャンセルチャージ処理が完了しました");
 
+        } catch (ExclusiveLockException $e) { // 同時編集エラー
+            return back()->withInput()->with('error_message', "他のユーザーによる編集済みレコードです。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
         } catch (\Exception $e) {
             \Log::error($e);
         }

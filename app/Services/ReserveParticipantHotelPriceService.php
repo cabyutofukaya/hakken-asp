@@ -72,20 +72,21 @@ class ReserveParticipantHotelPriceService implements ReserveParticipantPriceInte
      * 対象IDのキャンセルチャージ料金、キャンセルフラグを保存
      * 
      * @param int $cancelCharge キャンセルチャージ金額
+     * @param int $cancelChargeNet 仕入れ先支払料金
      * @param bool $isCancel キャンセル有無
      */
-    public function setCancelChargeByIds(int $cancelCharge, bool $isCancel, array $ids) : bool
+    public function setCancelChargeByIds(int $cancelCharge, int $cancelChargeNet, bool $isCancel, array $ids) : bool
     {
-        return $this->reserveParticipantHotelPriceRepository->updateIds(['cancel_charge' => $cancelCharge, 'is_cancel' => $isCancel], $ids);
+        return $this->reserveParticipantHotelPriceRepository->updateIds(['cancel_charge' => $cancelCharge, 'cancel_charge_net' => $cancelChargeNet, 'is_cancel' => $isCancel], $ids);
     }
 
     /**
      * 対象予約IDのキャンセルチャージ料金、キャンセルフラグを保存
      */
-    public function setCancelChargeByReserveId(int $cancelCharge, bool $isCancel, int $reserveId) : bool
+    public function setCancelChargeByReserveId(int $cancelCharge, int $cancelChargeNet, bool $isCancel, int $reserveId) : bool
     {
         return $this->reserveParticipantHotelPriceRepository->updateWhere(
-            ['cancel_charge' => $cancelCharge, 'is_cancel' => $isCancel], 
+            ['cancel_charge' => $cancelCharge, 'cancel_charge_net' => $cancelChargeNet, 'is_cancel' => $isCancel], 
             ['reserve_id' => $reserveId]
         );
     }

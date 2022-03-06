@@ -13,6 +13,7 @@ import moment from "moment";
 import { MANAGEMENT_INVOICE } from "./actions"; //action名
 import DepositModal from "./components/ManagementInvoice/DepositModal";
 import DepositBatchModal from "./components/ManagementInvoice/DepositBatchModal";
+import { RESERVE } from "./constants";
 
 // 一括請求行
 const BundleRow = ({
@@ -147,9 +148,20 @@ const NormalRow = ({
                 )}
             </td>
             <td>
-                <a href={row?.reserve_url ?? ""}>
-                    {row.reserve.control_number ?? "-"}
-                </a>
+                {row?.reserve?.is_deleted && (
+                    <>
+                        {row.reserve.control_number ?? "-"}
+                        {RESERVE.DELETE_LABEL}
+                    </>
+                )}
+                {!row?.reserve?.is_deleted && (
+                    <>
+                        <a href={row?.reserve_url ?? ""}>
+                            {row.reserve.control_number ?? "-"}
+                        </a>
+                        {row?.reserve.is_canceled && RESERVE.CANCEL_LABEL}
+                    </>
+                )}
             </td>
             <td className="txtalc">
                 <InvoiceStatus
@@ -189,14 +201,20 @@ const NormalRow = ({
             <td>{row.departure_date ?? "-"}</td>
             <td>{formSelects.staffs?.[row.manager_id] ?? "-"}</td>
             <td className="txtalc">
-                <a href={row?.invoice_url ?? ""}>
-                    <span className="material-icons">description</span>
-                </a>
+                {row?.reserve?.is_deleted && "-"}
+                {!row?.reserve?.is_deleted && (
+                    <a href={row?.invoice_url ?? ""}>
+                        <span className="material-icons">description</span>
+                    </a>
+                )}
             </td>
             <td className="txtalc">
-                <a href={row?.receipt_url ?? ""}>
-                    <span className="material-icons">description</span>
-                </a>
+                {row?.reserve?.is_deleted && "-"}
+                {!row?.reserve?.is_deleted && (
+                    <a href={row?.receipt_url ?? ""}>
+                        <span className="material-icons">description</span>
+                    </a>
+                )}
             </td>
             <td>{row.note ?? "-"}</td>
         </tr>

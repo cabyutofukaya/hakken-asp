@@ -3,6 +3,7 @@
   applicationStep='{{ $applicationStep }}'
   reserveNumber='{{ $reserveNumber }}'
   isDeparted='{{ $isDeparted }}'
+  isCanceled='{{ $isCanceled }}'
   defaultValue='@json($defaultValue)'
   documentSetting='@json($documentSetting)'
   documentCommonSetting='@json($documentCommonSetting)'

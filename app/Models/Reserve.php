@@ -34,6 +34,7 @@ class Reserve extends Model
         'sum_not_deposit',
         'hash_id', // ハッシュID
         'is_departed', // 催行済みか否か
+        'is_canceled', // キャンセルか否か
     ];
     
     protected $softCascade = [
@@ -425,6 +426,15 @@ class Reserve extends Model
     }
 
     /**
+     * キャンセル済みの場合はtrue
+     *
+     */
+    public function getIsCanceledAttribute($value) : bool
+    {
+        return !is_null($this->cancel_at);
+    }
+
+    /**
      * 催行済みの場合はtrue
      *
      * この条件を変える場合は 「scopeDeparted」 も変更のこと
@@ -481,23 +491,26 @@ class Reserve extends Model
     public function getNameAttribute($value): ?string
     {
         if ($value) {
-            return $this->trashed() ? sprintf("%s(削除)", $value) : $value;
+            if ($this->trashed()) {
+                return sprintf("%s(削除)", $value);
+            }
+            return $value;
         }
         return null;
     }
 
-    /**
-     * 予約番号
-     *
-     * 論理削除レコードの場合は「(削除)」を表記
-     */
-    public function getControlNumberAttribute($value): ?string
-    {
-        if ($value) {
-            return $this->trashed() ? sprintf("%s(削除)", $value) : $value;
-        }
-        return null;
-    }
+    // /**
+    //  * 予約番号
+    //  *
+    //  * 論理削除レコードの場合は「(削除)」を表記
+    //  */
+    // public function getControlNumberAttribute($value): ?string
+    // {
+    //     if ($value) {
+    //         return $this->trashed() ? sprintf("%s(削除)", $value) : $value;
+    //     }
+    //     return null;
+    // }
 
     ///////////////// 読みやすい文字列に変換するAttribute ここまで //////////////
 
