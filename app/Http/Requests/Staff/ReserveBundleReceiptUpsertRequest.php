@@ -2,8 +2,6 @@
 
 namespace App\Http\Requests\Staff;
 
-use App\Rules\CheckTotalAmount;
-use App\Rules\ExistBusinessUser;
 use App\Rules\ExistDocumentCommon;
 use App\Rules\ExistDocumentReceipt;
 use Illuminate\Foundation\Http\FormRequest;

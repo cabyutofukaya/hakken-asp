@@ -40,6 +40,7 @@ class ReserveParticipantAirplanePrice extends Model implements ParticipantPriceI
         'zei_kbn',
         'gross_profit',
         'cancel_charge',
+        'cancel_charge_net',
         'is_cancel',
     ];
 
@@ -75,6 +76,7 @@ class ReserveParticipantAirplanePrice extends Model implements ParticipantPriceI
         'net' => 'integer',
         'gross_profit' => 'integer',
         'cancel_charge' => 'integer',
+        'cancel_charge_net' => 'integer',
     ];
 
     protected $dates = [

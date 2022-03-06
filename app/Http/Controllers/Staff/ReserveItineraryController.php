@@ -51,8 +51,8 @@ class ReserveItineraryController extends AppController
             abort(404);
         }
 
-        // 認可チェック
-        $response = Gate::inspect('create', [new ReserveItinerary, $reserve]);
+        // 認可チェック。createで認可処理をするとキャンセル予約の場合に本ページが開けなくなってしまうので緩めの権限(viewAny)で設定
+        $response = Gate::inspect('viewAny', [new ReserveItinerary]);
         if (!$response->allowed()) {
             abort(403);
         }

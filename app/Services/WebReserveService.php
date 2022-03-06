@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\ExclusiveLockException;
 use App\Models\Reserve;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -53,10 +54,15 @@ class WebReserveService extends WebReserveEstimateService
      * @param int $id 予約ID
      * @param bool $cancelCharge キャンセルチャージの有無
      * @return boolean
+     * @throws ExclusiveLockException 同時編集を検知した場合は例外を投げる
      */
-    public function cancel(int $id, bool $cancelCharge) : bool
+    public function cancel(int $id, bool $cancelCharge, ?string $updatedAt) : bool
     {
         $reserve = $this->webReserveRepository->find($id);
+        if ($updatedAt && $reserve->updated_at != $updatedAt) {
+            throw new ExclusiveLockException;
+        }
+
         if (!$reserve->cancel_at) { // cancel_atカラムの値をセットするのは初回のみ
             return $this->webReserveRepository->updateFields($id, [
                 'cancel_at' => date('Y-m-d H:i:s'),

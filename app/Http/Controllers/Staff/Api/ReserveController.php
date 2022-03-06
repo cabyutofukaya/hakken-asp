@@ -185,7 +185,7 @@ class ReserveController extends Controller
         try {
             $result = \DB::transaction(function () use ($reserve) {
                 $this->reserveParticipantPriceService->cancelChargeReset($reserve->id); // キャンセルチャージをリセット
-                $this->reserveService->cancel($reserve->id, false);
+                $this->reserveService->cancel($reserve->id, false, null);
 
 
                 /**カスタムステータスを「キャンセル」に更新 */

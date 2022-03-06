@@ -166,12 +166,13 @@ class EditFormComposer
         $consts = $this->getConstDatas();
 
         // 予約価格情報を取得
-        $reserveInvoices = $this->reserveInvoiceService->getByReserveBundleInvoiceId($agencyAccount, $reserveBundleInvoiceId, ['reserve:id,control_number,applicantable_type,applicantable_id','reserve.applicantable:id,name'],['reserve_id','option_prices','airticket_prices','hotel_prices','participant_ids']);
-        $reservePrices = $this->getReservePriceInfo($reserveInvoices);
+        $reserveInvoices = $this->reserveInvoiceService->getByReserveBundleInvoiceId($agencyAccount, $reserveBundleInvoiceId, ['reserve:id,control_number,applicantable_type,applicantable_id,cancel_at','reserve.applicantable:id,name'],['reserve_id','option_prices','airticket_prices','hotel_prices','participant_ids']);
+
+        list($reservePrices, $reserveCancelInfo) = $this->getReservePriceInfo($reserveInvoices);
 
         // reactに渡す各種定数
         $jsVars = $this->getJsVars($agencyAccount);
 
-        $view->with(compact('reserveBundleInvoiceId', 'defaultValue', 'formSelects', 'consts', 'documentCommonSetting', 'reservePrices', 'documentSetting', 'jsVars'));
+        $view->with(compact('reserveBundleInvoiceId', 'defaultValue', 'formSelects', 'consts', 'documentCommonSetting', 'reservePrices', 'reserveCancelInfo', 'documentSetting', 'jsVars'));
     }
 }

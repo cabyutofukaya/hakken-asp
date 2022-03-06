@@ -10,11 +10,14 @@
 	<div class="dcHead">
 		<div>
 			<p>
-				{{ $reserveItinerary->reserve->representatives[0]->name ?? '' }}
-				@if($reserveItinerary->reserve->representatives && $reserveItinerary->reserve->representatives[0]->name_roman)
-					({{ $reserveItinerary->reserve->representatives[0]->name_roman }})
+				@if($reserveItinerary->reserve->representatives->isNotEmpty())
+					{{ $reserveItinerary->reserve->representatives[0]->name ?? '-' }}
+					@if($reserveItinerary->reserve->representatives[0]->name_roman)
+						({{ $reserveItinerary->reserve->representatives[0]->name_roman }})
+					@endif
+					様
 				@endif
-				様</p>
+			</p>
 			<p class="dispTitle">件名 {{ $reserveItinerary->reserve->name ?? '' }}</p>
 			<p class="dispPeriod">期間 {{ $reserveItinerary->reserve->departure_date }}～{{ $reserveItinerary->reserve->return_date }}</p>
 		</div>

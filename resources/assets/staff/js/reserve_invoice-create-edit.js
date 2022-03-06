@@ -17,6 +17,7 @@ import ParticipantCheckSettingArea from "./components/BusinessForm/ParticipantCh
 import SealSettingArea from "./components/BusinessForm/SealSettingArea";
 import SettingCheckRow from "./components/BusinessForm/SettingCheckRow";
 import classNames from "classnames";
+import SuccessMessage from "./components/SuccessMessage";
 // flatpickr
 import "flatpickr/dist/themes/airbnb.css";
 import { Japanese } from "flatpickr/dist/l10n/ja.js";
@@ -45,13 +46,16 @@ const ReserveInvoiceArea = ({
     optionPrices,
     hotelContacts,
     consts,
-    isDeparted
+    isDeparted,
+    isCanceled
 }) => {
     const { agencyAccount, receptionTypes } = useContext(ConstContext);
 
     const mounted = useMountedRef(); // マウント・アンマウント制御
 
     const [input, setInput] = useState({ ...defaultValue });
+
+    const [saveMessage, setSaveMessage] = useState(""); // 保存完了メッセージ
 
     const [documentSetting, setDocumentSetting] = useState({
         ...documentRequestSetting
@@ -244,7 +248,8 @@ const ReserveInvoiceArea = ({
                     hotel_info: hotelInfo,
                     hotel_contacts: hotelContacts,
                     //
-                    set_message: 1,
+                    is_canceled: isCanceled == 1 ? 1 : 0,
+                    // set_message: 1,
                     _method: "put"
                 }
             )
@@ -257,10 +262,23 @@ const ReserveInvoiceArea = ({
                 }, 3000);
             });
         if (mounted.current && response?.status == 200) {
-            location.href = document.referrer
-                ? document.referrer
-                : `/${agencyAccount}/estimates/${applicationStep}/${reserveNumber}`;
-            return;
+            const res = response.data.data;
+            setInput({
+                ...input,
+                updated_at: res.updated_at
+            }); // 更新日時をセットする
+
+            // メッセージエリアをslideDown(表示状態)にした後でメッセージをセット
+            $("#successMessage .closeIcon")
+                .parent()
+                .slideDown();
+            setSaveMessage("請求書データを保存しました");
+
+            // ↓ページ遷移すると慌ただしのでひとまず遷移ナシに
+            // location.href = document.referrer
+            //     ? document.referrer
+            //     : `/${agencyAccount}/estimates/${applicationStep}/${reserveNumber}`;
+            // return;
         }
     };
 
@@ -304,7 +322,8 @@ const ReserveInvoiceArea = ({
                     hotel_info: hotelInfo,
                     hotel_contacts: hotelContacts,
                     //
-                    set_message: 1,
+                    is_canceled: isCanceled,
+                    // set_message: 1,
                     create_pdf: 1,
                     _method: "put"
                 }
@@ -447,6 +466,10 @@ const ReserveInvoiceArea = ({
                     </li>
                 </ol>
             </div>
+
+            {/**保存完了メッセージ */}
+            <SuccessMessage message={saveMessage} />
+
             <div id="inputArea">
                 <ul className="sideList documentSetting">
                     <li className="wd60 overflowX dragTable">
@@ -648,6 +671,7 @@ const ReserveInvoiceArea = ({
                                         DOCUMENT_REQUEST.DISPLAY_BLOCK
                                     ].includes("代金内訳") && (
                                         <BreakdownPricePreviewArea
+                                            isCanceled={isCanceled}
                                             optionPrices={optionPriceFilter}
                                             hotelPrices={hotelPriceFilter}
                                             airticketPrices={
@@ -1280,6 +1304,7 @@ if (Element) {
     const consts = Element.getAttribute("consts");
     const parsedConsts = consts && JSON.parse(consts);
     const isDeparted = Element.getAttribute("isDeparted");
+    const isCanceled = Element.getAttribute("isCanceled");
 
     render(
         <ConstApp jsVars={parsedJsVars}>
@@ -1298,6 +1323,7 @@ if (Element) {
                 optionPrices={parsedOptionPrices}
                 consts={parsedConsts}
                 isDeparted={isDeparted}
+                isCanceled={isCanceled}
             />
         </ConstApp>,
         document.getElementById("reserveInvoiceArea")

@@ -12,16 +12,18 @@ class CheckBundleTotalAmount implements Rule
 {
     protected $partnerManagerIds;
     protected $reservePrices;
+    protected $reserveCancelInfo;
 
     /**
      * Create a new rule instance.
      *
      * @return void
      */
-    public function __construct($partnerManagerIds, $reservePrices)
+    public function __construct(array $partnerManagerIds, array $reservePrices, array $reserveCancelInfo)
     {
         $this->partnerManagerIds = $partnerManagerIds;
         $this->reservePrices = $reservePrices;
+        $this->reserveCancelInfo = $reserveCancelInfo;
     }
 
     /**
@@ -33,7 +35,7 @@ class CheckBundleTotalAmount implements Rule
      */
     public function passes($attribute, $value)
     {
-        return get_reserve_price_total($this->partnerManagerIds, $this->reservePrices) === (int)$value;
+        return get_reserve_price_total($this->partnerManagerIds, $this->reservePrices, $this->reserveCancelInfo) === (int)$value;
     }
 
 

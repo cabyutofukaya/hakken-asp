@@ -27,6 +27,7 @@ import HotelInfoPreviewArea from "./components/BusinessForm/HotelInfoPreviewArea
 import HotelPreviewArea from "./components/BusinessForm/HotelPreviewArea";
 import OwnCompanyPreviewArea from "./components/BusinessForm/OwnCompanyPreviewArea";
 import ReserveInfoPreviewArea from "./components/BusinessForm/ReserveInfoPreviewArea";
+import SuccessMessage from "./components/SuccessMessage";
 
 // 戻る URL
 const getBackUrl = (
@@ -111,12 +112,15 @@ const ReserveConfirmArea = ({
     optionPrices,
     hotelContacts,
     consts,
-    isDeparted
+    isDeparted,
+    isCanceled
 }) => {
     const { agencyAccount } = useContext(ConstContext);
     const mounted = useMountedRef(); // マウント・アンマウント制御
 
     const [input, setInput] = useState({ ...defaultValue });
+
+    const [saveMessage, setSaveMessage] = useState(""); // 保存完了メッセージ
 
     const [documentSetting, setDocumentSetting] = useState({
         ...documentQuoteSetting
@@ -308,7 +312,9 @@ const ReserveConfirmArea = ({
                     airticket_prices: airticketPrices,
                     hotel_prices: hotelPrices,
                     hotel_info: hotelInfo,
-                    hotel_contacts: hotelContacts
+                    hotel_contacts: hotelContacts,
+                    //
+                    is_canceled: isCanceled == 1 ? 1 : 0
                 }
             )
             .finally(() => {
@@ -352,6 +358,8 @@ const ReserveConfirmArea = ({
                     hotel_prices: hotelPrices,
                     hotel_info: hotelInfo,
                     hotel_contacts: hotelContacts,
+                    //
+                    is_canceled: isCanceled == 1 ? 1 : 0,
                     _method: "put"
                 }
             )
@@ -390,14 +398,27 @@ const ReserveConfirmArea = ({
         let response = null;
         if (input?.confirm_number) {
             // 更新
-            response = await updateExec(true, false, setIsSaving);
+            response = await updateExec(false, false, setIsSaving);
         } else {
             // 新規
-            response = await createExec(true, false, setIsSaving);
+            response = await createExec(false, false, setIsSaving);
         }
 
         if (mounted.current && response?.data?.data) {
-            location.href = document.referrer ? document.referrer : backUrl;
+            const res = response.data.data;
+            setInput({
+                ...input,
+                updated_at: res.updated_at
+            }); // 更新日時をセットする
+
+            // メッセージエリアをslideDown(表示状態)にした後でメッセージをセット
+            $("#successMessage .closeIcon")
+                .parent()
+                .slideDown();
+            setSaveMessage("請求書データを保存しました");
+
+            // ↓ページ遷移すると慌ただしのでひとまず遷移ナシに
+            // location.href = document.referrer ? document.referrer : backUrl;
         }
     };
 
@@ -599,6 +620,10 @@ const ReserveConfirmArea = ({
                     </li>
                 </ol>
             </div>
+
+            {/**保存完了メッセージ */}
+            <SuccessMessage message={saveMessage} />
+
             <div id="inputArea">
                 <ul className="sideList documentSetting">
                     <li className="wd60 overflowX dragTable">
@@ -764,6 +789,7 @@ const ReserveConfirmArea = ({
                                         DOCUMENT_QUOTE.DISPLAY_BLOCK
                                     ].includes("代金内訳") && (
                                         <BreakdownPricePreviewArea
+                                            isCanceled={isCanceled}
                                             optionPrices={optionPriceFilter}
                                             hotelPrices={hotelPriceFilter}
                                             airticketPrices={
@@ -1370,6 +1396,7 @@ if (Element) {
     const consts = Element.getAttribute("consts");
     const parsedConsts = consts && JSON.parse(consts);
     const isDeparted = Element.getAttribute("isDeparted");
+    const isCanceled = Element.getAttribute("isCanceled");
 
     render(
         <ConstApp jsVars={parsedJsVars}>
@@ -1390,6 +1417,7 @@ if (Element) {
                 optionPrices={parsedOptionPrices}
                 consts={parsedConsts}
                 isDeparted={isDeparted}
+                isCanceled={isCanceled}
             />
         </ConstApp>,
         document.getElementById("reserveConfirmArea")

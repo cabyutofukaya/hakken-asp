@@ -62,7 +62,7 @@ class VReserveInvoice extends Model
      */
     public function reserve()
     {
-        return $this->belongsTo('App\Models\Reserve')->withDefault();
+        return $this->belongsTo('App\Models\Reserve')->withDefault()->withTrashed(); // 削除済みも取得
     }
 
     // (最後の)担当者

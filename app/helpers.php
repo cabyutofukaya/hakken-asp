@@ -5,7 +5,6 @@ use Carbon\Carbon;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Lang;
 
-
 if (! function_exists('get_webprofile_previewurl')) {
     /**
      * WebプロフィールのプレビューURLを取得
@@ -64,6 +63,44 @@ if (! function_exists('get_price_total')) {
     }
 }
 
+if (! function_exists('get_cancel_charge_total')) {
+    /**
+     * オプション科目、航空券科目、ホテル科目のキャンセルチャージ合計を計算
+     *
+     * @param array $participantIds 参加者IDリスト
+     * @param array $optionPrices オプション科目料金リスト
+     * @param array $airticketPrices 航空券科目料金リスト
+     * @param array $hotelPrices ホテル科目料金リスト
+     * @return int
+     */
+    function get_cancel_charge_total(array $participantIds, ?array $optionPrices, ?array $airticketPrices, ?array $hotelPrices) : int
+    {
+        $amountTotal = 0;
+        if ($optionPrices) {
+            foreach ($optionPrices as $op) {
+                if (in_array(Arr::get($op, 'participant_id'), $participantIds, true)) {
+                    $amountTotal += Arr::get($op, 'cancel_charge', 0);
+                }
+            }
+        }
+        if ($airticketPrices) {
+            foreach ($airticketPrices as $ap) {
+                if (in_array(Arr::get($ap, 'participant_id'), $participantIds, true)) {
+                    $amountTotal += Arr::get($ap, 'cancel_charge', 0);
+                }
+            }
+        }
+        if ($hotelPrices) {
+            foreach ($hotelPrices as $hp) {
+                if (in_array(Arr::get($hp, 'participant_id'), $participantIds, true)) {
+                    $amountTotal += Arr::get($hp, 'cancel_charge', 0);
+                }
+            }
+        }
+        return $amountTotal;
+    }
+}
+
 if (! function_exists('get_reserve_price_total')) {
     /**
      * 先方担当者に紐づく予約金額の合計を計算
@@ -72,14 +109,18 @@ if (! function_exists('get_reserve_price_total')) {
      * @param array $reservePrices 料金内訳リスト（一括請求書作成で使っている内訳データ）
      * @return int
      */
-    function get_reserve_price_total(array $partnerManagerIds, array $reservePrices) : int
+    function get_reserve_price_total(array $partnerManagerIds, array $reservePrices, array $reserveCancelInfo) : int
     {
         $amountTotal = 0;
         foreach ($reservePrices as $managerId => $reserves) {
             if (in_array($managerId, $partnerManagerIds, true)) {
                 foreach ($reserves as $reserveNumber => $zeiKbns) {
                     foreach ($zeiKbns as $zeiKbn => $rows) {
-                        $amountTotal += collect($rows)->sum('gross');
+                        if (Arr::get($reserveCancelInfo, $reserveNumber, false)) { // キャンセル予約の場合はキャンセルチャージの金額を足す
+                            $amountTotal += collect($rows)->sum('cancel_charge');
+                        } else {
+                            $amountTotal += collect($rows)->sum('gross');
+                        }
                     }
                 }
             }

@@ -117,6 +117,9 @@ class PdfComposer
         // 数量をまとめた配列を取得
         $reservePriceBreakdown = $this->getReservePriceBreakdown($reserveBundleInvoice->reserve_prices, $partnerManagers);
 
-        $view->with(compact('value', 'formSelects', 'reservePriceBreakdown'));
+        // キャンセル予約情報
+        $reserveCancelInfo = $reserveBundleInvoice->reserve_cancel_info;
+
+        $view->with(compact('value', 'formSelects', 'reservePriceBreakdown', 'reserveCancelInfo'));
     }
 }

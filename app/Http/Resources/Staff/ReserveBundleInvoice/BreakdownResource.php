@@ -56,6 +56,8 @@ class BreakdownResource extends JsonResource
             'reserve' => [
                 'control_number' => optional($this->reserve)->control_number,
                 'updated_at' => optional($this->reserve)->updated_at ? $this->reserve->updated_at->format('Y-m-d H:i:s') : null, // 予約情報の変更を検知するために使用
+                'is_deleted' => $this->reserve->trashed(),
+                'is_canceled' => $this->reserve->is_canceled,
             ],
             // 入金リスト
             'agency_deposits' => AgencyDepositIndexResource::collection($this->agency_deposits)

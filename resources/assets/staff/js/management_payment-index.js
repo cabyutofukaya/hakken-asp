@@ -13,6 +13,7 @@ import moment from "moment";
 import PaymentDateModal from "./components/ManagementPayment/PaymentDateModal";
 import { MANAGEMENT_PAYMENT } from "./actions"; //action名
 import PaymentBatchModal from "./components/ManagementPayment/PaymentBatchModal";
+import { RESERVE } from "./constants";
 
 const PaymentList = ({
     searchParam,
@@ -448,9 +449,13 @@ const PaymentList = ({
                                                         ?.control_number ?? "-"}
                                                 </a>
                                             )}
-                                            {row.reserve?.is_deleted &&
-                                                (row?.reserve?.control_number ??
-                                                    "-")}
+                                            {row.reserve?.is_deleted && (
+                                                <>
+                                                    {row?.reserve
+                                                        ?.control_number ?? "-"}
+                                                    {RESERVE.DELETE_LABEL}
+                                                </>
+                                            )}
                                         </td>
                                         <td className="txtalc">
                                             <span

@@ -13,6 +13,7 @@ import { MANAGEMENT_INVOICE_BREAKDOWN } from "./actions"; //action名
 import DepositModal from "./components/ManagementInvoiceBreakdown/DepositModal";
 import DepositBatchModal from "./components/ManagementInvoiceBreakdown/DepositBatchModal";
 import InvoiceStatus from "./components/InvoiceStatus";
+import { RESERVE } from "./constants";
 
 /**
  * 請求管理一覧ページ
@@ -429,10 +430,29 @@ const BreakdownList = ({
                                             )}
                                         </td>
                                         <td>
-                                            <a href={row.reserve_url ?? ""}>
-                                                {row.reserve.control_number ??
-                                                    "-"}
-                                            </a>
+                                            {row?.reserve?.is_deleted && (
+                                                <>
+                                                    {row.reserve
+                                                        .control_number ?? "-"}
+                                                    {RESERVE.DELETE_LABEL}
+                                                </>
+                                            )}
+                                            {!row?.reserve?.is_deleted && (
+                                                <>
+                                                    <a
+                                                        href={
+                                                            row?.reserve_url ??
+                                                            ""
+                                                        }
+                                                    >
+                                                        {row.reserve
+                                                            .control_number ??
+                                                            "-"}
+                                                    </a>
+                                                    {row?.reserve.is_canceled &&
+                                                        RESERVE.CANCEL_LABEL}
+                                                </>
+                                            )}
                                         </td>
                                         <td className="txtalc">
                                             <InvoiceStatus
@@ -495,20 +515,25 @@ const BreakdownList = ({
                                             ] ?? "-"}
                                         </td>
                                         <td className="txtalc">
-                                            <a href={row.invoice_url ?? ""}>
-                                                <span className="material-icons">
-                                                    description
-                                                </span>
-                                            </a>
+                                            {row?.reserve?.is_deleted && "-"}
+                                            {!row?.reserve?.is_deleted && (
+                                                <a href={row.invoice_url ?? ""}>
+                                                    <span className="material-icons">
+                                                        description
+                                                    </span>
+                                                </a>
+                                            )}
                                         </td>
                                         <td className="txtalc">
-                                            <a href={row.receipt_url ?? ""}>
-                                                <span className="material-icons">
-                                                    description
-                                                </span>
-                                            </a>
+                                            {row?.reserve?.is_deleted && "-"}
+                                            {!row?.reserve?.is_deleted && (
+                                                <a href={row.receipt_url ?? ""}>
+                                                    <span className="material-icons">
+                                                        description
+                                                    </span>
+                                                </a>
+                                            )}
                                         </td>
-
                                         <td>{row.note ?? "-"}</td>
                                     </tr>
                                 ))}

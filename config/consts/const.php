@@ -41,4 +41,6 @@ return [
   'MASTER_AGENCY_ID' => 0, // v_directionsテーブルに設定するマスターレコード用のagency_id
 
   'CANCEL_CHARGE_DATA_DELIMITER' => "_", // キャンセルチャージデータ区切り文字
+
+  'RESERVE_CANCEL_LABEL' => "(キャンセル)", // キャンセルチャージの商品名に表記するラベル(pdf出力時に使用) ※これを変更する場合は asp/resourses/assets/staff/js/constants.jsのRESERVE.CANCEL_LABELも変更すること
 ];

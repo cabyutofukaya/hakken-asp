@@ -81,6 +81,9 @@ class EditFormComposer
         // 催行済みか否か
         $isDeparted = $reserve->is_departed;
 
+        // キャンセルか否か
+        $isCanceled = $reserve->is_canceled;
+
         // 参加者情報
         $participantInfo = $this->webReserveService->getParticipants($reserve->id, true); // 参加者一覧（取消者を含む。削除済は取得しない）
 
@@ -251,11 +254,11 @@ class EditFormComposer
 
 
         // オプション価格情報、航空券価格情報、ホテル価格情報、宿泊施設情報、宿泊施設連絡先を取得
-        list($optionPrices, $airticketPrices, $hotelPrices, $hotelInfo, $hotelContacts) = $this->getPriceAndHotelInfo($reserve->enabled_reserve_itinerary->id ? $reserve->enabled_reserve_itinerary : null);
+        list($optionPrices, $airticketPrices, $hotelPrices, $hotelInfo, $hotelContacts) = $this->getPriceAndHotelInfo($reserve->enabled_reserve_itinerary->id ? $reserve->enabled_reserve_itinerary : null, $isCanceled);
 
         // reactに渡す各種定数
         $jsVars = $this->getJsVars($agencyAccount);
 
-        $view->with(compact('applicationStep', 'defaultValue', 'formSelects', 'consts', 'documentCommonSetting', 'hotelContacts', 'hotelInfo', 'optionPrices', 'airticketPrices', 'hotelPrices', 'documentSetting', 'jsVars', 'reception', 'isDeparted'));
+        $view->with(compact('applicationStep', 'defaultValue', 'formSelects', 'consts', 'documentCommonSetting', 'hotelContacts', 'hotelInfo', 'optionPrices', 'airticketPrices', 'hotelPrices', 'documentSetting', 'jsVars', 'reception', 'isDeparted', 'isCanceled'));
     }
 }

@@ -36,7 +36,9 @@ class CancelChargeFormComposer
         if (!isset($defaultValue['rows'])) {
             $defaultValue['rows'] = $purchasingList;
         }
-
+        if (!isset($defaultValue['reserve']['updated_at'])) {
+            $defaultValue['reserve']['updated_at'] = $reserve->updated_at->format('Y-m-d H:i:s');
+        }
 
         $consts = [
             'reserveUrl' => route('staff.web.estimates.reserve.show', [$agencyAccount, $reserve->control_number]),

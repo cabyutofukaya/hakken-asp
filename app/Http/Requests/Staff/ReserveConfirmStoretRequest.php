@@ -3,8 +3,10 @@
 namespace App\Http\Requests\Staff;
 
 use App\Rules\CheckTotalAmount;
+use App\Rules\CheckTotalCancelAmount;
 use App\Rules\ExistDocumentCommon;
 use App\Rules\ExistDocumentQuote;
+use Illuminate\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -18,6 +20,18 @@ class ReserveConfirmStoretRequest extends FormRequest
     public function authorize()
     {
         return true;
+    }
+
+    public function withValidator(Validator $validator)
+    {
+        // 合計金額検算(キャンセルか否かで計算メソッドを切り替え)
+        $validator->sometimes('amount_total', ['numeric',new CheckTotalAmount($this->participant_ids, $this->option_prices, $this->airticket_prices, $this->hotel_prices)], function ($input) {
+            return !$input->is_canceled;
+        });
+
+        $validator->sometimes('amount_total', ['numeric',new CheckTotalCancelAmount($this->participant_ids, $this->option_prices, $this->airticket_prices, $this->hotel_prices)], function ($input) {
+            return $input->is_canceled;
+        }); // キャンセル予約
     }
 
     /**
@@ -42,7 +56,8 @@ class ReserveConfirmStoretRequest extends FormRequest
             'status' => ['nullable',Rule::in(array_values(config("consts.reserve_confirms.STATUS_LIST")))],
             'document_common_setting' => 'nullable|array',
             'document_setting' => 'nullable|array',
-            'amount_total' => ['numeric',new CheckTotalAmount($this->participant_ids, $this->option_prices, $this->airticket_prices, $this->hotel_prices)],
+            // 'amount_total' => ['numeric',new CheckTotalAmount($this->participant_ids, $this->option_prices, $this->airticket_prices, $this->hotel_prices)],
+            'is_canceled' => 'boolean',
             // 代金内訳、ホテル情報等
             'option_prices' => 'nullable|array',
             'airticket_prices' => 'nullable|array',
@@ -70,6 +85,7 @@ class ReserveConfirmStoretRequest extends FormRequest
             'participant_ids.array' => '参加者の入力形式値が不正です。',
             'status.in' => 'ステータスの入力値が不正です。',
             'amount_total.numeric' => '合計金額の入力が不正です。',
+            'is_canceled.boolean' => 'キャンセルフラグの指定が不正です。',
             'document_common_setting.array' => '共通設定の入力形式が不正です。',
             'option_prices.array' => 'オプション科目の入力形式値が不正です。',
             'document_setting.array' => '各種表示設定の入力値が不正です。',

@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests\Staff;
 
-use App\Rules\CheckTotalAmount;
 use App\Rules\ExistBusinessUser;
 use App\Rules\ExistDocumentCommon;
 use App\Rules\ExistDocumentReceipt;
@@ -10,7 +9,6 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Arr;
 use Illuminate\Validation\Validator;
 use Illuminate\Validation\Rule;
-
 
 // 領収書 作成or更新リクエスト
 class ReserveReceiptUpsertRequest extends FormRequest
