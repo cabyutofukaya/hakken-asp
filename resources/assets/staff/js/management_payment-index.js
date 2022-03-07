@@ -444,10 +444,20 @@ const PaymentList = ({
                                         </td>
                                         <td>
                                             {!row.reserve?.is_deleted && (
-                                                <a href={row.reserve_url ?? ""}>
-                                                    {row.reserve
-                                                        ?.control_number ?? "-"}
-                                                </a>
+                                                <>
+                                                    <a
+                                                        href={
+                                                            row.reserve_url ??
+                                                            ""
+                                                        }
+                                                    >
+                                                        {row.reserve
+                                                            ?.control_number ??
+                                                            "-"}
+                                                    </a>
+                                                    {row.reserve?.is_canceled &&
+                                                        RESERVE.CANCEL_LABEL}
+                                                </>
                                             )}
                                             {row.reserve?.is_deleted && (
                                                 <>
