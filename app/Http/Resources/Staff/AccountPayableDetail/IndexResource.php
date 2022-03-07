@@ -43,8 +43,9 @@ class IndexResource extends JsonResource
             'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
             // リレーション
             'reserve' => [
-                'control_number' => optional($this->reserve)->control_number,
-                'is_deleted' => optional($this->reserve)->trashed()
+                'control_number' => $this->reserve ? $this->reserve->control_number : null,
+                'is_deleted' => $this->reserve ? $this->reserve->trashed() : null,
+                'is_canceled' => $this->reserve ? $this->reserve->is_canceled : null,
             ],
             'saleable' => [
                 'valid' => $this->saleable->valid ?? 0, // 仕入の有効・無効フラグ。リレーションが取得できない場合は無効で初期化
