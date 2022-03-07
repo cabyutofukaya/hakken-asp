@@ -17,7 +17,7 @@ trait VCustomValueTrait
                 return $value;
             }
         }
-        return null;
+        return $value;
     }
 
 }
