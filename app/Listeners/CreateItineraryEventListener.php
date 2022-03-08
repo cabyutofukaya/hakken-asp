@@ -75,12 +75,14 @@ class CreateItineraryEventListener
                         $this->reserveInvoiceService->createFromReserveConfirm(
                             $reserveConfirm, 
                             $event->reserveItinerary->reserve, 
+                            $event->reserveItinerary->id, 
                             auth("staff")->user()->id // 最終担当者
                         );
 
                     } else { // 予約確認書がない場合は"行程データをもと"に作成。（※この分岐は使用されない想定だが一応実装）
                         $this->reserveInvoiceService->createFromReserve(
                             $event->reserveItinerary->reserve, 
+                            $event->reserveItinerary->id, 
                             auth("staff")->user()->id // 最終担当者
                         );
                     }

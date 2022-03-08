@@ -51,6 +51,25 @@ class AccountPayableDetailRepository implements AccountPayableDetailRepositoryIn
     }
 
     /**
+     * 検索して全件取得
+     */
+    public function getWhere(array $where, array $with=[], array $select=[]) : Collection
+    {
+        $query = $this->accountPayableDetail;
+        
+        $query = $with ? $query->with($with) : $query;
+        $query = $select ? $query->select($select) : $query;
+
+        foreach ($where as $key => $val) {
+            if (is_empty($val)) {
+                continue;
+            }
+            $query = $query->where($key, $val);
+        }
+        return $query->get();
+    }
+
+    /**
      * 当該条件のレコードが存在するか
      */
     public function whereExists($where) : ?AccountPayableDetail
@@ -101,6 +120,28 @@ class AccountPayableDetailRepository implements AccountPayableDetailRepositoryIn
     public function updateOrCreate(array $where, array $params) : AccountPayableDetail
     {
         return $this->accountPayableDetail->updateOrCreate($where, $params);
+    }
+
+    /**
+     * 条件にマッチするレコードを更新
+     *
+     * @param array $update
+     * @param array $ids
+     * @return boolean
+     */
+    public function updateWhere(array $update, array $where) : bool
+    {
+        $query = $this->accountPayableDetail;
+        foreach ($where as $key => $val) {
+            $query = $query->where($key, $val);
+        }
+        foreach ($query->get() as $row) {
+            foreach ($update as $key => $val) {
+                $row->{$key} = $val;
+            }
+            $row->save();
+        }
+        return true;
     }
 
     ///////////////// 以下は予約済ステータス専用処理。メソッド末尾が Reserved

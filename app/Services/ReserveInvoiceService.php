@@ -100,7 +100,7 @@ class ReserveInvoiceService extends ReserveDocumentService implements DocumentAd
      *
      * @param int $managerId 作業中のスタッフID
      */
-    public function createFromReserveConfirm(ReserveConfirm $reserveConfirm, Reserve $reserve, int $managerId)
+    public function createFromReserveConfirm(ReserveConfirm $reserveConfirm, Reserve $reserve, int $reserveItineraryId, int $managerId)
     {
         // 参加者IDを取得
         $participantIds = $reserveConfirm->participant_ids;
@@ -134,7 +134,8 @@ class ReserveInvoiceService extends ReserveDocumentService implements DocumentAd
         $reserveInvoice = $this->reserveInvoiceRepository->updateOrCreate(
             [
                 'agency_id' => $reserveConfirm->agency_id,
-                'reserve_id' => $reserveConfirm->reserve_id
+                'reserve_id' => $reserveConfirm->reserve_id,
+                'reserve_itinerary_id' => $reserveItineraryId
             ],
             $this->createData(
                 $businessUserId,
@@ -177,7 +178,7 @@ class ReserveInvoiceService extends ReserveDocumentService implements DocumentAd
      *
      * @param int $managerId 作業中のスタッフID
      */
-    public function createFromReserve(Reserve $reserve, int $managerId) : ReserveInvoice
+    public function createFromReserve(Reserve $reserve, int $reserveItineraryId, int $managerId) : ReserveInvoice
     {
         // 有効参加者IDを取得
         $participantIds = $this->getDefaultParticipantCheckIds($this->reserveService->getParticipants($reserve->id, true));
@@ -214,7 +215,8 @@ class ReserveInvoiceService extends ReserveDocumentService implements DocumentAd
         $reserveInvoice = $this->reserveInvoiceRepository->updateOrCreate(
             [
                 'agency_id' => $reserve->agency_id,
-                'reserve_id' => $reserve->id
+                'reserve_id' => $reserve->id,
+                'reserve_itinerary_id' => $reserveItineraryId
             ],
             $this->createData(
                 $businessUserId,
@@ -301,7 +303,17 @@ class ReserveInvoiceService extends ReserveDocumentService implements DocumentAd
      */
     public function findByReserveId(int $reserveId, array $with = [], array $select=[], bool $getDeleted = false) : ?ReserveInvoice
     {
-        return $this->reserveInvoiceRepository->findByReserveId($reserveId, $with, $select, $getDeleted);
+        return $this->reserveInvoiceRepository->findWhere(['reserve_id' => $reserveId], $with, $select, $getDeleted);
+    }
+
+    /**
+     * 行程IDから一件取得
+     *
+     * @param int $reserveItineraryId 行程ID
+     */
+    public function findByReserveItineraryId(int $reserveItineraryId, array $with = [], array $select=[], bool $getDeleted = false) : ?ReserveInvoice
+    {
+        return $this->reserveInvoiceRepository->findWhere(['reserve_itinerary_id' => $reserveItineraryId], $with, $select, $getDeleted);
     }
 
     /**
@@ -362,14 +374,10 @@ class ReserveInvoiceService extends ReserveDocumentService implements DocumentAd
      * 一応、新規登録もできるようにはなっているが、実際は請求書は行程作成時に
      * 初回データが自動生成されるようになっているので本メソッドから新規作成されることはない
      *
-     * @throws ExclusiveLockException 同時編集を検知した場合は例外を投げる
      */
-    public function upsert(int $agencyId, int $reserveId, array $input) : ReserveInvoice
+    public function upsert(int $agencyId, int $reserveId, int $reserveItineraryId, array $input) : ReserveInvoice
     {
         $oldReserveInvoice = $this->findByReserveId($reserveId);
-        if ($oldReserveInvoice && $oldReserveInvoice->updated_at != Arr::get($input, 'updated_at')) {
-            throw new ExclusiveLockException;
-        }
 
         // 宛先区分が法人でない場合はbusiness_user_idを確実にクリアしておく
         if (Arr::get($input, 'document_address.type') !== config('consts.reserves.PARTICIPANT_TYPE_BUSINESS')) {
@@ -383,7 +391,7 @@ class ReserveInvoiceService extends ReserveDocumentService implements DocumentAd
             $input['billing_address_name'] = Arr::get($input, 'document_address.name');
         }
 
-        $result = $this->reserveInvoiceRepository->updateOrCreate(['agency_id' => $agencyId, 'reserve_id' => $reserveId], $input);
+        $result = $this->reserveInvoiceRepository->updateOrCreate(['agency_id' => $agencyId, 'reserve_id' => $reserveId, 'reserve_itinerary_id' => $reserveItineraryId], $input);
 
         // 入金額の再計算
         $this->updateFields(

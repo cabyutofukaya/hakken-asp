@@ -98,6 +98,37 @@ class AccountPayableDetailService
     }
 
     /**
+     * 仕入先へのキャンセルチャージ料金を設定
+     *
+     * @param int $cancelCharge キャンセルチャージ金額
+     * @param string $saleableType 販売種別
+     * @param int $saleableId 販売ID
+     * @param bool $getUpdatedId 更新対象のレコードIDがを取得する場合はtrue
+     */
+    public function setCancelChargeBySaleableId(int $cancelCharge, string $saleableType, int $saleableId, bool $getUpdatedId = false) : ?int
+    {
+        $updatedId = null;
+        if ($getUpdatedId) {
+            $res = $this->accountPayableDetailRepository->findWhere(['saleable_type' => $saleableType, 'saleable_id' => $saleableId], [], ['id']);
+            $updatedId = $res->id;
+        }
+        $this->accountPayableDetailRepository->updateWhere(
+            ['amount_billed' => $cancelCharge],
+            ['saleable_type' => $saleableType, 'saleable_id' => $saleableId]
+        );
+
+        return $updatedId;
+    }
+
+    /**
+     * 対象予約IDの仕入情報を取得
+     */
+    public function getByReserveId(int $reserveId, array $with = [], array $select = []) : Collection
+    {
+        return $this->accountPayableDetailRepository->getWhere(['reserve_id' => $reserveId], $with, $select);
+    }
+    
+    /**
      * 削除
      *
      * @param int $id ID

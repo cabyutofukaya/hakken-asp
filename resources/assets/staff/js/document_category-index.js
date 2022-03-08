@@ -143,7 +143,7 @@ const DocumentList = ({
                     {/* タブ */}
                     {documentCategories &&
                         Object.keys(documentCategories).map(index => (
-                            <li key={index}>
+                            <li key={`tab${index}`}>
                                 <span
                                     className={
                                         "tab " +
@@ -170,7 +170,7 @@ const DocumentList = ({
                     const categoryCode = documentCategories[index]?.code;
                     return (
                         <div
-                            key={index}
+                            key={`contents${index}`}
                             className={
                                 "customList " +
                                 (currentTab === categoryCode ? "show" : "")
@@ -216,41 +216,39 @@ const DocumentList = ({
                                         <tbody>
                                             {documentLists[categoryCode].map(
                                                 row => (
-                                                    <>
-                                                        <tr key={row?.id}>
-                                                            <td>
-                                                                <a
-                                                                    href={`/${agencyAccount}/system/document/${categoryCode}/${row?.id}/edit`}
-                                                                >
-                                                                    {row?.name}
-                                                                </a>
-                                                            </td>
-                                                            <td>
-                                                                {
-                                                                    row?.description
-                                                                }
-                                                            </td>
-                                                            <td>
-                                                                {row?.undelete_item ? (
-                                                                    "-"
-                                                                ) : (
-                                                                    <>
-                                                                        <span
-                                                                            className="material-icons js-modal-open"
-                                                                            data-target="mdDeleteDocumentCategory"
-                                                                            onClick={() =>
-                                                                                setDeleteId(
-                                                                                    row?.id
-                                                                                )
-                                                                            }
-                                                                        >
-                                                                            delete
-                                                                        </span>
-                                                                    </>
-                                                                )}
-                                                            </td>
-                                                        </tr>
-                                                    </>
+                                                    <tr
+                                                        key={`${index}_${row.id}`}
+                                                    >
+                                                        <td>
+                                                            <a
+                                                                href={`/${agencyAccount}/system/document/${categoryCode}/${row?.id}/edit`}
+                                                            >
+                                                                {row?.name}
+                                                            </a>
+                                                        </td>
+                                                        <td>
+                                                            {row?.description}
+                                                        </td>
+                                                        <td>
+                                                            {row?.undelete_item ? (
+                                                                "-"
+                                                            ) : (
+                                                                <>
+                                                                    <span
+                                                                        className="material-icons js-modal-open"
+                                                                        data-target="mdDeleteDocumentCategory"
+                                                                        onClick={() =>
+                                                                            setDeleteId(
+                                                                                row?.id
+                                                                            )
+                                                                        }
+                                                                    >
+                                                                        delete
+                                                                    </span>
+                                                                </>
+                                                            )}
+                                                        </td>
+                                                    </tr>
                                                 )
                                             )}
                                         </tbody>

@@ -62,6 +62,9 @@ class EditFormComposer
         $transitionTab = config('consts.reserves.TAB_RESERVE_DETAIL'); // 戻るリンクに使用するTabパラメータ
         $reserve = $reserveItinerary->reserve;
 
+        $isCanceled = $reserve->is_canceled; // キャンセル予約か否か
+        $isEnabled = $reserveItinerary->enabled; // 有効な行程か否か
+
         // POST URLの設定等
         if ($reserve->application_step == config("consts.reserves.APPLICATION_STEP_DRAFT")) { // 見積
             
@@ -256,7 +259,7 @@ class EditFormComposer
         // reactに渡す各種定数
         $jsVars = $this->getJsVars($agencyAccount);
 
-        $view->with(compact('formSelects', 'transitionTab', 'defaultValue', 'consts', 'customFields', 'subjectCustomCategoryCode', 'participants', 'modalInitialValues', 'reserve', 'updateUrl', 'backUrl','jsVars', 'reception'));
+        $view->with(compact('formSelects', 'transitionTab', 'defaultValue', 'consts', 'customFields', 'subjectCustomCategoryCode', 'participants', 'modalInitialValues', 'reserve', 'updateUrl', 'backUrl','jsVars', 'reception', 'isCanceled', 'isEnabled'));
     }
 
     /**

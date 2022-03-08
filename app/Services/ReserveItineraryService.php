@@ -122,12 +122,13 @@ class ReserveItineraryService
      *
      * @param int $agencyId 会社ID
      * @param int $reserveId 予約ID
+     * @param int $reserveItineraryId 行程ID
      * @param int $reserveTravelDateId 旅行日ID
      * @param bool $valid 科目の有効・無効フラグ
      * @param string $useDate 利用日
      * @param string $paymentDate 支払日
      */
-    private function accountPayableDetailCommon(int $agencyId, int $reserveId, int $reserveTravelDateId, bool $valid, int $accountPayableId, ParticipantPriceInterface $participantPrice, Supplier $supplier, ?string $itemCode, ?string $itemName, string $useDate, ?string $paymentDate) : ?AccountPayableDetail
+    private function accountPayableDetailCommon(int $agencyId, int $reserveId, int $reserveItineraryId, int $reserveTravelDateId, bool $valid, int $accountPayableId, ParticipantPriceInterface $participantPrice, Supplier $supplier, ?string $itemCode, ?string $itemName, string $useDate, ?string $paymentDate) : ?AccountPayableDetail
     {
         // 検索条件
         $attributes = [
@@ -152,6 +153,7 @@ class ReserveItineraryService
             [
                 'agency_id' => $agencyId,
                 'reserve_id' => $reserveId,
+                'reserve_itinerary_id' => $reserveItineraryId,
                 'reserve_travel_date_id' => $reserveTravelDateId,
                 'supplier_id' => $supplier->id,
                 'supplier_name' => $supplier->name,
@@ -315,6 +317,7 @@ class ReserveItineraryService
                                             $this->accountPayableDetailCommon(
                                                 $agencyId,
                                                 $reserveItinerary->reserve_id,
+                                                $reserveItinerary->id,
                                                 $reserveTravelDate->id,
                                                 Arr::get($participantPrice, 'valid') == 1,
                                                 $accountPayable->id,
@@ -356,6 +359,7 @@ class ReserveItineraryService
                                             $this->accountPayableDetailCommon(
                                                 $agencyId,
                                                 $reserveItinerary->reserve_id,
+                                                $reserveItinerary->id,
                                                 $reserveTravelDate->id,
                                                 Arr::get($participantPrice, 'valid') == 1,
                                                 $accountPayable->id,
@@ -397,6 +401,7 @@ class ReserveItineraryService
                                             $this->accountPayableDetailCommon(
                                                 $agencyId,
                                                 $reserveItinerary->reserve_id,
+                                                $reserveItinerary->id,
                                                 $reserveTravelDate->id,
                                                 Arr::get($participantPrice, 'valid') == 1,
                                                 $accountPayable->id,

@@ -406,9 +406,12 @@ const ReserveConfirmArea = ({
 
         if (mounted.current && response?.data?.data) {
             const res = response.data.data;
+            const reserve = {
+                updated_at: res.updated_at
+            };
             setInput({
                 ...input,
-                updated_at: res.updated_at
+                reserve
             }); // 更新日時をセットする
 
             // メッセージエリアをslideDown(表示状態)にした後でメッセージをセット
@@ -455,10 +458,13 @@ const ReserveConfirmArea = ({
 
         if (mounted.current && response?.data?.data) {
             const res = response.data.data;
+            const reserve = {
+                updated_at: res.updated_at
+            };
             setInput({
                 ...input,
                 confirm_number: res.confirm_number,
-                updated_at: res.updated_at
+                reserve
             }); // 確認番号、更新日時をセットする
 
             // PDFダウンロード

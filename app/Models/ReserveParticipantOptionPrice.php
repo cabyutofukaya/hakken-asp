@@ -41,6 +41,7 @@ class ReserveParticipantOptionPrice extends Model implements ParticipantPriceInt
         'gross_profit',
         'cancel_charge',
         'cancel_charge_net',
+        'cancel_charge_profit',
         'is_cancel',
     ];
 
@@ -76,6 +77,7 @@ class ReserveParticipantOptionPrice extends Model implements ParticipantPriceInt
         'gross_profit' => 'integer',
         'cancel_charge' => 'integer',
         'cancel_charge_net' => 'integer',
+        'cancel_charge_profit' => 'integer',
     ];
 
     protected $dates = [

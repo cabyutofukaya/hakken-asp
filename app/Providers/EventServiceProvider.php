@@ -49,6 +49,10 @@ class EventServiceProvider extends ServiceProvider
         'App\Events\CreateItineraryEvent' => [
             'App\Listeners\CreateItineraryEventListener',
         ],
+        // 行程更新時処理等
+        'App\Events\UpdateItineraryEvent' => [
+            'App\Listeners\UpdateItineraryEventListener',
+        ],
         // 通常請求に対する入金処理後イベント
         'App\Events\AgencyDepositedEvent' => [
             'App\Listeners\AgencyDepositedEventListener',

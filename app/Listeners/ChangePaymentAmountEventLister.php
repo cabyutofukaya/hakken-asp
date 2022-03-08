@@ -33,7 +33,7 @@ class ChangePaymentAmountEventLister
         $accountPayableDetail = $this->accountPayableDetailService->find($event->accountPayableDetailId, [], [], true);
 
         $currentStatus = $accountPayableDetail->status; // 現在のステータス
-        $currentUnpaidAmount = $accountPayableDetail->unpaid_amount; // 現在の未払金
+        $currentUnpaidAmount = $accountPayableDetail->unpaid_balance; // 現在の未払金
 
         // 支払い額合計（行ロックで取得）
         $withdrawalSum = $this->agencyWithdrawalService->getSumAmountByAccountPayableDetailId($accountPayableDetail->id, true);

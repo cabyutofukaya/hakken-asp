@@ -400,6 +400,7 @@ const ItineraryArea = ({
                                             ￥{row.sum_net.toLocaleString()}
                                         </td>
                                         <td>
+                                            ￥
                                             {row.sum_gross_profit.toLocaleString()}
                                             (
                                             {calcProfitRate(

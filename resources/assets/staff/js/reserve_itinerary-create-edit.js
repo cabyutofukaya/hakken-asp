@@ -2,7 +2,7 @@ import _ from "lodash";
 import React, { useState, useReducer, useContext, useCallback } from "react";
 import ConstApp from "./components/ConstApp";
 import ReserveItineraryConstApp from "./components/ReserveItineraryConstApp";
-import { ReserveItineraryConstContext } from "./components/ReserveItineraryConstApp";
+import { ReserveItineraryConstContext } from "./components/ReserveItineraryConstApp"; // 下層コンポーネントに定数などを渡すコンテキスト
 import { render } from "react-dom";
 import SmallDangerModal from "./components/SmallDangerModal";
 import Waypoint from "./components/ReserveItinerary/Waypoint";
@@ -1053,6 +1053,8 @@ if (Element) {
     const reception = Element.getAttribute("reception");
     const applicationStep = Element.getAttribute("applicationStep");
     const applicationStepList = Element.getAttribute("applicationStepList");
+    const isCanceled = Element.getAttribute("isCanceled");
+    const isEnabled = Element.getAttribute("isEnabled");
     const parsedApplicationStepList =
         applicationStepList && JSON.parse(applicationStepList);
     const reserveNumber = Element.getAttribute("reserveNumber");
@@ -1083,7 +1085,9 @@ if (Element) {
                     applicationStepList: parsedApplicationStepList,
                     estimateNumber,
                     reserveNumber,
-                    subjectCategoryTypes: parsedConsts?.subjectCategoryTypes
+                    subjectCategoryTypes: parsedConsts?.subjectCategoryTypes,
+                    isCanceled,
+                    isEnabled
                 }}
             >
                 <ItineraryArea
