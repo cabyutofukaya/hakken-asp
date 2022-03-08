@@ -16,6 +16,10 @@ class AccountPayableDetail extends Model
 {
     use ModelLogTrait,SoftDeletes,Sortable;
 
+    // protected $with = [
+    //     'reserve',
+    // ]; // 仕入額の算定に予約状態を考慮するため、withしておく
+
     public $sortable = [
         'id',
         'reserve.control_number',
@@ -25,6 +29,7 @@ class AccountPayableDetail extends Model
         'last_manager.name',
         'last_note',
         'payment_date',
+        'use_date',
         'amount_payment',
         'unpaid_balance',
     ];
@@ -37,6 +42,7 @@ class AccountPayableDetail extends Model
     protected $fillable = [
         'agency_id',
         'reserve_id',
+        'reserve_itinerary_id',
         'reserve_travel_date_id',
         'account_payable_id',
         'supplier_id',
@@ -48,7 +54,7 @@ class AccountPayableDetail extends Model
         'saleable_type',
         'saleable_id',
         'amount_billed',
-        'amount_payment',
+        'amount_payment', // ←使っていないかも
         'unpaid_balance',
         'official', // ←使っていないかも
         'last_manager_id',

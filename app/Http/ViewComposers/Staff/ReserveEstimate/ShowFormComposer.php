@@ -244,7 +244,7 @@ class ShowFormComposer
                     'tab_consultation' => config('consts.reserves.TAB_CONSULTATION'),
                 ],
                 'isCanceled' => !is_null($reserve->cancel_at), // キャンセル済みか否か
-                'existPurchaseData' => $this->reserveParticipantPriceService->isExistsPurchaseDataByReserveId($reserve->id, false), // 仕入情報がある場合はtrue
+                'existPurchaseData' => $this->reserveParticipantPriceService->isExistsPurchaseDataByReserveItineraryId($reserve->enabled_reserve_itinerary->id, false), // 仕入情報がある場合はtrue
                 'estimateIndexUrl' => $estimateIndexUrl,
                 'reserveIndexUrl' => $reserveIndexUrl,
                 'departedIndexUrl' => $departedIndexUrl,

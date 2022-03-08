@@ -18,6 +18,7 @@ use App\Services\ReserveParticipantOptionPriceService;
 use App\Services\ReserveParticipantPriceService;
 use App\Services\UserCustomItemService;
 use App\Services\WebReserveService;
+use App\Services\AccountPayableDetailService;
 use App\Traits\CancelChargeTrait;
 use App\Traits\ReserveControllerTrait;
 use Gate;
@@ -31,7 +32,7 @@ class ReserveController extends AppController
 {
     use ReserveControllerTrait, CancelChargeTrait;
 
-    public function __construct(WebReserveService $webReserveService, ReserveInvoiceService $reserveInvoiceService, ReserveParticipantPriceService $reserveParticipantPriceService, ReserveParticipantOptionPriceService $reserveParticipantOptionPriceService, ReserveParticipantHotelPriceService $reserveParticipantHotelPriceService, ReserveParticipantAirplanePriceService $reserveParticipantAirplanePriceService, ReserveCustomValueService $reserveCustomValueService, UserCustomItemService $userCustomItemService)
+    public function __construct(WebReserveService $webReserveService, ReserveInvoiceService $reserveInvoiceService, ReserveParticipantPriceService $reserveParticipantPriceService, ReserveParticipantOptionPriceService $reserveParticipantOptionPriceService, ReserveParticipantHotelPriceService $reserveParticipantHotelPriceService, ReserveParticipantAirplanePriceService $reserveParticipantAirplanePriceService, ReserveCustomValueService $reserveCustomValueService, UserCustomItemService $userCustomItemService, AccountPayableDetailService $accountPayableDetailService)
     {
         $this->webReserveService = $webReserveService;
         $this->reserveInvoiceService = $reserveInvoiceService;
@@ -42,6 +43,7 @@ class ReserveController extends AppController
         $this->reserveParticipantOptionPriceService = $reserveParticipantOptionPriceService;
         $this->reserveParticipantHotelPriceService = $reserveParticipantHotelPriceService;
         $this->reserveParticipantAirplanePriceService = $reserveParticipantAirplanePriceService;
+        $this->accountPayableDetailService = $accountPayableDetailService;
     }
 
     /**

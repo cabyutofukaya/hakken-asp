@@ -21,6 +21,7 @@ use App\Services\ReserveParticipantOptionPriceService;
 use App\Services\ReserveParticipantPriceService;
 use App\Services\ReserveService;
 use App\Services\UserCustomItemService;
+use App\Services\AccountPayableDetailService;
 use App\Traits\CancelChargeTrait;
 use App\Traits\ReserveControllerTrait;
 use DB;
@@ -34,7 +35,7 @@ class ReserveController extends AppController
 {
     use ReserveControllerTrait,CancelChargeTrait;
 
-    public function __construct(ReserveService $reserveService, ReserveInvoiceService $reserveInvoiceService, ReserveParticipantPriceService $reserveParticipantPriceService, ReserveParticipantOptionPriceService $reserveParticipantOptionPriceService, ReserveParticipantAirplanePriceService $reserveParticipantAirplanePriceService, ReserveParticipantHotelPriceService $reserveParticipantHotelPriceService, ReserveCustomValueService $reserveCustomValueService, UserCustomItemService $userCustomItemService)
+    public function __construct(ReserveService $reserveService, ReserveInvoiceService $reserveInvoiceService, ReserveParticipantPriceService $reserveParticipantPriceService, ReserveParticipantOptionPriceService $reserveParticipantOptionPriceService, ReserveParticipantAirplanePriceService $reserveParticipantAirplanePriceService, ReserveParticipantHotelPriceService $reserveParticipantHotelPriceService, ReserveCustomValueService $reserveCustomValueService, UserCustomItemService $userCustomItemService, AccountPayableDetailService $accountPayableDetailService)
     {
         $this->reserveService = $reserveService;
         $this->reserveInvoiceService = $reserveInvoiceService;
@@ -44,6 +45,7 @@ class ReserveController extends AppController
         $this->reserveParticipantAirplanePriceService = $reserveParticipantAirplanePriceService;
         $this->reserveParticipantHotelPriceService = $reserveParticipantHotelPriceService;
         $this->userCustomItemService = $userCustomItemService;
+        $this->accountPayableDetailService = $accountPayableDetailService;
     }
 
     public function index()

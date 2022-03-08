@@ -37,6 +37,8 @@
       id="itineraryArea" 
       reception='{{ $reception }}'
       applicationStep='{{ $reserve->application_step }}'
+      isCanceled='{{ $isCanceled }}'
+      isEnabled='{{ $isEnabled }}'
       applicationStepList='@json($consts['application_step_list'])'
       estimateNumber='{{ $reserve->estimate_number }}'
       reserveNumber='{{ $reserve->control_number }}'

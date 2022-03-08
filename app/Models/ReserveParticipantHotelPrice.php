@@ -39,6 +39,7 @@ class ReserveParticipantHotelPrice extends Model implements ParticipantPriceInte
         'gross_profit',
         'cancel_charge',
         'cancel_charge_net',
+        'cancel_charge_profit',
         'is_cancel',
     ];
 
@@ -75,6 +76,7 @@ class ReserveParticipantHotelPrice extends Model implements ParticipantPriceInte
         'gross_profit' => 'integer',
         'cancel_charge' => 'integer',
         'cancel_charge_net' => 'integer',
+        'cancel_charge_profit' => 'integer',
     ];
 
     protected $dates = [
