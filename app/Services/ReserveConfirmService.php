@@ -126,16 +126,9 @@ class ReserveConfirmService extends ReserveDocumentService implements DocumentAd
 
     /**
      * 更新
-     *
-     * @throws ExclusiveLockException 同時編集を検知した場合は例外を投げる
      */
     public function update(int $id, array $data): ReserveConfirm
     {
-        $oldReserveConfirm = $this->find($id);
-        if ($oldReserveConfirm->updated_at != Arr::get($data, 'updated_at')) {
-            throw new ExclusiveLockException;
-        }
-
         // 予約確認データ保存
         return $this->reserveConfirmRepository->update($id, $data);
     }

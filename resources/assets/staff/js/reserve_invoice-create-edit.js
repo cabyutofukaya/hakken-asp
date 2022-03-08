@@ -263,11 +263,14 @@ const ReserveInvoiceArea = ({
             });
         if (mounted.current && response?.status == 200) {
             const res = response.data.data;
+            const reserve = {
+                updated_at: res.updated_at
+            };
             setInput({
                 ...input,
-                updated_at: res.updated_at
+                reserve
             }); // 更新日時をセットする
-
+            console.log(input);
             // メッセージエリアをslideDown(表示状態)にした後でメッセージをセット
             $("#successMessage .closeIcon")
                 .parent()
@@ -322,7 +325,7 @@ const ReserveInvoiceArea = ({
                     hotel_info: hotelInfo,
                     hotel_contacts: hotelContacts,
                     //
-                    is_canceled: isCanceled,
+                    is_canceled: isCanceled == 1 ? 1 : 0,
                     // set_message: 1,
                     create_pdf: 1,
                     _method: "put"
@@ -335,9 +338,12 @@ const ReserveInvoiceArea = ({
             });
         if (mounted.current && response?.status == 200) {
             const res = response.data.data;
+            const reserve = {
+                updated_at: res.updated_at
+            };
             setInput({
                 ...input,
-                updated_at: res.updated_at
+                reserve
             }); // 更新日時をセットする
 
             // PDFダウンロード

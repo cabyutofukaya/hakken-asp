@@ -40,7 +40,6 @@ class ReserveInvoiceController extends Controller
         // 受付種別で分ける
         if ($reception === config('consts.const.RECEPTION_TYPE_ASP')) { // ASP受付
             $reserve = $this->reserveService->findByControlNumber($reserveNumber, $agencyAccount);
-            
         } elseif ($reception === config('consts.const.RECEPTION_TYPE_WEB')) { // WEB受付
             $reserve = $this->webReserveService->findByControlNumber($reserveNumber, $agencyAccount);
         } else {
@@ -58,20 +57,21 @@ class ReserveInvoiceController extends Controller
         }
 
         $agencyId = auth('staff')->user()->agency_id;
-        $reserveId = $reserve->id;
 
         $input = $request->all();
         $input['agency_id'] = $agencyId;
 
         try {
-            $newReserveInvoice = \DB::transaction(function () use ($agencyId, $reserveId, $input) {
-                $oldReserveInvoice = $this->reserveInvoiceService->findByReserveId($reserveId);
-                
-                $newReserveInvoice = $this->reserveInvoiceService->upsert($agencyId, $reserveId, $input);
+            $reserveInvoice = \DB::transaction(function () use ($agencyId, $reserve, $input) {
+                if ($reserve->updated_at != Arr::get($input, 'reserve.updated_at')) { // キャンセルなどの予約ステータスを考慮する必要があるので予約レコードの更新日時で同時編集チェック
+                    throw new ExclusiveLockException;
+                }
 
-                return $newReserveInvoice;
+                $reserveInvoice = $this->reserveInvoiceService->upsert($agencyId, $reserve->id, $reserve->enabled_reserve_itinerary->id, $input);
+
+                return $reserveInvoice;
             });
-            if ($newReserveInvoice) {
+            if ($reserveInvoice) {
                 if (request()->input("create_pdf")) { // PDF作成
                     $viewPath = '';
                     // 受付種別で分ける
@@ -80,18 +80,18 @@ class ReserveInvoiceController extends Controller
                     } elseif ($reception === config('consts.const.RECEPTION_TYPE_WEB')) { // WEB受付
                         $viewPath = 'staff.web.reserve_invoice.pdf';
                     }
-                    $pdfFile = $this->reserveInvoiceService->createPdf($viewPath, ['reserveInvoice' => $newReserveInvoice]);
+                    $pdfFile = $this->reserveInvoiceService->createPdf($viewPath, ['reserveInvoice' => $reserveInvoice]);
 
                     // 作成したPDFファイル名をセット
-                    $this->reserveInvoiceService->setPdf($newReserveInvoice, $pdfFile, $agencyId);
+                    $this->reserveInvoiceService->setPdf($reserveInvoice, $pdfFile, $agencyId);
                 }
                 if (request()->input("set_message")) {
-                    request()->session()->flash('success_message', "「請求書({$newReserveInvoice->user_invoice_number})の保存処理が完了しました。"); // set_messageは処理成功のフラッシュメッセージのセットを要求するパラメータ
+                    request()->session()->flash('success_message', "「請求書({$reserveInvoice->user_invoice_number})の保存処理が完了しました。"); // set_messageは処理成功のフラッシュメッセージのセットを要求するパラメータ
                 }
-                return new UpdateResource($this->reserveInvoiceService->find($newReserveInvoice->id), 201);
+                return new UpdateResource($this->reserveInvoiceService->find($reserveInvoice->id), 201);
             }
         } catch (ExclusiveLockException $e) { // 同時編集エラー（保存とpdf出力を同時に行う場所があるので、保存時した内容とpdfの内容が一致していることを担保する意味でもチェック）
-            abort(409, "他のユーザーによる編集済みレコードです。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+            abort(409, "予約情報が更新されています。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
         } catch (Exception $e) {
             Log::error($e);
         }

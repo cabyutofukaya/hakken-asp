@@ -17,58 +17,58 @@ import Peer from "skyway-js";
 const peer = new Peer({ key: process.env.MIX_SKYWAY_API_KEY });
 let room = null;
 
-(function(_Time, _Unit, _EventNamesArray) {
-    var TimeUnits = new (function() {
-        (this.Second = 1000),
-            (this.Minute = this.Second * 60),
-            (this.Hour = this.Minute * 60);
-    })();
-    var Timer = {};
-    Timer.Limit = _Time * TimeUnits[_Unit];
-    Timer.Main = function() {
-        // 現在のタブが「相談一覧」なら更新
-        var tab = document.getElementById("consultationTab");
-        if (tab.classList.contains("tabstay")) {
-            Timer.RemoveEvent();
+// (function(_Time, _Unit, _EventNamesArray) {
+//     var TimeUnits = new (function() {
+//         (this.Second = 1000),
+//             (this.Minute = this.Second * 60),
+//             (this.Hour = this.Minute * 60);
+//     })();
+//     var Timer = {};
+//     Timer.Limit = _Time * TimeUnits[_Unit];
+//     Timer.Main = function() {
+//         // 現在のタブが「相談一覧」なら更新
+//         var tab = document.getElementById("consultationTab");
+//         if (tab.classList.contains("tabstay")) {
+//             Timer.RemoveEvent();
 
-            var url = new URL(window.location.href);
-            var params = url.searchParams;
-            if (params.has("tab")) {
-                location.reload();
-            } else {
-                location.href = document.URL + "?tab=consultation"; // 相談タブのパラメータをつけて画面再読込
-            }
-        }
-    };
-    Timer.SetTimeoutID = "";
-    Timer.SetTimeout = function() {
-        this.SetTimeoutID = setTimeout(this.Main, this.Limit);
-        return this;
-    };
-    Timer.ClearTimeout = function() {
-        clearTimeout(Timer.SetTimeoutID);
-        return this;
-    };
-    Timer.Manage = function() {
-        Timer.ClearTimeout().SetTimeout();
-    };
-    Timer.EventNames = _EventNamesArray || ["keydown", "mousemove", "click"];
-    Timer.EventNamesLength = Timer.EventNames.length;
-    Timer.SetEvent = function() {
-        var _Length = this.EventNamesLength;
-        while (_Length--) {
-            addEventListener(this.EventNames[_Length], this.Manage, false);
-        }
-    };
-    Timer.RemoveEvent = function() {
-        var _Length = this.EventNamesLength;
-        while (_Length--) {
-            removeEventListener(this.EventNames[_Length], this.Manage, false);
-        }
-    };
+//             var url = new URL(window.location.href);
+//             var params = url.searchParams;
+//             if (params.has("tab")) {
+//                 location.reload();
+//             } else {
+//                 location.href = document.URL + "?tab=consultation"; // 相談タブのパラメータをつけて画面再読込
+//             }
+//         }
+//     };
+//     Timer.SetTimeoutID = "";
+//     Timer.SetTimeout = function() {
+//         this.SetTimeoutID = setTimeout(this.Main, this.Limit);
+//         return this;
+//     };
+//     Timer.ClearTimeout = function() {
+//         clearTimeout(Timer.SetTimeoutID);
+//         return this;
+//     };
+//     Timer.Manage = function() {
+//         Timer.ClearTimeout().SetTimeout();
+//     };
+//     Timer.EventNames = _EventNamesArray || ["keydown", "mousemove", "click"];
+//     Timer.EventNamesLength = Timer.EventNames.length;
+//     Timer.SetEvent = function() {
+//         var _Length = this.EventNamesLength;
+//         while (_Length--) {
+//             addEventListener(this.EventNames[_Length], this.Manage, false);
+//         }
+//     };
+//     Timer.RemoveEvent = function() {
+//         var _Length = this.EventNamesLength;
+//         while (_Length--) {
+//             removeEventListener(this.EventNames[_Length], this.Manage, false);
+//         }
+//     };
 
-    Timer.SetTimeout().SetEvent();
-})(5, "Minute"); // 5分、画面操作がなければリロード
+//     Timer.SetTimeout().SetEvent();
+// })(5, "Minute"); // 5分、画面操作がなければリロード
 
 const WebConsultationArea = ({ isShow, reserve, roomKey }) => {
     const { agencyAccount } = useContext(ConstContext);

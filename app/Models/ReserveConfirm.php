@@ -13,6 +13,8 @@ class ReserveConfirm extends Model implements ReserveDocumentInterface, Document
 {
     use SoftDeletes,ModelLogTrait,Sortable,SoftCascadeTrait;
 
+    protected $touches = ['reserve']; // 書類を更新した場合は念の為予約情報も更新
+
     protected $softCascade = [
         'pdf',
     ];

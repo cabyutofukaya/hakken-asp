@@ -10,7 +10,9 @@ interface ReserveInvoiceRepositoryInterface
 {
   public function find(int $id, array $with = [], array $select=[], bool $getDeleted = false) : ReserveInvoice;
 
-  public function findByReserveId(int $reserveId, array $with = [], array $select=[], bool $getDeleted = false) : ?ReserveInvoice;
+  // public function findByReserveId(int $reserveId, array $with = [], array $select=[], bool $getDeleted = false) : ?ReserveInvoice;
+
+  public function findWhere(array $where, array $with=[], array $select=[], bool $getDeleted = false) : ?ReserveInvoice;
   
   public function paginateByReserveBundleInvoiceId(int $agencyId, int $reserveBundleInvoiceId, int $limit, array $with = [], array $select = [], bool $getDeleted = false) : LengthAwarePaginator;
 

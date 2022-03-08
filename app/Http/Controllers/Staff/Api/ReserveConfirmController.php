@@ -17,6 +17,7 @@ use App\Services\EstimateService;
 use App\Services\WebReserveService;
 use App\Services\WebEstimateService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 
 /**
  * 予約
@@ -153,7 +154,11 @@ class ReserveConfirmController extends Controller
         $input['reserve_itinerary_id'] = $reserveItinerary->id; // 行程管理IDをセット
 
         try {
-            $reserveConfirm = \DB::transaction(function () use ($input) {
+            $reserveConfirm = \DB::transaction(function () use ($input, $reserve) {
+                if ($reserve->updated_at != Arr::get($input, 'reserve.updated_at')) {
+                    throw new ExclusiveLockException;
+                }
+
                 return $this->reserveConfirmService->create($input);
             });
             if ($reserveConfirm) {
@@ -168,6 +173,8 @@ class ReserveConfirmController extends Controller
                 }
                 return new StoreResource($this->reserveConfirmService->find($reserveConfirm->id), 201);
             }
+        } catch (ExclusiveLockException $e) { // 同時編集エラー（保存とpdf出力を同時に行う場所があるので、保存時した内容とpdfの内容が一致していることを担保する意味でもチェック）
+            abort(409, "予約情報が更新されています。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
         } catch (\Exception $e) {
             // パラメータエラー等
             \Log::error($e);
@@ -228,6 +235,10 @@ class ReserveConfirmController extends Controller
 
         try {
             $reserveConfirm = \DB::transaction(function () use ($reserveConfirm, $input) {
+                if ($reserveConfirm->reserve->updated_at != Arr::get($input, 'reserve.updated_at')) {
+                    throw new ExclusiveLockException;
+                }
+
                 return $this->reserveConfirmService->update($reserveConfirm->id, $input);
             });
 
@@ -252,7 +263,7 @@ class ReserveConfirmController extends Controller
                 return new UpdateResource($this->reserveConfirmService->find($reserveConfirm->id), 200);
             }
         } catch (ExclusiveLockException $e) { // 同時編集エラー（保存とpdf出力を同時に行う場所があるので、保存時した内容とpdfの内容が一致していることを担保する意味でもチェック）
-            abort(409, "他のユーザーによる編集済みレコードです。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+            abort(409, "予約情報が更新されています。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
         } catch (\Exception $e) {
             // パラメータエラー等
             \Log::error($e);

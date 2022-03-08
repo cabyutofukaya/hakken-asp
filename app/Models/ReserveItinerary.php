@@ -14,12 +14,12 @@ class ReserveItinerary extends Model
 
     // protected $touches = ['reserve'];
 
-    // 料金レコードの集計に使用
-    protected $with = [
-        'reserve_participant_option_prices',
-        'reserve_participant_hotel_prices', 
-        'reserve_participant_airplane_prices',
-    ]; // 参加者料金（オプション科目、ホテル科目、航空券科目）
+    // // 料金レコードの集計に使用
+    // protected $with = [
+    //     'reserve_participant_option_prices',
+    //     'reserve_participant_hotel_prices', 
+    //     'reserve_participant_airplane_prices',
+    // ]; // 参加者料金（オプション科目、ホテル科目、航空券科目）
 
     protected $appends = [
         // 'sum_gross',

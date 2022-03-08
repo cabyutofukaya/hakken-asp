@@ -18,6 +18,8 @@ class ReserveInvoice extends Model implements ReserveDocumentInterface, Document
 {
     use SoftDeletes,ModelLogTrait,SoftCascadeTrait,Sortable;
 
+    protected $touches = ['reserve']; // 書類を更新した場合は念の為予約情報も更新
+
     // // 金額集計に使用
     // protected $with = [
     //     'agency_deposits',
@@ -56,6 +58,7 @@ class ReserveInvoice extends Model implements ReserveDocumentInterface, Document
     protected $fillable = [
         'agency_id',
         'reserve_id',
+        'reserve_itinerary_id',
         'business_user_id',
         'invoice_number',
         'user_invoice_number',
