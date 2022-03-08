@@ -1,5 +1,46 @@
 import { getAgencyAccountFromUrl } from "./libs";
 
+(function(_Time, _Unit, _EventNamesArray) {
+    var TimeUnits = new (function() {
+        (this.Second = 1000),
+            (this.Minute = this.Second * 60),
+            (this.Hour = this.Minute * 60);
+    })();
+    var Timer = {};
+    Timer.Limit = _Time * TimeUnits[_Unit];
+    Timer.Main = function() {
+        location.reload();
+    };
+    Timer.SetTimeoutID = "";
+    Timer.SetTimeout = function() {
+        this.SetTimeoutID = setTimeout(this.Main, this.Limit);
+        return this;
+    };
+    Timer.ClearTimeout = function() {
+        clearTimeout(Timer.SetTimeoutID);
+        return this;
+    };
+    Timer.Manage = function() {
+        Timer.ClearTimeout().SetTimeout();
+    };
+    Timer.EventNames = _EventNamesArray || ["keydown", "mousemove", "click"];
+    Timer.EventNamesLength = Timer.EventNames.length;
+    Timer.SetEvent = function() {
+        var _Length = this.EventNamesLength;
+        while (_Length--) {
+            addEventListener(this.EventNames[_Length], this.Manage, false);
+        }
+    };
+    Timer.RemoveEvent = function() {
+        var _Length = this.EventNamesLength;
+        while (_Length--) {
+            removeEventListener(this.EventNames[_Length], this.Manage, false);
+        }
+    };
+
+    Timer.SetTimeout().SetEvent();
+})(10, "Minute"); // 10分、画面操作がなければリロード。画面開きっぱなしで表示中のデータが古いままなのを極力防ぐため
+
 // axiosのエラーハンドリング
 axios.interceptors.response.use(
     function(response) {

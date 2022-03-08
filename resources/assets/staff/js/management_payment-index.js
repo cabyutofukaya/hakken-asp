@@ -52,6 +52,7 @@ const PaymentList = ({
         "last_manager.name": "asc",
         last_note: "asc",
         payment_date: "asc",
+        use_date: "asc",
         amount_billed: "asc",
         unpaid_balance: "asc"
     });
@@ -359,7 +360,10 @@ const PaymentList = ({
                                 >
                                     <span>商品名</span>
                                 </th>
-                                <th className="txtalc">
+                                <th
+                                    className="txtalc sort"
+                                    onClick={e => handleSortClick("use_date")}
+                                >
                                     <span>利用日</span>
                                 </th>
                                 <th className="txtalc">
@@ -468,23 +472,28 @@ const PaymentList = ({
                                             )}
                                         </td>
                                         <td className="txtalc">
-                                            <span
-                                                className={classNames(
-                                                    "status",
-                                                    {
-                                                        red:
-                                                            row.status ==
-                                                            consts.statusVals
-                                                                .status_unpaid,
-                                                        gray:
-                                                            row.status ==
-                                                            consts.statusVals
-                                                                .status_paid
-                                                    }
-                                                )}
-                                            >
-                                                {row.status_label ?? "-"}
-                                            </span>
+                                            {row?.status_label && (
+                                                <span
+                                                    className={classNames(
+                                                        "status",
+                                                        {
+                                                            red:
+                                                                row.status ==
+                                                                consts
+                                                                    .statusVals
+                                                                    .status_unpaid,
+                                                            gray:
+                                                                row.status ==
+                                                                consts
+                                                                    .statusVals
+                                                                    .status_paid
+                                                        }
+                                                    )}
+                                                >
+                                                    {row.status_label}
+                                                </span>
+                                            )}
+                                            {!row?.status_label && "-"}
                                         </td>
                                         <td>{row?.supplier_name ?? "-"}</td>
                                         <td className="txtalc">

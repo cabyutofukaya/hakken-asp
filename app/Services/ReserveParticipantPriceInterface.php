@@ -10,11 +10,11 @@ interface ReserveParticipantPriceInterface
 
     public function deleteByParticipantId(int $participantId, bool $ifExistWithdrawalDelete = false, bool $isSoftDelete = true): bool;
 
-    public function isExistsDataByReserveId(int $reserveId, bool $getDeleted = false) : bool;
+    public function isExistsDataByReserveItineraryId(?int $reserveItineraryId, bool $getDeleted = false) : bool;
     
-    public function getByReserveId(int $reserveId, ?bool $isValid = null, array $with = [], array $select = [], bool $getDeleted = false) : Collection;
+    public function getByReserveItineraryId(int $reserveItineraryId, ?bool $isValid = null, array $with = [], array $select = [], bool $getDeleted = false) : Collection;
 
-    public function setCancelChargeByIds(int $cancelCharge, int $cancelChargeNet, bool $isCancel, array $ids) : bool;
+    public function setCancelChargeByIds(int $cancelCharge, int $cancelChargeNet, int $cancelChargeProfit, bool $isCancel, array $ids) : bool;
 
-    public function setCancelChargeByReserveId(int $cancelCharge, int $cancelChargeNet, bool $isCancel, int $reserveId) : bool;
+    public function setCancelChargeByReserveItineraryId(int $cancelCharge, int $cancelChargeNet, int $cancelChargeProfit, bool $isCancel, int $reserveItineraryId) : array;
 }

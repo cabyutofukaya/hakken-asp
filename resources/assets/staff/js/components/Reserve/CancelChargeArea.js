@@ -38,6 +38,13 @@ const CancelChargeArea = ({ defaultValue, consts, errors }) => {
         // チェックボックスの入力制御
         const currentVal = row[name]; // 現在の値
         row[name] = currentVal == 1 ? 0 : 1;
+
+        if (row[name] == 0) {
+            // チェックoffの場合は料金クリア
+            row["cancel_charge"] = 0;
+            row["cancel_charge_net"] = 0;
+        }
+
         lists[key] = row;
         setLists({ ...lists });
     };

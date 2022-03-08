@@ -27,11 +27,12 @@ class Reserve extends Model
     // ]; // 請求金額・出金額
 
     protected $appends = [
-        'sum_invoice_amount',
-        'sum_withdrawal',
-        'sum_unpaid',
-        'sum_deposit',
-        'sum_not_deposit',
+        // 'sum_invoice_amount',
+        // 'sum_withdrawal',
+        // 'sum_unpaid',
+        // 'sum_deposit',
+        // 'sum_not_deposit',
+        // 'sum_cancel_unpaid',
         'hash_id', // ハッシュID
         'is_departed', // 催行済みか否か
         'is_canceled', // キャンセルか否か
@@ -257,7 +258,22 @@ class Reserve extends Model
             'App\Models\ReserveParticipantAirplanePrice',
             'App\Models\ReserveParticipantHotelPrice',
         ], function ($q) {
-            $q->where('valid', true);
+            $q->where('valid', true)
+            ->where('reserve_itinerary_id', optional($this->enabled_reserve_itinerary)->id); // 有効な行程に属する支払い情報に絞る
+        });
+    }
+
+    // キャンセルチャージ対象の買い掛け金詳細
+    public function cancel_account_payable_details()
+    {
+        // 仕入が有効になっているレコードのみ対象に(AccountPayableDetailのscopeIsValidメソッドと同じ処理)
+        return $this->hasMany('App\Models\AccountPayableDetail')->whereHasMorph('saleable', [
+            'App\Models\ReserveParticipantOptionPrice',
+            'App\Models\ReserveParticipantAirplanePrice',
+            'App\Models\ReserveParticipantHotelPrice',
+        ], function ($q) {
+            $q->where('is_cancel', true)
+            ->where('reserve_itinerary_id', optional($this->enabled_reserve_itinerary)->id); // 有効な行程に属する支払い情報に絞る
         });
     }
 
@@ -719,7 +735,24 @@ class Reserve extends Model
      */
     public function getSumUnpaidAttribute()
     {
-        return $this->enabled_account_payable_details->sum('unpaid_balance');
+        // 計算は予約ステータス時のみ
+        if ($this->application_step == config('consts.reserves.APPLICATION_STEP_RESERVE')) {
+            return $this->enabled_account_payable_details->sum('unpaid_balance');
+        } else {
+            return 0;
+        }
+    }
+
+    /**
+     * 未出金額合計(キャンセル時)
+     */
+    public function getSumCancelUnpaidAttribute()
+    {
+        if ($this->application_step == config('consts.reserves.APPLICATION_STEP_RESERVE')) {
+            return $this->cancel_account_payable_details->sum('unpaid_balance');
+        } else {
+            return 0;
+        }
     }
 
     /**

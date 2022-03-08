@@ -14,17 +14,20 @@ class ReserveItinerary extends Model
 
     // protected $touches = ['reserve'];
 
-    // 料金レコードの集計に使用
-    protected $with = [
-        'reserve_participant_option_prices',
-        'reserve_participant_hotel_prices', 
-        'reserve_participant_airplane_prices',
-    ]; // 参加者料金（オプション科目、ホテル科目、航空券科目）
+    // // 料金レコードの集計に使用
+    // protected $with = [
+    //     'reserve_participant_option_prices',
+    //     'reserve_participant_hotel_prices', 
+    //     'reserve_participant_airplane_prices',
+    // ]; // 参加者料金（オプション科目、ホテル科目、航空券科目）
 
     protected $appends = [
-        'sum_gross_price',
-        'sum_net_price',
-        'sum_gross_profit_price',
+        // 'sum_gross',
+        // 'sum_cancel_gross',
+        // 'sum_net',
+        // 'sum_cancel_net',
+        // 'sum_gross_profit',
+        // 'sum_cancel_charge_profit',
     ];
 
     protected $softCascade = [
@@ -138,7 +141,16 @@ class ReserveItinerary extends Model
      */
     public function getSumGrossAttribute()
     {
-        return $this->attributes['sum_gross_price'] = $this->reserve_participant_option_prices->where('valid', true)->sum('gross') + $this->reserve_participant_hotel_prices->where('valid', true)->sum('gross') + $this->reserve_participant_airplane_prices->where('valid', true)->sum('gross');
+        return $this->reserve_participant_option_prices->where('valid', true)->sum('gross') + $this->reserve_participant_hotel_prices->where('valid', true)->sum('gross') + $this->reserve_participant_airplane_prices->where('valid', true)->sum('gross');
+    }
+
+    /**
+     * キャンセルチャージGROSS合計（オプション科目+航空券科目+ホテル科目）
+     * is_cancel=trueのキャセルチャージの合計
+     */
+    public function getSumCancelGrossAttribute()
+    {
+        return $this->reserve_participant_option_prices->where('is_cancel', true)->sum('cancel_charge') + $this->reserve_participant_hotel_prices->where('is_cancel', true)->sum('cancel_charge') + $this->reserve_participant_airplane_prices->where('is_cancel', true)->sum('cancel_charge');
     }
 
     /**
@@ -147,7 +159,16 @@ class ReserveItinerary extends Model
      */
     public function getSumNetAttribute()
     {
-        return $this->attributes['sum_net_price'] = $this->reserve_participant_option_prices->where('valid', true)->sum('net') + $this->reserve_participant_hotel_prices->where('valid', true)->sum('net') + $this->reserve_participant_airplane_prices->where('valid', true)->sum('net');
+        return $this->reserve_participant_option_prices->where('valid', true)->sum('net') + $this->reserve_participant_hotel_prices->where('valid', true)->sum('net') + $this->reserve_participant_airplane_prices->where('valid', true)->sum('net');
+    }
+
+    /**
+     * キャンセルチャージNET合計（オプション科目+航空券科目+ホテル科目）
+     * is_cancel=trueのキャセルチャージの合計
+     */
+    public function getSumCancelNetAttribute()
+    {
+        return $this->reserve_participant_option_prices->where('is_cancel', true)->sum('cancel_charge_net') + $this->reserve_participant_hotel_prices->where('is_cancel', true)->sum('cancel_charge_net') + $this->reserve_participant_airplane_prices->where('is_cancel', true)->sum('cancel_charge_net');
     }
 
     /**
@@ -156,6 +177,15 @@ class ReserveItinerary extends Model
      */
     public function getSumGrossProfitAttribute()
     {
-        return $this->attributes['sum_gross_profit_price'] = $this->reserve_participant_option_prices->where('valid', true)->sum('gross_profit') + $this->reserve_participant_hotel_prices->where('valid', true)->sum('gross_profit') + $this->reserve_participant_airplane_prices->where('valid', true)->sum('gross_profit');
+        return $this->reserve_participant_option_prices->where('valid', true)->sum('gross_profit') + $this->reserve_participant_hotel_prices->where('valid', true)->sum('gross_profit') + $this->reserve_participant_airplane_prices->where('valid', true)->sum('gross_profit');
+    }
+
+    /**
+     * キャンセルチャージ粗利合計（オプション科目+航空券科目+ホテル科目）
+     * is_cancel=trueのキャセルチャージの合計
+     */
+    public function getSumCancelChargeProfitAttribute()
+    {
+        return $this->reserve_participant_option_prices->where('is_cancel', true)->sum('cancel_charge_profit') + $this->reserve_participant_hotel_prices->where('is_cancel', true)->sum('cancel_charge_profit') + $this->reserve_participant_airplane_prices->where('is_cancel', true)->sum('cancel_charge_profit');
     }
 }

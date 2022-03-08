@@ -81,6 +81,7 @@ class ReserveInvoiceUpsertRequest extends FormRequest
             'hotel_prices' => 'nullable|array',
             'hotel_info' => 'nullable|array',
             'hotel_contacts' => 'nullable|array',
+            'reserve.updated_at' => 'required',
         ];
     }
     
@@ -112,7 +113,7 @@ class ReserveInvoiceUpsertRequest extends FormRequest
             'hotel_prices.array' => 'ホテル科目の入力形式値が不正です。',
             'hotel_info.array' => '宿泊施設情報の入力形式値が不正です。',
             'hotel_contacts.array' => '宿泊施設連絡先の入力形式値が不正です。',
-
+            'reserve.updated_at.required' => '予約情報更新日時は必須です。',
         ];
     }
 }

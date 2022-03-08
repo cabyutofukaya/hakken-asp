@@ -51,19 +51,19 @@ class ReserveParticipantOptionPriceService implements ReserveParticipantPriceInt
     /**
      * 当該予約IDに紐づく仕入データがある場合はtrue
      */
-    public function isExistsDataByReserveId(int $reserveId, bool $getDeleted = false) : bool
+    public function isExistsDataByReserveItineraryId(?int $reserveItineraryId, bool $getDeleted = false) : bool
     {
-        return $this->reserveParticipantOptionPriceRepository->whereExists(['reserve_id' => $reserveId], $getDeleted);
+        return $this->reserveParticipantOptionPriceRepository->whereExists(['reserve_itinerary_id' => $reserveItineraryId], $getDeleted);
     }
 
     /**
-     * 当該予約IDに紐づく仕入一覧を取得
+     * 当該行程IDに紐づく仕入一覧を取得
      *
      * @param bool $isValid 有効・無効フラグ。Nullの場合は指定ナシ
      */
-    public function getByReserveId(int $reserveId, ?bool $isValid = null, array $with = [], array $select = [], bool $getDeleted = false) : Collection
+    public function getByReserveItineraryId(int $reserveItineraryId, ?bool $isValid = null, array $with = [], array $select = [], bool $getDeleted = false) : Collection
     {
-        $param = !is_null($isValid) ? ['valid' => $isValid, 'reserve_id' => $reserveId] : ['reserve_id' => $reserveId]; // $isValidパラメータが指定されている場合は検索条件に付与
+        $param = !is_null($isValid) ? ['valid' => $isValid, 'reserve_itinerary_id' => $reserveItineraryId] : ['reserve_itinerary_id' => $reserveItineraryId]; // $isValidパラメータが指定されている場合は検索条件に付与
 
         return $this->reserveParticipantOptionPriceRepository->getWhere($param, $with, $select, $getDeleted);
     }
@@ -73,21 +73,28 @@ class ReserveParticipantOptionPriceService implements ReserveParticipantPriceInt
      *
      * @param int $cancelCharge キャンセルチャージ金額
      * @param int $cancelChargeNet 仕入れ先支払料金
+     * @param int $cancelChargeProfit キャンセルチャージ粗利
      * @param bool $isCancel キャンセル有無
      */
-    public function setCancelChargeByIds(int $cancelCharge, int $cancelChargeNet, bool $isCancel, array $ids) : bool
+    public function setCancelChargeByIds(int $cancelCharge, int $cancelChargeNet, int $cancelChargeProfit, bool $isCancel, array $ids) : bool
     {
-        return $this->reserveParticipantOptionPriceRepository->updateIds(['cancel_charge' => $cancelCharge, 'cancel_charge_net' => $cancelChargeNet, 'is_cancel' => $isCancel], $ids);
+        return $this->reserveParticipantOptionPriceRepository->updateIds(['cancel_charge' => $cancelCharge, 'cancel_charge_net' => $cancelChargeNet, 'cancel_charge_profit' => $cancelChargeProfit, 'is_cancel' => $isCancel], $ids);
     }
 
     /**
-     * 対象予約IDのキャンセルチャージ料金、キャンセルフラグを保存
+     * 対象行程IDのキャンセルチャージ料金、キャンセルフラグを保存
+     * 
+     * @return array 処理対象のレコードIDリスト
      */
-    public function setCancelChargeByReserveId(int $cancelCharge, int $cancelChargeNet, bool $isCancel, int $reserveId) : bool
+    public function setCancelChargeByReserveItineraryId(int $cancelCharge, int $cancelChargeNet, int $cancelChargeProfit, bool $isCancel, int $reserveItineraryId) : array
     {
-        return $this->reserveParticipantOptionPriceRepository->updateWhere(
-            ['cancel_charge' => $cancelCharge, 'cancel_charge_net' => $cancelChargeNet, 'is_cancel' => $isCancel], 
-            ['reserve_id' => $reserveId]
+        $targetRows = $this->reserveParticipantOptionPriceRepository->getWhere(['reserve_itinerary_id' => $reserveItineraryId], [], ['id']);
+
+        $this->reserveParticipantOptionPriceRepository->updateWhere(
+            ['cancel_charge' => $cancelCharge, 'cancel_charge_net' => $cancelChargeNet, 'cancel_charge_profit' => $cancelChargeProfit, 'is_cancel' => $isCancel], 
+            ['reserve_itinerary_id' => $reserveItineraryId]
         );
+
+        return $targetRows->pluck("id")->toArray();
     }
 }

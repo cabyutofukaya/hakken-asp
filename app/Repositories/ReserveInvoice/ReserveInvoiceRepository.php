@@ -26,14 +26,34 @@ class ReserveInvoiceRepository implements ReserveInvoiceRepositoryInterface
         return $query->findOrFail($id);
     }
 
-    public function findByReserveId(int $reserveId, array $with = [], array $select=[], bool $getDeleted = false) : ?ReserveInvoice
+    // public function findByReserveId(int $reserveId, array $with = [], array $select=[], bool $getDeleted = false) : ?ReserveInvoice
+    // {
+    //     $query = $this->reserveInvoice;
+    //     $query = $select ? $query->select($select) : $query;
+    //     $query = $with ? $query->with($with) : $query;
+    //     $query = $getDeleted ? $query->withTrashed() : $query;
+
+    //     return $query->where('reserve_id', $reserveId)->first();
+    // }
+
+    /**
+     * 検索して1件取得
+     */
+    public function findWhere(array $where, array $with=[], array $select=[], bool $getDeleted = false) : ?ReserveInvoice
     {
         $query = $this->reserveInvoice;
-        $query = $select ? $query->select($select) : $query;
+        
         $query = $with ? $query->with($with) : $query;
+        $query = $select ? $query->select($select) : $query;
         $query = $getDeleted ? $query->withTrashed() : $query;
 
-        return $query->where('reserve_id', $reserveId)->first();
+        foreach ($where as $key => $val) {
+            if (is_empty($val)) {
+                continue;
+            }
+            $query = $query->where($key, $val);
+        }
+        return $query->first();
     }
 
     /**
