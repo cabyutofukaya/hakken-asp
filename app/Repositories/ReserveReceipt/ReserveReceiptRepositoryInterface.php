@@ -8,12 +8,14 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 interface ReserveReceiptRepositoryInterface
 {
-  public function find(int $id, array $with = [], array $select=[], bool $getDeleted = false) : ReserveReceipt;
+  public function find(int $id, array $with = [], array $select=[], bool $getDeleted = false) : ?ReserveReceipt;
 
   public function findWhere(array $where, array $with = [], array $select = [], $getDeleted = false) : ?ReserveReceipt;
 
   public function updateOrCreate(array $attributes, array $values = []) : ReserveReceipt;
 
+  public function updateStatus(int $id, int $status) : bool;
+  
   public function create(array $data): ReserveReceipt;
 
   public function clearDocumentAddress(int $reserveId) : bool;

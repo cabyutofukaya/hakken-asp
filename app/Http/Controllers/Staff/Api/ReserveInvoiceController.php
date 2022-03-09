@@ -2,21 +2,23 @@
 
 namespace App\Http\Controllers\Staff\Api;
 
-use App\Events\AgencyDepositedEvent;
 use App\Events\AgencyDepositChangedEvent;
+use App\Events\AgencyDepositedEvent;
 use App\Exceptions\ExclusiveLockException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Staff\ReserveInvoiceDepositBatchRequest;
 use App\Http\Requests\Staff\ReserveInvoiceUpsertRequest;
+use App\Http\Requests\Staff\ReserveInvoiceStatusUpdateRequest;
 use App\Http\Resources\Staff\ReserveBundleInvoice\BreakdownResource;
+use App\Http\Resources\Staff\ReserveInvoice\StatusUpdateResource;
 use App\Http\Resources\Staff\ReserveInvoice\UpdateResource;
 use App\Http\Resources\Staff\VReserveInvoice\IndexResource;
 use App\Models\ReserveInvoice;
+use App\Services\AgencyDepositService;
 use App\Services\ReserveInvoiceService;
 use App\Services\ReserveService;
-use App\Services\WebReserveService;
-use App\Services\AgencyDepositService;
 use App\Services\VReserveInvoiceService;
+use App\Services\WebReserveService;
 use Hashids;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -171,5 +173,42 @@ class ReserveInvoiceController extends Controller
             \Log::error($e);
         }
         abort(500);
+    }
+
+    /**
+     * ステータス更新
+     *
+     * @param int $reserveInvoiceId 請求書ID
+     */
+    public function statusUpdate(ReserveInvoiceStatusUpdateRequest $request, $agencyAccount, int $reserveInvoiceId)
+    {
+        $reserveInvoice = $this->reserveInvoiceService->find($reserveInvoiceId);
+        
+        if (!$reserveInvoice) {
+            abort(404, "請求データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+        }
+
+        $response = \Gate::authorize('update', $reserveInvoice);
+        if (!$response->allowed()) {
+            abort(403, $response->message());
+        }
+
+        try {
+            $input = $request->all();
+
+            // 書類更新時に予約レコードの更新日時をチェックしているので、一応ここでもチェック
+            if ($reserveInvoice->reserve->updated_at != $input['reserve']['updated_at']) {
+                throw new ExclusiveLockException;
+            }
+
+            if ($this->reserveInvoiceService->updateStatus($reserveInvoiceId, $input['status'])) {
+                return new StatusUpdateResource($this->reserveInvoiceService->find($reserveInvoiceId));
+            }
+        } catch (ExclusiveLockException $e) { // 同時編集エラー
+            abort(409, "予約情報が更新されています。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+        } catch (Exception $e) {
+            Log::error($e);
+        }
+        return abort(500);
     }
 }

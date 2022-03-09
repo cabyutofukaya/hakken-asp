@@ -102,6 +102,7 @@ class EditFormComposer
 
 
         $travelDates = $this->getTravelDates($reserve); // 旅行日の配列
+        $isTravelDates = $travelDates ? true : false; // 旅行日が設定されているか否か
 
         // 参加者情報
         $participants = array();
@@ -259,7 +260,7 @@ class EditFormComposer
         // reactに渡す各種定数
         $jsVars = $this->getJsVars($agencyAccount);
 
-        $view->with(compact('formSelects', 'transitionTab', 'defaultValue', 'consts', 'customFields', 'subjectCustomCategoryCode', 'participants', 'modalInitialValues', 'reserve', 'updateUrl', 'backUrl','jsVars', 'reception', 'isCanceled', 'isEnabled'));
+        $view->with(compact('formSelects', 'transitionTab', 'defaultValue', 'consts', 'customFields', 'subjectCustomCategoryCode', 'participants', 'modalInitialValues', 'reserve', 'updateUrl', 'backUrl','jsVars', 'reception', 'isCanceled', 'isEnabled', 'isTravelDates'));
     }
 
     /**

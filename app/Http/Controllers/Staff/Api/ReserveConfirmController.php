@@ -6,16 +6,18 @@ use App\Exceptions\ExclusiveLockException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Staff\ReserveConfirmStoretRequest;
 use App\Http\Requests\Staff\ReserveConfirmUpdateRequest;
+use App\Http\Requests\Staff\ResesrveConfirmStatusUpdateRequest;
 use App\Http\Resources\Staff\ReserveConfirm\IndexResource;
+use App\Http\Resources\Staff\ReserveConfirm\StatusUpdateResource;
 use App\Http\Resources\Staff\ReserveConfirm\StoreResource;
 use App\Http\Resources\Staff\ReserveConfirm\UpdateResource;
 use App\Models\ReserveConfirm;
+use App\Services\EstimateService;
 use App\Services\ReserveConfirmService;
 use App\Services\ReserveItineraryService;
 use App\Services\ReserveService;
-use App\Services\EstimateService;
-use App\Services\WebReserveService;
 use App\Services\WebEstimateService;
+use App\Services\WebReserveService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 
@@ -269,6 +271,43 @@ class ReserveConfirmController extends Controller
             \Log::error($e);
         }
         abort(500);
+    }
+
+    /**
+     * ステータス更新
+     *
+     * @param int $reserveConfirmId 請求書ID
+     */
+    public function statusUpdate(ResesrveConfirmStatusUpdateRequest $request, $agencyAccount, int $reserveConfirmId)
+    {
+        $resesrveConfirm = $this->reserveConfirmService->find($reserveConfirmId);
+        
+        if (!$resesrveConfirm) {
+            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+        }
+
+        $response = \Gate::authorize('update', $resesrveConfirm);
+        if (!$response->allowed()) {
+            abort(403, $response->message());
+        }
+
+        try {
+            $input = $request->all();
+
+            // 書類更新時に予約レコードの更新日時をチェックしているので、一応ここでもチェック
+            if ($resesrveConfirm->reserve->updated_at != $input['reserve']['updated_at']) {
+                throw new ExclusiveLockException;
+            }
+
+            if ($this->reserveConfirmService->updateStatus($reserveConfirmId, $input['status'])) {
+                return new StatusUpdateResource($this->reserveConfirmService->find($reserveConfirmId));
+            }
+        } catch (ExclusiveLockException $e) { // 同時編集エラー
+            abort(409, "予約情報が更新されています。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+        } catch (Exception $e) {
+            Log::error($e);
+        }
+        return abort(500);
     }
 
     /**

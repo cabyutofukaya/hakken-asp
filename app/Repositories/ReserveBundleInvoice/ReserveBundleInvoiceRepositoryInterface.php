@@ -18,6 +18,8 @@ interface ReserveBundleInvoiceRepositoryInterface
 
   public function update(int $id, array $data): ReserveBundleInvoice;
 
+  public function updateStatus(int $id, int $status) : bool;
+
   public function updateFields(int $id, array $params) : bool;
 
   public function deleteIfNoChild(int $id, bool $isSoftDelete = true) : void;

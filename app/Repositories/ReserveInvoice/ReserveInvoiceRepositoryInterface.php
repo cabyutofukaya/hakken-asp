@@ -8,9 +8,9 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 interface ReserveInvoiceRepositoryInterface
 {
-  public function find(int $id, array $with = [], array $select=[], bool $getDeleted = false) : ReserveInvoice;
+  public function find(int $id, array $with = [], array $select=[], bool $getDeleted = false) : ?ReserveInvoice;
 
-  // public function findByReserveId(int $reserveId, array $with = [], array $select=[], bool $getDeleted = false) : ?ReserveInvoice;
+  public function updateStatus(int $reserveInvoiceId, int $status) : bool;
 
   public function findWhere(array $where, array $with=[], array $select=[], bool $getDeleted = false) : ?ReserveInvoice;
   

@@ -45,7 +45,6 @@ class EditFormComposer
         $agencyId = $my->agency_id;
         $agencyAccount = $my->agency->account;
 
-
         $defaultValue = [];
 
         if ($reserveBundleReceipt) { // 招集書保存データあり
@@ -133,6 +132,7 @@ class EditFormComposer
         // 各種デフォルト
         $defaultValue = array_merge($defaultValue, [
             // 'business_user_id' => $businessUserId, // 法人顧客ID
+            'id' => $reserveBundleReceipt ? $reserveBundleReceipt->id : null,
             'document_receipt_id' => $documentReceiptId, // 書類設定ID
             'document_common_id' => $documentCommonId, // 共通書類設定ID
             'user_receipt_number' => $userReceiptNumber, // 見積番号

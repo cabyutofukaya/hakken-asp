@@ -134,6 +134,7 @@ class EditFormComposer
 
         // 各種デフォルト
         $defaultValue = [
+            'id' => $reserveBundleInvoiceId,
             'business_user_id' => $businessUserId, // 法人顧客ID
             'document_request_all_id' => $documentRequestAllId, // 書類設定ID
             'document_common_id' => $documentCommonId, // 共通書類設定ID

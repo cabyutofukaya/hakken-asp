@@ -290,7 +290,7 @@ class ReserveInvoiceService extends ReserveDocumentService implements DocumentAd
     /**
      * idから一件取得
      */
-    public function find(int $id, array $with = [], array $select=[], bool $getDeleted = false) : ReserveInvoice
+    public function find(int $id, array $with = [], array $select=[], bool $getDeleted = false) : ?ReserveInvoice
     {
         return $this->reserveInvoiceRepository->find($id, $with, $select, $getDeleted);
     }
@@ -460,6 +460,14 @@ class ReserveInvoiceService extends ReserveDocumentService implements DocumentAd
                 $this->reserveBundleInvoiceRefresh($currentReserveInvoice->reserve_bundle_invoice_id, $this->find($currentReserveInvoice->id));
             }
         }
+    }
+
+    /**
+     * ステータス更新
+     */
+    public function updateStatus(int $reserveInvoiceId, int $status) : bool
+    {
+        return $this->reserveInvoiceRepository->updateStatus($reserveInvoiceId, $status);
     }
 
     /**

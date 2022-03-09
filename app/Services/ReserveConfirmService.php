@@ -134,6 +134,14 @@ class ReserveConfirmService extends ReserveDocumentService implements DocumentAd
     }
 
     /**
+     * ステータス更新
+     */
+    public function updateStatus(int $id, int $status) : bool
+    {
+        return $this->reserveConfirmRepository->updateStatus($id, $status);
+    }
+
+    /**
      * 予約確認書番号を生成
      *
      * フォーマット: F + 3桁連番（行程管理IDに対する連番）

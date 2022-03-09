@@ -201,6 +201,7 @@ class EditFormComposer
 
         // 各種デフォルト
         $defaultValue = [
+            'id' => $reserveInvoice ? $reserveInvoice->id : null, // 請求書ID
             'business_user_id' => $businessUserId, // 法人顧客ID
             'document_request_id' => $documentRequestId, // 書類設定ID
             'document_common_id' => $documentCommonId, // 共通書類設定ID

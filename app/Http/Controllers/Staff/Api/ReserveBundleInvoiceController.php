@@ -5,13 +5,15 @@ namespace App\Http\Controllers\Staff\Api;
 use App\Exceptions\ExclusiveLockException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Staff\ReserveBundleInvoiceUpdateRequest;
+use App\Http\Requests\Staff\ReserveBundleInvoiceStatusUpdateRequest;
 use App\Http\Resources\Staff\ReserveBundleInvoice\BreakdownResource;
+use App\Http\Resources\Staff\ReserveBundleInvoice\StatusUpdateResource;
 use App\Http\Resources\Staff\ReserveBundleInvoice\UpdateResource;
 use App\Models\ReserveInvoice;
+use App\Services\AgencyDepositService;
 use App\Services\ReserveBundleInvoiceService;
 use App\Services\ReserveInvoiceService;
 use App\Services\ReserveService;
-use App\Services\AgencyDepositService;
 use Hashids;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -102,5 +104,42 @@ class ReserveBundleInvoiceController extends Controller
                 false
             )
         );
+    }
+
+    /**
+     * ステータス更新
+     *
+     * @param int $reserveBundleInvoiceId 一括請求書ID
+     */
+    public function statusUpdate(ReserveBundleInvoiceStatusUpdateRequest $request, $agencyAccount, int $reserveBundleInvoiceId)
+    {
+        $reserveBundleInvoice = $this->reserveBundleInvoiceService->find($reserveBundleInvoiceId);
+        
+        if (!$reserveBundleInvoice) {
+            abort(404, "請求データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+        }
+
+        $response = \Gate::authorize('update', $reserveBundleInvoice);
+        if (!$response->allowed()) {
+            abort(403, $response->message());
+        }
+
+        try {
+            $input = $request->all();
+
+            // 書類更新時に更新日時をチェックしているので、一応ここでもチェック
+            if ($reserveBundleInvoice->updated_at != $input['updated_at']) {
+                throw new ExclusiveLockException;
+            }
+
+            if ($this->reserveBundleInvoiceService->updateStatus($reserveBundleInvoiceId, $input['status'])) {
+                return new StatusUpdateResource($this->reserveBundleInvoiceService->find($reserveBundleInvoiceId));
+            }
+        } catch (ExclusiveLockException $e) { // 同時編集エラー
+            abort(409, "他のユーザーによる編集済みレコードです。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+        } catch (Exception $e) {
+            Log::error($e);
+        }
+        return abort(500);
     }
 }

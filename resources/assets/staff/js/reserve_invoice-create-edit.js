@@ -10,7 +10,7 @@ import {
 import { useMountedRef } from "../../hooks/useMountedRef";
 import _ from "lodash";
 import BrText from "./BrText";
-import StatusModal from "./components/BusinessForm/StatusModal";
+import StatusUpdateModal from "./components/BusinessForm/StatusUpdateModal";
 import PersonDocumentAddressSettingArea from "./components/BusinessForm/PersonDocumentAddressSettingArea";
 import BusinessDocumentAddressSettingArea from "./components/BusinessForm/BusinessDocumentAddressSettingArea";
 import ParticipantCheckSettingArea from "./components/BusinessForm/ParticipantCheckSettingArea";
@@ -72,6 +72,7 @@ const ReserveInvoiceArea = ({
     const [isSaving, setIsSaving] = useState(false); // 保存処理中か否か
     const [isPdfSaving, setIsPdfSaving] = useState(false); // PDF保存処理中か否か
     const [isLoading, setIsLoading] = useState(false); // API取得中か否か
+    const [isStatusUpdating, setIsStatusUpdating] = useState(false); // ステータス更新中か否か
 
     // 入力フィールドの入力制御
     const handleChange = e => {
@@ -261,16 +262,17 @@ const ReserveInvoiceArea = ({
                     }
                 }, 3000);
             });
-        if (mounted.current && response?.status == 200) {
+        if (mounted.current && response?.data?.data) {
             const res = response.data.data;
-            const reserve = {
-                updated_at: res.updated_at
-            };
+            // input.id = res.id; // 新規保存後はIDが必要なので取得
+            // const reserve = {
+            //     updated_at: res.reserve.updated_at
+            // };
             setInput({
                 ...input,
-                reserve
+                ...res
             }); // 更新日時をセットする
-            console.log(input);
+
             // メッセージエリアをslideDown(表示状態)にした後でメッセージをセット
             $("#successMessage .closeIcon")
                 .parent()
@@ -336,14 +338,15 @@ const ReserveInvoiceArea = ({
                     setIsPdfSaving(false);
                 }
             });
-        if (mounted.current && response?.status == 200) {
+        if (mounted.current && response?.data?.data) {
             const res = response.data.data;
-            const reserve = {
-                updated_at: res.updated_at
-            };
+            // input.id = res.id; // 新規保存後はIDが必要なので取得
+            // const reserve = {
+            //     updated_at: res.reserve.updated_at
+            // };
             setInput({
                 ...input,
-                reserve
+                ...res
             }); // 更新日時をセットする
 
             // PDFダウンロード
@@ -356,9 +359,50 @@ const ReserveInvoiceArea = ({
 
     // ステータス更新
     const handleUpdateStatus = async () => {
-        $(".js-modal-close").trigger("click"); // モーダルclose
-        if (mounted.current) {
+        if (!mounted.current || isStatusUpdating) {
+            // アンマウント、処理中の場合は処理ナシ
+            return;
+        }
+
+        if (input?.id) {
+            if (status == input?.status) {
+                //値が変わっていない場合は処理ナシ
+                $(".js-modal-close").trigger("click"); // モーダルclose
+                return;
+            }
+
+            // 更新時
+            setIsStatusUpdating(true); // 処理中フラグOn
+
+            const response = await axios
+                .post(`/api/${agencyAccount}/invoice/${input?.id}/status`, {
+                    status: status,
+                    reserve: { updated_at: input?.reserve?.updated_at },
+                    _method: "put"
+                })
+                .finally(() => {
+                    $(".js-modal-close").trigger("click"); // モーダルclose
+                    setTimeout(function() {
+                        if (mounted.current) {
+                            setIsStatusUpdating(false);
+                        }
+                    }, 3000);
+                });
+
+            if (mounted.current && response?.data?.data) {
+                const res = response.data.data;
+                // const reserve = {
+                //     updated_at: res.reserve.updated_at
+                // };
+                setInput({ ...input, ...res, status });
+            }
+        } else {
+            // 新規登録時(まだ書類レコードが存在していない場合)
             setInput({ ...input, status });
+            alert(
+                "ステータスの保存はまだ完了していません。\n「保存」ボタンより書類情報を保存してください。"
+            );
+            $(".js-modal-close").trigger("click"); // モーダルclose
         }
     };
 
@@ -1267,13 +1311,13 @@ const ReserveInvoiceArea = ({
                 </ul>
             </div>
             {/*ステータス変更モーダル */}
-            <StatusModal
+            <StatusUpdateModal
                 id="mdStatus"
                 status={status}
                 setStatus={setStatus}
                 statuses={formSelects.statuses}
                 handleUpdate={handleUpdateStatus}
-                isUpdating={false}
+                isUpdating={isStatusUpdating}
             />
         </>
     );

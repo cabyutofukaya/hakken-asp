@@ -181,6 +181,7 @@ class EditFormComposer
 
         // 各種デフォルト
         $defaultValue = [
+            'id' => $reserveConfirm ? $reserveConfirm->id : null,
             'document_quote_id' => $documentQuoteId,
             'document_common_id' => $documentCommonId,
             // 帳票番号

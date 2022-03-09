@@ -5,7 +5,6 @@ import { render } from "react-dom";
 import { useMountedRef } from "../../hooks/useMountedRef";
 import _ from "lodash";
 import BrText from "./BrText";
-import StatusModal from "./components/BusinessForm/StatusModal";
 import PersonDocumentAddressSettingArea from "./components/BusinessForm/Receipt/PersonDocumentAddressSettingArea";
 import BusinessDocumentAddressSettingArea from "./components/BusinessForm/Receipt/BusinessDocumentAddressSettingArea";
 import classNames from "classnames";
@@ -17,6 +16,8 @@ import OwnCompanyPreviewArea from "./components/BusinessForm/Receipt/OwnCompanyP
 import PersonSuperscriptionPreviewArea from "./components/BusinessForm/Receipt/PersonSuperscriptionPreviewArea";
 import BusinessSuperscriptionPreviewArea from "./components/BusinessForm/Receipt/BusinessSuperscriptionPreviewArea";
 import OnlyNumberInput from "./components/OnlyNumberInput";
+import StatusUpdateModal from "./components/BusinessForm/StatusUpdateModal";
+import SuccessMessage from "./components/SuccessMessage";
 
 const ReserveReceiptArea = ({
     bundleId,
@@ -33,6 +34,8 @@ const ReserveReceiptArea = ({
 
     const [input, setInput] = useState({ ...defaultValue });
 
+    const [saveMessage, setSaveMessage] = useState(""); // 保存完了メッセージ
+
     const [documentSetting, setDocumentSetting] = useState({
         ...documentReceiptSetting
     }); // 書類設定
@@ -46,6 +49,7 @@ const ReserveReceiptArea = ({
     const [isSaving, setIsSaving] = useState(false); // 保存処理中か否か
     const [isPdfSaving, setIsPdfSaving] = useState(false); // PDF保存処理中か否か
     const [isLoading, setIsLoading] = useState(false); // API取得中か否か
+    const [isStatusUpdating, setIsStatusUpdating] = useState(false); // ステータス更新中か否か
 
     // 入力フィールドの入力制御
     const handleChange = e => {
@@ -186,11 +190,25 @@ const ReserveReceiptArea = ({
                     }
                 }, 3000);
             });
-        if (mounted.current && response?.status == 200) {
-            location.href = document.referrer
-                ? document.referrer
-                : `/${agencyAccount}/management/invoice/index`;
-            return;
+        if (mounted.current && response?.data?.data) {
+            const res = response.data.data;
+            // input.id = res.id; // 新規保存後はIDが必要なので取得
+            setInput({
+                ...input,
+                ...res
+            }); // 更新日時をセットする
+
+            // メッセージエリアをslideDown(表示状態)にした後でメッセージをセット
+            $("#successMessage .closeIcon")
+                .parent()
+                .slideDown();
+            setSaveMessage("領収書データを保存しました");
+
+            // ↓ページ遷移すると慌ただしのでひとまず遷移ナシに
+            // location.href = document.referrer
+            //     ? document.referrer
+            //     : `/${agencyAccount}/management/invoice/index`;
+            // return;
         }
     };
 
@@ -238,11 +256,12 @@ const ReserveReceiptArea = ({
                     setIsPdfSaving(false);
                 }
             });
-        if (mounted.current && response?.status == 200) {
+        if (mounted.current && response?.data?.data) {
             const res = response.data.data;
+            // input.id = res.id; // 新規保存後はIDが必要なので取得
             setInput({
                 ...input,
-                updated_at: res.updated_at
+                ...res
             }); // 更新日時をセットする
 
             // PDFダウンロード
@@ -255,11 +274,60 @@ const ReserveReceiptArea = ({
 
     // ステータス更新
     const handleUpdateStatus = async () => {
-        $(".js-modal-close").trigger("click"); // モーダルclose
-        if (mounted.current) {
+        if (!mounted.current || isStatusUpdating) {
+            // アンマウント、処理中の場合は処理ナシ
+            return;
+        }
+
+        if (input?.id) {
+            if (status == input?.status) {
+                //値が変わっていない場合は処理ナシ
+                $(".js-modal-close").trigger("click"); // モーダルclose
+                return;
+            }
+
+            // 更新時
+            setIsStatusUpdating(true); // 処理中フラグOn
+
+            const response = await axios
+                .post(
+                    `/api/${agencyAccount}/bundle_receipt/${input?.id}/status`,
+                    {
+                        status: status,
+                        updated_at: input?.updated_at,
+                        _method: "put"
+                    }
+                )
+                .finally(() => {
+                    $(".js-modal-close").trigger("click"); // モーダルclose
+                    setTimeout(function() {
+                        if (mounted.current) {
+                            setIsStatusUpdating(false);
+                        }
+                    }, 3000);
+                });
+
+            if (mounted.current && response?.data?.data) {
+                const res = response.data.data;
+                // input.updated_at = res.updated_at;
+                setInput({ ...input, ...res, status });
+            }
+        } else {
+            // 新規登録時(まだ書類レコードが存在していない場合)
             setInput({ ...input, status });
+            alert(
+                "ステータスの保存はまだ完了していません。\n「保存」ボタンより書類情報を保存してください。"
+            );
+            $(".js-modal-close").trigger("click"); // モーダルclose
         }
     };
+    // // ステータス更新
+    // const handleUpdateStatus = async () => {
+    //     $(".js-modal-close").trigger("click"); // モーダルclose
+    //     if (mounted.current) {
+    //         setInput({ ...input, status });
+    //     }
+    // };
 
     return (
         <>
@@ -325,6 +393,10 @@ const ReserveReceiptArea = ({
                     </li>
                 </ol>
             </div>
+
+            {/**保存完了メッセージ */}
+            <SuccessMessage message={saveMessage} />
+
             <div id="inputArea">
                 <ul className="sideList documentSetting">
                     <li className="wd60 overflowX dragTable">
@@ -609,13 +681,13 @@ const ReserveReceiptArea = ({
                 </ul>
             </div>
             {/*ステータス変更モーダル */}
-            <StatusModal
+            <StatusUpdateModal
                 id="mdStatus"
                 status={status}
                 setStatus={setStatus}
                 statuses={formSelects.statuses}
                 handleUpdate={handleUpdateStatus}
-                isUpdating={false}
+                isUpdating={isStatusUpdating}
             />
         </>
     );

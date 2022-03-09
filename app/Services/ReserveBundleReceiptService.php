@@ -64,4 +64,12 @@ class ReserveBundleReceiptService extends ReserveReceiptBaseService
     {
         return $this->reserveBundleReceiptRepository->findWhere(['reserve_bundle_invoice_id' => $reserveBundleInvoiceId]);
     }
+
+    /**
+     * ステータス更新
+     */
+    public function updateStatus(int $id, int $status) : bool
+    {
+        return $this->reserveBundleReceiptRepository->updateStatus($id, $status);
+    }
 }

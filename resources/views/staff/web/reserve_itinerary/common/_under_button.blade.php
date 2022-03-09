@@ -5,9 +5,11 @@
     <li class="wd50">
       <button class="grayBtn" onClick="event.preventDefault();location.href='{{ $backUrl }}'"><span class="material-icons">arrow_back_ios</span>{{ $mode === 'edit' ? '編集' : '登録' }}せずに戻る</button>
     </li>
-    <li class="wd50">
-      <button class="blueBtn"><span class="material-icons">save</span> この内容で{{ $mode === 'edit' ? '更新' : '登録' }}する</button>
-    </li>  
+    @if($isTravelDates)
+      <li class="wd50">
+        <button class="blueBtn"><span class="material-icons">save</span> この内容で{{ $mode === 'edit' ? '更新' : '登録' }}する</button>
+      </li>
+    @endif
 
   @elseif($applicationStep === config('consts.reserves.APPLICATION_STEP_RESERVE')) {{-- 予約 --}}
 
@@ -15,9 +17,11 @@
       <li class="wd50">
         <button class="grayBtn" onClick="event.preventDefault();location.href='{{ $backUrl }}'"><span class="material-icons">arrow_back_ios</span>{{ $mode === 'edit' ? '編集' : '登録' }}せずに戻る</button>
       </li>
-      <li class="wd50">
-        <button class="blueBtn"><span class="material-icons">save</span> この内容で{{ $mode === 'edit' ? '更新' : '登録' }}する</button>
-      </li>  
+      @if($isTravelDates)
+        <li class="wd50">
+          <button class="blueBtn"><span class="material-icons">save</span> この内容で{{ $mode === 'edit' ? '更新' : '登録' }}する</button>
+        </li>
+      @endif
     @else
       <li class="wd50"><button class="grayBtn" onClick="event.preventDefault();location.href='{{ $backUrl }}'"><span class="material-icons">arrow_back_ios</span>戻る</button></li>
     @endif

@@ -16,14 +16,14 @@ class ReserveReceiptRepository implements ReserveReceiptRepositoryInterface
         $this->reserveReceipt = $reserveReceipt;
     }
 
-    public function find(int $id, array $with = [], array $select=[], bool $getDeleted = false) : ReserveReceipt
+    public function find(int $id, array $with = [], array $select=[], bool $getDeleted = false) : ?ReserveReceipt
     {
         $query = $this->reserveReceipt;
         $query = $select ? $query->select($select) : $query;
         $query = $with ? $query->with($with) : $query;
         $query = $getDeleted ? $query->withTrashed() : $query;
 
-        return $query->findOrFail($id);
+        return $query->find($id);
     }
 
     /**
@@ -60,6 +60,20 @@ class ReserveReceiptRepository implements ReserveReceiptRepositoryInterface
             $attributes,
             $values
         );
+    }
+
+    /**
+     * ステータス更新
+     */
+    public function updateStatus(int $id, int $status) : bool
+    {
+        $reserveReceipt = $this->reserveReceipt->find($id);
+        if ($reserveReceipt) {
+            $reserveReceipt->status = $status;
+            $reserveReceipt->save(); // 関連モデルのタイムスタンプも更新される
+            return true;
+        }
+        return false;
     }
 
     /**
