@@ -52,7 +52,7 @@ class ReserveBundleInvoiceController extends Controller
 
         try {
             $newReserveBundleInvoice = \DB::transaction(function () use ($reserveBundleInvoiceId, $input, $reserveBundleInvoice) {
-                $newReserveBundleInvoice =  $this->reserveBundleInvoiceService->update($reserveBundleInvoiceId, $input);
+                $newReserveBundleInvoice =  $this->reserveBundleInvoiceService->update($reserveBundleInvoiceId, $input); // レコード更新日時をチェックして古ければ例外を投げる。レコード更新日時が異なるケース、1. 別のユーザーが保存済み。2. 行程を更新した際に請求データ金額更新処理が実行された等
 
                 return $newReserveBundleInvoice;
             });

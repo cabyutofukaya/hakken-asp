@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Staff\Web;
 
 use App\Events\ReserveUpdateStatusEvent;
+use App\Events\UpdateBillingAmountEvent;
 use App\Events\UpdatedReserveEvent;
 use App\Exceptions\ExclusiveLockException;
 use App\Http\Controllers\Controller;
@@ -10,6 +11,7 @@ use App\Http\Controllers\Staff\AppController;
 use App\Http\Requests\Staff\CancelChargeUpdateRequest;
 use App\Http\Requests\Staff\ReserveUpdateRequest;
 use App\Models\Reserve;
+use App\Services\AccountPayableDetailService;
 use App\Services\ReserveCustomValueService;
 use App\Services\ReserveInvoiceService;
 use App\Services\ReserveParticipantAirplanePriceService;
@@ -18,12 +20,11 @@ use App\Services\ReserveParticipantOptionPriceService;
 use App\Services\ReserveParticipantPriceService;
 use App\Services\UserCustomItemService;
 use App\Services\WebReserveService;
-use App\Services\AccountPayableDetailService;
 use App\Traits\CancelChargeTrait;
 use App\Traits\ReserveControllerTrait;
 use Gate;
-use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 
 /**
  * 予約管理
@@ -186,6 +187,8 @@ class ReserveController extends AppController
                 $this->setCancelCharge($input);
                 
                 $this->webReserveService->cancel($reserve->id, true, Arr::get($input, 'reserve.updated_at'));
+
+                event(new UpdateBillingAmountEvent($reserve->enabled_reserve_itinerary)); // 請求金額変更イベント
 
                 /**カスタムステータスを「キャンセル」に更新 */
 

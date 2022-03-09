@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers\Staff\Api\Web;
 
-use App\Exceptions\ExclusiveLockException;
 use App\Events\ReserveUpdateStatusEvent;
+use App\Events\UpdateBillingAmountEvent;
+use App\Exceptions\ExclusiveLockException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Staff\ReserveStatusUpdateRequest;
 use App\Http\Resources\Staff\WebReserve\IndexResource;
@@ -23,8 +24,8 @@ use Exception;
 use Gate;
 use Hashids;
 use Illuminate\Http\Request;
-use Log;
 use Illuminate\Support\Arr;
+use Log;
 
 class ReserveController extends Controller
 {
@@ -188,6 +189,7 @@ class ReserveController extends Controller
                 $this->reserveParticipantPriceService->cancelChargeReset($reserve->enabled_reserve_itinerary->id); // キャンセルチャージをリセット
                 $this->webReserveService->cancel($reserve->id, false, null);
 
+                event(new UpdateBillingAmountEvent($reserve->enabled_reserve_itinerary)); // 請求金額変更イベント
 
                 /**カスタムステータスを「キャンセル」に更新 */
 
