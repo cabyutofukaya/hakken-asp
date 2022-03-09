@@ -56,6 +56,8 @@ class EditFormComposer
 
         $defaultValue = [];
 
+        $reserveUpdatedAt = $reserve->updated_at->format('Y-m-d H:i:s'); // 同時編集の判定に使用
+
         if ($reserveReceipt) { // 招集書保存データあり
 
             $documentReceiptId = $reserveReceipt->document_setting['id'] ?? '';
@@ -65,8 +67,6 @@ class EditFormComposer
             $documentCommonSetting = $reserveReceipt->document_common_setting;
 
             $documentSetting = $reserveReceipt->document_setting;
-
-            $updatedAt = $reserveReceipt->updated_at->format('Y-m-d H:i:s'); // 同時編集の判定に使用
 
             /////////// 入力初期値をセット ///////////
             $userReceiptNumber = $reserveReceipt->user_receipt_number;
@@ -104,8 +104,6 @@ class EditFormComposer
             // 書類設定。$documentReceiptが未設定なれば空配列で初期化
             $documentSetting = $documentReceipt ? $documentReceipt->toArray() : [];
             
-            $updatedAt = null;
-
             /////////// 入力初期値をセット ///////////
 
             // システム的にあまり意味はないが、一応領収書番号を発行
@@ -140,6 +138,7 @@ class EditFormComposer
 
         // 各種デフォルト
         $defaultValue = array_merge($defaultValue, [
+            'id' => $reserveReceipt ? $reserveReceipt->id :null,
             'business_user_id' => $businessUserId, // 法人顧客ID
             'document_receipt_id' => $documentReceiptId, // 書類設定ID
             'document_common_id' => $documentCommonId, // 共通書類設定ID
@@ -148,8 +147,10 @@ class EditFormComposer
             'receipt_amount' => $receiptAmount,
             'document_address' => $documentAddress, // 宛名情報
             'manager' => $manager, // 担当
-            'updated_at' => $updatedAt,
             'status' => $status, // 書類ステータス
+            'reserve' => [
+                'updated_at' => $reserveUpdatedAt,
+            ],
         ]);
 
         $formSelects = [

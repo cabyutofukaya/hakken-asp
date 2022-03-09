@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Staff;
 
 use App\Events\CreateItineraryEvent;
 use App\Events\ReserveChangeSumGrossEvent;
-use App\Events\UpdateItineraryEvent;
+use App\Events\UpdateBillingAmountEvent;
 use App\Exceptions\ExclusiveLockException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Staff\ReserveItineraryStoreRequest;
@@ -212,7 +212,7 @@ class ReserveItineraryController extends AppController
                     event(new ReserveChangeSumGrossEvent($newReserveItinerary)); // 旅行代金変更イベント
                 }
 
-                event(new UpdateItineraryEvent($newReserveItinerary)); // 行程更新イベント(主に書類関連の金額処理更新を実行)
+                event(new UpdateBillingAmountEvent($newReserveItinerary)); // 請求金額変更イベント
 
                 return $newReserveItinerary;
             });

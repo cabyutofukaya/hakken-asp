@@ -201,6 +201,7 @@ class EditFormComposer
 
         // 各種デフォルト
         $defaultValue = [
+            'id' => $reserveInvoice ? $reserveInvoice->id : null, // 請求書ID
             'business_user_id' => $businessUserId, // 法人顧客ID
             'document_request_id' => $documentRequestId, // 書類設定ID
             'document_common_id' => $documentCommonId, // 共通書類設定ID
@@ -253,7 +254,7 @@ class EditFormComposer
 
 
         // オプション価格情報、航空券価格情報、ホテル価格情報、宿泊施設情報、宿泊施設連絡先を取得
-        list($optionPrices, $airticketPrices, $hotelPrices, $hotelInfo, $hotelContacts) = $this->getPriceAndHotelInfo($reserve->enabled_reserve_itinerary->id ? $reserve->enabled_reserve_itinerary : null, $isCanceled);
+        list($optionPrices, $airticketPrices, $hotelPrices, $hotelInfo, $hotelContacts) = $this->getPriceAndHotelInfo($reserve->enabled_reserve_itinerary->id ? $reserve->enabled_reserve_itinerary : null, $isCanceled, false);
 
         // reactに渡す各種定数
         $jsVars = $this->getJsVars($agencyAccount);

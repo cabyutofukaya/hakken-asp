@@ -19,7 +19,6 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 
-
 class ReserveInvoiceService extends ReserveDocumentService implements DocumentAddressInterface
 {
     use BusinessFormTrait;
@@ -184,7 +183,7 @@ class ReserveInvoiceService extends ReserveDocumentService implements DocumentAd
         $participantIds = $this->getDefaultParticipantCheckIds($this->reserveService->getParticipants($reserve->id, true));
 
         // オプション価格情報、航空券価格情報、ホテル価格情報、宿泊施設情報、宿泊施設連絡先を取得
-        list($optionPrices, $airticketPrices, $hotelPrices, $hotelInfo, $hotelContacts) = $this->getPriceAndHotelInfo($reserve->enabled_reserve_itinerary->id ? $reserve->enabled_reserve_itinerary : null, $reserve->is_canceled);
+        list($optionPrices, $airticketPrices, $hotelPrices, $hotelInfo, $hotelContacts) = $this->getPriceAndHotelInfo($reserve->enabled_reserve_itinerary->id ? $reserve->enabled_reserve_itinerary : null, $reserve->is_canceled, false);
 
         // 請求書書類設定
         $documentRequest = $this->documentRequestService->getDefault($reserve->agency_id);
@@ -291,7 +290,7 @@ class ReserveInvoiceService extends ReserveDocumentService implements DocumentAd
     /**
      * idから一件取得
      */
-    public function find(int $id, array $with = [], array $select=[], bool $getDeleted = false) : ReserveInvoice
+    public function find(int $id, array $with = [], array $select=[], bool $getDeleted = false) : ?ReserveInvoice
     {
         return $this->reserveInvoiceRepository->find($id, $with, $select, $getDeleted);
     }
@@ -368,6 +367,27 @@ class ReserveInvoiceService extends ReserveDocumentService implements DocumentAd
         return $this->reserveInvoiceRepository->getWhereIn('id', $ids, $with, $select, $getDeleted);
     }
 
+    public function updateOrCreate(array $where, array $data): ReserveInvoice
+    {
+        return $this->reserveInvoiceRepository->updateOrCreate($where, $data);
+    }
+
+    /**
+     * 入金額関連カラムを更新
+     */
+    public function updateDepositAmount(ReserveInvoice $reserveInvoice) : ReserveInvoice
+    {
+        $this->updateFields(
+            $reserveInvoice->id,
+            [
+                'deposit_amount' => $reserveInvoice->sum_deposit,
+                'not_deposit_amount' => $reserveInvoice->sum_not_deposit,
+            ]
+        );
+
+        return $this->find($reserveInvoice->id);
+    }
+
     /**
      * 新規登録or更新
      *
@@ -391,21 +411,13 @@ class ReserveInvoiceService extends ReserveDocumentService implements DocumentAd
             $input['billing_address_name'] = Arr::get($input, 'document_address.name');
         }
 
-        $result = $this->reserveInvoiceRepository->updateOrCreate(['agency_id' => $agencyId, 'reserve_id' => $reserveId, 'reserve_itinerary_id' => $reserveItineraryId], $input);
+        $result = $this->updateOrCreate(['agency_id' => $agencyId, 'reserve_id' => $reserveId, 'reserve_itinerary_id' => $reserveItineraryId], $input);
 
-        // 入金額の再計算
-        $this->updateFields(
-            $result->id,
-            [
-                'deposit_amount' => $result->sum_deposit,
-                'not_deposit_amount' => $result->sum_not_deposit,
-            ]
-        );
-        
-        $newReserveInvoice = $this->find($result->id);
+        // 入金額の再計算＆更新した最新の請求情報を取得
+        $newReserveInvoice = $this->updateDepositAmount($result);
         
         // 一括請求関連処理（作成、リレーション設定等）
-        $this->reserveBundleInvoiceRefresh($oldReserveInvoice->reserve_bundle_invoice_id, $newReserveInvoice);
+        $this->reserveBundleInvoiceRefresh($oldReserveInvoice ? $oldReserveInvoice->reserve_bundle_invoice_id : null, $newReserveInvoice);
 
         return $newReserveInvoice;
     }
@@ -448,6 +460,14 @@ class ReserveInvoiceService extends ReserveDocumentService implements DocumentAd
                 $this->reserveBundleInvoiceRefresh($currentReserveInvoice->reserve_bundle_invoice_id, $this->find($currentReserveInvoice->id));
             }
         }
+    }
+
+    /**
+     * ステータス更新
+     */
+    public function updateStatus(int $reserveInvoiceId, int $status) : bool
+    {
+        return $this->reserveInvoiceRepository->updateStatus($reserveInvoiceId, $status);
     }
 
     /**

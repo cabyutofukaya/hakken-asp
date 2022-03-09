@@ -312,8 +312,9 @@ trait BusinessFormTrait
      * 
      * @param ReserveItinerary $reserveItinerary 行程
      * @param bool $isCancelReserve キャンセル予約の場合はtrue
+     * @param bool $getPriceOnly 料金情報のみ取得する場合はtrue。全ての情報を取得する場合はfalse
      */
-    public function getPriceAndHotelInfo(?ReserveItinerary $reserveItinerary, bool $isCancelReserve)
+    public function getPriceAndHotelInfo(?ReserveItinerary $reserveItinerary, bool $isCancelReserve, bool $getPriceOnly = false)
     {
         $optionPrices = []; // オプション価格情報
         $airticketPrices = []; // 航空券価格情報
@@ -330,10 +331,10 @@ trait BusinessFormTrait
     
                 foreach ($travelDate->reserve_schedules as $reserveSchedule) {
     
-                    // ホテル（宿泊施設情報、宿泊施設連絡先）
-                    foreach ($reserveSchedule->reserve_purchasing_subject_hotels as $subject) {
-
-                        $rooms = []; // $hotelInfoのデータ作成に使用
+                    if (!$getPriceOnly) {
+                        // ホテル（宿泊施設情報、宿泊施設連絡先）
+                        foreach ($reserveSchedule->reserve_purchasing_subject_hotels as $subject) {
+                            $rooms = []; // $hotelInfoのデータ作成に使用
                         $guests = []; // $hotelContactsのデータ作成に使用
 
                         foreach ($subject->reserve_participant_prices as $price) {
@@ -358,18 +359,18 @@ trait BusinessFormTrait
                             }
                         }
     
-                        if ($rooms) { // 部屋の利用があれば宿泊施設情報をセット
-                            // 部屋タイプ
-                            $roomType = $subject->room_types->isNotEmpty() ? $subject->room_types[0]->val : null;
+                            if ($rooms) { // 部屋の利用があれば宿泊施設情報をセット
+                                // 部屋タイプ
+                                $roomType = $subject->room_types->isNotEmpty() ? $subject->room_types[0]->val : null;
                             
-                            // 宿泊施設情報をセット
-                            $tmp = array_merge($subject->only(['hotel_name']), ['room_type' => $roomType]);
-                            $tmp['rooms'] = $rooms;
+                                // 宿泊施設情報をセット
+                                $tmp = array_merge($subject->only(['hotel_name']), ['room_type' => $roomType]);
+                                $tmp['rooms'] = $rooms;
 
-                            $hotelInfo[$travelDate->travel_date][] = $tmp;// 1科目レコードごとに配列にまとめる
-                        }
+                                $hotelInfo[$travelDate->travel_date][] = $tmp;// 1科目レコードごとに配列にまとめる
+                            }
     
-                        if ($guests) { // 利用者がいればホテル情報をセット
+                            if ($guests) { // 利用者がいればホテル情報をセット
                             // 宿泊施設連絡先
                             $hotel = $subject->only(['hotel_name','address','tel','fax','url']); // 出力に必要な情報のみ抽出
                             $sha1 = sha1(serialize($hotel)); // ハッシュ値を作成
@@ -378,9 +379,10 @@ trait BusinessFormTrait
                                 $hotelContacts[] = $hotel;
                                 $retained[] = $sha1;
                             }
+                            }
                         }
                     }
-    
+
                     // オプション科目
                     foreach ($reserveSchedule->reserve_purchasing_subject_options as $subject) {
                         $tmp = ['name' => $subject->name];

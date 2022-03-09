@@ -75,6 +75,9 @@ class ShowFormComposer
             if ($reserve->is_departed) { // 催行済
                 $reserveStatus = '催行完了';
             }
+            if ($reserve->is_canceled) { // キャンセル
+                $reserveStatus = 'キャンセル';
+            }
         }
 
         // 初期入力値。タブ毎に値をセット

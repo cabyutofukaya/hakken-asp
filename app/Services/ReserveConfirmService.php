@@ -134,6 +134,14 @@ class ReserveConfirmService extends ReserveDocumentService implements DocumentAd
     }
 
     /**
+     * ステータス更新
+     */
+    public function updateStatus(int $id, int $status) : bool
+    {
+        return $this->reserveConfirmRepository->updateStatus($id, $status);
+    }
+
+    /**
      * 予約確認書番号を生成
      *
      * フォーマット: F + 3桁連番（行程管理IDに対する連番）
@@ -301,7 +309,7 @@ class ReserveConfirmService extends ReserveDocumentService implements DocumentAd
         $participantIds = $this->getDefaultParticipantCheckIds($participants);
 
         // オプション価格情報、航空券価格情報、ホテル価格情報、宿泊施設情報、宿泊施設連絡先を取得
-        list($optionPrices, $airticketPrices, $hotelPrices, $hotelInfo, $hotelContacts) = $this->getPriceAndHotelInfo($reserveItinerary, $reserveItinerary->reserve->is_canceled);
+        list($optionPrices, $airticketPrices, $hotelPrices, $hotelInfo, $hotelContacts) = $this->getPriceAndHotelInfo($reserveItinerary, $reserveItinerary->reserve->is_canceled, false);
 
         // 書類設定。$docuemntQuoteが未設定なればsetting配列、sealプロパティ初期化
         $documentSetting = $this->getDocumentSettingSealOrInitSetting($document ? $document->toArray() : []);

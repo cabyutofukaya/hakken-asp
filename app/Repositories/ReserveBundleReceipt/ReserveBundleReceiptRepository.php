@@ -57,4 +57,18 @@ class ReserveBundleReceiptRepository implements ReserveBundleReceiptRepositoryIn
         );
     }
 
+    /**
+     * ステータス更新
+     */
+    public function updateStatus(int $id, int $status) : bool
+    {
+        $reserveBundleReceipt = $this->reserveBundleReceipt->find($id);
+        if ($reserveBundleReceipt) {
+            $reserveBundleReceipt->status = $status;
+            $reserveBundleReceipt->save(); // 関連モデルのタイムスタンプも更新される
+            return true;
+        }
+        return false;
+    }
+
 }

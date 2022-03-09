@@ -16,25 +16,15 @@ class ReserveInvoiceRepository implements ReserveInvoiceRepositoryInterface
         $this->reserveInvoice = $reserveInvoice;
     }
 
-    public function find(int $id, array $with = [], array $select=[], bool $getDeleted = false) : ReserveInvoice
+    public function find(int $id, array $with = [], array $select=[], bool $getDeleted = false) : ?ReserveInvoice
     {
         $query = $this->reserveInvoice;
         $query = $select ? $query->select($select) : $query;
         $query = $with ? $query->with($with) : $query;
         $query = $getDeleted ? $query->withTrashed() : $query;
 
-        return $query->findOrFail($id);
+        return $query->find($id);
     }
-
-    // public function findByReserveId(int $reserveId, array $with = [], array $select=[], bool $getDeleted = false) : ?ReserveInvoice
-    // {
-    //     $query = $this->reserveInvoice;
-    //     $query = $select ? $query->select($select) : $query;
-    //     $query = $with ? $query->with($with) : $query;
-    //     $query = $getDeleted ? $query->withTrashed() : $query;
-
-    //     return $query->where('reserve_id', $reserveId)->first();
-    // }
 
     /**
      * 検索して1件取得
@@ -114,6 +104,20 @@ class ReserveInvoiceRepository implements ReserveInvoiceRepositoryInterface
             $attributes,
             $values
         );
+    }
+
+    /**
+     * ステータス更新
+     */
+    public function updateStatus(int $reserveInvoiceId, int $status) : bool
+    {
+        $reserveInvoice = $this->reserveInvoice->find($reserveInvoiceId);
+        if ($reserveInvoice) {
+            $reserveInvoice->status = $status;
+            $reserveInvoice->save(); // 関連モデルのタイムスタンプも更新される
+            return true;
+        }
+        return false;
     }
 
     /**

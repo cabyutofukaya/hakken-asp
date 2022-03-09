@@ -176,6 +176,14 @@ class ReserveBundleInvoiceService extends ReserveDocumentService
     }
 
     /**
+     * ステータス更新
+     */
+    public function updateStatus(int $id, int $status) : bool
+    {
+        return $this->reserveBundleInvoiceRepository->updateStatus($id, $status);
+    }
+
+    /**
      * フィールド更新
      */
     public function updateFields(int $id, array $params) : int

@@ -11,8 +11,8 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-// 主に書類関連の金額更新
-class UpdateItineraryEvent
+// 請求書の金額が変わる場合のイベント
+class UpdateBillingAmountEvent
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -25,7 +25,8 @@ class UpdateItineraryEvent
      */
     public function __construct(ReserveItinerary $reserveItinerary)
     {
-        $this->reserveItinerary = $reserveItinerary->withoutRelations(); // リレーション外し
+        // $this->reserveItinerary = $reserveItinerary->withoutRelations(); // リレーション外し
+        $this->reserveItinerary = $reserveItinerary;
     }
 
     /**

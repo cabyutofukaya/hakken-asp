@@ -11,6 +11,7 @@ interface ReserveConfirmRepositoryInterface
   public function find(int $id, array $with = [], array $select=[], bool $getDeleted = false) : ReserveConfirm;
   public function findWhere(array $where, array $with=[], array $select=[]) : ?ReserveConfirm;
   public function create(array $data) : ReserveConfirm;
+  public function updateStatus(int $id, int $status) : bool;
   public function update(int $id, array $data): ReserveConfirm;
   public function clearDocumentAddress(int $reserveId) : bool;
   public function updateFields(int $id, array $params) : ReserveConfirm;

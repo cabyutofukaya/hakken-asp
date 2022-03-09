@@ -79,6 +79,20 @@ class ReserveBundleInvoiceRepository implements ReserveBundleInvoiceRepositoryIn
     }
 
     /**
+     * ステータス更新
+     */
+    public function updateStatus(int $id, int $status) : bool
+    {
+        $reserveBundleInvoice = $this->reserveBundleInvoice->find($id);
+        if ($reserveBundleInvoice) {
+            $reserveBundleInvoice->status = $status;
+            $reserveBundleInvoice->save(); // 関連モデルのタイムスタンプも更新される
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * 項目更新
      */
     public function updateFields(int $id, array $params) : bool

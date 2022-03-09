@@ -181,6 +181,7 @@ class EditFormComposer
 
         // 各種デフォルト
         $defaultValue = [
+            'id' => $reserveConfirm ? $reserveConfirm->id : null,
             'document_quote_id' => $documentQuoteId,
             'document_common_id' => $documentCommonId,
             // 帳票番号
@@ -225,7 +226,7 @@ class EditFormComposer
         $consts['departedIndexUrl'] = route('staff.estimates.departed.index', $agencyAccount); // 催行済URL
 
         // オプション価格情報、航空券価格情報、ホテル価格情報、宿泊施設情報、宿泊施設連絡先を取得
-        list($optionPrices, $airticketPrices, $hotelPrices, $hotelInfo, $hotelContacts) = $this->getPriceAndHotelInfo($reserveItinerary, $isCanceled);
+        list($optionPrices, $airticketPrices, $hotelPrices, $hotelInfo, $hotelContacts) = $this->getPriceAndHotelInfo($reserveItinerary, $isCanceled, false);
 
         // reactに渡す各種定数
         $jsVars = $this->getJsVars($agencyAccount);

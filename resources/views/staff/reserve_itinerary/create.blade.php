@@ -30,7 +30,7 @@
 
   <form method="post" action="{{ $storeUrl }}" enctype="multipart/form-data">
     @csrf
-    @if(Arr::get($defaultValue, 'dates'))
+    @if($isTravelDates)
       <div 
         id="itineraryArea" 
         reception='{{ $reception }}'
@@ -56,6 +56,7 @@
 
     @include('staff.reserve_itinerary.common._under_button', [
       'applicationStep' => $reserve->application_step,
+      'isTravelDates' => $isTravelDates,
       'isEnabled' => true,
       'backUrl' => $backUrl,
       'mode' => 'create'

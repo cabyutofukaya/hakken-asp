@@ -18,6 +18,8 @@ class ReserveReceipt extends Model implements DocumentPdfInterface
 {
     use SoftDeletes,ModelLogTrait,SoftCascadeTrait;
 
+    protected $touches = ['reserve']; // 書類を更新した場合は念の為予約情報も更新
+
     // // 金額集計に使用
     // protected $with = [
     //     'agency_deposits',

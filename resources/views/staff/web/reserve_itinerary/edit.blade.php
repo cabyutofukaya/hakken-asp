@@ -32,7 +32,7 @@
     @csrf
     @method('PUT')
     
-    @if(Arr::get($defaultValue, 'dates'))
+    @if($isTravelDates)
     <div 
       id="itineraryArea" 
       reception='{{ $reception }}'
@@ -58,6 +58,7 @@
     
     @include('staff.web.reserve_itinerary.common._under_button', [
       'applicationStep' => $reserve->application_step,
+      'isTravelDates' => $isTravelDates,
       'isEnabled' => $reserveItinerary->enabled,
       'backUrl' => $backUrl,
       'mode' => 'edit'

@@ -39,7 +39,7 @@ class ReserveReceiptService extends ReserveReceiptBaseService implements Documen
     /**
      * idから一件取得
      */
-    public function find(int $id, array $with = [], array $select=[], bool $getDeleted = false) : ReserveReceipt
+    public function find(int $id, array $with = [], array $select=[], bool $getDeleted = false) : ?ReserveReceipt
     {
         return $this->reserveReceiptRepository->find($id, $with, $select, $getDeleted);
     }
@@ -67,17 +67,30 @@ class ReserveReceiptService extends ReserveReceiptBaseService implements Documen
     }
 
     /**
-     * 新規登録or更新
-     * 
-     * @param bool $checkUpdatedAt 更新日をチェックする場合はtrue
-     * @throws ExclusiveLockException 同時編集を検知した場合は例外を投げる
+     * ステータス更新
      */
-    public function upsert(?ReserveReceipt $oldReserveReceipt, array $input, bool $checkUpdatedAt = true) : ReserveReceipt
+    public function updateStatus(int $id, int $status) : bool
     {
-        if ($checkUpdatedAt && $oldReserveReceipt && $oldReserveReceipt->updated_at != Arr::get($input, 'updated_at')) {
-            throw new ExclusiveLockException;
-        }
+        return $this->reserveReceiptRepository->updateStatus($id, $status);
+    }
 
+    // /**
+    //  * 新規登録or更新
+    //  * 
+    //  * @param bool $checkUpdatedAt 更新日をチェックする場合はtrue
+    //  * @throws ExclusiveLockException 同時編集を検知した場合は例外を投げる
+    //  */
+    // public function upsert(?ReserveReceipt $oldReserveReceipt, array $input, bool $checkUpdatedAt = true) : ReserveReceipt
+    // {
+        // if ($checkUpdatedAt && $oldReserveReceipt && $oldReserveReceipt->updated_at != Arr::get($input, 'updated_at')) {
+        //     throw new ExclusiveLockException;
+        // }
+        
+    /**
+     * 新規登録or更新
+     */
+    public function upsert(array $input) : ReserveReceipt
+    {
         // 宛先区分が法人でない場合はbusiness_user_idを確実にクリアしておく
         if (Arr::get($input, 'document_address.type') !== config('consts.reserves.PARTICIPANT_TYPE_BUSINESS')) {
             $input['business_user_id'] = null;

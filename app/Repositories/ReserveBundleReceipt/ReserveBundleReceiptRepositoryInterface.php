@@ -13,4 +13,6 @@ interface ReserveBundleReceiptRepositoryInterface
   public function findWhere(array $where, array $with=[], array $select=[], bool $getDeleted = false) : ?ReserveBundleReceipt;
   
   public function updateOrCreate(array $attributes, array $values = []) : ReserveBundleReceipt;
+
+  public function updateStatus(int $id, int $status) : bool;
 }

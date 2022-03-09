@@ -37,6 +37,21 @@ class ReserveConfirmRepository
         return $reserveConfirm;
     }
 
+    /**
+     * ステータス更新
+     */
+    public function updateStatus(int $id, int $status) : bool
+    {
+        $reserveConfirm = $this->reserveConfirm->find($id);
+        if ($reserveConfirm) {
+            $reserveConfirm->status = $status;
+            $reserveConfirm->save(); // 関連モデルのタイムスタンプも更新される
+            return true;
+        }
+        return false;
+    }
+
+
     public function updateFields(int $id, array $params) : ReserveConfirm
     {
         $this->reserveConfirm->where('id', $id)->update($params);

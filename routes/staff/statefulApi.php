@@ -57,16 +57,21 @@ Route::domain(env('STAFF_DOMAIN', 'api.hakken-tour.com'))->namespace('Staff\Api'
         Route::post('estimate/{reception}/{applicationStep}/{controlNumber}/itinerary/{itineraryNumber}/confirm', 'ReserveConfirmController@store'); // 作成
         Route::put('estimate/{reception}/{applicationStep}/{controlNumber}/itinerary/{itineraryNumber}/confirm/{confirmNumber}', 'ReserveConfirmController@update'); // 更新
         Route::delete('estimate/{reception}/{applicationStep}/{controlNumber}/itinerary/{itineraryNumber}/confirm/{confirmNumber}', 'ReserveConfirmController@destroy'); // 削除
+        Route::put('reserve_confirm/{id}/status', 'ReserveConfirmController@statusUpdate'); // ステータス更新
 
 
         // 請求書
         Route::put('estimate/{reception}/reserve/{reserveNumber}/invoice', 'ReserveInvoiceController@upsert'); // 作成or更新
         Route::put('management/deposit_batch', 'ReserveInvoiceController@depositBatch'); // 一括入金処理(一括請求、一括請求内訳ページで使用)
+        Route::put('invoice/{id}/status', 'ReserveInvoiceController@statusUpdate'); // ステータス更新
+
 
         // 領収書(通常)
         Route::put('estimate/{reception}/reserve/{reserveNumber}/receipt', 'ReserveReceiptController@upsert'); // 作成or更新
+        Route::put('receipt/{id}/status', 'ReserveReceiptController@statusUpdate'); // ステータス更新
         // 領収書(一括請求用)
         Route::put('management/bundle_receipt/{reserveBundleInvoiceHashId}', 'ReserveBundleReceiptController@upsert'); // 作成or更新
+        Route::put('bundle_receipt/{id}/status', 'ReserveBundleReceiptController@statusUpdate'); // ステータス更新
 
 
         // 支払管理
@@ -88,6 +93,7 @@ Route::domain(env('STAFF_DOMAIN', 'api.hakken-tour.com'))->namespace('Staff\Api'
         // 一括請求書
         Route::put('management/bundle_invoice/{reserveBundleInvoiceId}', 'ReserveBundleInvoiceController@edit'); // 更新
         Route::get('management/bundle_invoice/{reserveBundleInvoiceId}/breakdown/list', 'ReserveBundleInvoiceController@breakdownOfBundle'); // 一括請求内訳一覧
+        Route::put('bundle_invoice/{id}/status', 'ReserveBundleInvoiceController@statusUpdate'); // ステータス更新
 
 
         // 科目前半

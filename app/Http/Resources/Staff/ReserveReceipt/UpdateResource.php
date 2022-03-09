@@ -18,6 +18,9 @@ class UpdateResource extends JsonResource
             'id' => $this->id,
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
+            'reserve' => [
+                'updated_at' => $this->reserve->updated_at->format('Y-m-d H:i:s'),
+            ],
             // リレーション
             'pdf' => [
                 'id' => $this->pdf ? $this->pdf->getRouteKey() : null
