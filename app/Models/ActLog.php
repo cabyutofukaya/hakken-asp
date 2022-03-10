@@ -58,16 +58,17 @@ class ActLog extends Model
                 $arr['password'] = str_repeat("*", strlen($arr['password']));//パスワード文字列は記録しない
                 $value = json_encode($arr);
             }
-            $this->attributes['message'] = Crypt::encrypt(serialize($value));
+            // $this->attributes['message'] = Crypt::encrypt(serialize($value));
+            $this->attributes['message'] = $value;
         }
     }
 
     // カラム復号化
     public function getMessageAttribute($value)
     {
-        if ($value) {
-            return unserialize(Crypt::decrypt($value));
-        }
+        // if ($value) {
+        //     return unserialize(Crypt::decrypt($value));
+        // }
         return $value;
     }
 }

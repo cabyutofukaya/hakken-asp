@@ -21,7 +21,7 @@ class CreateActLogsTable extends Migration
             $table->string('url')->nullable()->comment('要求Path');
             $table->string('method')->nullable()->comment('要求メソッド');
             $table->integer('status')->unsigned()->nullable();
-            $table->text('message')->nullable();
+            $table->mediumText('message')->nullable();
             $table->string('remote_addr')->nullable();
             $table->string('user_agent')->nullable();
             $table->timestamps();
