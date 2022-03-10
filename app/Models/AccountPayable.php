@@ -21,11 +21,11 @@ class AccountPayable extends Model
     //     'agency_withdrawals',
     // ];
     
-    protected $appends = [
-        'sum_net', // 無効仕入含む
-        'sum_enabled_net', // 無効仕入除く(valid=1)
-        'sum_withdrawal',
-    ];
+    // protected $appends = [
+    //     'sum_net', // 無効仕入含む
+    //     'sum_enabled_net', // 無効仕入除く(valid=1)
+    //     'sum_withdrawal',
+    // ];
 
 
     public $sortable = [

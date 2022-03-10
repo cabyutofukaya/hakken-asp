@@ -65,7 +65,9 @@ trait CancelChargeTrait
                     $accountPayableDetail = $this->accountPayableDetailService->findWhere(['saleable_type' => 'App\Models\ReserveParticipantOptionPrice', 'saleable_id' => $id], [], ['id']);
 
                     // ステータスと支払い残高計算
-                    event(new ChangePaymentAmountEvent($accountPayableDetail->id));
+                    if ($accountPayableDetail) {
+                        event(new ChangePaymentAmountEvent($accountPayableDetail->id));
+                    }
                 }
             } elseif ($subject == config('consts.subject_categories.SUBJECT_CATEGORY_AIRPLANE')) { // 航空券科目
                 $this->reserveParticipantAirplanePriceService->setCancelChargeByIds($cancelCharge, $cancelChargeNet, $cancelChargeProfit, $isCancel, $ids); // ユーザー側
@@ -77,7 +79,9 @@ trait CancelChargeTrait
                     $accountPayableDetail = $this->accountPayableDetailService->findWhere(['saleable_type' => 'App\Models\ReserveParticipantAirplanePrice', 'saleable_id' => $id], [], ['id']);
 
                     // ステータスと支払い残高計算
-                    event(new ChangePaymentAmountEvent($accountPayableDetail->id));
+                    if ($accountPayableDetail) {
+                        event(new ChangePaymentAmountEvent($accountPayableDetail->id));
+                    }
                 }
             } elseif ($subject == config('consts.subject_categories.SUBJECT_CATEGORY_HOTEL')) { // ホテル科目
                 $this->reserveParticipantHotelPriceService->setCancelChargeByIds($cancelCharge, $cancelChargeNet, $cancelChargeProfit, $isCancel, $ids); // ユーザー側
@@ -89,7 +93,9 @@ trait CancelChargeTrait
                     $accountPayableDetail = $this->accountPayableDetailService->findWhere(['saleable_type' => 'App\Models\ReserveParticipantHotelPrice', 'saleable_id' => $id], [], ['id']);
 
                     // ステータスと支払い残高計算
-                    event(new ChangePaymentAmountEvent($accountPayableDetail->id));
+                    if ($accountPayableDetail) {
+                        event(new ChangePaymentAmountEvent($accountPayableDetail->id));
+                    }
                 }
             }
         }

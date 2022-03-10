@@ -148,8 +148,7 @@ const AccountPayableArea = ({
                                                 (row?.supplier_name ?? "-")}
                                         </td>
                                         <td>
-                                            ￥
-                                            {row.sum_enabled_net.toLocaleString()}
+                                            ￥{row.sum_net.toLocaleString()}
                                         </td>
                                         <td>{row?.payment_deadline ?? "-"}</td>
                                         <td>

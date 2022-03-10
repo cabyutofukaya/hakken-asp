@@ -118,7 +118,8 @@ class ReserveItineraryService
 
     /**
      * 買い掛け金詳細upsert処理
-     * 当該科目が”無効”で出金登録がされていない場合はaccount_payable_detailsテーブル削除
+     * 
+     * 当該科目が”無効”で出金登録がされていない場合はaccount_payable_detailsテーブル削除 → 消してしまうとキャンセルチャージ処理する際に商品数が合わなくなってしまうので削除はせず金額情報を0円に初期化する
      *
      * @param int $agencyId 会社ID
      * @param int $reserveId 予約ID
@@ -137,15 +138,19 @@ class ReserveItineraryService
             'saleable_id' => $participantPrice->id,
         ];
 
-        if (!$valid) { // 無効科目 → 出金登録がなければ削除
-            $accountPayableDetail = $this->accountPayableDetailService->findWhere($attributes);
-            if ($accountPayableDetail && $accountPayableDetail->agency_withdrawals->isEmpty()) {
-                // 論理削除
-                $this->accountPayableDetailService->delete($accountPayableDetail->id, true);
-            }
-            return null;
-        }
+        // if (!$valid) { // 無効科目 → 出金登録がなければ削除
+        //     $accountPayableDetail = $this->accountPayableDetailService->findWhere($attributes);
+        //     if ($accountPayableDetail && $accountPayableDetail->agency_withdrawals->isEmpty()) {
+        //         // 論理削除
+        //         $this->accountPayableDetailService->delete($accountPayableDetail->id, true);
+        //     }
+        //     return null;
+        // }
+        // ↑出金登録を消してしまうとキャンセルチャージ処理の際に商品数が合わなくなるので、無効フラグがオンの時は仕入料金を0円で初期化するように修正
 
+        $amountBilled = !$valid ? 0 : ($participantPrice->net ?? 0); // 数字なのでnullの場合は0で初期化
+        $amountPayment = !$valid ? 0 : ($participantPrice->cost ?? 0); // 数字なのでnullの場合は0で初期化
+        
         /////////// 更新or登録が必要な場合は以下の処理
 
         $accountPayableDetail = $this->accountPayableDetailService->updateOrCreate(
@@ -159,8 +164,8 @@ class ReserveItineraryService
                 'supplier_name' => $supplier->name,
                 'item_code' => $itemCode,
                 'item_name' => $itemName,
-                'amount_billed' => $participantPrice->net ?? 0, // 数字なのでnullの場合は0で初期化
-                'amount_payment' => $participantPrice->cost ?? 0, // 数字なのでnullの場合は0で初期化
+                'amount_billed' => $amountBilled,
+                'amount_payment' => $amountPayment,
                 'use_date' => $useDate,
                 'payment_date' => $paymentDate,
             ]
