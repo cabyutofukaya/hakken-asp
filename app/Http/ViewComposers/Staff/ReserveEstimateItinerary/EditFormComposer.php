@@ -322,6 +322,7 @@ class EditFormComposer
 
                     // reserve_itinerary-create-edit.jsのinitialTargetPurchasingと同様
                     $defaultValue['dates'][$date][$i]['reserve_purchasing_subjects'][$j]['participants'][$l] = array_merge(
+                        $subjectCagetory == config('consts.subject_categories.SUBJECT_CATEGORY_HOTEL') ? ['room_number' => null] : [], // ホテル科目の場合はルーム番号も初期化
                         $this->reserveParticipantOptionPriceService->getInitialData($pid, $targetParticipant['age_kbn'], $subject->subjectable->toArray())
                     ); // 料金明細
                 }

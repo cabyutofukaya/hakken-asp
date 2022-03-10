@@ -44,6 +44,7 @@ class AccountPayableDetail extends Model
         'reserve_id',
         'reserve_itinerary_id',
         'reserve_travel_date_id',
+        'reserve_schedule_id',
         'account_payable_id',
         'supplier_id',
         'supplier_name',
