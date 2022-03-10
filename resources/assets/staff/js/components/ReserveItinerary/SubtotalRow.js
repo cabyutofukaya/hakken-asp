@@ -82,13 +82,27 @@ const SubtotalRow = ({
                                         subjectCategoryTypes.hotel &&
                                         (Object.keys(
                                             _.groupBy(
-                                                _.filter(
-                                                    item?.participants,
-                                                    function(item) {
-                                                        return item?.valid == 1;
+                                                _.map(
+                                                    _.filter(
+                                                        item?.participants,
+                                                        function(item) {
+                                                            return (
+                                                                item?.valid == 1
+                                                            );
+                                                        }
+                                                    ),
+                                                    row => {
+                                                        return !row?.room_number
+                                                            ? {
+                                                                  room_number: null
+                                                              }
+                                                            : {
+                                                                  room_number:
+                                                                      row.room_number
+                                                              }; // 部屋番号はnullと空文字を同じ部屋としてカウント
                                                     }
                                                 ),
-                                                "room_number"
+                                                "room_number" // 部屋番号でグループ化
                                             )
                                         ).length ??
                                             0)}
