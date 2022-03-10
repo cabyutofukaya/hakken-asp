@@ -119,21 +119,25 @@ class ReserveItineraryService
     /**
      * 買い掛け金詳細upsert処理
      * 
-     * 当該科目が”無効”で出金登録がされていない場合はaccount_payable_detailsテーブル削除 → 消してしまうとキャンセルチャージ処理する際に商品数が合わなくなってしまうので削除はせず金額情報を0円に初期化する
+     * 当該科目が”無効”で出金登録がされていない場合はaccount_payable_detailsテーブル削除
+     * ↓↓↓↓
+     * 消してしまうとキャンセルチャージ処理する際に商品数が合わなくなってしまうので削除はせず金額情報を0円に初期化する
      *
      * @param int $agencyId 会社ID
      * @param int $reserveId 予約ID
      * @param int $reserveItineraryId 行程ID
      * @param int $reserveTravelDateId 旅行日ID
+     * @param int $reserveScheduleId スケジュールID
      * @param bool $valid 科目の有効・無効フラグ
      * @param string $useDate 利用日
      * @param string $paymentDate 支払日
      */
-    private function accountPayableDetailCommon(int $agencyId, int $reserveId, int $reserveItineraryId, int $reserveTravelDateId, bool $valid, int $accountPayableId, ParticipantPriceInterface $participantPrice, Supplier $supplier, ?string $itemCode, ?string $itemName, string $useDate, ?string $paymentDate) : ?AccountPayableDetail
+    private function accountPayableDetailCommon(int $agencyId, int $reserveId, int $reserveItineraryId, int $reserveTravelDateId, int $reserveScheduleId, bool $valid, int $accountPayableId, ParticipantPriceInterface $participantPrice, Supplier $supplier, ?string $itemCode, ?string $itemName, string $useDate, ?string $paymentDate) : ?AccountPayableDetail
     {
         // 検索条件
         $attributes = [
-            'account_payable_id' => $accountPayableId,
+            // 'account_payable_id' => $accountPayableId,
+            'reserve_schedule_id' => $reserveScheduleId,
             'saleable_type' => get_class($participantPrice),
             'saleable_id' => $participantPrice->id,
         ];
@@ -156,6 +160,7 @@ class ReserveItineraryService
         $accountPayableDetail = $this->accountPayableDetailService->updateOrCreate(
             $attributes,
             [
+                'account_payable_id' => $accountPayableId,
                 'agency_id' => $agencyId,
                 'reserve_id' => $reserveId,
                 'reserve_itinerary_id' => $reserveItineraryId,
@@ -324,6 +329,7 @@ class ReserveItineraryService
                                                 $reserveItinerary->reserve_id,
                                                 $reserveItinerary->id,
                                                 $reserveTravelDate->id,
+                                                $reserveSchedule->id,
                                                 Arr::get($participantPrice, 'valid') == 1,
                                                 $accountPayable->id,
                                                 $price,
@@ -366,6 +372,7 @@ class ReserveItineraryService
                                                 $reserveItinerary->reserve_id,
                                                 $reserveItinerary->id,
                                                 $reserveTravelDate->id,
+                                                $reserveSchedule->id,
                                                 Arr::get($participantPrice, 'valid') == 1,
                                                 $accountPayable->id,
                                                 $price,
@@ -408,6 +415,7 @@ class ReserveItineraryService
                                                 $reserveItinerary->reserve_id,
                                                 $reserveItinerary->id,
                                                 $reserveTravelDate->id,
+                                                $reserveSchedule->id,
                                                 Arr::get($participantPrice, 'valid') == 1,
                                                 $accountPayable->id,
                                                 $price,
