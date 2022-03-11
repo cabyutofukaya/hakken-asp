@@ -37,6 +37,9 @@ class ReserveTravelDate extends Model
      * @var array
      */
     protected $hidden = [
+        'updated_at',
+        'created_at',
+        'deleted_at',
     ];
 
     /**

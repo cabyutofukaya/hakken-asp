@@ -342,7 +342,7 @@ const PaymentModal = ({
                                     return (
                                         <input
                                             name="withdrawal_date"
-                                            value={value}
+                                            defaultValue={value ?? ""}
                                             ref={ref}
                                         />
                                     );
@@ -379,7 +379,7 @@ const PaymentModal = ({
                                     return (
                                         <input
                                             name="record_date"
-                                            value={value}
+                                            defaultValue={value ?? ""}
                                             ref={ref}
                                         />
                                     );

@@ -142,7 +142,7 @@ const PaymentBatchModal = ({
                                     return (
                                         <input
                                             name="withdrawal_date"
-                                            value={value}
+                                            defaultValue={value ?? ""}
                                             ref={ref}
                                         />
                                     );
@@ -179,7 +179,7 @@ const PaymentBatchModal = ({
                                     return (
                                         <input
                                             name="record_date"
-                                            value={value}
+                                            defaultValue={value ?? ""}
                                             ref={ref}
                                         />
                                     );

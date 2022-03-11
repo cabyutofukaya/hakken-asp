@@ -133,10 +133,6 @@ class AccountPayableDetailController extends Controller
             if (!$response->allowed()) {
                 abort(403, $response->message());
             }
-            
-            if ($accountPayableDetail->unpaid_balance <= 0) {
-                continue;
-            } // 未払金額が0円以下の場合は処理ナシ
 
             // 保存用データ配列にamount、account_payable_detail_id値をセット
             $data = array_merge($input['input'], [

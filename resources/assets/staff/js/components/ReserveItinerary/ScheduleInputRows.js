@@ -47,7 +47,7 @@ const ScheduleInputRows = ({ index, date, input, inputName, handleChange }) => {
                 <input
                     type="hidden"
                     name={`${inputName}[arrival_time]`}
-                    value={index !== 0 ? _.get(input, "arrival_time", "") : ""}
+                    value={index !== 0 ? input?.arrival_time ?? "" : ""}
                 />
                 {/** indexが0だった場合は空フィールドがpostされるようにhiddenで上書き */}
             </li>
@@ -74,7 +74,7 @@ const ScheduleInputRows = ({ index, date, input, inputName, handleChange }) => {
                 <input
                     type="hidden"
                     name={`${inputName}[staying_time]`}
-                    value={index !== 0 ? _.get(input, "staying_time", "") : ""}
+                    value={index !== 0 ? input?.staying_time ?? "" : ""}
                 />
                 {/** indexが0だった場合は空フィールドがpostされるようにhiddenで上書き */}
             </li>
