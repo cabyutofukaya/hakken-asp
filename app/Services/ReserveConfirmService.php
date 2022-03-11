@@ -3,22 +3,23 @@
 namespace App\Services;
 
 use App\Exceptions\ExclusiveLockException;
-use App\Models\Reserve;
-use App\Models\ReserveItinerary;
-use App\Models\ReserveConfirm;
 use App\Models\DocumentQuote;
+use App\Models\Reserve;
+use App\Models\ReserveConfirm;
+use App\Models\ReserveItinerary;
 use App\Repositories\Agency\AgencyRepository;
 use App\Repositories\ReserveConfirm\ReserveConfirmRepository;
+use App\Services\DocumentQuoteService;
+use App\Services\EstimateService;
 use App\Services\ReserveConfirmBusinessUserManagerService;
 use App\Services\ReserveConfirmUserService;
 use App\Services\ReserveItineraryService;
-use App\Services\DocumentQuoteService;
 use App\Services\ReserveService;
-use App\Services\EstimateService;
 use App\Traits\BusinessFormTrait;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+
 
 class ReserveConfirmService extends ReserveDocumentService implements DocumentAddressInterface
 {
@@ -44,18 +45,6 @@ class ReserveConfirmService extends ReserveDocumentService implements DocumentAd
         return $this->reserveConfirmRepository->find($id, $with, $select, $getDeleted);
     }
 
-    // /**
-    //  * 確認番号と”見積番号”から確認書類データを1件取得
-    //  */
-    // public function findByConfirmNumberForEstimate(string $confirmNumber, string $estimateNumber, ?string $itineraryNumber, string $agencyAccount, array $with = [], array $select = []) : ?ReserveConfirm
-    // {
-    //     $reserve = $this->estimateService->findByEstimateNumber($estimateNumber, $agencyAccount);
-
-    //     $reserveItinerary = $this->reserveItineraryService->findByItineraryNumber($reserve->id, $itineraryNumber, $reserve->agency_id);
-
-    //     return $this->reserveConfirmRepository->findWhere(['reserve_itinerary_id' => $reserveItinerary->id, 'confirm_number' => $confirmNumber], $with, $select);
-    // }
-
     /**
      * 確認番号と”予約情報”から確認書類データを1件取得
      */
@@ -66,24 +55,12 @@ class ReserveConfirmService extends ReserveDocumentService implements DocumentAd
         return $this->reserveConfirmRepository->findWhere(['reserve_itinerary_id' => $reserveItinerary->id, 'confirm_number' => $confirmNumber], $with, $select);
     }
 
-    // /**
-    //  * 確認番号と”予約番号”から確認書類データを1件取得
-    //  */
-    // public function findByConfirmNumberForReserve(string $confirmNumber, string $reserveNumber, ?string $itineraryNumber, string $agencyAccount, array $with = [], array $select = []) : ?ReserveConfirm
-    // {
-    //     $reserve = $this->reserveService->findByControlNumber($reserveNumber, $agencyAccount);
-
-    //     $reserveItinerary = $this->reserveItineraryService->findByReserveItineraryNumber($reserve->id, $itineraryNumber, $reserve->agency_id);
-
-    //     return $this->reserveConfirmRepository->findWhere(['reserve_itinerary_id' => $reserveItinerary->id, 'confirm_number' => $confirmNumber], $with, $select);
-    // }
-
     /**
      * 当該行程管理IDに紐づく全予約確認データを取得
      */
-    public function getByReserveItineraryId(int $reserveItineraryId, array $with=[], array $select=[]) : Collection
+    public function getByReserveItineraryId(int $reserveItineraryId, array $with=[], array $select=[], bool $getDeleted = false) : Collection
     {
-        return $this->reserveConfirmRepository->getByReserveItineraryId($reserveItineraryId, $with, $select);
+        return $this->reserveConfirmRepository->getByReserveItineraryId($reserveItineraryId, $with, $select, $getDeleted);
     }
 
     /**
@@ -139,6 +116,20 @@ class ReserveConfirmService extends ReserveDocumentService implements DocumentAd
     public function updateStatus(int $id, int $status) : bool
     {
         return $this->reserveConfirmRepository->updateStatus($id, $status);
+    }
+
+    /**
+     * 合計金額更新
+     * 関連モデルのタイムスタンプも更新
+     */
+    public function updateAmountTotal(int $id, int $amountTotal) : bool
+    {
+        return $this->reserveConfirmRepository->updateAmountTotal($id, $amountTotal);
+    }
+
+    public function updateOrCreate(array $where, array $data): ReserveConfirm
+    {
+        return $this->reserveConfirmRepository->updateOrCreate($where, $data);
     }
 
     /**
