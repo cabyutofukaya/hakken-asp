@@ -801,6 +801,8 @@ const ItineraryArea = ({
                         <h2 className="subTit">
                             <span className="material-icons">event_note </span>
                             {date}
+                            {/**スケジュールがない日付でもdatesパラメータがPOSTされるようにhidden値でセット。スケジュールのある日付は.itineraryArea内のブロックの値で上書きPOSTされる */}
+                            <input type="hidden" name={`dates[${date}]`} />
                         </h2>
                         <div className="itineraryArea">
                             {lists[date] &&
