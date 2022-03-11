@@ -713,30 +713,28 @@ const ReserveInvoiceArea = ({
                                     )}
                             </p>
                             <div className="dispPrice">
-                                {/**代金内訳ゾーン */}
-                                {documentSetting?.setting?.[
-                                    DOCUMENT_REQUEST.DISPLAY_BLOCK
-                                ] &&
-                                    documentSetting.setting[
-                                        DOCUMENT_REQUEST.DISPLAY_BLOCK
-                                    ].includes("代金内訳") && (
-                                        <BreakdownPricePreviewArea
-                                            isCanceled={isCanceled}
-                                            optionPrices={optionPriceFilter}
-                                            hotelPrices={hotelPriceFilter}
-                                            airticketPrices={
-                                                airticketPriceFilter
-                                            }
-                                            showSetting={
-                                                documentSetting.setting[
-                                                    DOCUMENT_REQUEST
-                                                        .BREAKDOWN_PRICE
-                                                ] ?? []
-                                            }
-                                            amountTotal={amountTotal}
-                                            setAmountTotal={setAmountTotal}
-                                        />
-                                    )}
+                                {/**代金内訳ゾーン。他のコンポーネントと異なり表示・非表示の判定はコンポーネント内で行う（合計金額の計算が必要な為） */}
+                                <BreakdownPricePreviewArea
+                                    isShow={
+                                        documentSetting?.setting?.[
+                                            DOCUMENT_REQUEST.DISPLAY_BLOCK
+                                        ] &&
+                                        documentSetting.setting[
+                                            DOCUMENT_REQUEST.DISPLAY_BLOCK
+                                        ].includes("代金内訳")
+                                    }
+                                    isCanceled={isCanceled}
+                                    optionPrices={optionPriceFilter}
+                                    hotelPrices={hotelPriceFilter}
+                                    airticketPrices={airticketPriceFilter}
+                                    showSetting={
+                                        documentSetting.setting[
+                                            DOCUMENT_REQUEST.BREAKDOWN_PRICE
+                                        ] ?? []
+                                    }
+                                    amountTotal={amountTotal}
+                                    setAmountTotal={setAmountTotal}
+                                />
                             </div>
                             <div className="dispSchedule">
                                 {/**航空券情報ゾーン */}

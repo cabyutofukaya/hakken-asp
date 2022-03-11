@@ -6,10 +6,13 @@ const md5 = require("md5");
 /**
  * 代金内訳プレビュー
  *
- * @param {*} param0
+ * 表示、非表示はisShowで判定。合計金額はAPIで必ず保存するので表示、非表示にかかわらず計算する
+ *
+ * @param {bool} isShow 代金内訳枠を表示するか否か
  * @returns
  */
 const BreakdownPricePreviewArea = ({
+    isShow,
     isCanceled,
     optionPrices,
     airticketPrices,
@@ -148,272 +151,288 @@ const BreakdownPricePreviewArea = ({
         setHotelPriceBreakdown({ ...hotelTemp });
     }, [optionPrices, airticketPrices, hotelPrices]);
 
-    return (
-        <>
-            <h3>代金内訳</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>内容</th>
-                        {showSetting.includes("単価・金額") && <th>単価</th>}
-                        <th>数量</th>
-                        {showSetting.includes("消費税") && <th>消費税</th>}
-                        {showSetting.includes("単価・金額") && <th>金額</th>}
-                    </tr>
-                </thead>
-                <tbody>
-                    {/**オプション科目 */}
-                    {Object.keys(optionPriceBreakdown).map((k, i) => (
-                        <tr key={`option${i}`}>
-                            {/**キャンセル予約か否かで出し分け */}
-                            {isCanceled && (
-                                <>
-                                    <td>
-                                        {optionPriceBreakdown[k].name}{" "}
-                                        {RESERVE.CANCEL_LABEL}
-                                    </td>
-                                    {showSetting.includes("単価・金額") && (
+    if (isShow) {
+        return (
+            <>
+                <h3>代金内訳</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>内容</th>
+                            {showSetting.includes("単価・金額") && (
+                                <th>単価</th>
+                            )}
+                            <th>数量</th>
+                            {showSetting.includes("消費税") && <th>消費税</th>}
+                            {showSetting.includes("単価・金額") && (
+                                <th>金額</th>
+                            )}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {/**オプション科目 */}
+                        {Object.keys(optionPriceBreakdown).map((k, i) => (
+                            <tr key={`option${i}`}>
+                                {/**キャンセル予約か否かで出し分け */}
+                                {isCanceled && (
+                                    <>
                                         <td>
-                                            ￥
+                                            {optionPriceBreakdown[k].name}{" "}
+                                            {RESERVE.CANCEL_LABEL}
+                                        </td>
+                                        {showSetting.includes("単価・金額") && (
+                                            <td>
+                                                ￥
+                                                {optionPriceBreakdown[
+                                                    k
+                                                ].cancel_charge.toLocaleString()}
+                                            </td>
+                                        )}
+                                        <td>
                                             {optionPriceBreakdown[
                                                 k
-                                            ].cancel_charge.toLocaleString()}
+                                            ].quantity.toLocaleString()}
                                         </td>
-                                    )}
-                                    <td>
-                                        {optionPriceBreakdown[
-                                            k
-                                        ].quantity.toLocaleString()}
-                                    </td>
-                                    {showSetting.includes("消費税") && (
-                                        <td>-</td>
-                                    )}
-                                    {showSetting.includes("単価・金額") && (
+                                        {showSetting.includes("消費税") && (
+                                            <td>-</td>
+                                        )}
+                                        {showSetting.includes("単価・金額") && (
+                                            <td>
+                                                ￥
+                                                {(
+                                                    optionPriceBreakdown[k]
+                                                        .cancel_charge *
+                                                    optionPriceBreakdown[k]
+                                                        .quantity
+                                                ).toLocaleString()}
+                                            </td>
+                                        )}
+                                    </>
+                                )}
+                                {!isCanceled && (
+                                    <>
+                                        <td>{optionPriceBreakdown[k].name}</td>
+                                        {showSetting.includes("単価・金額") && (
+                                            <td>
+                                                ￥
+                                                {optionPriceBreakdown[
+                                                    k
+                                                ].gross_ex.toLocaleString()}
+                                            </td>
+                                        )}
                                         <td>
-                                            ￥
-                                            {(
-                                                optionPriceBreakdown[k]
-                                                    .cancel_charge *
-                                                optionPriceBreakdown[k].quantity
-                                            ).toLocaleString()}
-                                        </td>
-                                    )}
-                                </>
-                            )}
-                            {!isCanceled && (
-                                <>
-                                    <td>{optionPriceBreakdown[k].name}</td>
-                                    {showSetting.includes("単価・金額") && (
-                                        <td>
-                                            ￥
                                             {optionPriceBreakdown[
                                                 k
-                                            ].gross_ex.toLocaleString()}
+                                            ].quantity.toLocaleString()}
                                         </td>
-                                    )}
-                                    <td>
-                                        {optionPriceBreakdown[
-                                            k
-                                        ].quantity.toLocaleString()}
-                                    </td>
-                                    {showSetting.includes("消費税") && (
+                                        {showSetting.includes("消費税") && (
+                                            <td>
+                                                {zeiKbns?.[
+                                                    optionPriceBreakdown[k]
+                                                        .zei_kbn
+                                                ] ?? "-"}
+                                            </td>
+                                        )}
+                                        {showSetting.includes("単価・金額") && (
+                                            <td>
+                                                ￥
+                                                {(
+                                                    optionPriceBreakdown[k]
+                                                        .gross *
+                                                    optionPriceBreakdown[k]
+                                                        .quantity
+                                                ).toLocaleString()}
+                                            </td>
+                                        )}
+                                    </>
+                                )}
+                            </tr>
+                        ))}
+                        {/**航空券 */}
+                        {Object.keys(airticketPriceBreakdown).map((k, i) => (
+                            <tr key={`airticket${i}`}>
+                                {/** キャンセルか否かで出し分け */}
+                                {isCanceled && (
+                                    <>
                                         <td>
-                                            {zeiKbns?.[
-                                                optionPriceBreakdown[k].zei_kbn
-                                            ] ?? "-"}
+                                            {airticketPriceBreakdown[k].name}{" "}
+                                            {airticketPriceBreakdown[k].seat}{" "}
+                                            {RESERVE.CANCEL_LABEL}
                                         </td>
-                                    )}
-                                    {showSetting.includes("単価・金額") && (
+                                        {showSetting.includes("単価・金額") && (
+                                            <td>
+                                                ￥
+                                                {airticketPriceBreakdown[
+                                                    k
+                                                ].cancel_charge.toLocaleString()}
+                                            </td>
+                                        )}
                                         <td>
-                                            ￥
-                                            {(
-                                                optionPriceBreakdown[k].gross *
-                                                optionPriceBreakdown[k].quantity
-                                            ).toLocaleString()}
-                                        </td>
-                                    )}
-                                </>
-                            )}
-                        </tr>
-                    ))}
-                    {/**航空券 */}
-                    {Object.keys(airticketPriceBreakdown).map((k, i) => (
-                        <tr key={`airticket${i}`}>
-                            {/** キャンセルか否かで出し分け */}
-                            {isCanceled && (
-                                <>
-                                    <td>
-                                        {airticketPriceBreakdown[k].name}{" "}
-                                        {airticketPriceBreakdown[k].seat}{" "}
-                                        {RESERVE.CANCEL_LABEL}
-                                    </td>
-                                    {showSetting.includes("単価・金額") && (
-                                        <td>
-                                            ￥
                                             {airticketPriceBreakdown[
                                                 k
-                                            ].cancel_charge.toLocaleString()}
+                                            ].quantity.toLocaleString()}
                                         </td>
-                                    )}
-                                    <td>
-                                        {airticketPriceBreakdown[
-                                            k
-                                        ].quantity.toLocaleString()}
-                                    </td>
-                                    {showSetting.includes("消費税") && (
-                                        <td>-</td>
-                                    )}
-                                    {showSetting.includes("単価・金額") && (
+                                        {showSetting.includes("消費税") && (
+                                            <td>-</td>
+                                        )}
+                                        {showSetting.includes("単価・金額") && (
+                                            <td>
+                                                ￥
+                                                {(
+                                                    airticketPriceBreakdown[k]
+                                                        .cancel_charge *
+                                                    airticketPriceBreakdown[k]
+                                                        .quantity
+                                                ).toLocaleString()}
+                                            </td>
+                                        )}
+                                    </>
+                                )}
+                                {!isCanceled && (
+                                    <>
                                         <td>
-                                            ￥
-                                            {(
-                                                airticketPriceBreakdown[k]
-                                                    .cancel_charge *
-                                                airticketPriceBreakdown[k]
-                                                    .quantity
-                                            ).toLocaleString()}
+                                            {airticketPriceBreakdown[k].name}{" "}
+                                            {airticketPriceBreakdown[k].seat}
                                         </td>
-                                    )}
-                                </>
-                            )}
-                            {!isCanceled && (
-                                <>
-                                    <td>
-                                        {airticketPriceBreakdown[k].name}{" "}
-                                        {airticketPriceBreakdown[k].seat}
-                                    </td>
-                                    {showSetting.includes("単価・金額") && (
+                                        {showSetting.includes("単価・金額") && (
+                                            <td>
+                                                ￥
+                                                {airticketPriceBreakdown[
+                                                    k
+                                                ].gross_ex.toLocaleString()}
+                                            </td>
+                                        )}
                                         <td>
-                                            ￥
                                             {airticketPriceBreakdown[
                                                 k
-                                            ].gross_ex.toLocaleString()}
+                                            ].quantity.toLocaleString()}
                                         </td>
-                                    )}
-                                    <td>
-                                        {airticketPriceBreakdown[
-                                            k
-                                        ].quantity.toLocaleString()}
-                                    </td>
-                                    {showSetting.includes("消費税") && (
+                                        {showSetting.includes("消費税") && (
+                                            <td>
+                                                {zeiKbns?.[
+                                                    airticketPriceBreakdown[k]
+                                                        .zei_kbn
+                                                ] ?? "-"}
+                                            </td>
+                                        )}
+                                        {showSetting.includes("単価・金額") && (
+                                            <td>
+                                                ￥
+                                                {(
+                                                    airticketPriceBreakdown[k]
+                                                        .gross *
+                                                    airticketPriceBreakdown[k]
+                                                        .quantity
+                                                ).toLocaleString()}
+                                            </td>
+                                        )}
+                                    </>
+                                )}
+                            </tr>
+                        ))}
+                        {/**ホテル */}
+                        {Object.keys(hotelPriceBreakdown).map((k, i) => (
+                            <tr key={`hotel${i}`}>
+                                {/**キャンセルか否かで出し分け */}
+                                {isCanceled && (
+                                    <>
                                         <td>
-                                            {zeiKbns?.[
-                                                airticketPriceBreakdown[k]
-                                                    .zei_kbn
-                                            ] ?? "-"}
+                                            {hotelPriceBreakdown[k].name}{" "}
+                                            {hotelPriceBreakdown[k].room_type}{" "}
+                                            {hotelPriceBreakdown[k].quantity}名{" "}
+                                            {RESERVE.CANCEL_LABEL}
                                         </td>
-                                    )}
-                                    {showSetting.includes("単価・金額") && (
+                                        {showSetting.includes("単価・金額") && (
+                                            <td>
+                                                ￥
+                                                {hotelPriceBreakdown[
+                                                    k
+                                                ].cancel_charge.toLocaleString()}
+                                            </td>
+                                        )}
                                         <td>
-                                            ￥
-                                            {(
-                                                airticketPriceBreakdown[k]
-                                                    .gross *
-                                                airticketPriceBreakdown[k]
-                                                    .quantity
-                                            ).toLocaleString()}
-                                        </td>
-                                    )}
-                                </>
-                            )}
-                        </tr>
-                    ))}
-                    {/**ホテル */}
-                    {Object.keys(hotelPriceBreakdown).map((k, i) => (
-                        <tr key={`hotel${i}`}>
-                            {/**キャンセルか否かで出し分け */}
-                            {isCanceled && (
-                                <>
-                                    <td>
-                                        {hotelPriceBreakdown[k].name}{" "}
-                                        {hotelPriceBreakdown[k].room_type}{" "}
-                                        {hotelPriceBreakdown[k].quantity}名{" "}
-                                        {RESERVE.CANCEL_LABEL}
-                                    </td>
-                                    {showSetting.includes("単価・金額") && (
-                                        <td>
-                                            ￥
                                             {hotelPriceBreakdown[
                                                 k
-                                            ].cancel_charge.toLocaleString()}
+                                            ].quantity.toLocaleString()}
                                         </td>
-                                    )}
-                                    <td>
-                                        {hotelPriceBreakdown[
-                                            k
-                                        ].quantity.toLocaleString()}
-                                    </td>
-                                    {showSetting.includes("消費税") && (
-                                        <td>-</td>
-                                    )}
-                                    {showSetting.includes("単価・金額") && (
+                                        {showSetting.includes("消費税") && (
+                                            <td>-</td>
+                                        )}
+                                        {showSetting.includes("単価・金額") && (
+                                            <td>
+                                                ￥
+                                                {(
+                                                    hotelPriceBreakdown[k]
+                                                        .cancel_charge *
+                                                    hotelPriceBreakdown[k]
+                                                        .quantity
+                                                ).toLocaleString()}
+                                            </td>
+                                        )}
+                                    </>
+                                )}
+                                {!isCanceled && (
+                                    <>
                                         <td>
-                                            ￥
-                                            {(
-                                                hotelPriceBreakdown[k]
-                                                    .cancel_charge *
-                                                hotelPriceBreakdown[k].quantity
-                                            ).toLocaleString()}
+                                            {hotelPriceBreakdown[k].name}{" "}
+                                            {hotelPriceBreakdown[k].room_type}{" "}
+                                            {hotelPriceBreakdown[k].quantity}名
                                         </td>
-                                    )}
-                                </>
-                            )}
-                            {!isCanceled && (
-                                <>
-                                    <td>
-                                        {hotelPriceBreakdown[k].name}{" "}
-                                        {hotelPriceBreakdown[k].room_type}{" "}
-                                        {hotelPriceBreakdown[k].quantity}名
-                                    </td>
-                                    {showSetting.includes("単価・金額") && (
+                                        {showSetting.includes("単価・金額") && (
+                                            <td>
+                                                ￥
+                                                {hotelPriceBreakdown[
+                                                    k
+                                                ].gross_ex.toLocaleString()}
+                                            </td>
+                                        )}
                                         <td>
-                                            ￥
                                             {hotelPriceBreakdown[
                                                 k
-                                            ].gross_ex.toLocaleString()}
+                                            ].quantity.toLocaleString()}
                                         </td>
-                                    )}
-                                    <td>
-                                        {hotelPriceBreakdown[
-                                            k
-                                        ].quantity.toLocaleString()}
-                                    </td>
-                                    {showSetting.includes("消費税") && (
-                                        <td>
-                                            {zeiKbns?.[
-                                                hotelPriceBreakdown[k].zei_kbn
-                                            ] ?? "-"}
-                                        </td>
-                                    )}
-                                    {showSetting.includes("単価・金額") && (
-                                        <td>
-                                            ￥
-                                            {(
-                                                hotelPriceBreakdown[k].gross *
-                                                hotelPriceBreakdown[k].quantity
-                                            ).toLocaleString()}
-                                        </td>
-                                    )}
-                                </>
-                            )}
+                                        {showSetting.includes("消費税") && (
+                                            <td>
+                                                {zeiKbns?.[
+                                                    hotelPriceBreakdown[k]
+                                                        .zei_kbn
+                                                ] ?? "-"}
+                                            </td>
+                                        )}
+                                        {showSetting.includes("単価・金額") && (
+                                            <td>
+                                                ￥
+                                                {(
+                                                    hotelPriceBreakdown[k]
+                                                        .gross *
+                                                    hotelPriceBreakdown[k]
+                                                        .quantity
+                                                ).toLocaleString()}
+                                            </td>
+                                        )}
+                                    </>
+                                )}
+                            </tr>
+                        ))}
+                        <tr className="total">
+                            <td
+                                colSpan={
+                                    4 -
+                                    (showSetting.includes("消費税") ? 0 : 1) -
+                                    (showSetting.includes("単価・金額") ? 0 : 2)
+                                }
+                            >
+                                合計金額
+                            </td>
+                            <td>￥{amountTotal.toLocaleString()}</td>
                         </tr>
-                    ))}
-                    <tr className="total">
-                        <td
-                            colSpan={
-                                4 -
-                                (showSetting.includes("消費税") ? 0 : 1) -
-                                (showSetting.includes("単価・金額") ? 0 : 2)
-                            }
-                        >
-                            合計金額
-                        </td>
-                        <td>￥{amountTotal.toLocaleString()}</td>
-                    </tr>
-                </tbody>
-            </table>
-        </>
-    );
+                    </tbody>
+                </table>
+            </>
+        );
+    } else {
+        return null;
+    }
 };
 
 export default BreakdownPricePreviewArea;

@@ -69,9 +69,9 @@ class ReserveReceiptController extends Controller
         $input['reserve_invoice_id'] = $reserveInvoice->id;
 
         try {
-            $newReserveReceipt = \DB::transaction(function () use ($reserveReceipt, $input) {
+            $newReserveReceipt = \DB::transaction(function () use ($reserveReceipt, $reserve, $input) {
 
-                if ($reserveReceipt->reserve->updated_at != Arr::get($input, 'reserve.updated_at')) { // 請求書などと処理を合わせて予約レコードの更新日時で同時編集チェック
+                if ($reserve->updated_at != Arr::get($input, 'reserve.updated_at')) { // 請求書などと処理を合わせて予約レコードの更新日時で同時編集チェック
                     throw new ExclusiveLockException;
                 }
 
