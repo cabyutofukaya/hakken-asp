@@ -133,6 +133,14 @@ class ReserveItinerary extends Model
         return $this->hasMany('App\Models\AccountPayable');
     }
 
+    /**
+     * 帳票登録数を取得
+     */
+    public function getReserveConfirmNumAttribute() : int
+    {
+        return $this->reserve_confirms->count();
+    }
+
     ///////////////  集計メソッド ここから ///////////////
 
     /**

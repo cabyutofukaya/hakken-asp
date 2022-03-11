@@ -6,6 +6,7 @@ use App\Models\Admin;
 use App\Models\AppUser;
 use App\Models\DocumentQuote;
 use App\Models\ReserveConfirm;
+use App\Models\ReserveItinerary;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Auth\Access\Response;
@@ -59,7 +60,7 @@ class ReserveConfirmPolicy
      * @param  \App\Models\AppUser  $appUser
      * @return mixed
      */
-    public function create(AppUser $appUser)
+    public function create(AppUser $appUser, ReserveConfirm $reserveConfirm, ReserveItinerary $reserveItinerary)
     {
         $model = class_basename(get_class($appUser));
         if ($model === 'Admin') {
@@ -71,6 +72,9 @@ class ReserveConfirmPolicy
                     if (in_array($documentQuoteCode, config('consts.reserve_confirms.NO_ADD_OR_DELETE_CODE_LIST'), true)) {
                         return Response::deny('許可されていないリクエストです(403 Forbidden)');
                     }
+                }
+                if ($reserveItinerary->reserve_confirm_num >= config('consts.const.NUMBER_LEDGER_ALLOWED_MAX')) {
+                    return Response::deny("帳票の最大作成数(" . config('consts.const.NUMBER_LEDGER_ALLOWED_MAX') . ")を超えています(403 Forbidden)");
                 }
                 return Response::allow();
             }

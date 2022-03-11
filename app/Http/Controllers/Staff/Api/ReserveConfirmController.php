@@ -104,12 +104,6 @@ class ReserveConfirmController extends Controller
      */
     public function store(ReserveConfirmStoretRequest $request, $agencyAccount, string $reception, string $applicationStep, string $controlNumber, string $itineraryNumber)
     {
-        // 認可チェック
-        $response = \Gate::inspect('create', new ReserveConfirm);
-        if (!$response->allowed()) {
-            abort(403, $response->message());
-        }
-
         // 受付種別で分ける
         if ($reception === config('consts.const.RECEPTION_TYPE_ASP')) { // ASP受付
             // 見積or予約で処理を分ける
@@ -145,6 +139,12 @@ class ReserveConfirmController extends Controller
 
         if (!$reserveItinerary) {
             abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+        }
+
+        // 認可チェック
+        $response = \Gate::inspect('create', [new ReserveConfirm, $reserveItinerary]);
+        if (!$response->allowed()) {
+            abort(403, $response->message());
         }
 
         $agencyId = auth('staff')->user()->agency_id;
