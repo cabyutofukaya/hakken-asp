@@ -111,7 +111,7 @@ class ReserveParticipantHotelPrice extends Model implements ParticipantPriceInte
     // ホテル仕入科目
     public function reserve_purchasing_subject_hotel()
     {
-        return $this->belongsTo('App\Models\ReservePurchasingSubjectHotel')->withDefault();
+        return $this->belongsTo('App\Models\ReservePurchasingSubjectHotel')->withDefault()->withTrashed(); // 仕入情報から削除状態でも参照するケースがあるためwithTrashed
     }
 
     // 参加者

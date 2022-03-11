@@ -88,7 +88,7 @@ class PdfComposer
         }
 
         // 税区分。表示設定で「非課税/不課税」がOffになっている場合はプロパティを削除
-        if (!in_array("消費税_非課税/不課税", Arr::get($value, 'document_setting.setting.'.config('consts.document_request_alls.BREAKDOWN_PRICE'), []))) {
+        if (!check_business_form_pdf_item($value, "消費税_非課税/不課税", 'document_setting.setting.'.config('consts.document_request_alls.BREAKDOWN_PRICE'))) {
             $zeiKbns = get_const_item('subject_categories', 'document_zei_kbn');
             foreach ([
                 config('consts.subject_categories.ZEI_KBN_TAX_FREE'),

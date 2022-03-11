@@ -39,6 +39,7 @@ class ReserveConfirmRepository
 
     /**
      * ステータス更新
+     * 関連モデルのタイムスタンプも更新
      */
     public function updateStatus(int $id, int $status) : bool
     {
@@ -51,6 +52,31 @@ class ReserveConfirmRepository
         return false;
     }
 
+    /**
+     * 合計金額更新
+     * 関連モデルのタイムスタンプも更新
+     */
+    public function updateAmountTotal(int $id, int $amountTotal) : bool
+    {
+        $reserveConfirm = $this->reserveConfirm->find($id);
+        if ($reserveConfirm) {
+            $reserveConfirm->amount_total = $amountTotal;
+            $reserveConfirm->save(); // 関連モデルのタイムスタンプも更新される
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * アップサート
+     */
+    public function updateOrCreate(array $attributes, array $values = []) : ReserveConfirm
+    {
+        return $this->reserveConfirm->updateOrCreate(
+            $attributes,
+            $values
+        );
+    }
 
     public function updateFields(int $id, array $params) : ReserveConfirm
     {
@@ -67,7 +93,7 @@ class ReserveConfirmRepository
 
     /**
      * 宛名情報クリア
-     * 
+     *
      * @param int $reserveId 予約ID
      * @return bool
      */
@@ -75,7 +101,7 @@ class ReserveConfirmRepository
     {
         $this->reserveConfirm->where('reserve_id', $reserveId)
             ->update([
-                'document_address' => null, 
+                'document_address' => null,
             ]);
         return true;
     }
@@ -102,9 +128,10 @@ class ReserveConfirmRepository
     /**
      * 全件取得
      */
-    public function getByReserveItineraryId(int $reserveItineraryId, array $with=[], array $select=[]) : Collection
+    public function getByReserveItineraryId(int $reserveItineraryId, array $with=[], array $select=[], bool $getDeleted = false) : Collection
     {
         $query = $this->reserveConfirm;
+        $query = $getDeleted ? $query->withTrashed() : $query;
         $query = $with ? $query->with($with) : $query;
         $query = $select ? $query->select($select) : $query;
         return $query->where('reserve_itinerary_id', $reserveItineraryId)->sortable()->get();
@@ -128,7 +155,7 @@ class ReserveConfirmRepository
     /**
      * 当該行程IDに紐づくdocument_quoteリレーションの中で
      * 当該codeを持つレコードに紐づくreserve_confirmレコードを一件取得
-     * 
+     *
      * @param int $reserveItineraryId 行程ID
      * @param string 帳票管理コード
      * @param bool $getDeleted 論理削除も取得する場合はtrue

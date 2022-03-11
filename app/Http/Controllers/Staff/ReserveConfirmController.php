@@ -33,12 +33,6 @@ class ReserveConfirmController extends AppController
      */
     public function create(string $agencyAccount, string $applicationStep, string $controlNumber, string $itineraryNumber)
     {
-        // 認可チェック
-        $response = \Gate::inspect('create', [new ReserveConfirm]);
-        if (!$response->allowed()) {
-            abort(403);
-        }
-        
         $reserveNumber = null;
         $estimateNumber = null;
 
@@ -92,8 +86,14 @@ class ReserveConfirmController extends AppController
             return response("データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 404);
         }
 
+        // // 認可チェック
+        // $response = Gate::inspect('view', [$reserveItinerary]);
+        // if (!$response->allowed()) {
+        //     abort(403);
+        // }
+
         // 認可チェック
-        $response = Gate::inspect('view', [$reserveItinerary]);
+        $response = \Gate::inspect('create', [new ReserveConfirm, $reserveItinerary]);
         if (!$response->allowed()) {
             abort(403);
         }

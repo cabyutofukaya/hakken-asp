@@ -7,10 +7,14 @@ const md5 = require("md5");
 /**
  * 代金内訳プレビュー
  *
+ * 表示、非表示はisShowで判定。合計金額はAPIで必ず保存するので表示、非表示にかかわらず計算する
+ *
+ * @param {bool} isShow 代金内訳枠を表示するか否か
  * @param {object} reserveCancelInfo キャンセル予約情報
  * @returns
  */
 const ReserveBreakdownPricePreviewArea = ({
+    isShow,
     reservePrices,
     reserveCancelInfo,
     showSetting,
@@ -87,124 +91,138 @@ const ReserveBreakdownPricePreviewArea = ({
         setReservePriceBreakdown({ ...temp });
     }, [reservePrices]);
 
-    return (
-        <>
-            <h3>代金内訳</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>予約番号</th>
-                        {showSetting.includes("御社担当") && <th>御社担当</th>}
-                        {showSetting.includes("単価・金額") && <th>単価</th>}
-                        <th>数量</th>
-                        {showSetting.includes("消費税") && <th>消費税</th>}
-                        {showSetting.includes("単価・金額") && <th>金額</th>}
-                    </tr>
-                </thead>
-                <tbody>
-                    {Object.keys(reservePriceBreakdown).map(
-                        (reserveNumber, i) => {
-                            return reservePriceBreakdown[reserveNumber].map(
-                                (row, j) => {
-                                    return (
-                                        <tr key={`row${i}_${j}`}>
-                                            <td>
-                                                {reserveNumber}
-                                                {reserveCancelInfo?.[
-                                                    reserveNumber
-                                                ] && RESERVE.CANCEL_LABEL}
-                                            </td>
-                                            {showSetting.includes(
-                                                "御社担当"
-                                            ) && (
+    if (isShow) {
+        return (
+            <>
+                <h3>代金内訳</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>予約番号</th>
+                            {showSetting.includes("御社担当") && (
+                                <th>御社担当</th>
+                            )}
+                            {showSetting.includes("単価・金額") && (
+                                <th>単価</th>
+                            )}
+                            <th>数量</th>
+                            {showSetting.includes("消費税") && <th>消費税</th>}
+                            {showSetting.includes("単価・金額") && (
+                                <th>金額</th>
+                            )}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {Object.keys(reservePriceBreakdown).map(
+                            (reserveNumber, i) => {
+                                return reservePriceBreakdown[reserveNumber].map(
+                                    (row, j) => {
+                                        return (
+                                            <tr key={`row${i}_${j}`}>
                                                 <td>
-                                                    {_.find(
-                                                        partnerManagers,
-                                                        function(o) {
-                                                            return (
-                                                                o.id ==
-                                                                row?.partner_manager_id
-                                                            );
-                                                        }
-                                                    )?.org_name ?? "-"}
-                                                    {showSetting.includes(
-                                                        "御社担当_御社担当(敬称)"
-                                                    ) && " 様"}
-                                                </td>
-                                            )}
-                                            {showSetting.includes(
-                                                "単価・金額"
-                                            ) && (
-                                                <td>
-                                                    {/**キャンセルの場合はキャンセルチャージ料金を出力 */}
-                                                    ￥
+                                                    {reserveNumber}
                                                     {reserveCancelInfo?.[
                                                         reserveNumber
-                                                    ] &&
-                                                        row.cancel_charge.toLocaleString()}
-                                                    {!reserveCancelInfo?.[
-                                                        reserveNumber
-                                                    ] &&
-                                                        row.gross_ex.toLocaleString()}
+                                                    ] && RESERVE.CANCEL_LABEL}
                                                 </td>
-                                            )}
-                                            <td>
-                                                {row.quantity.toLocaleString()}
-                                            </td>
-                                            {showSetting.includes("消費税") && (
+                                                {showSetting.includes(
+                                                    "御社担当"
+                                                ) && (
+                                                    <td>
+                                                        {_.find(
+                                                            partnerManagers,
+                                                            function(o) {
+                                                                return (
+                                                                    o.id ==
+                                                                    row?.partner_manager_id
+                                                                );
+                                                            }
+                                                        )?.org_name ?? "-"}
+                                                        {showSetting.includes(
+                                                            "御社担当_御社担当(敬称)"
+                                                        ) && " 様"}
+                                                    </td>
+                                                )}
+                                                {showSetting.includes(
+                                                    "単価・金額"
+                                                ) && (
+                                                    <td>
+                                                        {/**キャンセルの場合はキャンセルチャージ料金を出力 */}
+                                                        ￥
+                                                        {reserveCancelInfo?.[
+                                                            reserveNumber
+                                                        ] &&
+                                                            row.cancel_charge.toLocaleString()}
+                                                        {!reserveCancelInfo?.[
+                                                            reserveNumber
+                                                        ] &&
+                                                            row.gross_ex.toLocaleString()}
+                                                    </td>
+                                                )}
                                                 <td>
-                                                    {/**キャンセル予約の場合は消費税表示ナシ */}
-                                                    {reserveCancelInfo?.[
-                                                        reserveNumber
-                                                    ] && "-"}
-                                                    {!reserveCancelInfo?.[
-                                                        reserveNumber
-                                                    ] &&
-                                                        (zeiKbns?.[
-                                                            row.zei_kbn
-                                                        ] ??
-                                                            "-")}
+                                                    {row.quantity.toLocaleString()}
                                                 </td>
-                                            )}
-                                            {showSetting.includes(
-                                                "単価・金額"
-                                            ) && (
-                                                <td>
-                                                    {/**キャンセル予約の場合はキャンセルチャージの合計がgross */}
-                                                    ￥
-                                                    {reserveCancelInfo?.[
-                                                        reserveNumber
-                                                    ] &&
-                                                        row.cancel_charge.toLocaleString()}
-                                                    {!reserveCancelInfo?.[
-                                                        reserveNumber
-                                                    ] &&
-                                                        row.gross.toLocaleString()}
-                                                </td>
-                                            )}
-                                        </tr>
-                                    );
-                                }
-                            );
-                        }
-                    )}
-                    <tr className="total">
-                        <td
-                            colSpan={
-                                5 -
-                                (showSetting.includes("消費税") ? 0 : 1) -
-                                (showSetting.includes("単価・金額") ? 0 : 2) -
-                                (showSetting.includes("御社担当") ? 0 : 1)
+                                                {showSetting.includes(
+                                                    "消費税"
+                                                ) && (
+                                                    <td>
+                                                        {/**キャンセル予約の場合は消費税表示ナシ */}
+                                                        {reserveCancelInfo?.[
+                                                            reserveNumber
+                                                        ] && "-"}
+                                                        {!reserveCancelInfo?.[
+                                                            reserveNumber
+                                                        ] &&
+                                                            (zeiKbns?.[
+                                                                row.zei_kbn
+                                                            ] ??
+                                                                "-")}
+                                                    </td>
+                                                )}
+                                                {showSetting.includes(
+                                                    "単価・金額"
+                                                ) && (
+                                                    <td>
+                                                        {/**キャンセル予約の場合はキャンセルチャージの合計がgross */}
+                                                        ￥
+                                                        {reserveCancelInfo?.[
+                                                            reserveNumber
+                                                        ] &&
+                                                            row.cancel_charge.toLocaleString()}
+                                                        {!reserveCancelInfo?.[
+                                                            reserveNumber
+                                                        ] &&
+                                                            row.gross.toLocaleString()}
+                                                    </td>
+                                                )}
+                                            </tr>
+                                        );
+                                    }
+                                );
                             }
-                        >
-                            合計金額
-                        </td>
-                        <td>￥{amountTotal.toLocaleString()}</td>
-                    </tr>
-                </tbody>
-            </table>
-        </>
-    );
+                        )}
+                        <tr className="total">
+                            <td
+                                colSpan={
+                                    5 -
+                                    (showSetting.includes("消費税") ? 0 : 1) -
+                                    (showSetting.includes("単価・金額")
+                                        ? 0
+                                        : 2) -
+                                    (showSetting.includes("御社担当") ? 0 : 1)
+                                }
+                            >
+                                合計金額
+                            </td>
+                            <td>￥{amountTotal.toLocaleString()}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </>
+        );
+    } else {
+        return null;
+    }
 };
 
 export default ReserveBreakdownPricePreviewArea;

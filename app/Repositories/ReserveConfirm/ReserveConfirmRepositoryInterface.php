@@ -12,10 +12,12 @@ interface ReserveConfirmRepositoryInterface
   public function findWhere(array $where, array $with=[], array $select=[]) : ?ReserveConfirm;
   public function create(array $data) : ReserveConfirm;
   public function updateStatus(int $id, int $status) : bool;
+  public function updateAmountTotal(int $id, int $amountTotal) : bool;
   public function update(int $id, array $data): ReserveConfirm;
+  public function updateOrCreate(array $attributes, array $values = []) : ReserveConfirm;
   public function clearDocumentAddress(int $reserveId) : bool;
   public function updateFields(int $id, array $params) : ReserveConfirm;
-  public function getByReserveItineraryId(int $reserveItineraryId, array $with=[], array $select=[]) : Collection;
+  public function getByReserveItineraryId(int $reserveItineraryId, array $with=[], array $select=[], bool $getDeleted = false) : Collection;
   public function findByDocumentQuoteCodeByReserveItineraryId(int $reserveItineraryId, string $code, array $with =[], array $select = [], bool $getDeleted = false) : ?ReserveConfirm;
   public function getCountByReserveItineraryId(int $reserveItineraryId, bool $includeDeleted = true) : int;
   public function delete(int $id, bool $isSoftDelete): bool;

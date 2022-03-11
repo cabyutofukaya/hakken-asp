@@ -5,6 +5,16 @@ use Carbon\Carbon;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Lang;
 
+if (! function_exists('check_business_form_pdf_item')) {
+    /**
+     * $valueの配列に任意の値があるか(帳票PDF用)
+     */
+    function check_business_form_pdf_item($value, string $name, string $path) : bool
+    {
+        return is_array($value) && Arr::get($value, $path) && in_array($name, Arr::get($value, $path));
+    }
+}
+
 if (! function_exists('get_webprofile_previewurl')) {
     /**
      * WebプロフィールのプレビューURLを取得

@@ -88,7 +88,7 @@ const DocumentArea = ({
     hasOriginalDocumentQuoteTemplate,
     constsCommon
 }) => {
-    const { agencyAccount } = useContext(ConstContext);
+    const { agencyAccount, numberLedgerAllowedMax } = useContext(ConstContext);
 
     const mounted = useMountedRef(); // マウント・アンマウント制御
 
@@ -196,22 +196,27 @@ const DocumentArea = ({
         <>
             <h2 className="optTit">
                 帳票
-                {hasOriginalDocumentQuoteTemplate && currentItineraryNumber && (
-                    <a
-                        href={getCreateApiUrl(
-                            reception,
-                            applicationStep,
-                            applicationStepList,
-                            agencyAccount,
-                            estimateNumber,
-                            reserveNumber,
-                            currentItineraryNumber,
-                            constsCommon?.departedQuery ?? ""
-                        )}
-                    >
-                        <span className="material-icons">add_circle</span>追加
-                    </a>
-                )}
+                {/**追加可能条件-->カスタムテンプレートが設定されていること。現在選択されている有効行程であること。帳票追加最大数未満であること */}
+                {hasOriginalDocumentQuoteTemplate &&
+                    currentItineraryNumber &&
+                    !isLoading &&
+                    lists.length < numberLedgerAllowedMax && (
+                        <a
+                            href={getCreateApiUrl(
+                                reception,
+                                applicationStep,
+                                applicationStepList,
+                                agencyAccount,
+                                estimateNumber,
+                                reserveNumber,
+                                currentItineraryNumber,
+                                constsCommon?.departedQuery ?? ""
+                            )}
+                        >
+                            <span className="material-icons">add_circle</span>
+                            追加
+                        </a>
+                    )}
                 {/** デフォルト系以外の「見積・予約確認」テンプレートが設定されていて、かつ行程IDが選択されていればリンクを表示*/}
             </h2>
             <div className="tableWrap dragTable">

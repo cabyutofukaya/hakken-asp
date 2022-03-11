@@ -596,34 +596,32 @@ const BundleInvoiceArea = ({
                                     )}
                             </p>
                             <div className="dispPrice">
-                                {/**代金内訳ゾーン */}
-                                {documentSetting?.setting?.[
-                                    DOCUMENT_REQUEST_ALL.DISPLAY_BLOCK
-                                ] &&
-                                    documentSetting.setting[
-                                        DOCUMENT_REQUEST_ALL.DISPLAY_BLOCK
-                                    ].includes("代金内訳") && (
-                                        <ReserveBreakdownPricePreviewArea
-                                            reservePrices={reservePriceFilter}
-                                            showSetting={
-                                                documentSetting.setting[
-                                                    DOCUMENT_REQUEST_ALL
-                                                        .BREAKDOWN_PRICE
-                                                ] ?? []
-                                            }
-                                            reserveCancelInfo={
-                                                reserveCancelInfo
-                                            }
-                                            amountTotal={amountTotal}
-                                            setAmountTotal={setAmountTotal}
-                                            partnerManagers={formSelects.partnerManagers.filter(
-                                                item =>
-                                                    input.partner_manager_ids.includes(
-                                                        parseInt(item.id, 10)
-                                                    )
-                                            )}
-                                        />
+                                {/**代金内訳ゾーン。他のコンポーネントと異なり表示・非表示の判定はコンポーネント内で行う（合計金額の計算が必要な為） */}
+                                <ReserveBreakdownPricePreviewArea
+                                    isShow={
+                                        documentSetting?.setting?.[
+                                            DOCUMENT_REQUEST_ALL.DISPLAY_BLOCK
+                                        ] &&
+                                        documentSetting.setting[
+                                            DOCUMENT_REQUEST_ALL.DISPLAY_BLOCK
+                                        ].includes("代金内訳")
+                                    }
+                                    reservePrices={reservePriceFilter}
+                                    showSetting={
+                                        documentSetting.setting[
+                                            DOCUMENT_REQUEST_ALL.BREAKDOWN_PRICE
+                                        ] ?? []
+                                    }
+                                    reserveCancelInfo={reserveCancelInfo}
+                                    amountTotal={amountTotal}
+                                    setAmountTotal={setAmountTotal}
+                                    partnerManagers={formSelects.partnerManagers.filter(
+                                        item =>
+                                            input.partner_manager_ids.includes(
+                                                parseInt(item.id, 10)
+                                            )
                                     )}
+                                />
                             </div>
                         </div>
                     </li>

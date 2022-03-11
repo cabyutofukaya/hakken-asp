@@ -113,7 +113,7 @@ class ReserveParticipantAirplanePrice extends Model implements ParticipantPriceI
     // 航空券仕入科目
     public function reserve_purchasing_subject_airplane()
     {
-        return $this->belongsTo('App\Models\ReservePurchasingSubjectAirplane')->withDefault();
+        return $this->belongsTo('App\Models\ReservePurchasingSubjectAirplane')->withDefault()->withTrashed(); // 仕入情報から削除状態でも参照するケースがあるためwithTrashed
     }
 
     // 参加者

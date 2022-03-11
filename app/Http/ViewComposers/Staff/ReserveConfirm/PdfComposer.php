@@ -88,13 +88,13 @@ class PdfComposer
         $participants = []; // 参加者リスト
         foreach ($participantInfo as $participant) {
             // 取り消し情報もセットする
-            if (in_array($participant->id, $value['participant_ids'], true)) {
+            if (is_array($value['participant_ids']) && in_array($participant->id, $value['participant_ids'], true)) {
                 $participants[] = $participant->only(['id','name','user_number','sex','name_roman','cancel']);
             }
         }
 
         // 税区分。表示設定で「非課税/不課税」がOffになっている場合はプロパティを削除
-        if (!in_array("消費税_非課税/不課税", Arr::get($value, 'document_setting.setting.'.config('consts.document_requests.BREAKDOWN_PRICE'), []))) {
+        if (!check_business_form_pdf_item($value, "消費税_非課税/不課税", 'document_setting.setting.'.config('consts.document_requests.BREAKDOWN_PRICE'))) {
             $zeiKbns = get_const_item('subject_categories', 'document_zei_kbn');
             foreach ([
                 config('consts.subject_categories.ZEI_KBN_TAX_FREE'),

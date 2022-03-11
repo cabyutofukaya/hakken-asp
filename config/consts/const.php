@@ -11,6 +11,9 @@ return [
 
   'DEPARTED_QUERY' => 'departed', // 催行済GETパラメータ(主に、ASP左メニューにおいて現在の対象ページが催行済みであることを判定するのに使用)
 
+  // 帳票追加数最大。無制限に追加できてしまうと合計計算の負荷が心配なので一応制限
+  'NUMBER_LEDGER_ALLOWED_MAX' => 10,
+
   // Web相談の応札上限
   'WEB_CONSULT_MAX_UNDERTAKE' => 5,
 

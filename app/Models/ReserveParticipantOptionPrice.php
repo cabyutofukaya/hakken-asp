@@ -112,7 +112,7 @@ class ReserveParticipantOptionPrice extends Model implements ParticipantPriceInt
     // オプション仕入科目
     public function reserve_purchasing_subject_option()
     {
-        return $this->belongsTo('App\Models\ReservePurchasingSubjectOption')->withDefault();
+        return $this->belongsTo('App\Models\ReservePurchasingSubjectOption')->withDefault()->withTrashed(); // 仕入情報から削除状態でも参照するケースがあるためwithTrashed
     }
 
     // 参加者

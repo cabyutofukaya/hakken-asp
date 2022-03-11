@@ -113,7 +113,7 @@ const PaymentDateModal = ({
                                         return (
                                             <input
                                                 name="payment_date"
-                                                value={value}
+                                                defaultValue={value ?? ""}
                                                 ref={ref}
                                             />
                                         );

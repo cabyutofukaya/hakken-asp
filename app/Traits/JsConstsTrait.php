@@ -78,6 +78,7 @@ trait JsConstsTrait
             'documentZeiKbns' => get_const_item('subject_categories', 'document_zei_kbn'),
             // 科目カテゴリ一覧
             'subjectCategories' => config('consts.subject_categories.SUBJECT_CATEGORY_LIST'),
+            'numberLedgerAllowedMax' => config('consts.const.NUMBER_LEDGER_ALLOWED_MAX'), // 帳票最大追加数
         ];
     }
 }
