@@ -525,7 +525,7 @@ const ReserveConfirmArea = ({
             $(".js-modal-close").trigger("click"); // モーダルclose
         }
     };
-    console.log(input);
+
     const optionPriceFilter = useMemo(() => {
         return optionPrices.filter(item =>
             input.participant_ids.includes(parseInt(item.participant_id, 10))

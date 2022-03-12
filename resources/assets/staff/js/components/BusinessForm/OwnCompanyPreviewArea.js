@@ -38,7 +38,6 @@ const OwnCompanyPreviewArea = ({ showSetting, company, manager }) => {
                 {showSetting.includes("住所1") &&
                     company?.address1 &&
                     (company.address1 ?? "")}
-                <br />
                 {showSetting.includes("住所2") && company?.address2 && (
                     <>
                         <br />

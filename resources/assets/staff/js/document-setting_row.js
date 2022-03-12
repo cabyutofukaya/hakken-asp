@@ -5,7 +5,10 @@ $(() => {
         if ($(this).prop("checked")) {
             if (child) {
                 // 子項目の場合は親項目のチェックもON
-                $(`[value="${parent}"]`).prop("checked", true);
+                $(this)
+                    .closest("ul")
+                    .find(`[value="${parent}"]`)
+                    .prop("checked", true);
             }
         } else {
             if (!child) {

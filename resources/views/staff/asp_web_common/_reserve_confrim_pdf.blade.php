@@ -14,7 +14,7 @@
         @if(Arr::get($value, 'document_address.type') === config('consts.reserves.PARTICIPANT_TYPE_PERSON')) {{-- 個人申込 --}}
           <div class="dispSign">
             <p class="dispPostal">
-              @if(check_business_form_pdf_item($value, "郵便番号", 'document_common_setting.'.config('consts.document_commons.ADDRESS_PERSON')) && Arr::get($value, 'document_address.zip_code'))
+              @if(check_business_form_pdf_item($value, "郵便番号", 'document_common_setting.setting.'.config('consts.document_commons.ADDRESS_PERSON')) && Arr::get($value, 'document_address.zip_code'))
                 {{ sprintf("〒%s-%s", substr($value['document_address']['zip_code'], 0, 3), substr($value['document_address']['zip_code'], 3)) }}
               @endif
             </p>
@@ -156,39 +156,38 @@
       @if(check_business_form_pdf_item($value, "自社情報", 'document_setting.setting.'.config('consts.document_quotes.DISPLAY_BLOCK'))){{-- 自社情報エリア --}}
         <p class="dispCompany">
           @if(check_business_form_pdf_item($value, "自社名", 'document_common_setting.setting.'.config('consts.document_commons.COMPANY_INFO')))
-            {{ Arr::get($value, 'company_info.company_name') }}
+            {{ Arr::get($value, 'document_common_setting.company_name') }}
           @endif
         </p>
         <p class="dispEtc01">
           @if(check_business_form_pdf_item($value, "補足情報1", 'document_common_setting.setting.'.config('consts.document_commons.COMPANY_INFO')))
-            {{ Arr::get($value, 'company_info.supplement1') }}
+            {{ Arr::get($value, 'document_common_setting.supplement1') }}
           @endif
         </p>
         <p class="dispEtc02">
           @if(check_business_form_pdf_item($value, "補足情報2", 'document_common_setting.setting.'.config('consts.document_commons.COMPANY_INFO')))
-            {{ Arr::get($value, 'company_info.supplement2') }}
+            {{ Arr::get($value, 'document_common_setting.supplement2') }}
           @endif
         </p>
         <p class="dispPostal">
-          @if(check_business_form_pdf_item($value, "郵便番号", 'document_common_setting.setting.'.config('consts.document_commons.COMPANY_INFO')) && Arr::get($value, 'company_info.zip_code'))
-            {{ sprintf("〒%s-%s", substr($value['company_info']['zip_code'], 0, 3), substr($value['company_info']['zip_code'], 3)) }}
+          @if(check_business_form_pdf_item($value, "郵便番号", 'document_common_setting.setting.'.config('consts.document_commons.COMPANY_INFO')) && Arr::get($value, 'document_common_setting.zip_code'))
+            {{ sprintf("〒%s-%s", substr($value['document_common_setting']['zip_code'], 0, 3), substr($value['document_common_setting']['zip_code'], 3)) }}
           @endif
         </p>
         <p class="dispCorpAddress">
           @if(check_business_form_pdf_item($value, "住所1", 'document_common_setting.setting.'.config('consts.document_commons.COMPANY_INFO')))
-            {{ Arr::get($value, 'company_info.address1') }}
+            {{ Arr::get($value, 'document_common_setting.address1') }}
           @endif
-          <br>
           @if(check_business_form_pdf_item($value, "住所2", 'document_common_setting.setting.'.config('consts.document_commons.COMPANY_INFO')))
-            {{ Arr::get($value, 'company_info.address2') }}
+            <br>{{ Arr::get($value, 'document_common_setting.address2') }}
           @endif
         </p>
         <p class="dispCorpContact">
-          @if(check_business_form_pdf_item($value, "TEL", 'document_common_setting.setting.'.config('consts.document_commons.COMPANY_INFO')) && Arr::get($value, 'company_info.tel'))
-            {{ sprintf("TEL:%s", $value['company_info']['tel']) }}
+          @if(check_business_form_pdf_item($value, "TEL", 'document_common_setting.setting.'.config('consts.document_commons.COMPANY_INFO')) && Arr::get($value, 'document_common_setting.tel'))
+            {{ sprintf("TEL:%s", $value['document_common_setting']['tel']) }}
           @endif
-          @if(check_business_form_pdf_item($value, "FAX", 'document_common_setting.setting.'.config('consts.document_commons.COMPANY_INFO')) && Arr::get($value, 'company_info.fax'))
-            {{ sprintf(" / FAX:%s ", $value['company_info']['fax']) }}
+          @if(check_business_form_pdf_item($value, "FAX", 'document_common_setting.setting.'.config('consts.document_commons.COMPANY_INFO')) && Arr::get($value, 'document_common_setting.fax'))
+            {{ sprintf(" / FAX:%s ", $value['document_common_setting']['fax']) }}
           @endif
         </p>
         <p class="dispManager">
