@@ -22,7 +22,7 @@ class ShowResource extends JsonResource
             'description' => $this->description,
             'proviso' => $this->proviso,
             'note' => $this->note,
-            'document_common' => $this->document_common,
+            'document_common' => $this->document_common->id ? $this->document_common : json_encode([], JSON_FORCE_OBJECT),
         ];
     }
 }

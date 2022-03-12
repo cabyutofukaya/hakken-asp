@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Kyslik\ColumnSortable\Sortable;
 use App\Traits\HashidsTrait;
 use App\Traits\ModelLogTrait;
+use App\Traits\DocumentModelTrait;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
@@ -13,7 +14,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class DocumentRequestAll extends Model
 {
-    use HashidsTrait, Sortable, SoftDeletes, ModelLogTrait;
+    use HashidsTrait, Sortable, SoftDeletes, ModelLogTrait, DocumentModelTrait;
     
     public $sortable = ['id'];
 
@@ -66,29 +67,16 @@ class DocumentRequestAll extends Model
     }
 
     /**
-     * 出力項目設定
-     */
-    public function getSettingAttribute($value): ?array
-    {
-        return $value ? json_decode($value, true) : null;
-    }
-
-    public function setSettingAttribute($value)
-    {
-        $this->attributes['setting'] = $value ? json_encode($value) : null;
-    }
-
-    /**
      * 検印項目名
      */
-    public function getSealItemsAttribute($value): ?array
+    public function getSealItemsAttribute($value): array
     {
-        return $value ? json_decode($value, true) : null;
+        return $value ? json_decode($value, true) : [];
     }
 
     public function setSealItemsAttribute($value)
     {
-        $this->attributes['seal_items'] = $value ? json_encode($value) : null;
+        $this->attributes['seal_items'] = $value ? json_encode($value) : json_encode([]);
     }
 
     ////////////// ゲッター

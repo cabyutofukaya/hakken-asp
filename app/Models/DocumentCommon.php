@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Kyslik\ColumnSortable\Sortable;
 use App\Traits\HashidsTrait;
 use App\Traits\ModelLogTrait;
+use App\Traits\DocumentModelTrait;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
@@ -13,7 +14,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class DocumentCommon extends Model
 {
-    use HashidsTrait, Sortable, SoftDeletes, ModelLogTrait;
+    use HashidsTrait, Sortable, SoftDeletes, ModelLogTrait, DocumentModelTrait;
     
     public $sortable = ['id'];
 
@@ -62,19 +63,6 @@ class DocumentCommon extends Model
     public function document_category()
     {
         return $this->belongsTo('App\Models\DocumentCategory');
-    }
-
-    /**
-     * 出力項目設定
-     */
-    public function getSettingAttribute($value): ?array
-    {
-        return $value ? json_decode($value, true) : null;
-    }
-
-    public function setSettingAttribute($value)
-    {
-        $this->attributes['setting'] = $value ? json_encode($value) : null;
     }
 
     ////////////// ゲッター
