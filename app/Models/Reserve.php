@@ -35,7 +35,6 @@ class Reserve extends Model
         'hash_id', // ハッシュID
         'is_departed', // 催行済みか否か
         'is_canceled', // キャンセルか否か
-        'reserve_itinerary_exists', // 行程が存在するか否か
     ];
     
     protected $softCascade = [
