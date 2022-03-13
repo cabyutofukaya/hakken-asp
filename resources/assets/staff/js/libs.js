@@ -1,3 +1,5 @@
+import moment from "moment";
+
 /**
  * 税込価格を計算
  * 小数点以下は四捨五入
@@ -111,4 +113,20 @@ export function getPathFromBracketName(name) {
 //オブジェクトが空かどうか
 export function isEmptyObject(obj) {
     return !Object.keys(obj).length;
+}
+
+// 帰着日が本日以降の場合はtrue
+export function checkReturnDate(returnDate) {
+    const rd = new Date(returnDate);
+    const dt = new Date();
+
+    return moment({
+        year: rd.getFullYear(),
+        month: rd.getMonth(),
+        day: rd.getDate()
+    }).isSameOrAfter({
+        year: dt.getFullYear(),
+        month: dt.getMonth(),
+        day: dt.getDate()
+    });
 }

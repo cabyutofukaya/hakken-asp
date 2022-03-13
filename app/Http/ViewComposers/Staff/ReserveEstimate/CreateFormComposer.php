@@ -184,6 +184,7 @@ class CreateFormComposer
             'customFieldTypes' => $this->getCustomFieldTypes(),
             // カスタム項目入力タイプ
             'customFieldInputTypes' => $this->getCustomFieldInputTypes(),
+            'reserveStoreUrl' => route('staff.asp.estimates.reserve.store', $agencyAccount),
         ];
 
         // カスタム項目。表示位置毎に値をセット
