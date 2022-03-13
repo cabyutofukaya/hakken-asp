@@ -17,8 +17,7 @@ class Reserve extends Model
 {
     use SoftDeletes,Sortable,ModelLogTrait,SoftCascadeTrait,HashidsTrait;
 
-    // TODO クエリ実行時、毎回withが動いてしまうので一旦コメント。
-    // コメントにしまって大丈夫か確認
+    // クエリ実行時、毎回withが動いてしまうので一旦コメント。
     // // 金額集計に使用
     // protected $with = [
     //     'account_payable_details',
@@ -36,6 +35,7 @@ class Reserve extends Model
         'hash_id', // ハッシュID
         'is_departed', // 催行済みか否か
         'is_canceled', // キャンセルか否か
+        'reserve_itinerary_exists', // 行程が存在するか否か
     ];
     
     protected $softCascade = [
@@ -515,18 +515,13 @@ class Reserve extends Model
         return null;
     }
 
-    // /**
-    //  * 予約番号
-    //  *
-    //  * 論理削除レコードの場合は「(削除)」を表記
-    //  */
-    // public function getControlNumberAttribute($value): ?string
-    // {
-    //     if ($value) {
-    //         return $this->trashed() ? sprintf("%s(削除)", $value) : $value;
-    //     }
-    //     return null;
-    // }
+    /**
+     * 行程が存在する場合はtrue
+     */
+    public function getReserveItineraryExistsAttribute($value): bool
+    {
+        return $this->reserve_itineraries->count() > 0;
+    }
 
     ///////////////// 読みやすい文字列に変換するAttribute ここまで //////////////
 

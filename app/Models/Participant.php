@@ -58,10 +58,16 @@ class Participant extends Model
         self::saveModelLog();
     }
 
-    // 予約
+    // 予約 ＊これは不要かも
     public function reserves()
     {
         return $this->belongsToMany('App\Models\Reserve');
+    }
+
+    // 予約
+    public function reserve()
+    {
+        return $this->belongsTo('App\Models\Reserve')->withDefault();
     }
 
     // 個人顧客

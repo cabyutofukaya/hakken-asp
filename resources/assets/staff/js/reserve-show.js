@@ -188,6 +188,10 @@ const ReserveShowArea = ({
                 </div>
             )}
 
+            {/* <div id="errorMessage">
+                <p>エラーメッセージ</p>
+            </div> */}
+
             <div id="tabNavi" className="estimateNav">
                 <ul>
                     {permission.basic.reserve_read && (
