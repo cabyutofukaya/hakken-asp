@@ -133,7 +133,7 @@ class ReserveController extends AppController
                 if ($updatedReserve->is_departed) { // 催行済の場合は催行一覧へ
                     return redirect(route('staff.estimates.departed.index', [$agencyAccount]))->with('success_message', "「{$updatedReserve->control_number}」を更新しました");
                 } else {
-                    if ($updatedReserve->reserve_itinerary_exists && ($reserve->departure_date != $updatedReserve->departure_date || $reserve->return_date != $updatedReserve->return_date)) { // 行程が登録されていて旅行日が変わった場合はメッセージを変える
+                    if (!$updatedReserve->is_canceled && $updatedReserve->reserve_itinerary_exists && ($reserve->departure_date != $updatedReserve->departure_date || $reserve->return_date != $updatedReserve->return_date)) { // 行程が登録されていて旅行日が変わった場合はメッセージを変える
                         $successMessage = "「{$updatedReserve->control_number}」を更新しました。旅行日が変更されている場合は行程の更新も行ってください";
                     } else {
                         $successMessage = "「{$updatedReserve->control_number}」を更新しました";

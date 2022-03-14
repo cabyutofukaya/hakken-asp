@@ -89,6 +89,14 @@ class AgencyWithdrawalService
     }
 
     /**
+     * 当該予約IDに紐づく出金情報がある場合はtrue
+     */
+    public function isExistsReserveId(int $reserveId) : bool
+    {
+        return $this->agencyWithdrawalRepository->isExistsReserveId($reserveId);
+    }
+
+    /**
      * 削除
      *
      * @param int $id ID
