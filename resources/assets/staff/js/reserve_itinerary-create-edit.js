@@ -1,9 +1,11 @@
 import _ from "lodash";
 import React, { useState, useReducer, useContext, useCallback } from "react";
+import { ConstContext } from "./components/ConstApp";
 import ConstApp from "./components/ConstApp";
 import ReserveItineraryConstApp from "./components/ReserveItineraryConstApp";
 import { ReserveItineraryConstContext } from "./components/ReserveItineraryConstApp"; // 下層コンポーネントに定数などを渡すコンテキスト
 import { render } from "react-dom";
+import { useMountedRef } from "../../hooks/useMountedRef";
 import SmallDangerModal from "./components/SmallDangerModal";
 import Waypoint from "./components/ReserveItinerary/Waypoint";
 import WaypointImage from "./components/ReserveItinerary/WaypointImage";
@@ -166,6 +168,10 @@ const ItineraryArea = ({
     subjectCustomCategoryCode,
     modalInitialValues
 } = {}) => {
+    const { agencyAccount } = useContext(ConstContext);
+
+    const mounted = useMountedRef(); // マウント・アンマウント制御
+
     const { subjectCategoryTypes } = useContext(ReserveItineraryConstContext);
 
     const [isDeleteChecking, setIsDeleteChecking] = useState(false); // 削除可否チェック中か否か
@@ -635,66 +641,59 @@ const ItineraryArea = ({
     }, []);
 
     // スケジュール行削除
+    // 削除対象スケジュールに対する出金データがある場合はエラーを出す。なければ削除
     const handleDeleteRow = useCallback(
-        e => {
+        async e => {
             e.preventDefault();
 
             const date = deleteRowInfo.date;
             const index = deleteRowInfo.index;
 
-            // スケジュール行削除
-            rowDispatch({
-                type: "DELETE_ROW",
-                payload: {
-                    date,
-                    index
+            // 対象行
+            const row = lists?.[date]?.[index];
+            if (row?.id) {
+                //スケジュール行あり
+
+                if (!mounted.current || isDeleteChecking) return;
+                setIsDeleteChecking(true);
+
+                // 削除対象スケジュールにて出金登録がある場合はエラー
+                const response = await axios
+                    .get(
+                        `/api/${agencyAccount}/reserve_schedule/${row.id}/exist_withdrawal`
+                    )
+                    .finally(() => {
+                        if (mounted.current) {
+                            setIsDeleteChecking(false);
+                        }
+                    });
+                if (mounted.current && response?.data) {
+                    if (response.data === "no") {
+                        // スケジュール行削除
+                        rowDispatch({
+                            type: "DELETE_ROW",
+                            payload: {
+                                date,
+                                index
+                            }
+                        });
+                    } else if (response.data === "yes") {
+                        alert(
+                            "出金データがあるため削除できません。\nスケジュールを削除する前に支払管理より、当該商品の出金履歴の削除をお願いします。"
+                        );
+                        $(".js-modal-close").trigger("click"); // 削除モーダルclose
+                    }
                 }
-            });
-
-            // ↓出金登録があるかどうかのチェックはひとまずナシ。
-            // 出金登録がある場合はサーバー側で料金情報レコードを消さずにそのまま残すようにした
-            // // 対象行
-            // const row = lists?.[date]?.[index];
-            // if (row?.id) {
-            //     //スケジュール行あり
-
-            //     if (!mounted.current || isDeleteChecking) return;
-            //     setIsDeleteChecking(true);
-
-            //     const response = await axios
-            //         .get(
-            //             `/api/${agencyAccount}/reserve_schedule/${row.id}/exist_withdrawal`
-            //         )
-            //         .finally(() => {
-            //             if (mounted.current) {
-            //                 setIsDeleteChecking(false);
-            //             }
-            //         });
-            //     if (mounted.current && response?.data) {
-            //         if (response.data === "no") {
-            //             // スケジュール行削除
-            //             rowDispatch({
-            //                 type: "DELETE_ROW",
-            //                 payload: {
-            //                     date,
-            //                     index
-            //                 }
-            //             });
-            //         } else if (response.data === "yes") {
-            //             alert("出金データがあるため削除できません");
-            //             $(".js-modal-close").trigger("click"); // 削除モーダルclose
-            //         }
-            //     }
-            // } else {
-            //     // 新規行の場合はチェックなしで削除可
-            //     rowDispatch({
-            //         type: "DELETE_ROW",
-            //         payload: {
-            //             date,
-            //             index
-            //         }
-            //     });
-            // }
+            } else {
+                // 新規行の場合はチェックなしで削除可
+                rowDispatch({
+                    type: "DELETE_ROW",
+                    payload: {
+                        date,
+                        index
+                    }
+                });
+            }
         },
         [deleteRowInfo]
     );
@@ -704,70 +703,60 @@ const ItineraryArea = ({
      * 削除対象商品に対する出金データがある場合はエラーを出す。なければ削除
      */
     const handleDeletePurchasingRow = useCallback(
-        e => {
+        async e => {
             e.preventDefault();
 
             const date = deletePurchasingRowInfo.date;
             const index = deletePurchasingRowInfo.index;
             const no = deletePurchasingRowInfo.no;
 
-            // 仕入行削除
-            rowDispatch({
-                type: "DELETE_PURCHASING_ROW",
-                payload: {
-                    date,
-                    index,
-                    no
+            // 対象行
+            const row =
+                lists?.[date]?.[index]?.reserve_purchasing_subjects?.[no];
+
+            // IDがある(=編集時)は出金登録があるかチェックして、ある場合はエラー
+            if (row?.id) {
+                if (!mounted.current || isDeleteChecking) return;
+                setIsDeleteChecking(true);
+
+                const response = await axios
+                    .get(
+                        `/api/${agencyAccount}/purchasing_subject/${row?.subject}/${row.id}/exist_withdrawal`
+                    )
+                    .finally(() => {
+                        if (mounted.current) {
+                            setIsDeleteChecking(false);
+                        }
+                    });
+                if (mounted.current && response?.data) {
+                    if (response.data === "no") {
+                        // 仕入行削除
+                        rowDispatch({
+                            type: "DELETE_PURCHASING_ROW",
+                            payload: {
+                                date,
+                                index,
+                                no
+                            }
+                        });
+                    } else if (response.data === "yes") {
+                        alert(
+                            "出金データがあるため削除できません。\nスケジュールを削除する前に支払管理より、当該商品の出金履歴の削除をお願いします。"
+                        );
+                        $(".js-modal-close").trigger("click"); // 削除モーダルclose
+                    }
                 }
-            });
-
-            // ↓出金登録があるかどうかのチェックはひとまずナシ。
-            // 出金登録がある場合はサーバー側で料金情報レコードを消さずにそのまま残すようにした
-            //
-            // // 対象行
-            // const row =
-            //     lists?.[date]?.[index]?.reserve_purchasing_subjects?.[no];
-            // // IDがある(=編集時)は出金登録があるかチェックして、ある場合はエラー
-            // if (row?.id) {
-            //     if (!mounted.current || isDeleteChecking) return;
-            //     setIsDeleteChecking(true);
-
-            //     const response = await axios
-            //         .get(
-            //             `/api/${agencyAccount}/purchasing_subject/${row?.subject}/${row.id}/exist_withdrawal`
-            //         )
-            //         .finally(() => {
-            //             if (mounted.current) {
-            //                 setIsDeleteChecking(false);
-            //             }
-            //         });
-            //     if (mounted.current && response?.data) {
-            //         if (response.data === "no") {
-            //             // 仕入行削除
-            //             rowDispatch({
-            //                 type: "DELETE_PURCHASING_ROW",
-            //                 payload: {
-            //                     date,
-            //                     index,
-            //                     no
-            //                 }
-            //             });
-            //         } else if (response.data === "yes") {
-            //             alert("出金データがあるため削除できません");
-            //             $(".js-modal-close").trigger("click"); // 削除モーダルclose
-            //         }
-            //     }
-            // } else {
-            //     // 新規登録された仕入行はノーチェックで仕入行削除
-            //     rowDispatch({
-            //         type: "DELETE_PURCHASING_ROW",
-            //         payload: {
-            //             date,
-            //             index,
-            //             no
-            //         }
-            //     });
-            // }
+            } else {
+                // 新規登録された仕入行はノーチェックで仕入行削除
+                rowDispatch({
+                    type: "DELETE_PURCHASING_ROW",
+                    payload: {
+                        date,
+                        index,
+                        no
+                    }
+                });
+            }
         },
         [deletePurchasingRowInfo]
     );

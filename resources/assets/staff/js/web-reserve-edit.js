@@ -38,7 +38,7 @@ const ReserveEditArea = ({
         e.preventDefault();
         if (input?.return_date) {
             if (!isCanceled && !checkReturnDate(input.return_date)) {
-                // 帰着日が本日よりも前の日付の場合は警告。ただしキャンセル予約の場合はチェック不要
+                // 帰着日が本日よりも前の日付の場合は警告（キャンセル予約の場合は催行済みに移動しないのでチェック不要）
                 if (
                     confirm(
                         "帰着日が過去の日付で登録すると催行済に移動します。\nよろしいですか?"
