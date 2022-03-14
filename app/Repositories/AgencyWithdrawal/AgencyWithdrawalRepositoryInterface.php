@@ -14,5 +14,7 @@ interface AgencyWithdrawalRepositoryInterface
 
   public function getSumAmountByAccountPayableDetailId(int $accountPayableDetailId, bool $isLock=false) : int;
 
+  public function getWhere(array $where, array $with=[], array $select=[]) : Collection;
+  
   public function delete(int $id, bool $isSoftDelete): bool;
 }

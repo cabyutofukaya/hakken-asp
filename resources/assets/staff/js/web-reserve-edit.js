@@ -59,7 +59,7 @@ const ReserveEditArea = ({
     // 戻る
     const handleBack = e => {
         e.preventDefault();
-        history.back();
+        location.href = consts.reserveDetailUrl;
     };
 
     return (

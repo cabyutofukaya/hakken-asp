@@ -51,6 +51,24 @@ class AgencyWithdrawalRepository implements AgencyWithdrawalRepositoryInterface
     }
 
     /**
+     * 検索して全件取得
+     */
+    public function getWhere(array $where, array $with=[], array $select=[]) : Collection
+    {
+        $query = $this->agencyWithdrawal;
+        $query = $with ? $query->with($with) : $query;
+        $query = $select ? $query->select($select) : $query;
+
+        foreach ($where as $key => $val) {
+            if (is_empty($val)) {
+                continue;
+            }
+            $query = $query->where($key, $val);
+        }
+        return $query->get();
+    }
+
+    /**
      * 削除
      *
      * @param int $id ID

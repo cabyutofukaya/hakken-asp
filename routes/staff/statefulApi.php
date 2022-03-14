@@ -105,7 +105,7 @@ Route::domain(env('STAFF_DOMAIN', 'api.hakken-tour.com'))->namespace('Staff\Api'
         Route::post('estimate/{applicationStep}/{reserveNumber}/consultation', 'ReserveConsultationController@store'); // 作成
         Route::put('estimate/{applicationStep}/{reserveNumber}/consultation/{consulNumber}', 'ReserveConsultationController@update'); // 更新
 
-        // 工程作成
+        // 工程ページ
         Route::get('purchasing_subject/{subject}/{id}/exist_withdrawal', 'ReservePurchasingSubjectController@existSubjectWithdrawal'); // 出金登録チェック(仕入科目削除時)
         Route::get('reserve_schedule/{id}/exist_withdrawal', 'ReservePurchasingSubjectController@existScheduleWithdrawal'); // 出金登録チェック(行程削除時)
 

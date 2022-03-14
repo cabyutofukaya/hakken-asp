@@ -83,6 +83,12 @@ class AgencyWithdrawal extends Model
         return $this->belongsTo('App\Models\AccountPayableDetail')->withDefault();
     }
 
+    // 旅行日
+    public function reserve_travel_date()
+    {
+        return $this->belongsTo('App\Models\ReserveTravelDate')->withDefault();
+    }
+
     /**
      * 自社担当
      * 論理削除も取得

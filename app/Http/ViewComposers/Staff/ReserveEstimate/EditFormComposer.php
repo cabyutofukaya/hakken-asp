@@ -153,6 +153,8 @@ class EditFormComposer
                 'travel_type' => config('consts.user_custom_items.CODE_APPLICATION_TRAVEL_TYPE')
             ],
             'reserveUpdateUrl' => $applicationStep === config('consts.reserves.APPLICATION_STEP_RESERVE') ? route('staff.asp.estimates.reserve.update', [$agencyAccount, $reserve->control_number]) : null,
+            'reserveDetailUrl' => $applicationStep === config('consts.reserves.APPLICATION_STEP_RESERVE') ? route('staff.asp.estimates.reserve.show', [$agencyAccount, $reserve->control_number]) : null,
+            'estimateDetailUrl' => $applicationStep === config('consts.reserves.APPLICATION_STEP_DRAFT') ? route('staff.asp.estimates.normal.show', [$agencyAccount, $reserve->estimate_number]) : null,
         ];
 
         // カスタム項目。表示位置毎に値をセット

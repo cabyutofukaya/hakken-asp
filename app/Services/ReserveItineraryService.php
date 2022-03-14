@@ -191,6 +191,7 @@ class ReserveItineraryService
 
         ///////////// 旅行日管理レコードを作成 //////////
         $dates = array_keys(Arr::get($input, 'dates', []));
+        sort($dates); // 一応ソート
 
         $editTravelDateIds = []; // 編集、新規登録されたID一覧。削除処理に使用
 
