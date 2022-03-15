@@ -13,6 +13,7 @@ import Destination from "./components/ReserveItinerary/Destination";
 import SubjectModal from "./components/ReserveItinerary/SubjectModal";
 import { calcTaxInclud, calcNet, calcGrossProfit } from "./libs";
 import { RESERVE_ITINERARY } from "./constants";
+import UnderButton from "./components/ReserveItinerary/UnderButton";
 
 // 写真項目初期値。説明フィールドは含まない
 const initialPhotoInfo = {
@@ -160,6 +161,8 @@ const listsReducer = (state, action) => {
 };
 
 const ItineraryArea = ({
+    editMode,
+    isTravelDates,
     defaultValue,
     formSelects,
     consts,
@@ -168,6 +171,19 @@ const ItineraryArea = ({
     subjectCustomCategoryCode,
     modalInitialValues
 } = {}) => {
+    if (!isTravelDates)
+        return (
+            <>
+                <div>旅行日が設定されていません（出発日、帰着日）。</div>
+                <UnderButton
+                    backUrl={consts.backUrl}
+                    editMode={editMode}
+                    canSave={isTravelDates == 1}
+                    handleSubmit={e => {}}
+                />
+            </>
+        ); // 旅行日未設定
+
     const { agencyAccount } = useContext(ConstContext);
 
     const mounted = useMountedRef(); // マウント・アンマウント制御
@@ -175,6 +191,7 @@ const ItineraryArea = ({
     const { subjectCategoryTypes } = useContext(ReserveItineraryConstContext);
 
     const [isDeleteChecking, setIsDeleteChecking] = useState(false); // 削除可否チェック中か否か
+    const [isSubmitting, setIsSubmitting] = useState(false); // form送信中か否か
 
     const initialTargetPurchasing = {
         mode: RESERVE_ITINERARY.MODE_CREATE,
@@ -761,14 +778,59 @@ const ItineraryArea = ({
         [deletePurchasingRowInfo]
     );
 
+    // form送信
+    const handleSubmit = async e => {
+        e.preventDefault();
+
+        if (!mounted.current) return;
+        if (isSubmitting) return;
+
+        setIsSubmitting(true);
+
+        // lists配列から画像データを削除(データが大きく、POST不要の値なので)
+        let params = _.cloneDeep(lists);
+        for (let date in params) {
+            params[date].forEach((row, i) => {
+                if (row?.photos) {
+                    params[date][i].photos.forEach((r, j) => {
+                        params[date][i].photos[j].image = null; // 画像データそのものはアップしないので不要
+                    });
+                }
+            });
+        }
+
+        const param =
+            editMode == "edit"
+                ? {
+                      dates: params,
+                      note,
+                      updated_at: defaultValue?.updated_at,
+                      set_message: 1,
+                      _method: "PUT"
+                  }
+                : { dates: params, note, set_message: 1 };
+
+        const response = await axios.post(consts.postUrl, param).finally(() => {
+            setTimeout(function() {
+                if (mounted.current) {
+                    setIsSubmitting(false);
+                }
+            }, 1000); // 少し間を置く
+        });
+
+        if (mounted.current && response?.data?.data) {
+            location.href = consts.backUrl;
+        }
+    };
+
     return (
         <>
             {/**更新日時 */}
-            <input
+            {/* <input
                 type="hidden"
                 name="updated_at"
                 value={defaultValue?.updated_at ?? ""}
-            />
+            /> */}
             <h2 className="subTit">
                 <span className="material-icons">subject </span>備考欄
             </h2>
@@ -998,7 +1060,12 @@ const ItineraryArea = ({
                         </div>
                     </React.Fragment>
                 ))}
-
+            <UnderButton
+                backUrl={consts.backUrl}
+                editMode={editMode}
+                canSave={isTravelDates == 1}
+                handleSubmit={handleSubmit}
+            />
             {/**スケジュール行削除 */}
             <SmallDangerModal
                 id="mdScheduleDelete"
@@ -1039,6 +1106,8 @@ const ItineraryArea = ({
 // 入力画面
 const Element = document.getElementById("itineraryArea");
 if (Element) {
+    const editMode = Element.getAttribute("editMode");
+    const isTravelDates = Element.getAttribute("isTravelDates");
     const jsVars = Element.getAttribute("jsVars");
     const parsedJsVars = jsVars && JSON.parse(jsVars);
     const reception = Element.getAttribute("reception");
@@ -1082,6 +1151,8 @@ if (Element) {
                 }}
             >
                 <ItineraryArea
+                    editMode={editMode}
+                    isTravelDates={isTravelDates}
                     defaultValue={parsedDefaultValue}
                     reserveNumber={reserveNumber}
                     formSelects={parsedFormSelects}

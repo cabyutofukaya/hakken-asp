@@ -2,13 +2,18 @@
 
 namespace App\Http\Controllers\Staff\Api;
 
+use App\Events\UpdateBillingAmountEvent;
+use App\Events\CreateItineraryEvent;
 use App\Events\ReserveChangeSumGrossEvent;
+use App\Exceptions\ExclusiveLockException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Staff\ReserveItineraryDestroyRequest;
 use App\Http\Requests\Staff\ReserveItineraryEnabledRequest;
 use App\Http\Requests\Staff\ReserveItineraryStoreRequest;
+use App\Http\Requests\Staff\ReserveItineraryUpdateRequest;
 use App\Http\Resources\Staff\ReserveItinerary\IndexResource;
 use App\Http\Resources\Staff\ReserveItinerary\UpdateResource;
+use App\Http\Resources\Staff\ReserveItinerary\StoreResource;
 use App\Models\ReserveItinerary;
 use App\Services\ReserveItineraryService;
 use App\Services\ReserveService;
@@ -153,6 +158,153 @@ class ReserveItineraryController extends Controller
         });
         if ($newReserveItinerary) {
             return new UpdateResource($newReserveItinerary, 200);
+        }
+        abort(500);
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(ReserveItineraryStoreRequest $request, string $agencyAccount, string $reception, string $applicationStep, string $controlNumber)
+    {
+        // 受付種別で分ける
+        if ($reception === config('consts.const.RECEPTION_TYPE_ASP')) { // ASP受付
+            // 見積or予約で処理を分ける
+            if ($applicationStep == config("consts.reserves.APPLICATION_STEP_DRAFT")) { // 見積
+                $reserve = $this->estimateService->findByEstimateNumber($controlNumber, $agencyAccount);
+            } elseif ($applicationStep == config("consts.reserves.APPLICATION_STEP_RESERVE")) { // 予約
+                $reserve = $this->reserveService->findByControlNumber($controlNumber, $agencyAccount);
+            } else {
+                abort(404);
+            }
+        } elseif ($reception === config('consts.const.RECEPTION_TYPE_WEB')) { // WEB受付
+            // 見積or予約で処理を分ける
+            if ($applicationStep == config("consts.reserves.APPLICATION_STEP_DRAFT")) { // 見積
+                $reserve = $this->webEstimateService->findByEstimateNumber($controlNumber, $agencyAccount);
+            } elseif ($applicationStep == config("consts.reserves.APPLICATION_STEP_RESERVE")) { // 予約
+                $reserve = $this->webReserveService->findByControlNumber($controlNumber, $agencyAccount);
+            } else {
+                abort(404);
+            }
+        } else {
+            abort(404);
+        }
+
+        
+        if (!$reserve) {
+            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+        }
+
+        // 認可チェック
+        $response = Gate::inspect('create', [new ReserveItinerary, $reserve]);
+        if (!$response->allowed()) {
+            abort(403, $response->message());
+        }
+
+        $input = $request->all();
+
+        try {
+            $reserveItinerary = \DB::transaction(function () use ($reserve, $input) {
+                $reserveItinerary = $this->reserveItineraryService->create($reserve, $input);
+
+                if ($reserveItinerary->enabled) {
+                    event(new ReserveChangeSumGrossEvent($reserveItinerary)); // 旅行代金変更イベント
+                }
+
+                event(new CreateItineraryEvent($reserveItinerary)); // 行程作成時イベント
+
+                return $reserveItinerary;
+            });
+
+            if ($reserveItinerary) {
+                if (request()->input("set_message")) {
+                    request()->session()->flash('success_message', "「行程「{$reserveItinerary->control_number}」を登録しました"); // set_messageは処理成功のフラッシュメッセージのセットを要求するパラメータ
+                }
+                return new StoreResource($reserveItinerary, 201);
+            }
+        } catch (Exception $e) {
+            \Log::error($e);
+        }
+        abort(500);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(ReserveItineraryUpdateRequest $request, string $agencyAccount, string $reception, string $applicationStep, string $controlNumber, string $itineraryNumber)
+    {
+        // 受付種別で分ける
+        if ($reception === config('consts.const.RECEPTION_TYPE_ASP')) { // ASP受付
+            // 見積or予約で処理を分ける
+            if ($applicationStep == config("consts.reserves.APPLICATION_STEP_DRAFT")) { // 見積
+
+                $reserve = $this->estimateService->findByEstimateNumber($controlNumber, $agencyAccount);
+
+                $reserveItinerary = $this->reserveItineraryService->findByItineraryNumber($reserve->id, $itineraryNumber, $reserve->agency_id);
+            } elseif ($applicationStep == config("consts.reserves.APPLICATION_STEP_RESERVE")) { // 予約
+
+                $reserve = $this->reserveService->findByControlNumber($controlNumber, $agencyAccount);
+
+                $reserveItinerary = $this->reserveItineraryService->findByItineraryNumber($reserve->id, $itineraryNumber, $reserve->agency_id);
+            } else {
+                abort(404);
+            }
+        } elseif ($reception === config('consts.const.RECEPTION_TYPE_WEB')) { // WEB受付
+            // 見積or予約で処理を分ける
+            if ($applicationStep == config("consts.reserves.APPLICATION_STEP_DRAFT")) { // 見積
+                $reserve = $this->webEstimateService->findByEstimateNumber($controlNumber, $agencyAccount);
+
+                $reserveItinerary = $this->reserveItineraryService->findByItineraryNumber($reserve->id, $itineraryNumber, $reserve->agency_id);
+            } elseif ($applicationStep == config("consts.reserves.APPLICATION_STEP_RESERVE")) { // 予約
+                $reserve = $this->webReserveService->findByControlNumber($controlNumber, $agencyAccount);
+
+                $reserveItinerary = $this->reserveItineraryService->findByItineraryNumber($reserve->id, $itineraryNumber, $reserve->agency_id);
+            } else {
+                abort(404);
+            }
+        } else {
+            abort(404);
+        }
+
+
+        // 認可チェック
+        $response = Gate::inspect('update', [$reserveItinerary]);
+        if (!$response->allowed()) {
+            abort(403, $response->message());
+        }
+
+        try {
+            $input = $request->all();
+
+            $reserveItinerary = \DB::transaction(function () use ($reserveItinerary, $input) {
+                $newReserveItinerary = $this->reserveItineraryService->update($reserveItinerary->id, $input);
+
+                if ($newReserveItinerary->enabled) {
+                    event(new ReserveChangeSumGrossEvent($newReserveItinerary)); // 旅行代金変更イベント
+                }
+
+                event(new UpdateBillingAmountEvent($newReserveItinerary)); // 請求金額変更イベント
+
+                return $newReserveItinerary;
+            });
+
+            if ($reserveItinerary) {
+                if (request()->input("set_message")) {
+                    request()->session()->flash('success_message', "行程「{$reserveItinerary->control_number}」を更新しました"); // set_messageは処理成功のフラッシュメッセージのセットを要求するパラメータ
+                }
+                return new UpdateResource($reserveItinerary);
+            }
+        } catch (ExclusiveLockException $e) { // 同時編集エラー
+            abort(409, "他のユーザーによる編集済みレコードです。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+        } catch (Exception $e) {
+            \Log::error($e);
         }
         abort(500);
     }

@@ -8,7 +8,7 @@ namespace App\Traits;
 trait DeleteImageFileTrait
 {
     // ファイル削除
-    public function deleteFile($fileName, $softDelete) : bool
+    public function deleteFile($fileName, $softDelete)
     {
         foreach ([
             config('consts.const.UPLOAD_IMAGE_DIR'),

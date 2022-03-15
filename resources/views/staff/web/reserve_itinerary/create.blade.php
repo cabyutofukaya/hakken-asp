@@ -11,7 +11,7 @@
     @include('staff.web.reserve_itinerary.common._breadcrumb', [
       'reserve' => $reserve,
       'agencyAccount' => $agencyAccount,
-      'backUrl' => $backUrl,
+      'backUrl' => $consts['backUrl'],
       'current' => '行程作成'
     ])
   </div>
@@ -28,56 +28,28 @@
   </h2>
   @include('staff.web.reserve_itinerary.common._reserve_info', ['reserve' => $reserve])
 
-  <form method="post" action="{{ $storeUrl }}" enctype="multipart/form-data">
-    @csrf
-    @if($isTravelDates)
-      <div 
-        id="itineraryArea" 
-        reception='{{ $reception }}'
-        applicationStep='{{ $reserve->application_step }}'
-        isCanceled='{{ $isCanceled }}'
-        isEnabled='{{ $isEnabled }}'  
-        applicationStepList='@json($consts['application_step_list'])'
-        estimateNumber='{{ $reserve->estimate_number }}'
-        reserveNumber='{{ $reserve->control_number }}'
-        defaultValue='@json($defaultValue)' 
-        formSelects='@json($formSelects)'
-        consts='@json($consts)'
-        customFields='@json($customFields)'
-        subjectCustomCategoryCode='{{ $subjectCustomCategoryCode }}'
-        participants='@json($participants)'
-        modalInitialValues='@json($modalInitialValues)'
-        jsVars='@json($jsVars)'
-        ></div>
-    @else
-      <div>旅行日が設定されていません（出発日、帰着日）。</div>
-    @endif
-      
-
-    @include('staff.web.reserve_itinerary.common._under_button', [
-      'applicationStep' => $reserve->application_step,
-      'isTravelDates' => $isTravelDates,
-      'isEnabled' => true,
-      'backUrl' => $backUrl,
-      'mode' => 'create'
-    ])
-
-  </form>
+    <div 
+      id="itineraryArea" 
+      editMode="create"
+      isTravelDates='{{ $isTravelDates }}'
+      reception='{{ $reception }}'
+      applicationStep='{{ $reserve->application_step }}'
+      isCanceled='{{ $isCanceled }}'
+      isEnabled='{{ $isEnabled }}'  
+      applicationStepList='@json($consts['application_step_list'])'
+      estimateNumber='{{ $reserve->estimate_number }}'
+      reserveNumber='{{ $reserve->control_number }}'
+      defaultValue='@json($defaultValue)' 
+      formSelects='@json($formSelects)'
+      consts='@json($consts)'
+      customFields='@json($customFields)'
+      subjectCustomCategoryCode='{{ $subjectCustomCategoryCode }}'
+      participants='@json($participants)'
+      modalInitialValues='@json($modalInitialValues)'
+      jsVars='@json($jsVars)'
+      ></div>
 </main>
 
-<script>
-  // reserve_itinerary登録、編集ページ共通スクリプト
-  $(() => {
-      // 仕入科目を更新or登録した際に、どうしてもformがsubmitされてしまうのでform送信ボタンを押した時のみformが送信されるようにjqueryで制御
-      $("form").on("submit", function(e) {
-          e.preventDefault();
-      });
-      $("#formControl .blueBtn").on("click", function() {
-          $("form").off("submit");
-          $("form").trigger("submit");
-      });
-  });
-</script>
 {{-- ASP用のjsと共通 --}}
 <script src="{{ mix('/staff/js/reserve_itinerary-create-edit.js') }}"></script>
 @endsection

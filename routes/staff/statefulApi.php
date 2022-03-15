@@ -52,6 +52,10 @@ Route::domain(env('STAFF_DOMAIN', 'api.hakken-tour.com'))->namespace('Staff\Api'
         Route::put('estimate/{reception}/{applicationStep}/{controlNumber}/itinerary/enabled', 'ReserveItineraryController@setEnabled'); // 有効チェック
         Route::delete('estimate/{reception}/{applicationStep}/{controlNumber}/itinerary/{itineraryNumber}', 'ReserveItineraryController@destroy'); // 削除
 
+        Route::post('estimate/{reception}/{applicationStep}/{controlNumber}/itinerary', 'ReserveItineraryController@store')->name('itinerary.store'); // 作成処理
+        Route::put('estimate/{reception}/{applicationStep}/{controlNumber}/itinerary/{itineraryNumber}', 'ReserveItineraryController@update')->name('itinerary.update'); // 更新処理
+        
+
         // 予約確認書・見積帳票
         Route::get('estimate/{reception}/{applicationStep}/{controlNumber}/itinerary/{itineraryNumber}/confirm/list', 'ReserveConfirmController@index'); // 一覧
         Route::post('estimate/{reception}/{applicationStep}/{controlNumber}/itinerary/{itineraryNumber}/confirm', 'ReserveConfirmController@store'); // 作成

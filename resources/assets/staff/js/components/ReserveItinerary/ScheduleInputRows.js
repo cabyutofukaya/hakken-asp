@@ -3,7 +3,8 @@ import React from "react";
 const ScheduleInputRows = ({ index, date, input, inputName, handleChange }) => {
     return (
         <>
-            <input
+            {/**日付はPOSTで渡すname属性値になるが、name属性のバリデーションはできないので同じ値を隠しフィールドにセットして、その値を検証する(travel_date) */}
+            {/* <input
                 type="hidden"
                 name={`${inputName}[id]`}
                 value={input?.id ?? ""}
@@ -18,12 +19,11 @@ const ScheduleInputRows = ({ index, date, input, inputName, handleChange }) => {
                 name={`${inputName}[seq]]`}
                 value={index ?? ""}
             />
-            {/** 日付はPOSTで渡すname属性値になるが、name属性のバリデーションはできないので同じ値を隠しフィールドにセットして、その値を検証する */}
             <input
                 type="hidden"
                 name={`${inputName}[travel_date]]`}
                 value={date ?? ""}
-            />
+            /> */}
             <li>
                 <span className="inputLabel">到着時間</span>
                 <input
@@ -44,11 +44,11 @@ const ScheduleInputRows = ({ index, date, input, inputName, handleChange }) => {
                     }
                     disabled={index === 0}
                 />
-                <input
+                {/* <input
                     type="hidden"
                     name={`${inputName}[arrival_time]`}
                     value={index !== 0 ? input?.arrival_time ?? "" : ""}
-                />
+                /> */}
                 {/** indexが0だった場合は空フィールドがpostされるようにhiddenで上書き */}
             </li>
             <li>
@@ -71,11 +71,11 @@ const ScheduleInputRows = ({ index, date, input, inputName, handleChange }) => {
                     }
                     disabled={index === 0}
                 />
-                <input
+                {/* <input
                     type="hidden"
                     name={`${inputName}[staying_time]`}
                     value={index !== 0 ? input?.staying_time ?? "" : ""}
-                />
+                /> */}
                 {/** indexが0だった場合は空フィールドがpostされるようにhiddenで上書き */}
             </li>
             <li>
