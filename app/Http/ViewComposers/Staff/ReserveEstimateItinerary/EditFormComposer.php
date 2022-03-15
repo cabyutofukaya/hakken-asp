@@ -63,7 +63,7 @@ class EditFormComposer
         $reserve = $reserveItinerary->reserve;
 
         $isCanceled = $reserve->is_canceled; // キャンセル予約か否か
-        $isEnabled = $reserveItinerary->enabled; // 有効な行程か否か
+        $isEnabled = $reserveItinerary->enabled; // 有効な行程か否か。不要かも
 
         // POST URLの設定等
         if ($reserve->application_step == config("consts.reserves.APPLICATION_STEP_DRAFT")) { // 見積

@@ -59,7 +59,7 @@ class CreateFormComposer
         $transitionTab = config('consts.reserves.TAB_RESERVE_DETAIL'); // 戻るリンクに使用するTabパラメータ
 
         $isCanceled = $reserve->is_canceled; // キャンセル予約か否か
-        $isEnabled = false; // 有効な行程か否か(作成前は有効フラグは立っていない)
+        $isEnabled = false; // 有効な行程か否か(作成前は有効フラグは立っていない)。不要かも
 
         // POST URLの設定等
         if ($reserve->application_step == config("consts.reserves.APPLICATION_STEP_DRAFT")) { // 見積

@@ -245,7 +245,9 @@ class Reserve extends Model
     // 買い掛け金詳細
     public function account_payable_details()
     {
-        return $this->hasMany('App\Models\AccountPayableDetail');
+        return $this->hasMany('App\Models\AccountPayableDetail')->where(function($q){
+            $q->where('reserve_itinerary_id', optional($this->enabled_reserve_itinerary)->id); // 行程で絞る必要もあまりないが一応
+        });
     }
 
     // 有効な買い掛け金詳細
@@ -731,14 +733,16 @@ class Reserve extends Model
     {
         // 計算は予約ステータス時のみ
         if ($this->application_step == config('consts.reserves.APPLICATION_STEP_RESERVE')) {
-            return $this->enabled_account_payable_details->sum('unpaid_balance');
+            // ↓有効な仕入のみ(enabled_account_payable_details)にすると取り消しユーザーで支払い済みの仕入があった場合に計算対象外になってしまうため、enabled_account_payable_detailsに変更
+            // return $this->enabled_account_payable_details->sum('unpaid_balance');
+            return $this->account_payable_details->sum('unpaid_balance');
         } else {
             return 0;
         }
     }
 
     /**
-     * 未出金額合計(キャンセル時)
+     * 未出金額合計(キャンセル時) ＊一旦未使用
      */
     public function getSumCancelUnpaidAttribute()
     {
