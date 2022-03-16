@@ -167,7 +167,13 @@ class EditFormComposer
         $consts = $this->getConstDatas();
 
         // 予約価格情報を取得
-        $reserveInvoices = $this->reserveInvoiceService->getByReserveBundleInvoiceId($agencyAccount, $reserveBundleInvoiceId, ['reserve:id,control_number,applicantable_type,applicantable_id,cancel_at','reserve.applicantable:id,name'],['reserve_id','option_prices','airticket_prices','hotel_prices','participant_ids']);
+        $reserveInvoices = $this->reserveInvoiceService->getByReserveBundleInvoiceId(
+            $agencyAccount, 
+            $reserveBundleInvoiceId, 
+            ['reserve:id,control_number,applicantable_type,applicantable_id,cancel_at','reserve.applicantable:id,name'],
+            ['reserve_id','option_prices','airticket_prices','hotel_prices','participant_ids'],
+            true
+        ); // 削除済みも取得(予約情報を消すと請求データも消えるが一括請求の明細としては一応表示しておく)
 
         list($reservePrices, $reserveCancelInfo) = $this->getReservePriceInfo($reserveInvoices);
 

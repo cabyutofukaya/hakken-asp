@@ -17,7 +17,6 @@ class Reserve extends Model
 {
     use SoftDeletes,Sortable,ModelLogTrait,SoftCascadeTrait,HashidsTrait;
 
-    // クエリ実行時、毎回withが動いてしまうので一旦コメント。
     // // 金額集計に使用
     // protected $with = [
     //     'account_payable_details',
@@ -42,7 +41,8 @@ class Reserve extends Model
         'web_message_histories', // 当該予約を消したらメッセージ履歴も削除する
         // 'reserve_itineraries',
         // 'account_payables', // 不要?
-        // 'account_payable_details', // 不要?
+        'account_payable_details', // 支払管理一覧
+        'reserve_invoices', // 請求管理一覧
     ];
 
     // TODO 申込者ソートはなくしても良いか？
@@ -245,9 +245,7 @@ class Reserve extends Model
     // 買い掛け金詳細
     public function account_payable_details()
     {
-        return $this->hasMany('App\Models\AccountPayableDetail')->where(function($q){
-            $q->where('reserve_itinerary_id', optional($this->enabled_reserve_itinerary)->id); // 行程で絞る必要もあまりないが一応
-        });
+        return $this->hasMany('App\Models\AccountPayableDetail');
     }
 
     // 有効な買い掛け金詳細
