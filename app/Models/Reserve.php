@@ -42,7 +42,7 @@ class Reserve extends Model
         // 'reserve_itineraries',
         // 'account_payables', // 不要?
         'account_payable_details', // 支払管理一覧
-        'reserve_invoices', // 請求管理一覧
+        // 'reserve_invoices', // 請求管理一覧。請求データを消すと一括請求の入金処理の計算が合わなくなりエラーになるので一旦削除無くし
     ];
 
     // TODO 申込者ソートはなくしても良いか？

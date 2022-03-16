@@ -35,9 +35,10 @@ class VReserveInvoiceRepository implements VReserveInvoiceRepositoryInterface
      * ページネーション で取得
      *
      * @var $limit
+     * @param bool $getDeletedReserve 削除済み予約を取得対象にする場合はtrue
      * @return object
      */
-    public function paginateByAgencyId(int $agencyId, array $params, int $limit, array $with, array $select) : LengthAwarePaginator
+    public function paginateByAgencyId(int $agencyId, array $params, int $limit, array $with, array $select, bool $getDeletedReserve = false) : LengthAwarePaginator
     {
         $query = $this->vReserveInvoice;
         $query = $with ? $query->with($with) : $query;
@@ -79,6 +80,8 @@ class VReserveInvoiceRepository implements VReserveInvoiceRepositoryInterface
                 $query = $query->where($key, 'like', "%$val%");
             }
         }
+
+        $query = $getDeletedReserve ? $query : $query->whereNull('reserve_deleted_at');
 
         return $query->where('v_reserve_invoices.agency_id', $agencyId)->sortable()->paginate($limit); // sortableする際にagency_idがリレーション先のテーブルにも存在するのでエラー回避のために明示的にagency_idを指定する
     }
