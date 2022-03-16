@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Staff\Api;
 
+use App\Models\AgencyBundleDeposit;
 use App\Events\AgencyBundleDepositChangedEvent;
 use App\Events\AgencyDepositChangedEvent;
 use App\Exceptions\DepositAmountException;
@@ -42,8 +43,8 @@ class AgencyBundleDepositController extends Controller
             abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
         }
 
-        // agency_bundle_depositsテーブルに対するcreate権限をチェックしてもセキュリティ上あまり意味がないので、reserve_bundle_invoicesテーブルに対する編集権限をチェック
-        $response = \Gate::authorize('update', $reserveBundleInvoice);
+        // reserve_bundle_invoicesを使い、対象請求が操作ユーザー会社所有データであることも確認
+        $response = \Gate::authorize('create', [new AgencyBundleDeposit, $reserveBundleInvoice]);
         if (!$response->allowed()) {
             abort(403, $response->message());
         }

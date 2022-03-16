@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Models\Admin;
 use App\Models\AgencyWithdrawal;
+use App\Models\AccountPayableDetail;
 use App\Models\AppUser;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
@@ -58,13 +59,13 @@ class AgencyWithdrawalPolicy
      * @param  \App\Models\AppUser  $appUser
      * @return mixed
      */
-    public function create(AppUser $appUser)
+    public function create(AppUser $appUser, AgencyWithdrawal $agencyWithdrawal, AccountPayableDetail $accountPayableDetail)
     {
         $model = class_basename(get_class($appUser));
         if ($model === 'Admin') {
             return Response::allow();
         } elseif ($model === 'Staff') {
-            if($appUser->isApproval('agency_withdrawals', config("consts.agency_roles.CREATE"))){
+            if($appUser->isApproval('agency_withdrawals', config("consts.agency_roles.CREATE")) && $accountPayableDetail->agency_id == $appUser->agency_id){
                 return Response::allow();
             }
         }

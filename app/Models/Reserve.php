@@ -297,6 +297,14 @@ class Reserve extends Model
     }
 
     /**
+     * 請求書。請求書の作成・編集の認可チェックに使用
+     */
+    public function reserve_invoice()
+    {
+        return $this->hasOne('App\Models\ReserveInvoice');
+    }
+
+    /**
      * カスタム項目を全取得（有効な項目のみ flg=1）
      */
     public function v_reserve_custom_values()

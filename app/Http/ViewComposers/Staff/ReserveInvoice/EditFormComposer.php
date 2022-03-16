@@ -108,6 +108,8 @@ class EditFormComposer
             $documentSetting = $reserveInvoice->document_setting;
 
             /////////// 入力初期値をセット ///////////
+            $systemInvoiceNumber = $reserveInvoice->invoice_number; // システムから割り当てられた請求書番号。編集ページでは特に使わない
+
             $invoiceNumber = $reserveInvoice->user_invoice_number;
             // 発行日
             $issueDate = $reserveInvoice->issue_date ?? date('Y/m/d');
@@ -147,7 +149,7 @@ class EditFormComposer
             $participants = []; // 参加者リスト
             foreach ($participantInfo as $participant) {
                 // 取り消し情報もセットする
-                $participants[] = $participant->only(['id','name','user_number','sex','name_roman','cancel']);    
+                $participants[] = $participant->only(['id','name','user_number','sex','name_roman','cancel']);
             }
 
             // checkオンの参加者IDリスト（作成時は取消者以外を全てONに）
@@ -168,7 +170,8 @@ class EditFormComposer
             $this->setSealSetting($documentSetting, config('consts.document_requests.DISPLAY_BLOCK'));
 
             /////////// 入力初期値をセット ///////////
-            $invoiceNumber = "";
+            $systemInvoiceNumber = $this->reserveInvoiceService->createInvoiceNumber($reserve->agency_id); // システムから割り当てられた請求書番号。編集ページでは特に使わない
+            $invoiceNumber = $systemInvoiceNumber;
             // 発行日
             $issueDate = date('Y/m/d');
             // 支払い期限
@@ -205,7 +208,8 @@ class EditFormComposer
             'business_user_id' => $businessUserId, // 法人顧客ID
             'document_request_id' => $documentRequestId, // 書類設定ID
             'document_common_id' => $documentCommonId, // 共通書類設定ID
-            'user_invoice_number' => $invoiceNumber, // 見積番号
+            'user_invoice_number' => $invoiceNumber, // 請求番号
+            'invoice_number' => $systemInvoiceNumber,
             'issue_date' => $issueDate, // 発行日
             'payment_deadline' => $paymentDeadline, // 支払い期限
             'name' => $name, // 案件名
@@ -245,11 +249,9 @@ class EditFormComposer
         if (optional($reserve)->reception_type == config('consts.reserves.RECEPTION_TYPE_ASP')) {
             $consts['reserveIndexUrl'] = route('staff.asp.estimates.reserve.index', [$agencyAccount]);
             $consts['reserveUrl'] = route('staff.asp.estimates.reserve.show', [$agencyAccount, optional($reserve)->control_number ?? '']);
-
         } elseif (optional($reserve)->reception_type == config('consts.reserves.RECEPTION_TYPE_WEB')) {
             $consts['reserveIndexUrl'] = route('staff.web.estimates.reserve.index', [$agencyAccount]);
             $consts['reserveUrl'] = route('staff.web.estimates.reserve.show', [$agencyAccount, optional($reserve)->control_number ?? '']);
-
         }
 
 

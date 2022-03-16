@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Staff\Api;
 
+use App\Models\AgencyWithdrawal;
 use App\Events\ChangePaymentAmountEvent;
 use App\Exceptions\ExclusiveLockException;
 use App\Http\Controllers\Controller;
@@ -126,8 +127,8 @@ class AccountPayableDetailController extends Controller
                 abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
             }
     
-            // 認可チェック
-            $response = \Gate::inspect('update', [$accountPayableDetail]);
+            // account_payable_detailsを使い、対象支払いが操作ユーザー会社所有データであることも確認。
+            $response = \Gate::inspect('create', [new AgencyWithdrawal, $accountPayableDetail]);
             if (!$response->allowed()) {
                 abort(403, $response->message());
             }
@@ -158,6 +159,8 @@ class AccountPayableDetailController extends Controller
                 });
             } catch (ExclusiveLockException $e) { // 同時編集エラー
                 abort(409, "他のユーザーによる編集済みレコードです。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+            } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+                return response($e->getMessage(), 403);    
             } catch (\Exception $e) {
                 \Log::error($e);
             }
