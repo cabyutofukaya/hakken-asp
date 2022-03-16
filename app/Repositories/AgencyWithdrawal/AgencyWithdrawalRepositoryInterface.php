@@ -16,7 +16,7 @@ interface AgencyWithdrawalRepositoryInterface
 
   public function getWhere(array $where, array $with=[], array $select=[]) : Collection;
   
-  public function isExistsReserveId(int $reserveId) : bool;
+  public function isExistsParticipant(int $participantId, int $reserveId) : bool;
 
   public function delete(int $id, bool $isSoftDelete): bool;
 }

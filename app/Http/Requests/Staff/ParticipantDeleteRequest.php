@@ -39,7 +39,7 @@ class ParticipantDeleteRequest extends FormRequest
         // 申し込み段階が「予約」時は、削除対象参加者の仕入に対して出金があるかチェック
         $validator->sometimes('id', ['required', function ($attribute, $value, $fail) {
             $participant = $this->participantService->find($value, [], ['id','name','reserve_id']);
-            if ($this->agencyWithdrawalService->isExistsReserveId($participant->reserve_id)) {
+            if ($this->agencyWithdrawalService->isExistsParticipant($participant->id, $participant->reserve_id)) {
                 $fail("参加者「{$participant->name}」の仕入に対する出金登録があるため削除できません。");
             }
         }], function () {

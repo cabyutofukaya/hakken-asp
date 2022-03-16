@@ -33,6 +33,7 @@ class AgencyWithdrawal extends Model
         'withdrawal_date',
         'record_date',
         'manager_id',
+        'participant_id',
         'note',
     ];
 

@@ -89,11 +89,11 @@ class AgencyWithdrawalService
     }
 
     /**
-     * 当該予約IDに紐づく出金情報がある場合はtrue
+     * 当該参加者に紐づく出金情報がある場合はtrue
      */
-    public function isExistsReserveId(int $reserveId) : bool
+    public function isExistsParticipant(int $participantId, int $reserveId) : bool
     {
-        return $this->agencyWithdrawalRepository->isExistsReserveId($reserveId);
+        return $this->agencyWithdrawalRepository->isExistsParticipant($participantId, $reserveId);
     }
 
     /**

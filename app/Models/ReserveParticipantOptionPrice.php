@@ -118,7 +118,7 @@ class ReserveParticipantOptionPrice extends Model implements ParticipantPriceInt
     // 参加者
     public function participant()
     {
-        return $this->belongsTo('App\Models\Participant')->withDefault();
+        return $this->belongsTo('App\Models\Participant')->withDefault()->withTrashed(); // 仕入情報から削除状態でも参照するケースがあるためwithTrashed
     }
 
     // 仕入れ先買掛金明細

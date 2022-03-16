@@ -49,6 +49,10 @@ class IndexResource extends JsonResource
             ],
             'saleable' => [
                 'valid' => $this->saleable->valid ?? 0, // 仕入の有効・無効フラグ。リレーションが取得できない場合は無効で初期化
+                'participant' => [
+                    'id' => optional($this->saleable->participant)->id,
+                    'name' => optional($this->saleable->participant)->name,
+                ]
             ],
             'agency_withdrawals' => AgencyWithdrawalIndexResource::collection($this->agency_withdrawals)
         ];

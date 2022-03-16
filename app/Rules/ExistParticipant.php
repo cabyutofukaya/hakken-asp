@@ -2,10 +2,10 @@
 
 namespace App\Rules;
 
-use App\Models\User;
+use App\Models\Participant;
 use Illuminate\Contracts\Validation\Rule;
 
-class ExistUser implements Rule
+class ExistParticipant implements Rule
 {
     protected $agencyId;
 
@@ -28,7 +28,7 @@ class ExistUser implements Rule
      */
     public function passes($attribute, $value)
     {
-        return User::withTrashed()->where('agency_id', $this->agencyId)->where('id', $value)->exists(); // 論理削除も含めてチェック
+        return Participant::withTrashed()->where('agency_id', $this->agencyId)->where('id', $value)->exists(); // 論理削除も含めてチェック
     }
 
     /**
@@ -38,6 +38,6 @@ class ExistUser implements Rule
      */
     public function message()
     {
-        return '個人顧客が存在しません。';
+        return '参加者情報が存在しません。';
     }
 }

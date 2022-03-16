@@ -71,9 +71,9 @@ class AgencyWithdrawalRepository implements AgencyWithdrawalRepositoryInterface
     /**
      * 当該予約IDに紐づく出金情報があるか否か
      */
-    public function isExistsReserveId(int $reserveId) : bool
+    public function isExistsParticipant(int $participantId, int $reserveId) : bool
     {
-        return $this->agencyWithdrawal->where('reserve_id', $reserveId)->exists();
+        return $this->agencyWithdrawal->where('participant_id', $participantId)->where('reserve_id', $reserveId)->exists();
     }
 
     /**

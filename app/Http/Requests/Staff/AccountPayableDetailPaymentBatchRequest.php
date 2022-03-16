@@ -2,8 +2,9 @@
 
 namespace App\Http\Requests\Staff;
 
-use Illuminate\Foundation\Http\FormRequest;
+use App\Rules\ExistParticipants;
 use App\Rules\ExistStaff;
+use Illuminate\Foundation\Http\FormRequest;
 
 // 支払一括処理リクエスト
 class AccountPayableDetailPaymentBatchRequest extends FormRequest
@@ -26,7 +27,7 @@ class AccountPayableDetailPaymentBatchRequest extends FormRequest
     public function rules()
     {
         return [
-            'data' => 'required|array',
+            'data' => ['required', 'array', new ExistParticipants(auth('staff')->user()->agency->id, collect($this->data)->pluck("participant_id")->unique()->all())],
             'input.manager_id' => ['nullable', new ExistStaff(auth('staff')->user()->agency->id)],
             'input.withdrawal_date' => 'nullable|date',
             'input.record_date' => 'nullable|date',

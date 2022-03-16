@@ -115,6 +115,8 @@ const PaymentModal = ({
                     `/api/${agencyAccount}/management/withdrawal/account_payable_detail/${currentPaymentData?.id}`,
                     {
                         ...withdrawalData,
+                        participant_id:
+                            currentPaymentData?.saleable?.participant?.id, // 参加者ID
                         account_payable_detail: {
                             updated_at: currentPaymentData?.updated_at
                         } // 同時編集チェックのために支払明細レコード更新日時もセット
@@ -270,6 +272,13 @@ const PaymentModal = ({
                                     <th>商品名</th>
                                     <td>
                                         {currentPaymentData?.item_name ?? "-"}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>利用者</th>
+                                    <td>
+                                        {currentPaymentData?.saleable
+                                            ?.participant?.name ?? "-"}
                                     </td>
                                 </tr>
                             </tbody>
