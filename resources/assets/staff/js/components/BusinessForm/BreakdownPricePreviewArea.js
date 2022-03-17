@@ -79,8 +79,12 @@ const BreakdownPricePreviewArea = ({
         ///////////// オプション科目
         let optionTemp = {};
         Object.keys(optionPrices).map((k, i) => {
-            if (!optionPrices[k]?.gross && !optionPrices[k]?.gross_ex) {
-                return; //単価・税込単価のいずれも0円の場合は表示ナシ
+            if (
+                !optionPrices[k]?.gross &&
+                !optionPrices[k]?.gross_ex &&
+                !optionPrices[k]?.cancel_charge
+            ) {
+                return; //単価・税込単価・キャンセルチャージのいずれも0円の場合は表示ナシ
             }
             // 名前・単価・キャンセルチャージ・税区分で同一性をチェック ※asp/app/Traits/BusinessFormTrait.phpのgetOptionPriceBreakdownと同じ処理
             const key = md5(
@@ -106,8 +110,12 @@ const BreakdownPricePreviewArea = ({
         ///////////// 航空券科目
         let airticketTemp = {};
         Object.keys(airticketPrices).map((k, i) => {
-            if (!airticketPrices[k]?.gross && !airticketPrices[k]?.gross_ex) {
-                return; //単価・税込単価のいずれも0円の場合は表示ナシ
+            if (
+                !airticketPrices[k]?.gross &&
+                !airticketPrices[k]?.gross_ex &&
+                !optionPrices[k]?.cancel_charge
+            ) {
+                return; //単価・税込単価・キャンセルチャージのいずれも0円の場合は表示ナシ
             }
             // 名前・座席・単価・キャンセルチャージ・税区分で同一性をチェック ※asp/app/Traits/BusinessFormTrait.phpのgetAirticketPriceBreakdownと同じ処理
             const key = md5(
@@ -135,8 +143,12 @@ const BreakdownPricePreviewArea = ({
         ///////////// ホテル科目
         let hotelTemp = {};
         Object.keys(hotelPrices).map((k, i) => {
-            if (!hotelPrices[k]?.gross && !hotelPrices[k]?.gross_ex) {
-                return; //単価・税込単価のいずれも0円の場合は表示ナシ
+            if (
+                !hotelPrices[k]?.gross &&
+                !hotelPrices[k]?.gross_ex &&
+                !optionPrices[k]?.cancel_charge
+            ) {
+                return; //単価・税込単価・キャンセルチャージのいずれも0円の場合は表示ナシ
             }
             // 名前・ルームタイプ・単価・キャンセルチャージ・税区分で同一性をチェック ※asp/app/Traits/BusinessFormTrait.phpのgetHotelPriceBreakdownと同じ処理
             const key = md5(
