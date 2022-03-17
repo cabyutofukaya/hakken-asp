@@ -50,15 +50,15 @@ return [
   'CODE_SUBJECT_HOTEL_ROOM_TYPE_DEFAULT_LIST' => ['シングル','ツイン','ダブル','洋室','トリプル','和室','和洋室','4ベッド','スイート'], // 科目 > ホテル科目 > 部屋タイプ
   'CODE_SUBJECT_HOTEL_MEAL_TYPE_DEFAULT_LIST' => ['夕朝食付','朝食付','夕食付','食事なし'], // 科目 > ホテル科目 > 食事タイプ
   'CODE_SUBJECT_AIRPLANE_COMPANY_DEFAULT_LIST' => ['SQ','JL','NH','AA','MU','HA','D7'], // 科目 > 航空券科目 > 航空会社
-  'CODE_MANAGEMENT_WITHDRAWAL_METHOD_DEFAULT_LIST' => ['銀行振込'], // 入出金管理 > 出金方法
-  'CODE_MANAGEMENT_DEPOSIT_METHOD_DEFAULT_LIST' => ['銀行振込'], // 入出金管理 > 入金方法
+  'CODE_MANAGEMENT_WITHDRAWAL_METHOD_DEFAULT_LIST' => ['現金払い','銀行振込','銀行引落し','クレジットカード'], // 入出金管理 > 出金方法
+  'CODE_MANAGEMENT_DEPOSIT_METHOD_DEFAULT_LIST' => ['現金収受','銀行振込','銀行引落し','クレジットカード','コンビニ払い'], // 入出金管理 > 入金方法
 
 
   // 削除不可リスト(定数名の接尾辞が「PROTECT」)
   'CODE_APPLICATION_ESTIMATE_STATUS_DEFAULT_LIST_PROTECT' => ['見積','連絡待ち'], // 見積もりステータス
   'CODE_APPLICATION_RESERVE_STATUS_DEFAULT_LIST_PROTECT' => ['問合せ','受付','手配中','手配完了','出発','出発後','CXL','CXL待ち','ペンディング','クレーム','キャンセル'], // 予約ステータス
-  'CODE_MANAGEMENT_WITHDRAWAL_METHOD_DEFAULT_LIST_PROTECT' => ['銀行振込'], // 入出金管理 > 出金方法
-  'CODE_MANAGEMENT_DEPOSIT_METHOD_DEFAULT_LIST_PROTECT' => ['銀行振込'], // 入出金管理 > 入金方法
+  'CODE_MANAGEMENT_WITHDRAWAL_METHOD_DEFAULT_LIST_PROTECT' => ['現金払い','銀行振込','銀行引落し','クレジットカード'], // 入出金管理 > 出金方法
+  'CODE_MANAGEMENT_DEPOSIT_METHOD_DEFAULT_LIST_PROTECT' => ['現金収受','銀行振込','銀行引落し','クレジットカード','コンビニ払い'], // 入出金管理 > 入金方法
   'CODE_APPLICATION_TRAVEL_TYPE_DEFAULT_LIST_PROTECT' => ['国内','海外','日本発着'], // 予約見積 > 旅行種別
 
 
