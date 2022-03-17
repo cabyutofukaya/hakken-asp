@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Models\Admin;
 use App\Models\Participant;
+use App\Models\Reserve;
 use App\Models\AppUser;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
@@ -25,7 +26,7 @@ class ParticipantPolicy
         if ($model === 'Admin') {
             return Response::allow();
         } elseif ($model === 'Staff') {
-            if($appUser->isApproval('participants', config("consts.agency_roles.READ"))){
+            if ($appUser->isApproval('participants', config("consts.agency_roles.READ"))) {
                 return Response::allow();
             }
         }
@@ -45,7 +46,7 @@ class ParticipantPolicy
         if ($model === 'Admin') {
             return Response::allow();
         } elseif ($model === 'Staff') {
-            if($appUser->isApproval('participants', config("consts.agency_roles.READ")) && $participant->agency_id == $appUser->agency_id){
+            if ($appUser->isApproval('participants', config("consts.agency_roles.READ")) && $participant->agency_id == $appUser->agency_id) {
                 return Response::allow();
             }
         }
@@ -58,13 +59,17 @@ class ParticipantPolicy
      * @param  \App\Models\AppUser  $appUser
      * @return mixed
      */
-    public function create(AppUser $appUser)
+    public function create(AppUser $appUser, Participant $participant, Reserve $reserve)
     {
+        if ($reserve->is_canceled) {
+            return Response::deny('キャンセル予約に参加者追加はできません(403 Forbidden)'); // 行程等の扱いが複雑になりそうなのでひとまず不許可
+        }
+
         $model = class_basename(get_class($appUser));
         if ($model === 'Admin') {
             return Response::allow();
         } elseif ($model === 'Staff') {
-            if($appUser->isApproval('participants', config("consts.agency_roles.CREATE"))){
+            if ($appUser->isApproval('participants', config("consts.agency_roles.CREATE"))) {
                 return Response::allow();
             }
         }
@@ -84,7 +89,33 @@ class ParticipantPolicy
         if ($model === 'Admin') {
             return Response::allow();
         } elseif ($model === 'Staff') {
-            if($appUser->isApproval('participants', config("consts.agency_roles.UPDATE")) && $participant->agency_id == $appUser->agency_id){
+            if ($appUser->isApproval('participants', config("consts.agency_roles.UPDATE")) && $participant->agency_id == $appUser->agency_id) {
+                return Response::allow();
+            }
+        }
+        return Response::deny('予約/見積の更新権限がありません(403 Forbidden)');
+    }
+
+    /**
+     * Determine whether the user can update the participants.
+     *
+     * 取り消し
+     *
+     * @param  \App\Models\AppUser  $user
+     * @param  \App\Participant  $participant
+     * @return mixed
+     */
+    public function cancel(AppUser $appUser, Participant $participant)
+    {
+        if ($participant->reserve->is_canceled) {
+            return Response::deny('キャンセル予約の参加者は取り消しできません(403 Forbidden)'); // 行程等の扱いが複雑になりそうなのでひとまず不許可
+        }
+        
+        $model = class_basename(get_class($appUser));
+        if ($model === 'Admin') {
+            return Response::allow();
+        } elseif ($model === 'Staff') {
+            if ($appUser->isApproval('participants', config("consts.agency_roles.UPDATE")) && $participant->agency_id == $appUser->agency_id) {
                 return Response::allow();
             }
         }
@@ -100,7 +131,7 @@ class ParticipantPolicy
                 return Response::allow();
             }
         } elseif ($model === 'Staff') {
-            if($appUser->isApproval('participants', config("consts.agency_roles.UPDATE")) && $participant->agency_id == $appUser->agency_id && !$participant->cancel){
+            if ($appUser->isApproval('participants', config("consts.agency_roles.UPDATE")) && $participant->agency_id == $appUser->agency_id && !$participant->cancel) {
                 return Response::allow();
             }
         }
@@ -116,11 +147,15 @@ class ParticipantPolicy
      */
     public function delete(AppUser $appUser, Participant $participant)
     {
+        if ($participant->reserve->is_canceled) {
+            return Response::deny('キャンセル予約の参加者は削除できません(403 Forbidden)'); // 行程等の扱いが複雑になりそうなのでひとまず不許可
+        }
+
         $model = class_basename(get_class($appUser));
         if ($model === 'Admin') {
             return Response::allow();
         } elseif ($model === 'Staff') {
-            if($appUser->isApproval('participants', config("consts.agency_roles.DELETE")) && $participant->agency_id == $appUser->agency_id){
+            if ($appUser->isApproval('participants', config("consts.agency_roles.DELETE")) && $participant->agency_id == $appUser->agency_id) {
                 return Response::allow();
             }
         }
@@ -152,7 +187,7 @@ class ParticipantPolicy
         if ($model === 'Admin') {
             return Response::allow();
         } elseif ($model === 'Staff') {
-            if($appUser->isApproval('participants', config("consts.agency_roles.DELETE")) && $participant->agency_id == $appUser->agency_id){
+            if ($appUser->isApproval('participants', config("consts.agency_roles.DELETE")) && $participant->agency_id == $appUser->agency_id) {
                 return Response::allow();
             }
         }

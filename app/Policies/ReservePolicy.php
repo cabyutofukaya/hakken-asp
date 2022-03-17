@@ -80,6 +80,13 @@ class ReservePolicy
      */
     public function update(AppUser $appUser, Reserve $reserve)
     {
+        if ($reserve->is_canceled) { // キャンセル
+            return Response::deny('キャンセル済みの予約情報は更新できません(403 Forbidden)');
+        }
+        if ($reserve->is_departed) { // 催行済み
+            return Response::deny('催行済みの予約情報は更新できません(403 Forbidden)');
+        }
+
         $model = class_basename(get_class($appUser));
         if ($model === 'Admin') {
             return Response::allow();

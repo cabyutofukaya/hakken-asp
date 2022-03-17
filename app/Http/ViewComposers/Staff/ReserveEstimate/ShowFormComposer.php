@@ -246,7 +246,7 @@ class ShowFormComposer
                     'tab_reserve_detail' => config('consts.reserves.TAB_RESERVE_DETAIL'),
                     'tab_consultation' => config('consts.reserves.TAB_CONSULTATION'),
                 ],
-                'isCanceled' => !is_null($reserve->cancel_at), // キャンセル済みか否か
+                'isCanceled' => $reserve->is_canceled, // キャンセル済みか否か
                 'existPurchaseData' => $this->reserveParticipantPriceService->isExistsPurchaseDataByReserveItineraryId($reserve->enabled_reserve_itinerary->id, false), // 仕入情報がある場合はtrue
                 'estimateIndexUrl' => $estimateIndexUrl,
                 'reserveIndexUrl' => $reserveIndexUrl,
@@ -305,8 +305,12 @@ class ShowFormComposer
                 'reserve_update' => Auth::user('staff')->can('update', $reserve), // 更新権限
                 'reserve_delete' => Auth::user('staff')->can('delete', $reserve), // 削除権限
                 'management_read' => Auth::user('staff')->can('viewAny', new AccountPayable), // 経理権限
-                // TODO 参加者の編集権限をどうするか考えて実装する
-                // 'user_create' => Auth::user('staff')->can('create', new User), // 参加者作成
+                'itinerary_create' => !$reserve->is_canceled, // キャンセル予約の場合は追加不可に
+                // 参加者の編集権限はちょっと特殊
+                'participant_create' => !$reserve->is_canceled, // キャンセル予約の場合は追加不可に
+                'participant_agekbn_update' => !$reserve->is_canceled, // キャンセル予約の場合は年齢区分編集不可に(料金に関連するため)
+                'participant_cancel' => !$reserve->is_canceled, // キャンセル予約の場合は取り消し不可に
+                'participant_delete' => !$reserve->is_canceled, // キャンセル予約の場合は削除不可に
             ],
             // 相談
             config('consts.reserves.TAB_CONSULTATION') => [

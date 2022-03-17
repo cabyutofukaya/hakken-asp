@@ -69,6 +69,7 @@ const ReserveDetail = ({
                 setCurrentItineraryNumber={setCurrentItineraryNumber}
                 participantDeleteRequestId={participantDeleteRequestId}
                 participantCancelRequestId={participantCancelRequestId}
+                permission={permission}
             />
             <DocumentArea
                 isShow={isShow}
