@@ -135,7 +135,12 @@ class EstimateController extends AppController
             });
 
             if ($updatedReserve) {
-                return redirect()->route('staff.web.estimates.normal.index', [$agencyAccount])->with('success_message', "「{$updatedReserve->estimate_number}」を更新しました");
+                if ($updatedReserve->reserve_itinerary_exists && ($reserve->departure_date != $updatedReserve->departure_date || $reserve->return_date != $updatedReserve->return_date)) { // 行程が登録されていて旅行日が変わった場合はメッセージを変える
+                    $successMessage = "「{$updatedReserve->estimate_number}」を更新しました。旅行日が変更されている場合は行程の更新も行ってください";
+                } else {
+                    $successMessage = "「{$updatedReserve->estimate_number}」を更新しました";
+                }
+                return redirect()->route('staff.web.estimates.normal.index', [$agencyAccount])->with('success_message', $successMessage);
             }
         } catch (ExclusiveLockException $e) { // 同時編集エラー
             return back()->withInput()->with('error_message', "他のユーザーによる編集済みレコードです。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");

@@ -33,6 +33,7 @@ class AgencyWithdrawal extends Model
         'withdrawal_date',
         'record_date',
         'manager_id',
+        'participant_id',
         'note',
     ];
 
@@ -81,6 +82,12 @@ class AgencyWithdrawal extends Model
     public function account_payable_detail()
     {
         return $this->belongsTo('App\Models\AccountPayableDetail')->withDefault();
+    }
+
+    // 旅行日
+    public function reserve_travel_date()
+    {
+        return $this->belongsTo('App\Models\ReserveTravelDate')->withDefault();
     }
 
     /**

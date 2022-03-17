@@ -52,6 +52,10 @@ Route::domain(env('STAFF_DOMAIN', 'api.hakken-tour.com'))->namespace('Staff\Api'
         Route::put('estimate/{reception}/{applicationStep}/{controlNumber}/itinerary/enabled', 'ReserveItineraryController@setEnabled'); // 有効チェック
         Route::delete('estimate/{reception}/{applicationStep}/{controlNumber}/itinerary/{itineraryNumber}', 'ReserveItineraryController@destroy'); // 削除
 
+        Route::post('estimate/{reception}/{applicationStep}/{controlNumber}/itinerary', 'ReserveItineraryController@store')->name('itinerary.store'); // 作成処理
+        Route::put('estimate/{reception}/{applicationStep}/{controlNumber}/itinerary/{itineraryNumber}', 'ReserveItineraryController@update')->name('itinerary.update'); // 更新処理
+        
+
         // 予約確認書・見積帳票
         Route::get('estimate/{reception}/{applicationStep}/{controlNumber}/itinerary/{itineraryNumber}/confirm/list', 'ReserveConfirmController@index'); // 一覧
         Route::post('estimate/{reception}/{applicationStep}/{controlNumber}/itinerary/{itineraryNumber}/confirm', 'ReserveConfirmController@store'); // 作成
@@ -105,7 +109,7 @@ Route::domain(env('STAFF_DOMAIN', 'api.hakken-tour.com'))->namespace('Staff\Api'
         Route::post('estimate/{applicationStep}/{reserveNumber}/consultation', 'ReserveConsultationController@store'); // 作成
         Route::put('estimate/{applicationStep}/{reserveNumber}/consultation/{consulNumber}', 'ReserveConsultationController@update'); // 更新
 
-        // 工程作成
+        // 工程ページ
         Route::get('purchasing_subject/{subject}/{id}/exist_withdrawal', 'ReservePurchasingSubjectController@existSubjectWithdrawal'); // 出金登録チェック(仕入科目削除時)
         Route::get('reserve_schedule/{id}/exist_withdrawal', 'ReservePurchasingSubjectController@existScheduleWithdrawal'); // 出金登録チェック(行程削除時)
 

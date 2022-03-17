@@ -57,6 +57,7 @@ class EditFormComposer
 
         $customCategoryCode = config('consts.user_custom_categories.CUSTOM_CATEGORY_RESERVE'); // カスタムカテゴリcode
 
+        $isCanceled = $reserve->is_canceled; // キャンセル予約か否か
 
         // デフォルトデータを作成
         $defaultValue = session()->getOldInput();
@@ -151,6 +152,9 @@ class EditFormComposer
             'customFieldCodes' => [
                 'travel_type' => config('consts.user_custom_items.CODE_APPLICATION_TRAVEL_TYPE')
             ],
+            'reserveUpdateUrl' => $applicationStep === config('consts.reserves.APPLICATION_STEP_RESERVE') ? route('staff.asp.estimates.reserve.update', [$agencyAccount, $reserve->control_number]) : null,
+            'reserveDetailUrl' => $applicationStep === config('consts.reserves.APPLICATION_STEP_RESERVE') ? route('staff.asp.estimates.reserve.show', [$agencyAccount, $reserve->control_number]) : null,
+            'estimateDetailUrl' => $applicationStep === config('consts.reserves.APPLICATION_STEP_DRAFT') ? route('staff.asp.estimates.normal.show', [$agencyAccount, $reserve->estimate_number]) : null,
         ];
 
         // カスタム項目。表示位置毎に値をセット
@@ -162,6 +166,6 @@ class EditFormComposer
         // reactに渡す各種定数
         $jsVars = $this->getJsVars($agencyAccount);
 
-        $view->with(compact('applicationStep', 'defaultValue', 'formSelects', 'consts', 'customCategoryCode', 'customFields', 'userAddModalDefaultValue', 'jsVars'));
+        $view->with(compact('applicationStep', 'defaultValue', 'formSelects', 'consts', 'customCategoryCode', 'customFields', 'userAddModalDefaultValue', 'jsVars', 'isCanceled'));
     }
 }

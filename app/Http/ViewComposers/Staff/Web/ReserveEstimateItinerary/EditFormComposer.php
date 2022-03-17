@@ -68,8 +68,9 @@ class EditFormComposer
         // POST URLの設定等
         if ($reserve->application_step == config("consts.reserves.APPLICATION_STEP_DRAFT")) { // 見積
             
-            $updateUrl = route('staff.web.estimates.itinerary.update', [
+            $postUrl = route('staff.api.itinerary.update', [
                 'agencyAccount' => $agencyAccount, 
+                'reception' => config('consts.const.RECEPTION_TYPE_WEB'),
                 'applicationStep' =>config("consts.reserves.APPLICATION_STEP_DRAFT"), 
                 'controlNumber' => $reserve->estimate_number,
                 'itineraryNumber' => $reserveItinerary->control_number,
@@ -83,14 +84,22 @@ class EditFormComposer
 
         } elseif ($reserve->application_step == config("consts.reserves.APPLICATION_STEP_RESERVE")) { // 予約
 
-            $updateUrl = route('staff.web.estimates.itinerary.update', [
+            $postUrl = route('staff.api.itinerary.update', [
                 'agencyAccount' => $agencyAccount, 
+                'reception' => config('consts.const.RECEPTION_TYPE_WEB'),
                 'applicationStep' =>config("consts.reserves.APPLICATION_STEP_RESERVE"), 
                 'controlNumber' => $reserve->control_number,
                 'itineraryNumber' => $reserveItinerary->control_number,
             ]);
 
-            $backUrl = route('staff.web.estimates.reserve.show', [
+            // 催行済みの場合は催行済み詳細ページへ戻る
+            $backUrl = $reserve->is_departed ? 
+            route('staff.estimates.departed.show', [
+                'agencyAccount' => $agencyAccount, 
+                'reserveNumber' => $reserve->control_number,
+                'tab' => $transitionTab
+            ]) : 
+            route('staff.web.estimates.reserve.show', [
                 'agencyAccount' => $agencyAccount, 
                 'reserveNumber' => $reserve->control_number,
                 'tab' => $transitionTab
@@ -255,12 +264,14 @@ class EditFormComposer
                 'application_step_draft' => config('consts.reserves.APPLICATION_STEP_DRAFT'),
                 'application_step_reserve' => config('consts.reserves.APPLICATION_STEP_RESERVE'),
             ],
+            'postUrl' => $postUrl,
+            'backUrl' => $backUrl,
         ];
 
         // reactに渡す各種定数
         $jsVars = $this->getJsVars($agencyAccount);
 
-        $view->with(compact('formSelects', 'transitionTab', 'defaultValue', 'consts', 'customFields', 'subjectCustomCategoryCode', 'participants', 'modalInitialValues', 'reserve', 'updateUrl', 'backUrl','jsVars', 'reception', 'isCanceled', 'isEnabled', 'isTravelDates'));
+        $view->with(compact('formSelects', 'transitionTab', 'defaultValue', 'consts', 'customFields', 'subjectCustomCategoryCode', 'participants', 'modalInitialValues', 'reserve', 'jsVars', 'reception', 'isCanceled', 'isEnabled', 'isTravelDates'));
     }
 
     /**

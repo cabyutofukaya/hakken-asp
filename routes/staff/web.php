@@ -82,9 +82,9 @@ Route::domain(env('STAFF_DOMAIN', 'asp.hakken-tour.com'))->namespace('Staff')->n
 
             // 旅程管理
             Route::get('/{applicationStep}/{controlNumber}/itinerary/create', 'ReserveItineraryController@create')->name('itinerary.create'); // 作成画面
-            Route::post('/{applicationStep}/{controlNumber}/itinerary', 'ReserveItineraryController@store')->name('itinerary.store'); // 作成処理
+            // Route::post('/{applicationStep}/{controlNumber}/itinerary', 'ReserveItineraryController@store')->name('itinerary.store'); // 作成処理
             Route::get('/{applicationStep}/{controlNumber}/itinerary/{itineraryNumber}/edit', 'ReserveItineraryController@edit')->name('itinerary.edit'); // 編集画面
-            Route::put('/{applicationStep}/{controlNumber}/itinerary/{itineraryNumber}', 'ReserveItineraryController@update')->name('itinerary.update'); // 更新処理
+            // Route::put('/{applicationStep}/{controlNumber}/itinerary/{itineraryNumber}', 'ReserveItineraryController@update')->name('itinerary.update'); // 更新処理
             
             Route::get('/{applicationStep}/{controlNumber}/itinerary/{itineraryNumber}/schedule_pdf', 'ReserveItineraryController@schedulePdf')->name('itinerary.pdf'); // 行程PDF
             Route::get('/{applicationStep}/{controlNumber}/itinerary/{itineraryNumber}/rooming_list/pdf', 'ReserveItineraryController@itineraryRoomingListPdf')->name('itinerary_roominglist.pdf'); // ルーミングリストpdf（当該行程のルーミングリスト）
@@ -355,9 +355,9 @@ Route::domain(env('STAFF_DOMAIN', 'asp.hakken-tour.com'))->namespace('Staff')->n
 
             // 旅程管理
             Route::get('/{applicationStep}/{controlNumber}/itinerary/create', 'ReserveItineraryController@create')->name('itinerary.create'); // 作成画面
-            Route::post('/{applicationStep}/{controlNumber}/itinerary', 'ReserveItineraryController@store')->name('itinerary.store'); // 作成処理
+            // Route::post('/{applicationStep}/{controlNumber}/itinerary', 'ReserveItineraryController@store')->name('itinerary.store'); // 作成処理
             Route::get('/{applicationStep}/{controlNumber}/itinerary/{itineraryNumber}/edit', 'ReserveItineraryController@edit')->name('itinerary.edit'); // 編集画面
-            Route::put('/{applicationStep}/{controlNumber}/itinerary/{itineraryNumber}', 'ReserveItineraryController@update')->name('itinerary.update'); // 更新処理
+            // Route::put('/{applicationStep}/{controlNumber}/itinerary/{itineraryNumber}', 'ReserveItineraryController@update')->name('itinerary.update'); // 更新処理
 
             Route::get('/{applicationStep}/{controlNumber}/itinerary/{itineraryNumber}/schedule_pdf', 'ReserveItineraryController@schedulePdf')->name('itinerary.pdf'); // 行程PDF
             Route::get('/{applicationStep}/{controlNumber}/itinerary/{itineraryNumber}/rooming_list/pdf', 'ReserveItineraryController@itineraryRoomingListPdf')->name('itinerary_roominglist.pdf'); // ルーミングリストpdf（当該行程のルーミングリスト）

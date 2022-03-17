@@ -51,6 +51,32 @@ class AgencyWithdrawalRepository implements AgencyWithdrawalRepositoryInterface
     }
 
     /**
+     * 検索して全件取得
+     */
+    public function getWhere(array $where, array $with=[], array $select=[]) : Collection
+    {
+        $query = $this->agencyWithdrawal;
+        $query = $with ? $query->with($with) : $query;
+        $query = $select ? $query->select($select) : $query;
+
+        foreach ($where as $key => $val) {
+            if (is_empty($val)) {
+                continue;
+            }
+            $query = $query->where($key, $val);
+        }
+        return $query->get();
+    }
+
+    /**
+     * 当該予約IDに紐づく出金情報があるか否か
+     */
+    public function isExistsParticipant(int $participantId, int $reserveId) : bool
+    {
+        return $this->agencyWithdrawal->where('participant_id', $participantId)->where('reserve_id', $reserveId)->exists();
+    }
+
+    /**
      * 削除
      *
      * @param int $id ID

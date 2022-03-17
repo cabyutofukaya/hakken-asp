@@ -17,10 +17,8 @@
   <h2 class="subTit">
     <span class="material-icons"> subject </span>基本情報
   </h2>
-  <form method="post" action="{{ route('staff.web.estimates.reserve.update', [$agencyAccount, $reserve->control_number]) }}" id="reserveForm">
-    @csrf
-    @method('PUT')
     <div id="reserveEditArea"
+      isCanceled='{{ $isCanceled }}'
       applicationStep='{{ $applicationStep }}'
       defaultValue='@json($defaultValue)'
       applicant='@json($applicant)'
@@ -30,23 +28,6 @@
       customCategoryCode='{{ $customCategoryCode }}'
       jsVars='@json($jsVars)'
     ></div>
-    <ul id="formControl">
-      <li class="wd50">
-        <button class="grayBtn" onClick="event.preventDefault();history.back()"><span class="material-icons">arrow_back_ios</span>更新せずに戻る</button>
-      </li>
-      <li class="wd50">
-        <button class="blueBtn doubleBan">
-          <span class="material-icons">save</span> この内容で更新する
-        </button>
-      </li>
-    </ul>
-  </form>
 </main>
-
-@if(is_null($reserve->cancel_at)) {{-- 帰着日が過去の場合はform送信時時チェック。ただし、キャンセル予約の場合はチェック不要 --}}
-  <script>
-  @include("staff.common._check_return_date_js")
-  </script>
-@endif
 <script src="{{ mix('/staff/js/web-reserve-edit.js') }}"></script>
 @endsection

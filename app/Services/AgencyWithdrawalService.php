@@ -81,6 +81,22 @@ class AgencyWithdrawalService
     }
 
     /**
+     * 当該予約IDに紐づく一覧を取得
+     */
+    public function getByReserveId(int $reserveId, array $with = [], array $select=[]) : Collection
+    {
+        return $this->agencyWithdrawalRepository->getWhere(['reserve_id' => $reserveId], $with, $select);
+    }
+
+    /**
+     * 当該参加者に紐づく出金情報がある場合はtrue
+     */
+    public function isExistsParticipant(int $participantId, int $reserveId) : bool
+    {
+        return $this->agencyWithdrawalRepository->isExistsParticipant($participantId, $reserveId);
+    }
+
+    /**
      * 削除
      *
      * @param int $id ID

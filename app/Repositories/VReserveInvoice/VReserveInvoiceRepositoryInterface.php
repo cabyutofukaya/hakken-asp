@@ -12,5 +12,5 @@ interface VReserveInvoiceRepositoryInterface
 
   public function findByReserveInvoiceId(int $reserveInvoiceId, array $with = [], array $select=[]) : ?VReserveInvoice;
 
-  public function paginateByAgencyId(int $agencyId, array $params, int $limit, array $with, array $select) : LengthAwarePaginator;
+  public function paginateByAgencyId(int $agencyId, array $params, int $limit, array $with, array $select, bool $getDeletedReserve = false) : LengthAwarePaginator;
 }

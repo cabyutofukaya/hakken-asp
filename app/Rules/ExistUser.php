@@ -28,7 +28,7 @@ class ExistUser implements Rule
      */
     public function passes($attribute, $value)
     {
-        return User::withTrashed()->where('agency_id', $this->agencyId)->where('id', $id)->exists(); // 論理削除も含めてチェック
+        return User::withTrashed()->where('agency_id', $this->agencyId)->where('id', $value)->exists(); // 論理削除も含めてチェック
     }
 
     /**

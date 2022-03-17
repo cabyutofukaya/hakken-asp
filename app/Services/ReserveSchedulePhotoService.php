@@ -4,9 +4,12 @@ namespace App\Services;
 
 use App\Models\ReserveSchedulePhoto;
 use App\Repositories\ReserveSchedulePhoto\ReserveSchedulePhotoRepository;
+use App\Traits\DeleteImageFileTrait;
 
 class ReserveSchedulePhotoService
 {
+    use DeleteImageFileTrait;
+
     public function __construct(ReserveSchedulePhotoRepository $reserveSchedulePhotoRepository)
     {
         $this->reserveSchedulePhotoRepository = $reserveSchedulePhotoRepository;
@@ -29,8 +32,8 @@ class ReserveSchedulePhotoService
      * @param array $deleteFiles 削除ファイル一覧
      * @param boolean $isSoftDelete 論理削除か否か
      */
-    public function deleteFile(string $fileName, bool $isSoftDelete = true) : bool
+    public function deletePhotoFile(string $fileName, bool $isSoftDelete = true)
     {
-        return $this->reserveSchedulePhotoRepository->deleteFile($fileName, $isSoftDelete);
+        $this->deleteFile($fileName, $isSoftDelete);
     }
 }

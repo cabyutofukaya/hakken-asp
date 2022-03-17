@@ -17,8 +17,6 @@ class Reserve extends Model
 {
     use SoftDeletes,Sortable,ModelLogTrait,SoftCascadeTrait,HashidsTrait;
 
-    // TODO クエリ実行時、毎回withが動いてしまうので一旦コメント。
-    // コメントにしまって大丈夫か確認
     // // 金額集計に使用
     // protected $with = [
     //     'account_payable_details',
@@ -43,7 +41,8 @@ class Reserve extends Model
         'web_message_histories', // 当該予約を消したらメッセージ履歴も削除する
         // 'reserve_itineraries',
         // 'account_payables', // 不要?
-        // 'account_payable_details', // 不要?
+        'account_payable_details', // 支払管理一覧
+        // 'reserve_invoices', // 請求管理一覧。請求データを消すと一括請求の入金処理の計算が合わなくなりエラーになるので一旦削除無くし
     ];
 
     // TODO 申込者ソートはなくしても良いか？
@@ -298,6 +297,14 @@ class Reserve extends Model
     }
 
     /**
+     * 請求書。請求書の作成・編集の認可チェックに使用
+     */
+    public function reserve_invoice()
+    {
+        return $this->hasOne('App\Models\ReserveInvoice');
+    }
+
+    /**
      * カスタム項目を全取得（有効な項目のみ flg=1）
      */
     public function v_reserve_custom_values()
@@ -515,18 +522,13 @@ class Reserve extends Model
         return null;
     }
 
-    // /**
-    //  * 予約番号
-    //  *
-    //  * 論理削除レコードの場合は「(削除)」を表記
-    //  */
-    // public function getControlNumberAttribute($value): ?string
-    // {
-    //     if ($value) {
-    //         return $this->trashed() ? sprintf("%s(削除)", $value) : $value;
-    //     }
-    //     return null;
-    // }
+    /**
+     * 行程が存在する場合はtrue
+     */
+    public function getReserveItineraryExistsAttribute($value): bool
+    {
+        return $this->reserve_itineraries->count() > 0;
+    }
 
     ///////////////// 読みやすい文字列に変換するAttribute ここまで //////////////
 
@@ -737,14 +739,16 @@ class Reserve extends Model
     {
         // 計算は予約ステータス時のみ
         if ($this->application_step == config('consts.reserves.APPLICATION_STEP_RESERVE')) {
-            return $this->enabled_account_payable_details->sum('unpaid_balance');
+            // ↓有効な仕入のみ(enabled_account_payable_details)にすると取り消しユーザーで支払い済みの仕入があった場合に計算対象外になってしまうため、enabled_account_payable_detailsに変更
+            // return $this->enabled_account_payable_details->sum('unpaid_balance');
+            return $this->account_payable_details->sum('unpaid_balance');
         } else {
             return 0;
         }
     }
 
     /**
-     * 未出金額合計(キャンセル時)
+     * 未出金額合計(キャンセル時) ＊一旦未使用
      */
     public function getSumCancelUnpaidAttribute()
     {

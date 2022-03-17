@@ -37,11 +37,12 @@ class VReserveInvoiceService
      * @param string $agencyAccount
      * @param int $limit
      * @param array $with
+     * @param bool $getDeletedReserve 削除済み予約を取得対象にする場合はtrue
      */
-    public function paginateByAgencyAccount(string $agencyAccount, array $params, int $limit, array $with = [], array $select=[]) : LengthAwarePaginator
+    public function paginateByAgencyAccount(string $agencyAccount, array $params, int $limit, array $with = [], array $select=[], bool $getDeletedReserve = false) : LengthAwarePaginator
     {
         $agencyId = $this->agencyRepository->getIdByAccount($agencyAccount);
-        return $this->vReserveInvoiceRepository->paginateByAgencyId($agencyId, $params, $limit, $with, $select);
+        return $this->vReserveInvoiceRepository->paginateByAgencyId($agencyId, $params, $limit, $with, $select, $getDeletedReserve);
     }
 
 }

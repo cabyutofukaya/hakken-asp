@@ -191,7 +191,12 @@ class ReserveController extends AppController
                 if ($updatedReserve->is_departed) { // 催行済の場合は催行一覧へ
                     return redirect(route('staff.estimates.departed.index', [$agencyAccount]))->with('success_message', "「{$updatedReserve->control_number}」を更新しました");
                 } else {
-                    return redirect()->route('staff.asp.estimates.reserve.index', [$agencyAccount])->with('success_message', "「{$updatedReserve->control_number}」を更新しました");
+                    if (!$updatedReserve->is_canceled && $updatedReserve->reserve_itinerary_exists && ($reserve->departure_date != $updatedReserve->departure_date || $reserve->return_date != $updatedReserve->return_date)) { // 行程が登録されていて旅行日が変わった場合はメッセージを変える
+                        $successMessage = "「{$updatedReserve->control_number}」を更新しました。旅行日が変更されている場合は行程の更新も行ってください";
+                    } else {
+                        $successMessage = "「{$updatedReserve->control_number}」を更新しました";
+                    }
+                    return redirect()->route('staff.asp.estimates.reserve.index', [$agencyAccount])->with('success_message', $successMessage);
                 }
             }
         } catch (ExclusiveLockException $e) { // 同時編集エラー
@@ -240,7 +245,6 @@ class ReserveController extends AppController
         }
 
         try {
-
             $input = $request->validated();
 
             DB::transaction(function () use ($input, $reserve) {
@@ -267,14 +271,11 @@ class ReserveController extends AppController
 
             // 予約詳細ページへリダイレクト
             return redirect()->route('staff.asp.estimates.reserve.show', [$agencyAccount, $controlNumber])->with('success_message', "「{$controlNumber}」のキャンセルチャージ処理が完了しました");
-
         } catch (ExclusiveLockException $e) { // 同時編集エラー
             return back()->withInput()->with('error_message', "他のユーザーによる編集済みレコードです。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
-            
         } catch (Exception $e) {
             Log::error($e);
         }
         abort(500);
-
     }
 }

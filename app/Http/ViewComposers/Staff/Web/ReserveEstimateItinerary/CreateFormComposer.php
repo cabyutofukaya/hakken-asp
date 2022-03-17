@@ -59,13 +59,14 @@ class CreateFormComposer
         $transitionTab = config('consts.reserves.TAB_RESERVE_DETAIL'); // 戻るリンクに使用するTabパラメータ
 
         $isCanceled = $reserve->is_canceled; // キャンセル予約か否か
-        $isEnabled = false; // 有効な行程か否か
+        $isEnabled = false; // 有効な行程か否か(作成前は有効フラグは立っていない)
 
         // POST URLの設定等
         if ($reserve->application_step == config("consts.reserves.APPLICATION_STEP_DRAFT")) { // 見積
             
-            $storeUrl = route('staff.web.estimates.itinerary.store', [
+            $postUrl = route('staff.api.itinerary.store', [
                 'agencyAccount' => $agencyAccount, 
+                'reception' => config('consts.const.RECEPTION_TYPE_WEB'),
                 'applicationStep' =>config("consts.reserves.APPLICATION_STEP_DRAFT"), 
                 'controlNumber' => $reserve->estimate_number
             ]);
@@ -78,8 +79,9 @@ class CreateFormComposer
 
         } elseif ($reserve->application_step == config("consts.reserves.APPLICATION_STEP_RESERVE")) { // 予約
 
-            $storeUrl = route('staff.web.estimates.itinerary.store', [
+            $postUrl = route('staff.api.itinerary.store', [
                 'agencyAccount' => $agencyAccount, 
+                'reception' => config('consts.const.RECEPTION_TYPE_WEB'),
                 'applicationStep' =>config("consts.reserves.APPLICATION_STEP_RESERVE"), 
                 'controlNumber' => $reserve->control_number
             ]);
@@ -204,11 +206,13 @@ class CreateFormComposer
                 'application_step_draft' => config('consts.reserves.APPLICATION_STEP_DRAFT'),
                 'application_step_reserve' => config('consts.reserves.APPLICATION_STEP_RESERVE'),
             ],
+            'postUrl' => $postUrl,
+            'backUrl' => $backUrl,
         ];
 
         // reactに渡す各種定数
         $jsVars = $this->getJsVars($agencyAccount);
 
-        $view->with(compact('formSelects', 'transitionTab', 'defaultValue', 'consts', 'customFields', 'subjectCustomCategoryCode', 'participants', 'modalInitialValues', 'storeUrl', 'backUrl', 'jsVars', 'reception', 'isCanceled', 'isEnabled', 'isTravelDates'));
+        $view->with(compact('formSelects', 'transitionTab', 'defaultValue', 'consts', 'customFields', 'subjectCustomCategoryCode', 'participants', 'modalInitialValues', 'jsVars', 'reception', 'isCanceled', 'isEnabled', 'isTravelDates'));
     }
 }

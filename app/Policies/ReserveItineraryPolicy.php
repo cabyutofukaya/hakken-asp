@@ -62,7 +62,7 @@ class ReserveItineraryPolicy
     public function create(AppUser $appUser, ReserveItinerary $reserveItinerary, Reserve $reserve)
     {
         if ($reserve->application_step == config("consts.reserves.APPLICATION_STEP_RESERVE") && $reserve->reserve_itineraries->where('enabled', true)->count() > 0) { // 予約状態且つ、有効行程がすでにあれば追加作成不可
-            return Response::deny('許可されていないリクエストです(403 Forbidden)');
+            return Response::deny('有効行程は作成済みです。予約情報ページにて最新情報をご確認ください(403 Forbidden)');
         }
 
         if ($reserve->is_canceled) {

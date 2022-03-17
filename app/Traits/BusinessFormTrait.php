@@ -34,10 +34,10 @@ trait BusinessFormTrait
 
     /**
      * 予約金額情報と予約キャンセル情報を取得
-     * 
+     *
      * ・担当者ID > 予約番号 > 税区分 > 金額データ の構造でまとめた配列
      * ・予約番号 => キャンセルか否かの配列
-     * 
+     *
      * @param Collection $reserveInvoices 請求データ
      * @return array
      */
@@ -64,7 +64,6 @@ trait BusinessFormTrait
 
             foreach (['option_prices','airticket_prices','hotel_prices'] as $field) {
                 if ($reserveInvoice->{$field}) {
-                    
                     foreach ($reserveInvoice->{$field} as $row) {
                         
                         // 料金対象の参加者でなければスキップ
@@ -243,7 +242,7 @@ trait BusinessFormTrait
     /**
      * 料金、ホテル情報を取得
      * PDF用
-     * 
+     *
      * @param bool $isCancelReserve キャンセル予約の場合はtrue ※特に使わないので使用予定がなければ本引数は削除
      */
     public function getPriceAndHotelInfoPdf(ReserveDocumentInterface $reserveDocument, array $participantIds = [], bool $isCancelReserve)
@@ -309,7 +308,7 @@ trait BusinessFormTrait
 
     /**
      * 料金内訳、ホテル情報を取得
-     * 
+     *
      * @param ReserveItinerary $reserveItinerary 行程
      * @param bool $isCancelReserve キャンセル予約の場合はtrue
      * @param bool $getPriceOnly 料金情報のみ取得する場合はtrue。全ての情報を取得する場合はfalse
@@ -330,7 +329,6 @@ trait BusinessFormTrait
                 $hotelInfo[$travelDate->travel_date] = []; //旅行日ごとの配列を作成
     
                 foreach ($travelDate->reserve_schedules as $reserveSchedule) {
-    
                     if (!$getPriceOnly) {
                         // ホテル（宿泊施設情報、宿泊施設連絡先）
                         foreach ($reserveSchedule->reserve_purchasing_subject_hotels as $subject) {
@@ -494,6 +492,9 @@ trait BusinessFormTrait
     {
         $result = [];
         foreach ($optionPrices as $row) {
+            if (!Arr::get($row, 'gross') && !Arr::get($row, 'gross_ex')) {
+                continue; //単価・税込単価のいずれも0円の場合は表示ナシ
+            }
             // 名称、単価、キャンセルチャージ、税区分で同一性をチェック ※asp/resources/assets/staff/js/components/BusinessForm/BreakdownPricePreviewArea.jsと同じ処理
             $key = md5(sprintf("%s_%s_%s_%s", Arr::get($row, 'name'), Arr::get($row, 'gross_ex'), Arr::get($row, 'cancel_charge'), Arr::get($row, 'zei_kbn')));
             if (!isset($result[$key])) {
@@ -514,6 +515,9 @@ trait BusinessFormTrait
     {
         $result = [];
         foreach ($airticketPrices as $row) {
+            if (!Arr::get($row, 'gross') && !Arr::get($row, 'gross_ex')) {
+                continue; //単価・税込単価のいずれも0円の場合は表示ナシ
+            }
             // 名前・座席・単価・キャンセルチャージ・税区分で同一性をチェック ※asp/resources/assets/staff/js/components/BusinessForm/BreakdownPricePreviewArea.jsと同じ処理
             $key = md5(sprintf("%s_%s_%s_%s_%s", Arr::get($row, 'name'), Arr::get($row, 'seat'), Arr::get($row, 'gross_ex'), Arr::get($row, 'cancel_charge'), Arr::get($row, 'zei_kbn')));
             if (!isset($result[$key])) {
@@ -534,6 +538,9 @@ trait BusinessFormTrait
     {
         $result = [];
         foreach ($hotelPrices as $row) {
+            if (!Arr::get($row, 'gross') && !Arr::get($row, 'gross_ex')) {
+                continue; //単価・税込単価のいずれも0円の場合は表示ナシ
+            }
             // 名前・ルームタイプ・単価・キャンセルチャージ・税区分で同一性をチェック ※asp/resources/assets/staff/js/components/BusinessForm/BreakdownPricePreviewArea.jsと同じ処理
             $key = md5(sprintf("%s_%s_%s_%s_%s", Arr::get($row, 'name'), Arr::get($row, 'room_type'), Arr::get($row, 'gross_ex'), Arr::get($row, 'cancel_charge'), Arr::get($row, 'zei_kbn')));
             if (!isset($result[$key])) {

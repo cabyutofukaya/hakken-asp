@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Staff\Api;
 
+use App\Models\AgencyWithdrawal;
 use App\Events\ChangePaymentAmountEvent;
 use App\Exceptions\ExclusiveLockException;
 use App\Http\Controllers\Controller;
@@ -56,7 +57,7 @@ class AccountPayableDetailController extends Controller
                 $limit,
                 true,
                 config('consts.reserves.APPLICATION_STEP_RESERVE'), // スコープ設定は確定済予約情報に
-                ['reserve','agency_withdrawals.v_agency_withdrawal_custom_values','saleable'],
+                ['reserve','agency_withdrawals.v_agency_withdrawal_custom_values','saleable.participant:id,name,deleted_at'],
                 []
             )
         );
@@ -118,30 +119,34 @@ class AccountPayableDetailController extends Controller
 
         $input['input']['agency_id'] = auth('staff')->user()->agency_id; // form値に会社IDをセット
 
-        // id=>updated_at形式の配列にまとめる
-        $idInfo = collect($input['data'])->pluck('updated_at','id')->toArray();
-
-        foreach (array_keys($idInfo) as $id) {
-            $accountPayableDetail = $this->accountPayableDetailService->find($id);
+        // 出金データを一行ずつ処理
+        foreach ($input['data'] as $row) {
+            $accountPayableDetail = $this->accountPayableDetailService->find(Arr::get($row, "id"));
 
             if (!$accountPayableDetail) {
                 abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
             }
     
-            // 認可チェック
-            $response = \Gate::inspect('update', [$accountPayableDetail]);
+            // account_payable_detailsを使い、対象支払いが操作ユーザー会社所有データであることも確認。
+            $response = \Gate::inspect('create', [new AgencyWithdrawal, $accountPayableDetail]);
             if (!$response->allowed()) {
                 abort(403, $response->message());
             }
 
-            // 保存用データ配列にamount、account_payable_detail_id値をセット
-            $data = array_merge($input['input'], [
-                'amount' => $accountPayableDetail['unpaid_balance'],
-                'account_payable_detail_id' => $accountPayableDetail->id, // 仕入明細ID
-                'reserve_id' => $accountPayableDetail->reserve_id,
-                'reserve_travel_date_id' => $accountPayableDetail->reserve_travel_date_id,
-            ]);
-            $data['account_payable_detail']['updated_at'] = Arr::get($idInfo, $id); // 書類更新日時(同時編集チェック用)
+            // 保存用データ配列に利用者ID、amount、account_payable_detail_id値をセット
+            $data = array_merge(
+                $input['input'], 
+                [
+                    'participant_id' => Arr::get($row, "participant_id")
+                ],
+                [
+                    'amount' => $accountPayableDetail['unpaid_balance'],
+                    'account_payable_detail_id' => $accountPayableDetail->id, // 仕入明細ID
+                    'reserve_id' => $accountPayableDetail->reserve_id,
+                    'reserve_travel_date_id' => $accountPayableDetail->reserve_travel_date_id,
+                ]
+            );
+            $data['account_payable_detail']['updated_at'] = Arr::get($row, "updated_at"); // 書類更新日時(同時編集チェック用)
 
             try {
                 $agencyWithdrawal = \DB::transaction(function () use ($data) {
@@ -154,6 +159,8 @@ class AccountPayableDetailController extends Controller
                 });
             } catch (ExclusiveLockException $e) { // 同時編集エラー
                 abort(409, "他のユーザーによる編集済みレコードです。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+            } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+                return response($e->getMessage(), 403);    
             } catch (\Exception $e) {
                 \Log::error($e);
             }

@@ -60,11 +60,12 @@ const SubtotalRow = ({
                         {reservePurchasingSubjects.map((item, index) => (
                             <tr key={index}>
                                 <td>
-                                    <SubjectHiddenRow
+                                    {/**form送信しなくなったので↓不要に */}
+                                    {/* <SubjectHiddenRow
                                         item={item}
                                         index={index}
                                         inputName={inputName}
-                                    />
+                                    /> */}
                                     <a
                                         href="#"
                                         className="js-modal-open"

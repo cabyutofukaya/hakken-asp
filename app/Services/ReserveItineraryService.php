@@ -191,6 +191,7 @@ class ReserveItineraryService
 
         ///////////// 旅行日管理レコードを作成 //////////
         $dates = array_keys(Arr::get($input, 'dates', []));
+        sort($dates); // 一応ソート
 
         $editTravelDateIds = []; // 編集、新規登録されたID一覧。削除処理に使用
 
@@ -217,17 +218,16 @@ class ReserveItineraryService
                 $schedules = Arr::get($input, "dates.{$date}", []);
                 $editScheduleIds = []; // 編集、新規登録されたID一覧。削除処理に使用
                 if ($schedules) {
-                    foreach ($schedules as $schedule) {
+                    foreach ($schedules as $seq => $schedule) { //$seqは並び順
                         $reserveSchedule = $reserveTravelDate->reserve_schedules()->updateOrCreate(
                             ['id' => Arr::get($schedule, "id")],
-                            array_merge($schedule, ['agency_id' => $agencyId])
+                            array_merge($schedule, ['agency_id' => $agencyId, 'seq' => $seq])
                         );
                         $editScheduleIds[] = $reserveSchedule->id;
 
                         ///////////// 写真情報をセット //////////
                         if ($schedule['type'] === config('consts.reserve_itineraries.ITINERARY_TYPE_WAYPOINT_IMAGE')) {
                             $photos = Arr::get($schedule, "photos", []);
-
                             foreach ($photos as $photo) {
                                 // upload画像がある場合は、公開状態をprivateからpublicに変更（オリジナル画像とサムネイル画像）して保存用カラムをupload_file_nameからfile_nameに切り替える
                                 if (Arr::get($photo, 'upload_file_name')) {
@@ -254,9 +254,10 @@ class ReserveItineraryService
 
                                 if (!$reserveSchedulePhoto->wasRecentlyCreated) {
                                     if ($oldFileName && $reserveSchedulePhoto->wasChanged("file_name")) { // ファイル名が変更されている場合は、古いファイルは削除
-                                        $this->reserveSchedulePhotoService->deleteFile($oldFileName, false); // 物理削除
+                                        $this->reserveSchedulePhotoService->deletePhotoFile($oldFileName, false); // 物理削除
                                     }
                                 }
+
                             }
                         }
 
@@ -446,6 +447,7 @@ class ReserveItineraryService
                                 );
                             }
                         }
+
                         ///////// 編集対象にならなかったオプション科目の削除処理（科目レコード＆オプション科目レコード）。reserve_participant_option_pricesはreserve_purchasing_subject_optionsレコードの削除と合わせて削除されるので特に手動で削除するような処理は不要 /////////
 
                         // 編集対象にならなかった科目レコードを削除

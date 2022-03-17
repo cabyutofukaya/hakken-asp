@@ -13,6 +13,7 @@ use App\Http\Resources\Staff\ReserveBundleInvoice\BreakdownResource;
 use App\Http\Resources\Staff\ReserveInvoice\StatusUpdateResource;
 use App\Http\Resources\Staff\ReserveInvoice\UpdateResource;
 use App\Http\Resources\Staff\VReserveInvoice\IndexResource;
+use App\Models\AgencyDeposit;
 use App\Models\ReserveInvoice;
 use App\Services\AgencyDepositService;
 use App\Services\ReserveInvoiceService;
@@ -53,10 +54,23 @@ class ReserveInvoiceController extends Controller
         }
 
         // 認可チェック
-        $response = \Gate::authorize('update', $reserve);
-        if (!$response->allowed()) {
-            abort(403, $response->message());
+        if ($reserve->reserve_invoice) { // 編集時
+            $response = \Gate::inspect('update', [$reserve->reserve_invoice]);
+            if (!$response->allowed()) {
+                abort(403, $response->message());
+            }
+        } else { // 新規作成時
+            $response = \Gate::inspect('create', new ReserveInvoice);
+            if (!$response->allowed()) {
+                abort(403, $response->message());
+            }
         }
+
+        // // 認可チェック
+        // $response = \Gate::authorize('update', $reserve);
+        // if (!$response->allowed()) {
+        //     abort(403, $response->message());
+        // }
 
         $agencyId = auth('staff')->user()->agency_id;
 
@@ -116,11 +130,8 @@ class ReserveInvoiceController extends Controller
         try {
             foreach ($reserveInvoices as $reserveInvoice) {
 
-                // 編集権限をチェック
-                $response = \Gate::authorize('update', $reserveInvoice);
-                if (!$response->allowed()) {
-                    abort(403, $response->message());
-                }
+                // reserve_invoicesを使い、対象請求が操作ユーザー会社所有データであることも確認。try文内では例外が投げられてしまうので認可エラーはcatch文で処理
+                \Gate::authorize('create', [new AgencyDeposit, $reserveInvoice]);
 
                 $data = $input['input'];
                 $data['reserve_invoice'] = [];
@@ -169,6 +180,8 @@ class ReserveInvoiceController extends Controller
             }
         } catch (ExclusiveLockException $e) { // 同時編集エラー
             return response($e->getMessage(), 409);
+        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+            return response($e->getMessage(), 403);
         } catch (\Exception $e) {
             \Log::error($e);
         }

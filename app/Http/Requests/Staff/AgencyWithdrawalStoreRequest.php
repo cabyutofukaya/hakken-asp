@@ -4,6 +4,7 @@ namespace App\Http\Requests\Staff;
 
 use Illuminate\Foundation\Http\FormRequest;
 use App\Rules\ExistStaff;
+use App\Rules\ExistParticipant;
 
 class AgencyWithdrawalStoreRequest extends FormRequest
 {
@@ -36,6 +37,7 @@ class AgencyWithdrawalStoreRequest extends FormRequest
             'amount' => 'required|integer',
             'withdrawal_date' => 'nullable|date',
             'record_date' => 'nullable|date',
+            'participant_id' => ['required', new ExistParticipant(auth('staff')->user()->agency->id)],
             'manager_id' => ['nullable', new ExistStaff(auth('staff')->user()->agency->id)],
             'note' => 'nullable|max:1500',
             'account_payable_detail.updated_at' => 'nullable',
@@ -51,6 +53,7 @@ class AgencyWithdrawalStoreRequest extends FormRequest
             'amount.integer' => '出金額は半角数字で入力してください',
             'withdrawal_date.date' => '出金日の入力入力形式が不正です(YYYY/MM/DD)',
             'record_date.date' => '登録日の入力入力形式が不正です(YYYY/MM/DD)',
+            'participant_id.required' => '参加者IDは必須です。',
             'note.max' => '備考が長すぎます(1500文字まで)',
         ];
     }

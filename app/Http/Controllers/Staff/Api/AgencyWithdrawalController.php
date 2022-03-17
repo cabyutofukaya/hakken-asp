@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Staff\Api;
 
+use App\Models\AgencyWithdrawal;
 use App\Events\ChangePaymentAmountEvent;
 use App\Exceptions\ExclusiveLockException;
 use App\Http\Controllers\Controller;
@@ -34,8 +35,8 @@ class AgencyWithdrawalController extends Controller
             abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
         }
 
-        // agency_withdrawalsテーブルに対するcreate権限をチェックしてもセキュリティ上あまり意味がないので、account_payable_detailsテーブルに対する編集権限をチェック
-        $response = \Gate::authorize('update', $accountPayableDetail);
+        // account_payable_detailsを使い、対象支払いが操作ユーザー会社所有データであることも確認
+        $response = \Gate::authorize('create', [new AgencyWithdrawal, $accountPayableDetail]);
         if (!$response->allowed()) {
             abort(403, $response->message());
         }

@@ -49,7 +49,7 @@ const PaymentBatchModal = ({
 
             setIsProcessing(true);
 
-            // POST用に処理対象IDと更新日時のデータをまとめる
+            // POST用に処理対象ID、利用者ID、更新日時のデータをまとめる
             let data = [];
             const targetRow = doneLists.map((id, index) => {
                 let targetRow = _.find(paymentLists, function(row) {
@@ -58,6 +58,7 @@ const PaymentBatchModal = ({
 
                 let tmp = {};
                 tmp["id"] = id;
+                tmp["participant_id"] = targetRow?.saleable?.participant?.id;
                 tmp["updated_at"] = targetRow.updated_at ?? null;
 
                 data.push(tmp);

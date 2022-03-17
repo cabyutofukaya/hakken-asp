@@ -71,7 +71,7 @@ class ShowResource extends JsonResource
             /////// 金額計算 ///////
             "sum_invoice_amount" => $this->sum_invoice_amount, // 請求金額合計
             "sum_withdrawal" => $this->sum_withdrawal, // 出金額合計
-            "sum_unpaid" => $this->is_canceled ? $this->sum_cancel_unpaid : $this->sum_unpaid, // 未出金額合計（キャンセルの場合はキャンセルチャージ対象の仕入で計算）
+            "sum_unpaid" => $this->sum_unpaid, // 未出金額合計
             "sum_deposit" => $this->sum_deposit, // 入金合計
             "sum_not_deposit" => $this->sum_not_deposit, // 未入金合計
             "updated_at" => $this->updated_at->format('Y-m-d H:i:s'),

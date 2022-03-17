@@ -136,19 +136,19 @@ const PickupSpot = ({
                         onChange={handleImageChange}
                         disabled={isUploading}
                     />
-                    <input
+                    {/* <input
                         type="hidden"
                         name={`${inputName}[photos][${no}][id]`}
                         value={input?.photos?.[no]?.id ?? ""}
-                    />
+                    /> */}
                     {/** 保存済み画像パス */}
-                    <input
+                    {/* <input
                         type="hidden"
                         name={`${inputName}[photos][${no}][file_name]`}
                         value={input?.photos?.[no]?.file_name ?? ""}
-                    />
+                    /> */}
                     {/** アップロード画像パス */}
-                    <input
+                    {/* <input
                         type="hidden"
                         name={`${inputName}[photos][${no}][upload_file_name]`}
                         value={input?.photos?.[no]?.upload_file_name ?? ""}
@@ -167,7 +167,7 @@ const PickupSpot = ({
                         type="hidden"
                         name={`${inputName}[photos][${no}][mime_type]`}
                         value={input?.photos?.[no]?.mime_type ?? ""}
-                    />
+                    /> */}
                     <label htmlFor={`${date}_${index}_photos_${no}`}>
                         <span className="material-icons">add_a_photo</span>
                     </label>
