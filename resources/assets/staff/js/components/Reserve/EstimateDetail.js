@@ -68,6 +68,7 @@ const EstimateDetail = ({
                 setCurrentItineraryNumber={setCurrentItineraryNumber}
                 participantDeleteRequestId={participantDeleteRequestId}
                 participantCancelRequestId={participantCancelRequestId}
+                permission={permission}
             />
             <DocumentArea
                 isShow={isShow}
