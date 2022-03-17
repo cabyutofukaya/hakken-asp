@@ -472,22 +472,28 @@ const ParticipantArea = ({
                 <td>{row.passport_expiration_date ?? "-"}</td>
                 <td>{row.mobile_phone ?? "-"}</td>
                 <td className="txtalc">
-                    <span
-                        className="material-icons js-modal-open"
-                        data-target="mdParticipantCancelCard"
-                        onClick={e => handleModalCancel(e, row?.id)}
-                    >
-                        not_interested
-                    </span>
+                    {permission?.participant_cancel && (
+                        <span
+                            className="material-icons js-modal-open"
+                            data-target="mdParticipantCancelCard"
+                            onClick={e => handleModalCancel(e, row?.id)}
+                        >
+                            not_interested
+                        </span>
+                    )}
+                    {!permission?.participant_cancel && <>-</>}
                 </td>
                 <td className="txtalc">
-                    <span
-                        className="material-icons js-modal-open"
-                        data-target="mdParticipantDeleteCard"
-                        onClick={e => handleModalDelete(e, row?.id)}
-                    >
-                        delete
-                    </span>
+                    {permission?.participant_delete && (
+                        <span
+                            className="material-icons js-modal-open"
+                            data-target="mdParticipantDeleteCard"
+                            onClick={e => handleModalDelete(e, row?.id)}
+                        >
+                            delete
+                        </span>
+                    )}
+                    {!permission.participant_delete && <>-</>}
                 </td>
             </tr>
         );
@@ -544,7 +550,7 @@ const ParticipantArea = ({
         <>
             <h2 className="optTit">
                 参加者
-                {permission.reserve_update && (
+                {permission?.reserve_update && permission?.participant_create && (
                     <a
                         className="js-modal-open"
                         data-target="mdAddUser"
@@ -650,6 +656,7 @@ const ParticipantArea = ({
                 countries={countries}
                 editMode={editMode}
                 isEditing={isEditing}
+                permission={permission}
             />
 
             <SmallDangerModal

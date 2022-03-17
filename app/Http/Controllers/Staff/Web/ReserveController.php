@@ -116,9 +116,6 @@ class ReserveController extends AppController
             return $this->forbiddenRedirect($response->message());
         }
 
-        // 催行済みの場合は転送
-        $this->checkReserveState($agencyAccount, $reserve);
-
         $input = $request->all();
         try {
             $updatedReserve = \DB::transaction(function () use ($reserve, $agencyAccount, $input) {
@@ -196,7 +193,7 @@ class ReserveController extends AppController
                 
                 $this->webReserveService->cancel($reserve->id, true, Arr::get($input, 'reserve.updated_at'));
 
-                event(new UpdateBillingAmountEvent($reserve->enabled_reserve_itinerary)); // 請求金額変更イベント
+                event(new UpdateBillingAmountEvent($this->webReserveService->find($reserve->id))); // 請求金額変更イベント
 
                 /**カスタムステータスを「キャンセル」に更新 */
 

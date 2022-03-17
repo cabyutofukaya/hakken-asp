@@ -290,7 +290,7 @@ class ReserveItineraryController extends Controller
                     event(new ReserveChangeSumGrossEvent($newReserveItinerary)); // 旅行代金変更イベント
                 }
 
-                event(new UpdateBillingAmountEvent($newReserveItinerary)); // 請求金額変更イベント
+                event(new UpdateBillingAmountEvent($newReserveItinerary->reserve)); // 請求金額変更イベント
 
                 return $newReserveItinerary;
             });

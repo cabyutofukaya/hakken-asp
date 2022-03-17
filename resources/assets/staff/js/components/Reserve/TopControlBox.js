@@ -20,28 +20,26 @@ const TopControlBox = ({
     isCanceling,
     existPurchaseData,
     isDeleting,
-    updatePermission,
+    updatePermission, // キャンセルボタンを表示するかどうかの判定に使う予定だったが、キャンセルボタンの表示・非表示条件はupdate権限と連動できないので本パラメータはひとまず使用ナシ
     deletePermission
 }) => {
     if (deletePermission && isCanceled && !existPurchaseData) {
         // キャンセル予約で仕入情報が無い場合は削除ボタンのみ表示
         return <TopDeleteBox isDeleting={isDeleting} />;
     } else {
-        if (updatePermission || deletePermission) {
+        if (deletePermission) {
             return (
                 <ul className="estimateControl">
-                    {updatePermission && (
-                        <li>
-                            <button
-                                className={classNames("grayBtn", {
-                                    "js-modal-open": !isCanceling
-                                })}
-                                data-target="mdCxl"
-                            >
-                                キャンセル
-                            </button>
-                        </li>
-                    )}
+                    <li>
+                        <button
+                            className={classNames("grayBtn", {
+                                "js-modal-open": !isCanceling
+                            })}
+                            data-target="mdCxl"
+                        >
+                            キャンセル
+                        </button>
+                    </li>
                     {deletePermission && (
                         <li>
                             <button

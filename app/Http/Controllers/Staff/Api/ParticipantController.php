@@ -132,12 +132,6 @@ class ParticipantController extends Controller
      */
     public function store(ParticipantStoreRequest $request, string $agencyAccount, string $reception, string $applicationStep, string $controlNumber)
     {
-        // 認可チェック
-        $response = Gate::inspect('create', new Participant);
-        if (!$response->allowed()) {
-            abort(403, $response->message());
-        }
-
         // 受付種別で分ける
         if ($reception === config('consts.const.RECEPTION_TYPE_ASP')) { // ASP受付
             // 見積or予約で処理を分ける
@@ -163,6 +157,12 @@ class ParticipantController extends Controller
 
         if (!$reserve) {
             abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+        }
+
+        // 認可チェック
+        $response = Gate::inspect('create', [new Participant, $reserve]);
+        if (!$response->allowed()) {
+            abort(403, $response->message());
         }
 
         try {
@@ -209,6 +209,10 @@ class ParticipantController extends Controller
 
         try {
             $input = $request->all();
+
+            if ($participant->reserve->is_canceled) { //キャンセル予約の場合は年齢区分だけ更新対象カラムから外しておく。料金に関係する箇所なので念の為
+                $input = collect($input)->except(['age_kbn'])->all();
+            }
 
             $result = DB::transaction(function () use ($participant, $input, $reception) {
                 $res = $this->participantService->update($participant->id, $input);
@@ -306,7 +310,7 @@ class ParticipantController extends Controller
         }
 
         // 認可チェック
-        $response = Gate::inspect('update', [$oldParticipant]);
+        $response = Gate::inspect('cancel', [$oldParticipant]);
         if (!$response->allowed()) {
             abort(403, $response->message());
         }

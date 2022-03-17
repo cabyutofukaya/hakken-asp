@@ -8,6 +8,7 @@ const md5 = require("md5");
  *
  * 表示、非表示はisShowで判定。合計金額はAPIで必ず保存するので表示、非表示にかかわらず計算する
  *
+ * @param {bool} isCanceled キャンセル予約か否か
  * @param {bool} isShow 代金内訳枠を表示するか否か
  * @returns
  */
@@ -79,8 +80,15 @@ const BreakdownPricePreviewArea = ({
         ///////////// オプション科目
         let optionTemp = {};
         Object.keys(optionPrices).map((k, i) => {
-            if (!optionPrices[k]?.gross && !optionPrices[k]?.gross_ex) {
-                return; //単価・税込単価のいずれも0円の場合は表示ナシ
+            if (
+                !optionPrices[k]?.is_cancel &&
+                !optionPrices[k]?.gross &&
+                !optionPrices[k]?.gross_ex
+            ) {
+                return; //予約科目で単価・税込単価のいずれも0円の場合は表示ナシ
+            }
+            if (optionPrices[k]?.is_cancel && !optionPrices[k]?.cancel_charge) {
+                return; //キャンセル科目でキャンセルチャージが0円の場合は表示ナシ
             }
             // 名前・単価・キャンセルチャージ・税区分で同一性をチェック ※asp/app/Traits/BusinessFormTrait.phpのgetOptionPriceBreakdownと同じ処理
             const key = md5(
@@ -106,8 +114,18 @@ const BreakdownPricePreviewArea = ({
         ///////////// 航空券科目
         let airticketTemp = {};
         Object.keys(airticketPrices).map((k, i) => {
-            if (!airticketPrices[k]?.gross && !airticketPrices[k]?.gross_ex) {
-                return; //単価・税込単価のいずれも0円の場合は表示ナシ
+            if (
+                !airticketPrices[k]?.is_cancel &&
+                !airticketPrices[k]?.gross &&
+                !airticketPrices[k]?.gross_ex
+            ) {
+                return; //予約科目で単価・税込単価のいずれも0円の場合は表示ナシ
+            }
+            if (
+                airticketPrices[k]?.is_cancel &&
+                !airticketPrices[k]?.cancel_charge
+            ) {
+                return; //キャンセル科目でキャンセルチャージが0円の場合は表示ナシ
             }
             // 名前・座席・単価・キャンセルチャージ・税区分で同一性をチェック ※asp/app/Traits/BusinessFormTrait.phpのgetAirticketPriceBreakdownと同じ処理
             const key = md5(
@@ -135,8 +153,15 @@ const BreakdownPricePreviewArea = ({
         ///////////// ホテル科目
         let hotelTemp = {};
         Object.keys(hotelPrices).map((k, i) => {
-            if (!hotelPrices[k]?.gross && !hotelPrices[k]?.gross_ex) {
-                return; //単価・税込単価のいずれも0円の場合は表示ナシ
+            if (
+                !hotelPrices[k]?.is_cancel &&
+                !hotelPrices[k]?.gross &&
+                !hotelPrices[k]?.gross_ex
+            ) {
+                return; //予約科目で単価・税込単価のいずれも0円の場合は表示ナシ
+            }
+            if (hotelPrices[k]?.is_cancel && !hotelPrices[k]?.cancel_charge) {
+                return; //キャンセル科目でキャンセルチャージが0円の場合は表示ナシ
             }
             // 名前・ルームタイプ・単価・キャンセルチャージ・税区分で同一性をチェック ※asp/app/Traits/BusinessFormTrait.phpのgetHotelPriceBreakdownと同じ処理
             const key = md5(

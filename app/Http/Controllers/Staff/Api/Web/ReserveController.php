@@ -189,7 +189,7 @@ class ReserveController extends Controller
                 $this->reserveParticipantPriceService->cancelChargeReset($reserve->enabled_reserve_itinerary->id); // キャンセルチャージをリセット
                 $this->webReserveService->cancel($reserve->id, false, null);
 
-                event(new UpdateBillingAmountEvent($reserve->enabled_reserve_itinerary)); // 請求金額変更イベント
+                event(new UpdateBillingAmountEvent($this->webReserveService->find($reserve->id))); // 請求金額変更イベント
 
                 /**カスタムステータスを「キャンセル」に更新 */
 

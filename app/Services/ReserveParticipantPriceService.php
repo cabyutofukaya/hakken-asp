@@ -29,11 +29,14 @@ class ReserveParticipantPriceService
      *
      * TODO
      * 本メソッド、処理が重すぎるようなら非同期で実行することも検討
-     * 
-     * @param int $reserveItineraryId 行程ID
+     *
+     * @param ?int $reserveItineraryId 行程ID(有効な行程が設定されていない場合nullが渡される可能性あり)
      */
-    public function cancelChargeReset(int $reserveItineraryId) : bool
+    public function cancelChargeReset(?int $reserveItineraryId) : bool
     {
+        if (!$reserveItineraryId) {
+            return true;
+        } // 処理ナシ
 
         // 当該行程IDのオプション科目・航空券科目・ホテル科目のキャンセルチャージをリセット
         $optionIds = $this->reserveParticipantOptionPriceService->setCancelChargeByReserveItineraryId(0, 0, 0, false, $reserveItineraryId); // オプション科目

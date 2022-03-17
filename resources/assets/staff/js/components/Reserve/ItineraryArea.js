@@ -95,7 +95,8 @@ const ItineraryArea = ({
     currentItineraryNumber,
     setCurrentItineraryNumber,
     participantDeleteRequestId,
-    participantCancelRequestId
+    participantCancelRequestId,
+    permission
 }) => {
     const { agencyAccount } = useContext(ConstContext);
 
@@ -251,12 +252,14 @@ const ItineraryArea = ({
         isLoading,
         lists
     }) => {
-        //予約時は2個目以降の行程追加不可
+        // キャンセル予約の場合は追加不可。予約時は2個目以降の行程追加不可
         if (
-            applicationStep == applicationStepList.application_step_draft ||
-            (applicationStep == applicationStepList.application_step_reserve &&
-                !isLoading &&
-                lists.length === 0)
+            permission?.itinerary_create &&
+            (applicationStep == applicationStepList.application_step_draft ||
+                (applicationStep ==
+                    applicationStepList.application_step_reserve &&
+                    !isLoading &&
+                    lists.length === 0))
         ) {
             return (
                 <a

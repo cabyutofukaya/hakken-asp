@@ -18,7 +18,8 @@ const ParticipantEditModal = ({
     birthdayDays,
     countries,
     editMode,
-    isEditing
+    isEditing,
+    permission
 } = {}) => {
     return (
         <>
@@ -231,6 +232,9 @@ const ParticipantEditModal = ({
                                                         value: e.target.value
                                                     }
                                                 })
+                                            }
+                                            disabled={
+                                                !permission?.participant_agekbn_update
                                             }
                                         >
                                             {ageKbns &&

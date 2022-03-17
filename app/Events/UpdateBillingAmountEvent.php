@@ -2,7 +2,7 @@
 
 namespace App\Events;
 
-use App\Models\ReserveItinerary;
+use App\Models\Reserve;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
@@ -16,17 +16,17 @@ class UpdateBillingAmountEvent
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $reserveItinerary;
+    public $reserve;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(ReserveItinerary $reserveItinerary)
+    public function __construct(Reserve $reserve)
     {
         // $this->reserveItinerary = $reserveItinerary->withoutRelations(); // リレーション外し
-        $this->reserveItinerary = $reserveItinerary;
+        $this->reserve = $reserve;
     }
 
     /**

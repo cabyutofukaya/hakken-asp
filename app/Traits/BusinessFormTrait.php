@@ -492,9 +492,13 @@ trait BusinessFormTrait
     {
         $result = [];
         foreach ($optionPrices as $row) {
-            if (!Arr::get($row, 'gross') && !Arr::get($row, 'gross_ex')) {
-                continue; //単価・税込単価のいずれも0円の場合は表示ナシ
+            if (!Arr::get($row, 'is_cancel') && !Arr::get($row, 'gross') && !Arr::get($row, 'gross_ex')) {
+                continue; // 予約状態で単価・税込単価のいずれも0円の場合は表示ナシ
             }
+            if (Arr::get($row, 'is_cancel') && !Arr::get($row, 'cancel_charge')) {
+                continue; // キャンセル状態でキャンセルチャージが0円の場合は表示ナシ
+            }
+
             // 名称、単価、キャンセルチャージ、税区分で同一性をチェック ※asp/resources/assets/staff/js/components/BusinessForm/BreakdownPricePreviewArea.jsと同じ処理
             $key = md5(sprintf("%s_%s_%s_%s", Arr::get($row, 'name'), Arr::get($row, 'gross_ex'), Arr::get($row, 'cancel_charge'), Arr::get($row, 'zei_kbn')));
             if (!isset($result[$key])) {
@@ -515,9 +519,13 @@ trait BusinessFormTrait
     {
         $result = [];
         foreach ($airticketPrices as $row) {
-            if (!Arr::get($row, 'gross') && !Arr::get($row, 'gross_ex')) {
-                continue; //単価・税込単価のいずれも0円の場合は表示ナシ
+            if (!Arr::get($row, 'is_cancel') && !Arr::get($row, 'gross') && !Arr::get($row, 'gross_ex')) {
+                continue; // 予約状態で単価・税込単価のいずれも0円の場合は表示ナシ
             }
+            if (Arr::get($row, 'is_cancel') && !Arr::get($row, 'cancel_charge')) {
+                continue; // キャンセル状態でキャンセルチャージが0円の場合は表示ナシ
+            }
+
             // 名前・座席・単価・キャンセルチャージ・税区分で同一性をチェック ※asp/resources/assets/staff/js/components/BusinessForm/BreakdownPricePreviewArea.jsと同じ処理
             $key = md5(sprintf("%s_%s_%s_%s_%s", Arr::get($row, 'name'), Arr::get($row, 'seat'), Arr::get($row, 'gross_ex'), Arr::get($row, 'cancel_charge'), Arr::get($row, 'zei_kbn')));
             if (!isset($result[$key])) {
@@ -538,9 +546,13 @@ trait BusinessFormTrait
     {
         $result = [];
         foreach ($hotelPrices as $row) {
-            if (!Arr::get($row, 'gross') && !Arr::get($row, 'gross_ex')) {
-                continue; //単価・税込単価のいずれも0円の場合は表示ナシ
+            if (!Arr::get($row, 'is_cancel') && !Arr::get($row, 'gross') && !Arr::get($row, 'gross_ex')) {
+                continue; // 予約状態で単価・税込単価のいずれも0円の場合は表示ナシ
             }
+            if (Arr::get($row, 'is_cancel') && !Arr::get($row, 'cancel_charge')) {
+                continue; // キャンセル状態でキャンセルチャージが0円の場合は表示ナシ
+            }
+            
             // 名前・ルームタイプ・単価・キャンセルチャージ・税区分で同一性をチェック ※asp/resources/assets/staff/js/components/BusinessForm/BreakdownPricePreviewArea.jsと同じ処理
             $key = md5(sprintf("%s_%s_%s_%s_%s", Arr::get($row, 'name'), Arr::get($row, 'room_type'), Arr::get($row, 'gross_ex'), Arr::get($row, 'cancel_charge'), Arr::get($row, 'zei_kbn')));
             if (!isset($result[$key])) {
