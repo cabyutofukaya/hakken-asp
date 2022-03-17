@@ -68,6 +68,7 @@ const WebEstimateDetail = ({
                 setCurrentItineraryNumber={setCurrentItineraryNumber}
                 participantDeleteRequestId={participantDeleteRequestId}
                 participantCancelRequestId={participantCancelRequestId}
+                permission={permission}
             />
             <DocumentArea
                 isShow={isShow}
