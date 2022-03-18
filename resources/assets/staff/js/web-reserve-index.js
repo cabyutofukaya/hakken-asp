@@ -13,6 +13,7 @@ import ConsultTd from "./components/Reserve/ConsultTd";
 import OnlineRequestModal from "./portal/OnlineRequestModal";
 import VideoTitArea from "./components/Reserve/VideoTitArea";
 import { useOnlineRequest } from "../../hooks/useOnlineRequest";
+import StatusTd from "./components/Reserve/StatusTd";
 
 const ReserveList = ({ searchParam, consts }) => {
     const { agencyAccount } = useContext(ConstContext);
@@ -299,7 +300,9 @@ const ReserveList = ({ searchParam, consts }) => {
                                             {row.control_number ?? "-"}
                                         </a>
                                     </td>
-                                    <td>{row.status.val ?? "-"}</td>
+                                    <td className="txtalc">
+                                        <StatusTd status={row?.status?.val} />
+                                    </td>
                                     <StaffTd
                                         name={row?.manager?.name}
                                         isDeleted={row?.manager?.is_deleted}

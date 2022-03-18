@@ -40,7 +40,7 @@ return [
   // +αのカスタムリスト初期値
   'CODE_USER_CUSTOMER_AIRPLANE_COMPANY_DEFAULT_LIST' => ['SQ','JL','NH','AA','MU','HA','D7'], // 個人顧客 > 航空会社
   'CODE_APPLICATION_TRAVEL_TYPE_DEFAULT_LIST' => ['国内','海外','日本発着'], // 予約見積 > 旅行種別
-  'CODE_APPLICATION_RESERVE_STATUS_DEFAULT_LIST' => ['問合せ','受付','手配中','手配完了','出発','出発後','CXL','CXL待ち','ペンディング','クレーム','キャンセル'], // 予約/見積 > 予約ステータス
+  'CODE_APPLICATION_RESERVE_STATUS_DEFAULT_LIST' => ['問合せ','受付','手配中','手配完了','出発','出発後','CXL','CXL待ち','ペンディング','クレーム','キャンセル','催行完了'], // 予約/見積 > 予約ステータス
   'CODE_APPLICATION_ESTIMATE_STATUS_DEFAULT_LIST' => ['見積','連絡待ち'], // 予約/見積 > 見積ステータス
   'CODE_APPLICATION_KBN_DEFAULT_LIST' => ['業務渡航','国内出張','バスツアー','国内ツアー','海外ツアー','個人','学会・教育','団体'], // 予約/見積 > 区分
   'CODE_APPLICATION_TYPE_DEFAULT_LIST' => ['TEL','FAX','来店'], // 予約/見積 > 申込種別
@@ -56,7 +56,7 @@ return [
 
   // 削除不可リスト(定数名の接尾辞が「PROTECT」)
   'CODE_APPLICATION_ESTIMATE_STATUS_DEFAULT_LIST_PROTECT' => ['見積','連絡待ち'], // 見積もりステータス
-  'CODE_APPLICATION_RESERVE_STATUS_DEFAULT_LIST_PROTECT' => ['問合せ','受付','手配中','手配完了','出発','出発後','CXL','CXL待ち','ペンディング','クレーム','キャンセル'], // 予約ステータス
+  'CODE_APPLICATION_RESERVE_STATUS_DEFAULT_LIST_PROTECT' => ['問合せ','受付','手配中','手配完了','出発','出発後','CXL','CXL待ち','ペンディング','クレーム','キャンセル','催行完了'], // 予約ステータス
   'CODE_MANAGEMENT_WITHDRAWAL_METHOD_DEFAULT_LIST_PROTECT' => ['現金払い','銀行振込','銀行引落し','クレジットカード'], // 入出金管理 > 出金方法
   'CODE_MANAGEMENT_DEPOSIT_METHOD_DEFAULT_LIST_PROTECT' => ['現金収受','銀行振込','銀行引落し','クレジットカード','コンビニ払い'], // 入出金管理 > 入金方法
   'CODE_APPLICATION_TRAVEL_TYPE_DEFAULT_LIST_PROTECT' => ['国内','海外','日本発着'], // 予約見積 > 旅行種別

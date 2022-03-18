@@ -69,25 +69,28 @@ class BusinessUserManagerRepository implements BusinessUserManagerRepositoryInte
         $query = $select ? $query->select($select) : $query;
         $query = $getDeleted ? $query->withTrashed() : $query;
 
-        $query = $query->where('agency_id', $agencyId);
-
         if (!is_empty($name)) {
             $query = $query->where(function ($q) use ($name) {
                 $q->where('name', 'like', "%$name%")
                     ->orWhere('name_roman', 'like', "%$name%");
-            });
-            $query = $query->orWhereHas('business_user', function ($q) use ($name) { // リレーション先の会社も検索対象
-                $q->where('name', 'like', "%$name%")
-                    ->orWhere('name_kana', 'like', "%$name%")
-                    ->orWhere('name_roman', 'like', "%$name%");
+                $q->orWhereHas('business_user', function ($q2) use ($name) { // リレーション先の会社も検索対象
+                    $q2->where('name', 'like', "%$name%")
+                            ->orWhere('name_kana', 'like', "%$name%")
+                            ->orWhere('name_roman', 'like', "%$name%");
+                });
             });
         }
         if (!is_empty($userNumber)) {
-            $query = $query->where('user_number', 'like', "%$userNumber%");
-            $query = $query->orWhereHas('business_user', function ($q) use ($userNumber) { // リレーション先の会社も検索対象
-                $q->where('user_number', 'like', "%$userNumber%");
+            $query = $query->where(function ($q) use ($userNumber) {
+                $q->where('user_number', 'like', "%$userNumber%")
+                    ->orWhereHas('business_user', function ($q2) use ($userNumber) { // リレーション先の会社も検索対象
+                        $q2->where('user_number', 'like', "%$userNumber%");
+                    });
             });
         }
+
+        $query = $query->where('agency_id', $agencyId);
+
         return !is_null($limit) ? $query->take($limit)->get() : $query->get();
     }
 

@@ -13,6 +13,7 @@ import OnlineRequestModal from "./portal/OnlineRequestModal";
 import VideoTitArea from "./components/Reserve/VideoTitArea";
 import ConsultTd from "./components/Reserve/ConsultTd";
 import { useOnlineRequest } from "../../hooks/useOnlineRequest";
+import StatusTd from "./components/Reserve/StatusTd";
 
 const EstimateList = ({ searchParam, formSelects, consts }) => {
     const { agencyAccount } = useContext(ConstContext);
@@ -386,7 +387,9 @@ const EstimateList = ({ searchParam, formSelects, consts }) => {
                                     <td>{row.name ?? "-"}</td>
                                     <td>{row.travel_type.val ?? "-"}</td>
                                     <td>{row.application_date.val ?? "-"}</td>
-                                    <td>{row?.status?.val ?? "-"}</td>
+                                    <td className="txtalc">
+                                        <StatusTd status={row?.status?.val} />
+                                    </td>
                                     <td className="txtalc">
                                         <span
                                             className={classNames(

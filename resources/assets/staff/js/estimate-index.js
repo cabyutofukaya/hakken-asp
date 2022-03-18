@@ -9,6 +9,7 @@ import ReactLoading from "react-loading";
 import StaffTd from "./components/StaffTd";
 import SmallDangerModal from "./components/SmallDangerModal";
 import classNames from "classnames";
+import StatusTd from "./components/Reserve/StatusTd";
 
 const EstimateList = ({ searchParam }) => {
     const { agencyAccount } = useContext(ConstContext);
@@ -249,7 +250,9 @@ const EstimateList = ({ searchParam }) => {
                                             {row.estimate_number ?? "-"}
                                         </a>
                                     </td>
-                                    <td>{row.status.val ?? "-"}</td>
+                                    <td className="txtalc">
+                                        <StatusTd status={row?.status?.val} />
+                                    </td>
                                     <td>{row.departure_date ?? "-"}</td>
                                     <td>{row.return_date ?? "-"}</td>
                                     <td>{row.departure.name ?? "-"}</td>

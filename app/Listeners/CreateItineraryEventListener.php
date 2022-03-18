@@ -60,34 +60,38 @@ class CreateItineraryEventListener
 
                 if (!$this->reserveConfirmService->getReserveConfirmByReserveItineraryId($event->reserveItinerary->id, [], ['id'])) { // 予約確認書が作成されていない場合は作成
 
-                    if (($quote = $this->reserveConfirmService->getQuoteByReserveItineraryId($event->reserveItinerary->id))) { // 見積がある場合は"見積書"をもとに予約確認書を作成
-                        $this->reserveConfirmService->createConfirmFromQuote($event->reserveItinerary->agency_id, $quote, $event->reserveItinerary);
+                    // ↓一応、行程が基本なので見積もりから作成するパターンは無しに
 
-                    } else { // 見積書がない場合は"行程をもと"に予約確認書を作成
+                    // if (($quote = $this->reserveConfirmService->getQuoteByReserveItineraryId($event->reserveItinerary->id))) { // 見積がある場合は"見積書"をもとに予約確認書を作成
+                    //     $this->reserveConfirmService->createConfirmFromQuote($event->reserveItinerary->agency_id, $quote, $event->reserveItinerary);
+
+                    // } else { // 見積書がない場合は"行程をもと"に予約確認書を作成
                         $this->reserveConfirmService->createFromReserveItinerary($event->reserveItinerary, $participants);
 
-                    }
+                    // }
                 }
 
-                if (!$this->reserveInvoiceService->findByReserveId($event->reserveItinerary->reserve->id, [], ['id'])) { // 請求書データが作成されていない場合は作成
+                // ↓行程や帳票の設定が最新の状態になっていない場合、それらを元に請求書を作成すると金額が合っていないため混乱の元になるので自動作成はひとまず無しに
 
-                    if (($reserveConfirm = $this->reserveConfirmService->getReserveConfirmByReserveItineraryId($event->reserveItinerary->id))) { // 予約確認書がある場合は"予約確認書をもと"に作成
-                        $this->reserveInvoiceService->createFromReserveConfirm(
-                            $reserveConfirm, 
-                            $event->reserveItinerary->reserve, 
-                            $event->reserveItinerary->id, 
-                            auth("staff")->user()->id // 最終担当者
-                        );
+                // if (!$this->reserveInvoiceService->findByReserveId($event->reserveItinerary->reserve->id, [], ['id'])) { // 請求書データが作成されていない場合は作成
 
-                    } else { // 予約確認書がない場合は"行程データをもと"に作成。（※この分岐は使用されない想定だが一応実装）
-                        $this->reserveInvoiceService->createFromReserve(
-                            $event->reserveItinerary->reserve, 
-                            $event->reserveItinerary->id, 
-                            auth("staff")->user()->id // 最終担当者
-                        );
-                    }
+                //     if (($reserveConfirm = $this->reserveConfirmService->getReserveConfirmByReserveItineraryId($event->reserveItinerary->id))) { // 予約確認書がある場合は"予約確認書をもと"に作成
+                //         $this->reserveInvoiceService->createFromReserveConfirm(
+                //             $reserveConfirm, 
+                //             $event->reserveItinerary->reserve, 
+                //             $event->reserveItinerary->id, 
+                //             auth("staff")->user()->id // 最終担当者
+                //         );
 
-                }
+                //     } else { // 予約確認書がない場合は"行程データをもと"に作成。（※この分岐は使用されない想定だが一応実装）
+                //         $this->reserveInvoiceService->createFromReserve(
+                //             $event->reserveItinerary->reserve, 
+                //             $event->reserveItinerary->id, 
+                //             auth("staff")->user()->id // 最終担当者
+                //         );
+                //     }
+
+                // }
                 break;
 
             default:

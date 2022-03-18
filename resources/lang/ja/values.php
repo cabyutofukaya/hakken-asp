@@ -118,7 +118,7 @@ return [
     'targets' => [
       'user_member_cards|user_mileages|user_visas|users' => '顧客管理(個人)',
       'business_users|business_user_managers' => '顧客管理(法人)',
-      'participants|reserve_confirms|reserve_invoices|reserve_itineraries|reserves|web_online_schedules|web_reserve_exts' => '予約/見積',
+      'participants|reserve_confirms|reserve_invoices|reserve_receipts|reserve_itineraries|reserves|web_online_schedules|web_reserve_exts' => '予約/見積',
       'account_payable_details|account_payables|agency_bundle_deposits|agency_deposits|agency_withdrawals|reserve_bundle_invoices|reserve_bundle_receipts|reserve_invoices|reserve_receipts|v_reserve_invoices' => '経理業務', 
       'agency_consultations|web_messages|web_message_histories' => '相談履歴',
       'directions|v_directions|areas|v_areas|cities|subject_options|subject_airplanes|subject_hotels|suppliers' => 'マスタ管理', 

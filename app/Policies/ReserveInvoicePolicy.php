@@ -29,7 +29,7 @@ class ReserveInvoicePolicy
                 return Response::allow();
             }
         }
-        return Response::deny('経理業務の参照権限がありません(403 Forbidden)');
+        return Response::deny('請求書の参照権限がありません(403 Forbidden)');
     }
 
     /**
@@ -49,7 +49,7 @@ class ReserveInvoicePolicy
                 return Response::allow();
             }
         }
-        return Response::deny('経理業務の参照権限がありません(403 Forbidden)');
+        return Response::deny('請求書の参照権限がありません(403 Forbidden)');
     }
 
     /**
@@ -68,7 +68,7 @@ class ReserveInvoicePolicy
                 return Response::allow();
             }
         }
-        return Response::deny('経理業務の登録権限がありません(403 Forbidden)');
+        return Response::deny('請求書の登録権限がありません(403 Forbidden)');
     }
 
     /**
@@ -88,7 +88,7 @@ class ReserveInvoicePolicy
                 return Response::allow();
             }
         }
-        return Response::deny('経理業務の更新権限がありません(403 Forbidden)');
+        return Response::deny('請求書の更新権限がありません(403 Forbidden)');
     }
 
     /**
@@ -108,7 +108,7 @@ class ReserveInvoicePolicy
                 return Response::allow();
             }
         }
-        return Response::deny('経理業務の削除権限がありません(403 Forbidden)');
+        return Response::deny('請求書の削除権限がありません(403 Forbidden)');
     }
 
     /**
@@ -140,6 +140,6 @@ class ReserveInvoicePolicy
                 return Response::allow();
             }
         }
-        return Response::deny('経理業務の削除権限がありません(403 Forbidden)');
+        return Response::deny('請求書の削除権限がありません(403 Forbidden)');
     }
 }

@@ -233,7 +233,7 @@ class Staff extends Authenticatable implements AppUser
         }
         return in_array(
             config('consts.agency_roles.READ'),
-            data_get($this->agency_role->authority, config('consts.agency_roles.PARTICIPANTS|RESERVE_CONFIRMS|RESERVE_INVOICES|RESERVE_ITINERARIES|RESERVES|WEB_ONLINE_SCHEDULES|WEB_RESERVE_EXTS'), [])
+            data_get($this->agency_role->authority, config('consts.agency_roles.PARTICIPANTS|RESERVE_CONFIRMS|RESERVE_INVOICES|RESERVE_RECEIPTS|RESERVE_ITINERARIES|RESERVES|WEB_ONLINE_SCHEDULES|WEB_RESERVE_EXTS'), [])
         );
     }
 

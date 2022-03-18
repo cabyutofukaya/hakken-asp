@@ -87,9 +87,10 @@ class EditFormComposer
         // 参加者情報
         $participantInfo = $this->webReserveService->getParticipants($reserve->id, true); // 参加者一覧（取消者を含む。削除済は取得しない）
 
+        $reserveUpdatedAt = $reserve->updated_at->format('Y-m-d H:i:s'); // 同時編集の判定に使用
 
         // 請求書、共通設定のデフォルト設定情報、予約番号
-        if ($reserveInvoice) { // 請求書保存データあり
+        if ($reserveInvoice) { // 更新
 
             // 参加者情報
             $participants = []; // 参加者リスト
@@ -105,8 +106,6 @@ class EditFormComposer
             $documentCommonSetting = $reserveInvoice->document_common_setting;
 
             $documentSetting = $reserveInvoice->document_setting;
-
-            $updatedAt = $reserveInvoice->updated_at->format('Y-m-d H:i:s'); // 同時編集の判定に使用
 
             /////////// 入力初期値をセット ///////////
             $invoiceNumber = $reserveInvoice->user_invoice_number;
@@ -141,8 +140,8 @@ class EditFormComposer
 
             // 編集時は論理削除を考慮してselectメニューを取得
             $documentRequests = ['' => '---'] + $this->documentRequestService->getIdNameSelectSafeValues($agencyId, [$documentRequestId]);
-        } else {
-            // 請求書の基本データは予約作成時に作られるのでここの処理に来ることは無いはず
+
+        } else { // 新規
 
             // 参加者情報
             $participants = []; // 参加者リスト
@@ -168,10 +167,9 @@ class EditFormComposer
             // 「検印欄」の表示・非表示は設定がイレギュラーにつき、他の設定項目と形式を合わせる
             $this->setSealSetting($documentSetting, config('consts.document_requests.DISPLAY_BLOCK'));
 
-            $updatedAt = null;
-
             /////////// 入力初期値をセット ///////////
-            $invoiceNumber = "";
+            $systemInvoiceNumber = $this->reserveInvoiceService->createInvoiceNumber($reserve->agency_id); // システムから割り当てられた請求書番号。編集ページでは特に使わない
+            $invoiceNumber = $systemInvoiceNumber;
             // 発行日
             $issueDate = date('Y/m/d');
             // 支払い期限
@@ -208,6 +206,7 @@ class EditFormComposer
             'document_request_id' => $documentRequestId, // 書類設定ID
             'document_common_id' => $documentCommonId, // 共通書類設定ID
             'user_invoice_number' => $invoiceNumber, // 見積番号
+            'invoice_number' => $systemInvoiceNumber,
             'issue_date' => $issueDate, // 発行日
             'payment_deadline' => $paymentDeadline, // 支払い期限
             'name' => $name, // 案件名
@@ -217,9 +216,15 @@ class EditFormComposer
             'representative' => $representative, // 代表者情報
             'participant_ids' => $participantIds, // チェックONの参加者ID
             'document_address' => $documentAddress, // 宛名情報
-            'updated_at' => $updatedAt,
             'status' => $status, // 書類ステータス
+            'reserve' => [
+                'updated_at' => $reserveUpdatedAt,
+            ],
         ];
+
+        if (!$reserveInvoice) { // 新規作成時は申込者名(検索用)もセット
+            $defaultValue['applicant_name'] = Arr::get($documentAddress, 'name');
+        }
 
         $formSelects = [
             'documentCommons' => ['' => '---'] + $this->documentCommonService->getIdNameSelectSafeValues($agencyId, [$documentCommonId]), // 宛名/自社情報共通設定selectメニュー
