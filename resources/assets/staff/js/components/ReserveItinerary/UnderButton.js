@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import { ConstContext } from "../ConstApp";
 import { ReserveItineraryConstContext } from "../ReserveItineraryConstApp";
+import classNames from "classnames";
 
 /**
  *
@@ -11,8 +12,8 @@ const UnderButton = ({
     editMode,
     canSave,
     isSubmitting,
-    backUrl,
-    handleSubmit
+    handleSubmit,
+    backUrl
 }) => {
     const { applicationStep, isCanceled, isEnabled } = useContext(
         ReserveItineraryConstContext
@@ -46,7 +47,9 @@ const UnderButton = ({
                 {canSave && (
                     <li className="wd50">
                         <button
-                            className="blueBtn"
+                            className={classNames("blueBtn", {
+                                loading: isSubmitting
+                            })}
                             onClick={handleSubmit}
                             disabled={isSubmitting}
                         >

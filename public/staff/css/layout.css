@@ -1145,6 +1145,20 @@ hr.sepBorder {
 #formControl li:nth-of-type(2) button span {
     font-size: 30px;
 }
+#formControl button.loading span {
+    display: none;
+}
+#formControl button.loading:before {
+    content: "";
+    background: url("../img/shared/oval.svg") center center no-repeat;
+    background-size: 100%;
+    width: 24px;
+    height: 24px;
+    position: absolute;
+    left: 24px;
+    top: 50%;
+    transform: translateY(-50%);
+}
 .modal {
     height: 100vh;
     position: fixed;
