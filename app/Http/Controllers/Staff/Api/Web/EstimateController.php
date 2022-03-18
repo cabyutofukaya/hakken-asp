@@ -195,10 +195,11 @@ class EstimateController extends Controller
         try {
             $input = $request->all();
 
-            // ステータスが「キャンセル」になった後にステータス変更されると困るので同時編集チェック
-            if ($estimate->updated_at != Arr::get($input, 'updated_at')) {
-                throw new ExclusiveLockException;
-            }
+            // ↓この判定はそれほど重要ではなさそうなので一旦外し
+            // // ステータスが「キャンセル」になった後にステータス変更されると困るので同時編集チェック
+            // if ($estimate->updated_at != Arr::get($input, 'updated_at')) {
+            //     throw new ExclusiveLockException;
+            // }
 
             // ステータスのカスタム項目を取得
             $customStatus = $this->userCustomItemService->findByCodeForAgency($estimate->agency_id, config('consts.user_custom_items.CODE_APPLICATION_ESTIMATE_STATUS'), ['key'], null);
