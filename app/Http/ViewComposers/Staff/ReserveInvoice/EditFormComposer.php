@@ -90,7 +90,7 @@ class EditFormComposer
         $reserveUpdatedAt = $reserve->updated_at->format('Y-m-d H:i:s'); // 同時編集の判定に使用
 
         // 請求書、共通設定のデフォルト設定情報、予約番号
-        if ($reserveInvoice) { // 請求書保存データあり
+        if ($reserveInvoice) { // 更新
 
             // 参加者情報
             $participants = []; // 参加者リスト
@@ -142,8 +142,7 @@ class EditFormComposer
 
             // 編集時は論理削除を考慮してselectメニューを取得
             $documentRequests = ['' => '---'] + $this->documentRequestService->getIdNameSelectSafeValues($agencyId, [$documentRequestId]);
-        } else {
-            // 請求書の基本データは予約作成時に作られるのでここの処理に来ることは無いはず
+        } else { // 新規
 
             // 参加者情報
             $participants = []; // 参加者リスト
@@ -188,7 +187,7 @@ class EditFormComposer
             $representative = $this->getRepresentativeInfo($reserve);
             // 申込者情報
             $documentAddress = $this->getDocumentAddress($reserve->applicantable);
-
+            
             $businessUserId = null; // 法人顧客ID
             if ($reserve->applicantable && $reserve->applicantable->applicant_type === config('consts.reserves.PARTICIPANT_TYPE_BUSINESS')) {
                 $businessUserId = $reserve->applicantable->business_user_id;
@@ -224,6 +223,10 @@ class EditFormComposer
                 'updated_at' => $reserveUpdatedAt,
             ],
         ];
+
+        if (!$reserveInvoice) { // 新規作成時は申込者名(検索用)もセット
+            $defaultValue['applicant_name'] = Arr::get($documentAddress, 'name');
+        }
 
         $formSelects = [
             'documentCommons' => ['' => '---'] + $this->documentCommonService->getIdNameSelectSafeValues($agencyId, [$documentCommonId]), // 宛名/自社情報共通設定selectメニュー

@@ -61,8 +61,14 @@ class UpdatedReserveEventListener
 
             if (($reserveInvoice = $this->reserveInvoiceService->findByReserveId($newReserve->id))) {
                 // 請求書レコードのapplicant_nameを更新（検索用カラム）
+                $applicantName = null;
+                if ($newReserve->applicantable->applicant_type === config('consts.reserves.PARTICIPANT_TYPE_BUSINESS')) { // 法人顧客
+                    $applicantName = optional($newReserve->applicantable)->name;
+                } elseif ($newReserve->applicantable->applicant_type === config('consts.reserves.PARTICIPANT_TYPE_PERSON')) { // 個人顧客 *userableを経由してname属性にアクセス
+                    $applicantName = optional($newReserve->applicantable->userable)->name;
+                }
                 $this->reserveInvoiceService->updateFields($reserveInvoice->id, [
-                    'applicant_name' => $newReserve->applicantable->name,
+                    'applicant_name' => $applicantName,
                 ]);
             }
         }

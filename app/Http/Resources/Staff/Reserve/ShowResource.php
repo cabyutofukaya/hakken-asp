@@ -23,20 +23,40 @@ class ShowResource extends JsonResource
         // 有効行程
         $enabledReserveItinerary = $this->enabled_reserve_itinerary->id ? $this->enabled_reserve_itinerary : null;
 
-        // 予約確認書
-        $reserveConfirm = null;
-        if ($enabledReserveItinerary) {
+        $reserveConfirm = null; // 予約確認書
+        $reserveInvoice = null; // 請求書
+        $reserveReceipt = null; // 領収書
+
+        $invoice = null; // 請求書リンク情報
+        $receipt = null; // 領収書リンク情報
+
+        if ($enabledReserveItinerary) { // 有効な行程あり
             // 予約確認書
             $reserveConfirm = ReserveConfirm::select(['document_setting','confirm_number'])->where('reserve_itinerary_id', $enabledReserveItinerary->id)->whereHas('document_quote', function ($q) {
                 $q->where('code', config('consts.document_categories.CODE_RESERVE_CONFIRM_DEFAULT'));
             })->first();
+
+            // 請求書(⇦作成条件は有効行程があることが前提)
+            $reserveInvoice = ReserveInvoice::where('reserve_id', $this->id)->first();
+            // 領収書
+            $reserveReceipt = $reserveInvoice ? $reserveInvoice->reserve_receipt : null;
+
+            $invoice = [
+                'label' => $reserveInvoice ? Arr::get($reserveInvoice->document_setting, 'title') : '請求書',
+                'url' => route('staff.asp.estimates.reserve.invoice.edit', [
+                    $request->agencyAccount,
+                    $this->control_number
+                ]) . $departedQuery,
+            ];
+
+            $receipt = [
+                'label' => $reserveReceipt && Arr::get($reserveReceipt->document_setting, 'title') ? $reserveReceipt->document_setting['title'] : '領収書',
+                'url' => $reserveReceipt ? route('staff.asp.estimates.reserve.receipt.edit', [
+                    $request->agencyAccount,
+                    $this->control_number
+                ]) . $departedQuery: null,
+            ];
         }
-
-        // 請求書
-        $reserveInvoice = ReserveInvoice::where('reserve_id', $this->id)->first();
-        // 領収書
-        $reserveReceipt = $reserveInvoice ? $reserveInvoice->reserve_receipt : null;
-
 
         // 申込者
         $applicant = null;
@@ -123,21 +143,9 @@ class ShowResource extends JsonResource
                 ]) . $departedQuery,
             ],
             // 請求書
-            'invoice' => [
-                'label' => $reserveInvoice ? Arr::get($reserveInvoice->document_setting, 'title') : '請求書',
-                'url' => $reserveInvoice ? route('staff.asp.estimates.reserve.invoice.edit', [
-                    $request->agencyAccount,
-                    $this->control_number
-                ]) . $departedQuery: null,
-            ],
-            // 領収書(請求書が作成済みであれば作成・編集可)
-            'receipt' => [
-                'label' => $reserveReceipt && Arr::get($reserveReceipt->document_setting, 'title') ? $reserveReceipt->document_setting['title'] : '領収書',
-                'url' => $reserveReceipt ? route('staff.asp.estimates.reserve.receipt.edit', [
-                    $request->agencyAccount,
-                    $this->control_number
-                ]) . $departedQuery: null,
-            ]
+            'invoice' => $invoice,
+            // 領収書
+            'receipt' => $receipt,
         ];
     }
 }

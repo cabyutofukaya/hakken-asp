@@ -66,12 +66,6 @@ class ReserveInvoiceController extends Controller
             }
         }
 
-        // // 認可チェック
-        // $response = \Gate::authorize('update', $reserve);
-        // if (!$response->allowed()) {
-        //     abort(403, $response->message());
-        // }
-
         $agencyId = auth('staff')->user()->agency_id;
 
         $input = $request->all();

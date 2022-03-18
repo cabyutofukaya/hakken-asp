@@ -64,7 +64,7 @@ const ReserveInputArea = ({
         e.preventDefault();
         history.back();
     };
-    console.log(consts);
+
     return (
         <>
             <form
