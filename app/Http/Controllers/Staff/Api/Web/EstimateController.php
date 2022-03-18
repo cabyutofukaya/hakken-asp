@@ -187,7 +187,7 @@ class EstimateController extends Controller
             abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
         }
 
-        $response = Gate::authorize('update', $estimate);
+        $response = Gate::authorize('updateStatus', $estimate);
         if (!$response->allowed()) {
             abort(403, $response->message());
         }

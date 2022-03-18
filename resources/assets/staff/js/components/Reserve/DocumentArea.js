@@ -86,7 +86,8 @@ const DocumentArea = ({
     reserveNumber,
     currentItineraryNumber,
     hasOriginalDocumentQuoteTemplate,
-    constsCommon
+    constsCommon,
+    permission
 }) => {
     const { agencyAccount, numberLedgerAllowedMax } = useContext(ConstContext);
 
@@ -194,10 +195,12 @@ const DocumentArea = ({
 
     return (
         <>
+            {console.log(permission)}
             <h2 className="optTit">
                 帳票
                 {/**追加可能条件-->カスタムテンプレートが設定されていること。現在選択されている有効行程であること。帳票追加最大数未満であること */}
-                {hasOriginalDocumentQuoteTemplate &&
+                {permission?.reserve_confirm_create &&
+                    hasOriginalDocumentQuoteTemplate &&
                     currentItineraryNumber &&
                     !isLoading &&
                     lists.length < numberLedgerAllowedMax && (

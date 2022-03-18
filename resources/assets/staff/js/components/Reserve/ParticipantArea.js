@@ -550,7 +550,7 @@ const ParticipantArea = ({
         <>
             <h2 className="optTit">
                 参加者
-                {permission?.reserve_update && permission?.participant_create && (
+                {permission?.reserve_create && permission?.participant_create && (
                     <a
                         className="js-modal-open"
                         data-target="mdAddUser"

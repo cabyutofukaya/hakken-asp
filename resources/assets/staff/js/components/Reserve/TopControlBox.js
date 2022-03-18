@@ -27,34 +27,32 @@ const TopControlBox = ({
         // キャンセル予約で仕入情報が無い場合は削除ボタンのみ表示
         return <TopDeleteBox isDeleting={isDeleting} />;
     } else {
-        if (deletePermission) {
-            return (
-                <ul className="estimateControl">
+        return (
+            <ul className="estimateControl">
+                <li>
+                    <button
+                        className={classNames("grayBtn", {
+                            "js-modal-open": !isCanceling
+                        })}
+                        data-target="mdCxl"
+                    >
+                        キャンセル
+                    </button>
+                </li>
+                {deletePermission && (
                     <li>
                         <button
-                            className={classNames("grayBtn", {
-                                "js-modal-open": !isCanceling
+                            className={classNames("redBtn", {
+                                "js-modal-open": !isDeleting
                             })}
-                            data-target="mdCxl"
+                            data-target="mdDelete"
                         >
-                            キャンセル
+                            削除
                         </button>
                     </li>
-                    {deletePermission && (
-                        <li>
-                            <button
-                                className={classNames("redBtn", {
-                                    "js-modal-open": !isDeleting
-                                })}
-                                data-target="mdDelete"
-                            >
-                                削除
-                            </button>
-                        </li>
-                    )}
-                </ul>
-            );
-        }
+                )}
+            </ul>
+        );
     }
     return null;
 };

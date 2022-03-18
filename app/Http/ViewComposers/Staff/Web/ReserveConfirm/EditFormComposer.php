@@ -55,6 +55,8 @@ class EditFormComposer
         // キャンセルか否か
         $isCanceled = $reserve->is_canceled;
 
+        $reserveUpdatedAt = $reserve->updated_at->format('Y-m-d H:i:s'); // 同時編集の判定に使用
+
         if ($reserveConfirm) { // 保存データあり。$reserveConfirmから各種データをセット
 
             // 参加者情報
@@ -74,8 +76,6 @@ class EditFormComposer
             $documentCommonSetting = $reserveConfirm->document_common_setting;
 
             $documentSetting = $reserveConfirm->document_setting;
-
-            $updatedAt = $reserveConfirm->updated_at->format('Y-m-d H:i:s'); // 同時編集の判定に使用
 
             /////////// 入力初期値をセット ///////////
             // 帳票番号
@@ -152,8 +152,6 @@ class EditFormComposer
             // 「検印欄」の表示・非表示は設定がイレギュラーにつき、他の設定項目と形式を合わせる
             $this->setSealSetting($documentSetting, config('consts.document_quotes.DISPLAY_BLOCK'));
 
-            $updatedAt = null;
-
             /////////// 入力初期値をセット ///////////
             // 帳票番号
             $confirmNumber = null;
@@ -203,7 +201,9 @@ class EditFormComposer
             'representative' => $representative,
             'participant_ids' => $participantIds, // チェックONの参加者ID
             'document_address' => $documentAddress,
-            'updated_at' => $updatedAt, // 同時編集制御
+            'reserve' => [
+                'updated_at' => $reserveUpdatedAt,
+            ],
             'status' => $status,
         ];
 

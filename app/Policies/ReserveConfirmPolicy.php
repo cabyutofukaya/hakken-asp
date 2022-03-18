@@ -31,7 +31,7 @@ class ReserveConfirmPolicy
                 return Response::allow();
             }
         }
-        return Response::deny('予約/見積の参照権限がありません(403 Forbidden)');
+        return Response::deny('帳票の参照権限がありません(403 Forbidden)');
     }
 
     /**
@@ -51,7 +51,7 @@ class ReserveConfirmPolicy
                 return Response::allow();
             }
         }
-        return Response::deny('予約/見積の参照権限がありません(403 Forbidden)');
+        return Response::deny('帳票の参照権限がありません(403 Forbidden)');
     }
 
     /**
@@ -79,7 +79,7 @@ class ReserveConfirmPolicy
                 return Response::allow();
             }
         }
-        return Response::deny('予約/見積の登録権限がありません(403 Forbidden)');
+        return Response::deny('帳票の登録権限がありません(403 Forbidden)');
     }
 
     /**
@@ -99,7 +99,7 @@ class ReserveConfirmPolicy
                 return Response::allow();
             }
         }
-        return Response::deny('予約/見積の更新権限がありません(403 Forbidden)');
+        return Response::deny('帳票の更新権限がありません(403 Forbidden)');
     }
 
     /**
@@ -119,7 +119,7 @@ class ReserveConfirmPolicy
                 return Response::allow();
             }
         }
-        return Response::deny('予約/見積の削除権限がありません(403 Forbidden)');
+        return Response::deny('帳票の削除権限がありません(403 Forbidden)');
     }
 
     /**
@@ -151,6 +151,6 @@ class ReserveConfirmPolicy
                 return Response::allow();
             }
         }
-        return Response::deny('予約/見積の削除権限がありません(403 Forbidden)');
+        return Response::deny('帳票の削除権限がありません(403 Forbidden)');
     }
 }

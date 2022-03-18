@@ -99,6 +99,28 @@ class ReservePolicy
     }
 
     /**
+     * Determine whether the user can update the reserves.
+     *
+     * ステータス更新
+     * 
+     * @param  \App\Models\AppUser  $user
+     * @param  \App\Reserve  $user
+     * @return mixed
+     */
+    public function updateStatus(AppUser $appUser, Reserve $reserve)
+    {
+        $model = class_basename(get_class($appUser));
+        if ($model === 'Admin') {
+            return Response::allow();
+        } elseif ($model === 'Staff') {
+            if ($appUser->isApproval('reserves', config("consts.agency_roles.UPDATE")) && $reserve->agency_id == $appUser->agency_id) {
+                return Response::allow();
+            }
+        }
+        return Response::deny('予約/見積の更新権限がありません(403 Forbidden)');
+    }
+
+    /**
      * Determine whether the user can delete the user.
      *
      * @param  \App\Models\AppUser  $appUser

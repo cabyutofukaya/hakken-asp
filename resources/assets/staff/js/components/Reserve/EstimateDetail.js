@@ -82,6 +82,7 @@ const EstimateDetail = ({
                     consts?.hasOriginalDocumentQuoteTemplate
                 }
                 constsCommon={constsCommon}
+                permission={permission}
             />
             {permission.management_read && (
                 <AccountPayableArea

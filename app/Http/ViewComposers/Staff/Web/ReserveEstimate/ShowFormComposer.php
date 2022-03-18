@@ -3,6 +3,9 @@ namespace App\Http\ViewComposers\Staff\Web\ReserveEstimate;
 
 use App\Models\AccountPayable;
 use App\Models\AgencyConsultation;
+use App\Models\Participant;
+use App\Models\Reserve;
+use App\Models\ReserveItinerary;
 use App\Services\CountryService;
 use App\Services\DocumentQuoteService;
 use App\Services\ReserveParticipantPriceService;
@@ -309,12 +312,14 @@ class ShowFormComposer
             // 詳細
             config('consts.reserves.TAB_RESERVE_DETAIL') => [
                 'reserve_read' => Auth::user('staff')->can('view', $reserve), // 閲覧権限
+                'reserve_create' => Auth::user('staff')->can('create', new Reserve), // 作成権限
                 'reserve_update' => Auth::user('staff')->can('update', $reserve), // 更新権限
                 'reserve_delete' => Auth::user('staff')->can('delete', $reserve), // 削除権限
                 'management_read' => Auth::user('staff')->can('viewAny', new AccountPayable), // 経理権限
-                'itinerary_create' => !$reserve->is_canceled, // キャンセル予約の場合は追加不可に
+                'itinerary_create' => Auth::user('staff')->can('create', [new ReserveItinerary, $reserve]),
+                'reserve_confirm_create' => Auth::user('staff')->can('create', new Reserve),
                 // 参加者の編集権限はちょっと特殊
-                'participant_create' => !$reserve->is_canceled, // キャンセル予約の場合は追加不可に
+                'participant_create' => Auth::user('staff')->can('create', [new Participant, $reserve]),
                 'participant_agekbn_update' => !$reserve->is_canceled, // キャンセル予約の場合は年齢区分編集不可に(料金に関連するため)
                 'participant_cancel' => !$reserve->is_canceled, // キャンセル予約の場合は取り消し不可に
                 'participant_delete' => !$reserve->is_canceled, // キャンセル予約の場合は削除不可に
