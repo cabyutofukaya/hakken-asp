@@ -9,6 +9,7 @@ import ReactLoading from "react-loading";
 import StaffTd from "./components/StaffTd";
 import SmallDangerModal from "./components/SmallDangerModal";
 import classNames from "classnames";
+import StatusTd from "./components/Reserve/StatusTd";
 
 const ReserveList = ({ searchParam }) => {
     const { agencyAccount } = useContext(ConstContext);
@@ -242,7 +243,9 @@ const ReserveList = ({ searchParam }) => {
                                             {row.control_number ?? "-"}
                                         </a>
                                     </td>
-                                    <td>{row.status.val ?? "-"}</td>
+                                    <td className="txtalc">
+                                        <StatusTd status={row?.status?.val} />
+                                    </td>
                                     <StaffTd
                                         name={row?.manager?.name}
                                         isDeleted={row?.manager?.is_deleted}
