@@ -1061,10 +1061,11 @@ const ItineraryArea = ({
                     </React.Fragment>
                 ))}
             <UnderButton
-                backUrl={consts.backUrl}
                 editMode={editMode}
                 canSave={isTravelDates == 1}
+                isSubmitting={isSubmitting}
                 handleSubmit={handleSubmit}
+                backUrl={consts.backUrl}
             />
             {/**スケジュール行削除 */}
             <SmallDangerModal

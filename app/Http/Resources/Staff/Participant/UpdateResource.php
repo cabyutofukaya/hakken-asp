@@ -17,6 +17,9 @@ class UpdateResource extends JsonResource
         return [
             'id' => $this->id,
             'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
+            'reserve' => [
+                'updated_at' => $this->reserve->updated_at->format('Y-m-d H:i:s'),
+            ]
         ];
     }
 }
