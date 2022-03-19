@@ -369,7 +369,7 @@ class ParticipantController extends Controller
 
         try {
             // 予約データからの紐付け解除と参加者データ・参加者に紐づく料金情報の削除
-            $result = DB::transaction(function () use ($participant, $reception) {
+            list($result, $reserve) = DB::transaction(function () use ($participant, $reception) {
 
                 // 受付種別で分ける
                 if ($reception === config('consts.const.RECEPTION_TYPE_ASP')) { // ASP受付
@@ -402,10 +402,16 @@ class ParticipantController extends Controller
 
                 event(new ReserveChangeHeadcountEvent($reserve)); // 参加者人数変更イベント
 
-                return $result;
+                return [$result, $reserve];
             });
             if ($result) {
-                return response('', 200);
+                return [
+                    'data' => [
+                        'reserve' => [
+                            'reserve_itinerary_exists' => $reserve->reserve_itinerary_exists ? 1 : 0
+                            ]
+                        ]
+                    ];
             }
         } catch (Exception $e) {
             Log::error($e);

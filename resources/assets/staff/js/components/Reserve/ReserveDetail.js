@@ -15,7 +15,8 @@ const ReserveDetail = ({
     formSelects,
     consts,
     constsCommon,
-    permission
+    permission,
+    setSuccessMessage
 }) => {
     // 現在、有効化中の行程番号
     const [currentItineraryNumber, setCurrentItineraryNumber] = useState(null);
@@ -56,6 +57,7 @@ const ReserveDetail = ({
                 setDeleteRequestId={setParticipantDeleteRequestId}
                 setCancelRequestId={setParticipantCancelRequestId}
                 permission={permission}
+                setSuccessMessage={setSuccessMessage}
             />
 
             <ItineraryArea

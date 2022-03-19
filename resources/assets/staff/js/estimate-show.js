@@ -11,6 +11,7 @@ import classNames from "classnames";
 import { useMountedRef } from "../../hooks/useMountedRef";
 import SmallDangerModal from "./components/SmallDangerModal";
 import TopDeleteBox from "./components/Reserve/TopDeleteBox";
+import SuccessMessage from "./components/SuccessMessage";
 
 /**
  *
@@ -44,6 +45,8 @@ const EstimateShowArea = ({
     const [reserveUpdatedAt, setReserveUpdatedAt] = useState(
         defaultValue?.[consts.common.tabCodes?.tab_basic_info]?.updatedAt
     ); // 見積情報更新日時
+
+    const [successMessage, setSuccessMessage] = useState(""); // 成功メッセージ
 
     // タブクリック
     const handleTabChange = (e, tab) => {
@@ -112,6 +115,10 @@ const EstimateShowArea = ({
                 )}
             </div>
 
+            {/**APIがらみのサクセスメッセージ */}
+            <SuccessMessage message={successMessage} />
+
+            {/**ページ遷移時のフラッシュメッセージ */}
             {flashMessage?.success_message && (
                 <div id="successMessage">
                     <p>
@@ -225,6 +232,7 @@ const EstimateShowArea = ({
                     consts={consts?.[consts.common.tabCodes.tab_reserve_detail]}
                     constsCommon={consts?.common}
                     permission={permission.detail}
+                    setSuccessMessage={setSuccessMessage}
                 />
             )}
             {permission.consultation.consultation_read && (

@@ -15,7 +15,8 @@ const WebReserveDetail = ({
     formSelects,
     consts,
     constsCommon,
-    permission
+    permission,
+    setSuccessMessage
 }) => {
     // 現在、有効化中の行程番号
     const [currentItineraryNumber, setCurrentItineraryNumber] = useState(null);
@@ -56,6 +57,7 @@ const WebReserveDetail = ({
                 setDeleteRequestId={setParticipantDeleteRequestId}
                 setCancelRequestId={setParticipantCancelRequestId}
                 permission={permission}
+                setSuccessMessage={setSuccessMessage}
             />
             <ItineraryArea
                 isShow={isShow}

@@ -13,6 +13,7 @@ import TopControlBox from "./components/Reserve/TopControlBox";
 import CancelChargeModal from "./components/Reserve/CancelChargeModal";
 import CancelModal from "./components/Reserve/CancelModal";
 import TopStatus from "./components/Reserve/TopStatus";
+import SuccessMessage from "./components/SuccessMessage";
 
 /**
  *
@@ -46,6 +47,8 @@ const ReserveShowArea = ({
     const [reserveUpdatedAt, setReserveUpdatedAt] = useState(
         defaultValue?.[consts.common.tabCodes?.tab_basic_info]?.updatedAt
     ); // 予約情報更新日時
+
+    const [successMessage, setSuccessMessage] = useState(""); // 成功メッセージ
 
     // タブクリック
     const handleTabChange = (e, tab) => {
@@ -178,6 +181,10 @@ const ReserveShowArea = ({
                 />
             </div>
 
+            {/**APIがらみのサクセスメッセージ */}
+            <SuccessMessage message={successMessage} />
+
+            {/**ページ遷移時のフラッシュメッセージ */}
             {flashMessage?.success_message && (
                 <div id="successMessage">
                     <p>
@@ -296,6 +303,7 @@ const ReserveShowArea = ({
                     consts={consts?.[consts.common.tabCodes.tab_reserve_detail]}
                     constsCommon={consts?.common}
                     permission={permission.detail}
+                    setSuccessMessage={setSuccessMessage}
                 />
             )}
             {permission.consultation.consultation_read && (
