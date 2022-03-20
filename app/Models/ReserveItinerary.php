@@ -50,6 +50,8 @@ class ReserveItinerary extends Model
         'agency_id',
         'control_number',
         'enabled',
+        'total_gross',
+        'total_net',
         'note',
     ];
 
@@ -71,7 +73,8 @@ class ReserveItinerary extends Model
      * @var array
      */
     protected $casts = [
-        // 'enabled' => 'boolean',
+        'total_gross' => 'integer',
+        'total_net' => 'integer',
     ];
 
     protected $dates = [

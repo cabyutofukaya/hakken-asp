@@ -17,7 +17,9 @@ const ReserveBasicInfoArea = ({
     consts,
     constsCommon,
     customFields,
-    permission
+    permission,
+    errorMessage,
+    setErrorMessage
 }) => {
     const { agencyAccount } = useContext(ConstContext);
 
@@ -34,6 +36,8 @@ const ReserveBasicInfoArea = ({
 
         setIsLoading(true); // 二重読み込み禁止
 
+        setErrorMessage(""); // エラーメッセージ初期化
+
         const response = await axios
             .get(`/api/${agencyAccount}/reserve/${reserveNumber}`)
             .finally(() => {
@@ -43,10 +47,22 @@ const ReserveBasicInfoArea = ({
             });
 
         if (mounted.current && response?.data?.data) {
-            setData({ ...response.data.data });
+            const res = response.data.data;
+            setData({ ...res });
             // 最新ステータスと予約情報更新日時をセット
-            setStatus(response.data.data.status?.val);
-            setUpdatedAt(response.data.data.updated_at);
+            setStatus(res.status?.val);
+            setUpdatedAt(res.updated_at);
+
+            if (
+                res.invoice?.created_at &&
+                res.enabled_reserve_itinerary?.total_gross !=
+                    res.sum_invoice_amount
+            ) {
+                //請求書作成済みでGRS合計と請求金額が異なっている場合はエラーを表示
+                setErrorMessage(
+                    "GSR合計と請求合計が異なります。請求書の参加者情報が正しいかご確認ください。"
+                );
+            }
         }
     };
     useEffect(() => {

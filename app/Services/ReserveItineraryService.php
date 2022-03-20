@@ -113,6 +113,8 @@ class ReserveItineraryService
 
         $this->editCommon($reserveItinerary, $input);
 
+        $this->refreshItineraryTotalAmount($reserveItinerary); // 合計金額更新
+
         return $reserveItinerary;
     }
 
@@ -490,6 +492,22 @@ class ReserveItineraryService
     }
 
     /**
+     * 合計金額カラムを更新
+     */
+    public function refreshItineraryTotalAmount(ReserveItinerary $reserveItinerary) : void
+    {
+        $this->reserveItineraryRepository->updateField($reserveItinerary->id, [
+            'total_gross' => $reserveItinerary->sum_gross,
+            'total_net' => $reserveItinerary->sum_net,
+            'total_gross_profit' => $reserveItinerary->sum_gross_profit,
+            'total_cancel_charge' => $reserveItinerary->sum_cancel_gross,
+            'total_cancel_charge_net' => $reserveItinerary->sum_cancel_net,
+            'total_cancel_charge_profit' => $reserveItinerary->sum_cancel_charge_profit,
+
+        ]);
+    }
+
+    /**
      * 更新
      *
      * @param int $id 行程ID
@@ -509,6 +527,8 @@ class ReserveItineraryService
         ]); // 備考
 
         $this->editCommon($reserveItinerary, $input);
+
+        $this->refreshItineraryTotalAmount($reserveItinerary); // 合計金額更新
 
         return $this->reserveItineraryRepository->find($id);
     }
@@ -572,7 +592,9 @@ class ReserveItineraryService
         );
 
         // ②
-        return $this->reserveItineraryRepository->updateField($id, ['enabled' => true]);
+        $this->reserveItineraryRepository->updateField($id, ['enabled' => true]);
+
+        return $this->reserveItineraryRepository->find($id);
     }
 
     /**

@@ -10,8 +10,8 @@ const ReserveAmountBreakdown = ({ reserveData }) => {
                     <td>
                         ￥
                         {(
-                            reserveData.enabled_reserve_itinerary?.sum_gross ??
-                            0
+                            reserveData.enabled_reserve_itinerary
+                                ?.total_gross ?? 0
                         ).toLocaleString()}
                     </td>
                 </tr>
@@ -20,7 +20,8 @@ const ReserveAmountBreakdown = ({ reserveData }) => {
                     <td>
                         ￥
                         {(
-                            reserveData.enabled_reserve_itinerary?.sum_net ?? 0
+                            reserveData.enabled_reserve_itinerary?.total_net ??
+                            0
                         ).toLocaleString()}
                     </td>
                 </tr>
@@ -30,14 +31,14 @@ const ReserveAmountBreakdown = ({ reserveData }) => {
                         ￥
                         {(
                             reserveData.enabled_reserve_itinerary
-                                ?.sum_gross_profit ?? 0
+                                ?.total_gross_profit ?? 0
                         ).toLocaleString()}
                         (
                         {calcProfitRate(
                             reserveData.enabled_reserve_itinerary
-                                ?.sum_gross_profit ?? 0,
-                            reserveData.enabled_reserve_itinerary?.sum_gross ??
-                                0
+                                ?.total_gross_profit ?? 0,
+                            reserveData.enabled_reserve_itinerary
+                                ?.total_gross ?? 0
                         ).toFixed(1)}
                         %)
                     </td>

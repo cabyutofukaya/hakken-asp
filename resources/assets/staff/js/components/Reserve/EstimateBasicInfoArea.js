@@ -15,7 +15,9 @@ const EstimateBasicInfoArea = ({
     consts,
     constsCommon,
     customFields,
-    permission
+    permission,
+    errorMessage,
+    setErrorMessage
 }) => {
     const { agencyAccount } = useContext(ConstContext);
 

@@ -22,7 +22,7 @@ interface ReserveItineraryRepositoryInterface
 
   public function updateWhere(array $where, array $param) : int;
 
-  public function updateField(int $reserveItineraryId, array $params) : ReserveItinerary;
+  public function updateField(int $reserveItineraryId, array $params) : bool;
 
   public function delete(int $id, bool $isSoftDelete): bool;
 }

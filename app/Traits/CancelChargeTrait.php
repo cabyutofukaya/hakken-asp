@@ -4,6 +4,7 @@ namespace App\Traits;
 
 use App\Events\ChangePaymentAmountEvent;
 use App\Models\Reserve;
+use App\Models\ReserveItinerary;
 use Illuminate\Support\Arr;
 
 /**
@@ -99,5 +100,13 @@ trait CancelChargeTrait
                 }
             }
         }
+    }
+
+    /**
+     * 有効行程の合計金額更新
+     */
+    public function refreshItineraryTotalAmount(ReserveItinerary $reserveItinerary)
+    {
+        $this->reserveItineraryService->refreshItineraryTotalAmount($reserveItinerary); // 有効行程の合計金額更新
     }
 }

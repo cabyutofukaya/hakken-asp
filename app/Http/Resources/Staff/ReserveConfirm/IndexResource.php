@@ -56,13 +56,14 @@ class IndexResource extends JsonResource
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'document_address' => $this->document_address,
             'amount_total' => $this->amount_total,
-            // 削除不可テンプレート場合はtrue
+            // 削除不可テンプレートの場合はtrue
             'is_nondelete' => in_array($this->document_quote->code, config('consts.reserve_confirms.NO_ADD_OR_DELETE_CODE_LIST'), true),
             'pdf' => [
                 'id' => $this->pdf ? $this->pdf->getRouteKey() : null
             ],
             'reserve_itinerary' => [
                 'control_number' => $reserveItineraryControlNumber,
+                'total_gross' => $this->reserve->is_canceled ? ($this->reserve_itinerary->total_cancel_charge ?? 0) : ($this->reserve_itinerary->total_gross ?? 0), // 予約がキャンセル状態、かつ有効行程の場合はキャンセルチャージの合計
             ]
         ];
     }

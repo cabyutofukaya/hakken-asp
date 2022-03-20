@@ -86,10 +86,11 @@ class ReserveItineraryRepository implements ReserveItineraryRepositoryInterface
     /**
      * 項目更新
      */
-    public function updateField(int $reserveItineraryId, array $params) : ReserveItinerary
+    public function updateField(int $reserveItineraryId, array $params) : bool
     {
         $this->reserveItinerary->where('id', $reserveItineraryId)->update($params);
-        return $this->reserveItinerary->findOrFail($reserveItineraryId);
+        return true;
+        // return $this->reserveItinerary->findOrFail($reserveItineraryId);
 
         // $reserveItinerary = $this->reserveItinerary->findOrFail($reserveItineraryId);
         // foreach ($params as $k => $v) {

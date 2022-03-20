@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Staff\Api;
 
 use App\Events\ReserveChangeHeadcountEvent;
 use App\Events\ReserveChangeRepresentativeEvent;
+use App\Events\PriceRelatedChangeEvent;
 use App\Exceptions\ExclusiveLockException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Staff\CustomerSearchRequest;
@@ -174,7 +175,9 @@ class ParticipantController extends Controller
                 $participant = $this->participantService->create($reserve, $input);
     
                 event(new ReserveChangeHeadcountEvent($reserve)); // 参加者人数変更イベント
-    
+                
+                event(new PriceRelatedChangeEvent($reserve->id, date('Y-m-d H:i:s', strtotime("now +1 seconds")))); // 料金変更に関わるイベント。参加者情報を更新すると関連する行程レコードもtouchで日時が更新されてしまうので、他のレコードよりも確実に新しい日時で更新されるように1秒後の時間をセット
+
                 return $participant;
             });
             if ($participant) {
@@ -333,7 +336,9 @@ class ParticipantController extends Controller
                 }
     
                 event(new ReserveChangeHeadcountEvent($reserve)); // 参加者人数変更イベント
-    
+
+                event(new PriceRelatedChangeEvent($reserve->id, date('Y-m-d H:i:s', strtotime("now +1 seconds")))); // 料金変更に関わるイベント。参加者情報を更新すると関連する行程レコードもtouchで日時が更新されてしまうので、他のレコードよりも確実に新しい日時で更新されるように1秒後の時間をセット
+
                 return $newParticipant;
             });
             if ($newParticipant) {
@@ -401,6 +406,8 @@ class ParticipantController extends Controller
                 }
 
                 event(new ReserveChangeHeadcountEvent($reserve)); // 参加者人数変更イベント
+
+                event(new PriceRelatedChangeEvent($reserve->id, date('Y-m-d H:i:s', strtotime("now +1 seconds")))); // 料金変更に関わるイベント。参加者情報を更新すると関連する行程レコードもtouchで日時が更新されてしまうので、他のレコードよりも確実に新しい日時で更新されるように1秒後の時間をセット
 
                 return [$result, $reserve];
             });

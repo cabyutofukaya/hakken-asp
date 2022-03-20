@@ -16,7 +16,11 @@ const EstimateDetail = ({
     consts,
     constsCommon,
     permission,
-    setSuccessMessage
+    setSuccessMessage,
+    itineraryErrorMessage,
+    setItineraryErrorMessage,
+    documentErrorMessage,
+    setDocumentErrorMessage
 }) => {
     // 現在、有効化中の行程番号
     const [currentItineraryNumber, setCurrentItineraryNumber] = useState(null);
@@ -71,6 +75,8 @@ const EstimateDetail = ({
                 participantDeleteRequestId={participantDeleteRequestId}
                 participantCancelRequestId={participantCancelRequestId}
                 permission={permission}
+                errorMessage={itineraryErrorMessage}
+                setErrorMessage={setItineraryErrorMessage}
             />
             <DocumentArea
                 isShow={isShow}
@@ -85,6 +91,8 @@ const EstimateDetail = ({
                 }
                 constsCommon={constsCommon}
                 permission={permission}
+                errorMessage={documentErrorMessage}
+                setErrorMessage={setDocumentErrorMessage}
             />
             {permission.management_read && (
                 <AccountPayableArea
