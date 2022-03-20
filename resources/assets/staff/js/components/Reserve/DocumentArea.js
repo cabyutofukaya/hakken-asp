@@ -4,6 +4,7 @@ import { useMountedRef } from "../../../../hooks/useMountedRef";
 import ReactLoading from "react-loading";
 import SmallDangerModal from "../SmallDangerModal";
 import classNames from "classnames";
+import { isEmptyObject } from "../../libs";
 
 // 一覧取得API URL
 const getListApiUrl = (
@@ -77,6 +78,11 @@ const getDeleteApiUrl = (
     }
 };
 
+/**
+ *
+ * @param {func} setErrorMessage エラーがある場合はメッセージオブジェクトをセット
+ * @returns
+ */
 const DocumentArea = ({
     isShow,
     reception,
@@ -87,7 +93,9 @@ const DocumentArea = ({
     currentItineraryNumber,
     hasOriginalDocumentQuoteTemplate,
     constsCommon,
-    permission
+    permission,
+    errorMessage,
+    setErrorMessage
 }) => {
     const { agencyAccount, numberLedgerAllowedMax } = useContext(ConstContext);
 
@@ -105,6 +113,9 @@ const DocumentArea = ({
         if (isLoading) return;
 
         setIsLoading(true); // 二重読み込み禁止
+
+        // エラーメッセージ初期化
+        setErrorMessage("");
 
         const response = await axios
             .get(
@@ -133,6 +144,22 @@ const DocumentArea = ({
         if (mounted.current && response?.data?.data) {
             const rows = response.data.data;
             setLists([...rows]);
+
+            // 行程の合計金額と帳票の合計金額に差異がないかチェック
+            let errNumbers = [];
+            rows.forEach((row, index) => {
+                if (row.amount_total != row.reserve_itinerary.total_gross) {
+                    errNumbers.push(row.confirm_number);
+                }
+            });
+            if (errNumbers.length > 0) {
+                const message = `帳票:「${errNumbers
+                    .sort()
+                    .join(
+                        ","
+                    )}」の合計金額がGRS合計と異なります。帳票の参加者情報が正しいかご確認ください。`;
+                setErrorMessage(message);
+            }
         }
     };
 
@@ -195,7 +222,6 @@ const DocumentArea = ({
 
     return (
         <>
-            {console.log(permission)}
             <h2 className="optTit">
                 帳票
                 {/**追加可能条件-->カスタムテンプレートが設定されていること。現在選択されている有効行程であること。帳票追加最大数未満であること */}

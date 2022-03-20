@@ -19,6 +19,8 @@ use App\Services\ReserveService;
 use App\Services\UserCustomItemService;
 use App\Services\UserService;
 use App\Services\VAreaService;
+use App\Services\ReserveItineraryService;
+use App\Traits\CancelChargeTrait;
 use DB;
 use Exception;
 use Gate;
@@ -28,7 +30,9 @@ use Log;
 
 class ReserveController extends Controller
 {
-    public function __construct(UserService $userService, BusinessUserManagerService $businessUserManagerService, VAreaService $vAreaService, ReserveService $reserveService, ReserveCustomValueService $reserveCustomValueService, UserCustomItemService $userCustomItemService, ReserveParticipantPriceService $reserveParticipantPriceService)
+    use CancelChargeTrait;
+    
+    public function __construct(UserService $userService, BusinessUserManagerService $businessUserManagerService, VAreaService $vAreaService, ReserveService $reserveService, ReserveCustomValueService $reserveCustomValueService, UserCustomItemService $userCustomItemService, ReserveParticipantPriceService $reserveParticipantPriceService, ReserveItineraryService $reserveItineraryService)
     {
         $this->reserveService = $reserveService;
         $this->userService = $userService;
@@ -37,6 +41,7 @@ class ReserveController extends Controller
         $this->reserveCustomValueService = $reserveCustomValueService;
         $this->userCustomItemService = $userCustomItemService;
         $this->reserveParticipantPriceService = $reserveParticipantPriceService;
+        $this->reserveItineraryService = $reserveItineraryService;
     }
 
     // 一件取得
@@ -188,6 +193,10 @@ class ReserveController extends Controller
             $result = \DB::transaction(function () use ($reserve) {
                 $this->reserveParticipantPriceService->cancelChargeReset($reserve->enabled_reserve_itinerary->id); // キャンセルチャージをリセット
                 $this->reserveService->cancel($reserve->id, false, null);
+
+                if ($reserve->enabled_reserve_itinerary->id) {
+                    $this->refreshItineraryTotalAmount($reserve->enabled_reserve_itinerary); // 有効行程の合計金額更新
+                }
 
                 event(new UpdateBillingAmountEvent($this->reserveService->find($reserve->id))); // 請求金額変更イベント
 

@@ -108,6 +108,8 @@ class EditFormComposer
             $documentSetting = $reserveInvoice->document_setting;
 
             /////////// 入力初期値をセット ///////////
+            $systemInvoiceNumber = $reserveInvoice->invoice_number; // システムから割り当てられた請求書番号。編集ページでは特に使わない
+
             $invoiceNumber = $reserveInvoice->user_invoice_number;
             // 発行日
             $issueDate = $reserveInvoice->issue_date ?? date('Y/m/d');

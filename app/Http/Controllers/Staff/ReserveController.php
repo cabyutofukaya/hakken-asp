@@ -23,6 +23,7 @@ use App\Services\ReserveParticipantOptionPriceService;
 use App\Services\ReserveParticipantPriceService;
 use App\Services\ReserveService;
 use App\Services\UserCustomItemService;
+use App\Services\ReserveItineraryService;
 use App\Traits\CancelChargeTrait;
 use App\Traits\ReserveControllerTrait;
 use DB;
@@ -36,7 +37,7 @@ class ReserveController extends AppController
 {
     use ReserveControllerTrait,CancelChargeTrait;
 
-    public function __construct(ReserveService $reserveService, ReserveInvoiceService $reserveInvoiceService, ReserveParticipantPriceService $reserveParticipantPriceService, ReserveParticipantOptionPriceService $reserveParticipantOptionPriceService, ReserveParticipantAirplanePriceService $reserveParticipantAirplanePriceService, ReserveParticipantHotelPriceService $reserveParticipantHotelPriceService, ReserveCustomValueService $reserveCustomValueService, UserCustomItemService $userCustomItemService, AccountPayableDetailService $accountPayableDetailService)
+    public function __construct(ReserveService $reserveService, ReserveInvoiceService $reserveInvoiceService, ReserveParticipantPriceService $reserveParticipantPriceService, ReserveParticipantOptionPriceService $reserveParticipantOptionPriceService, ReserveParticipantAirplanePriceService $reserveParticipantAirplanePriceService, ReserveParticipantHotelPriceService $reserveParticipantHotelPriceService, ReserveCustomValueService $reserveCustomValueService, UserCustomItemService $userCustomItemService, AccountPayableDetailService $accountPayableDetailService, ReserveItineraryService $reserveItineraryService)
     {
         $this->reserveService = $reserveService;
         $this->reserveInvoiceService = $reserveInvoiceService;
@@ -47,6 +48,7 @@ class ReserveController extends AppController
         $this->reserveParticipantHotelPriceService = $reserveParticipantHotelPriceService;
         $this->userCustomItemService = $userCustomItemService;
         $this->accountPayableDetailService = $accountPayableDetailService;
+        $this->reserveItineraryService = $reserveItineraryService;
     }
 
     public function index()
@@ -250,6 +252,8 @@ class ReserveController extends AppController
                 $this->setCancelCharge($input);
                 
                 $this->reserveService->cancel($reserve->id, true, Arr::get($input, 'reserve.updated_at'));
+
+                $this->refreshItineraryTotalAmount($reserve->enabled_reserve_itinerary); // 有効行程の合計金額更新
 
                 event(new UpdateBillingAmountEvent($this->reserveService->find($reserve->id))); // 請求金額変更イベント
 

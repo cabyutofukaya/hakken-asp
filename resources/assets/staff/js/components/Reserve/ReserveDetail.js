@@ -15,7 +15,12 @@ const ReserveDetail = ({
     formSelects,
     consts,
     constsCommon,
-    permission
+    permission,
+    setSuccessMessage,
+    itineraryErrorMessage,
+    setItineraryErrorMessage,
+    documentErrorMessage,
+    setDocumentErrorMessage
 }) => {
     // 現在、有効化中の行程番号
     const [currentItineraryNumber, setCurrentItineraryNumber] = useState(null);
@@ -56,6 +61,7 @@ const ReserveDetail = ({
                 setDeleteRequestId={setParticipantDeleteRequestId}
                 setCancelRequestId={setParticipantCancelRequestId}
                 permission={permission}
+                setSuccessMessage={setSuccessMessage}
             />
 
             <ItineraryArea
@@ -70,6 +76,8 @@ const ReserveDetail = ({
                 participantDeleteRequestId={participantDeleteRequestId}
                 participantCancelRequestId={participantCancelRequestId}
                 permission={permission}
+                errorMessage={itineraryErrorMessage}
+                setErrorMessage={setItineraryErrorMessage}
             />
             <DocumentArea
                 isShow={isShow}
@@ -84,6 +92,8 @@ const ReserveDetail = ({
                 }
                 constsCommon={constsCommon}
                 permission={permission}
+                errorMessage={documentErrorMessage}
+                setErrorMessage={setDocumentErrorMessage}
             />
             {permission.management_read && (
                 <AccountPayableArea

@@ -5,6 +5,7 @@ import SmallDangerModal from "../SmallDangerModal";
 import ReactLoading from "react-loading";
 import { calcProfitRate } from "../../libs";
 import classNames from "classnames";
+import moment from "moment";
 
 // 一覧取得API URL
 const getListApiUrl = (
@@ -96,7 +97,9 @@ const ItineraryArea = ({
     setCurrentItineraryNumber,
     participantDeleteRequestId,
     participantCancelRequestId,
-    permission
+    permission,
+    errorMessage,
+    setErrorMessage
 }) => {
     const { agencyAccount } = useContext(ConstContext);
 
@@ -136,6 +139,9 @@ const ItineraryArea = ({
 
         setIsLoading(true); // 二重読み込み禁止
 
+        //エラーメッセージを初期化
+        setErrorMessage("");
+
         const response = await axios
             .get(listApiUrl, {
                 params: {
@@ -151,12 +157,31 @@ const ItineraryArea = ({
             const rows = response.data.data;
             setLists([...rows]);
 
+            // 行程更新日時が料金関連更新日時よりも新しいかチェック(料金情報が最新かどうかの判定)
+            let errNumbers = [];
+            rows.forEach((row, index) => {
+                if (
+                    row.reserve.price_related_change &&
+                    new Date(row.reserve.price_related_change) >
+                        new Date(row.updated_at)
+                ) {
+                    errNumbers.push(row.control_number);
+                }
+            });
+            if (errNumbers.length > 0) {
+                const message = `参加者情報が更新されています。行程:「${errNumbers
+                    .sort()
+                    .join(",")}」を更新してください。`;
+                setErrorMessage(message);
+            }
+
             // 有効行程番号を更新
             setCurrentItineraryNumber(
                 _.get(_.find(rows, { enabled: 1 }), "control_number")
             );
         }
     };
+
     useEffect(() => {
         if (isShow) {
             // 表示に切り替わったらリスト取得
@@ -397,18 +422,18 @@ const ItineraryArea = ({
                                         <td>{row?.created_at ?? "-"}</td>
                                         <td>{row?.updated_at ?? "-"}</td>
                                         <td>
-                                            ￥{row.sum_gross.toLocaleString()}
+                                            ￥{row.total_gross.toLocaleString()}
                                         </td>
                                         <td>
-                                            ￥{row.sum_net.toLocaleString()}
+                                            ￥{row.total_net.toLocaleString()}
                                         </td>
                                         <td>
                                             ￥
-                                            {row.sum_gross_profit.toLocaleString()}
+                                            {row.total_gross_profit.toLocaleString()}
                                             (
                                             {calcProfitRate(
-                                                row.sum_gross_profit,
-                                                row.sum_gross
+                                                row.total_gross_profit,
+                                                row.total_gross
                                             ).toFixed(1)}
                                             %)
                                             {/** 利益率 = 利益 ÷ 売上 × 100 */}

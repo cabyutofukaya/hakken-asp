@@ -15,6 +15,10 @@ import OnlineRequestModal from "./portal/OnlineRequestModal";
 import VideoTitArea from "./components/Reserve/VideoTitArea";
 import VideoTitAreaLarge from "./components/Reserve/VideoTitAreaLarge";
 import TopDeleteBox from "./components/Reserve/TopDeleteBox";
+import SuccessMessage from "./components/SuccessMessage";
+import ErrorMessage from "./components/ErrorMessage";
+import BaseErrorMessage from "./components/Reserve/Errors/BaseErrorMessage";
+import DetailErrorMessage from "./components/Reserve/Errors/DetailErrorMessage";
 
 /**
  *
@@ -50,10 +54,20 @@ const EstimateShowArea = ({
         defaultValue?.[consts.common.tabCodes?.tab_basic_info]?.updatedAt
     ); // 見積情報更新日時
 
+    const [successMessage, setSuccessMessage] = useState(""); // 成功メッセージ
+    const [baseErrorMessage, setBaseErrorMessage] = useState(""); // 基本情報用エラーメッセージ
+    const [itineraryErrorMessage, setItineraryErrorMessage] = useState(""); // 行程用エラーメッセージ
+    const [documentErrorMessage, setDocumentErrorMessage] = useState(""); // 帳票用エラーメッセージ
+
     // タブクリック
     const handleTabChange = (e, tab) => {
         e.preventDefault();
         setCurrentTab(tab);
+        //メッセージ初期化
+        setSuccessMessage("");
+        setBaseErrorMessage("");
+        setItineraryErrorMessage("");
+        setDocumentErrorMessage("");
     };
 
     // // キャンセル処理 -> 廃止
@@ -141,6 +155,18 @@ const EstimateShowArea = ({
                 )}
             </div>
 
+            {/**基本情報用エラーメッセージ */}
+            <BaseErrorMessage message={baseErrorMessage} />
+            {/**詳細情報用エラーメッセージ */}
+            <DetailErrorMessage
+                itineraryErrorMessage={itineraryErrorMessage}
+                documentErrorMessage={documentErrorMessage}
+            />
+
+            {/**APIがらみのサクセスメッセージ */}
+            <SuccessMessage message={successMessage} />
+
+            {/**ページ遷移時のフラッシュメッセージ */}
             {flashMessage?.success_message && (
                 <div id="successMessage">
                     <p>
@@ -235,6 +261,8 @@ const EstimateShowArea = ({
                     }
                     constsCommon={consts?.common}
                     permission={permission.basic}
+                    errorMessage={baseErrorMessage}
+                    setErrorMessage={setBaseErrorMessage}
                 />
             )}
             {permission.detail.reserve_read && (
@@ -257,6 +285,11 @@ const EstimateShowArea = ({
                     consts={consts?.[consts.common.tabCodes.tab_reserve_detail]}
                     constsCommon={consts?.common}
                     permission={permission.detail}
+                    setSuccessMessage={setSuccessMessage}
+                    itineraryErrorMessage={itineraryErrorMessage}
+                    setItineraryErrorMessage={setItineraryErrorMessage}
+                    documentErrorMessage={documentErrorMessage}
+                    setDocumentErrorMessage={setDocumentErrorMessage}
                 />
             )}
             {/**相談エリア */}

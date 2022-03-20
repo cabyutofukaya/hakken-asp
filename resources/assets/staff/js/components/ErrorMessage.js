@@ -6,7 +6,9 @@ const ErrorMessage = ({ errorObj }) => {
     let msgs = [];
     if (!isEmptyObject(errorObj)) {
         Object.keys(errorObj).map(k => {
-            msgs = [...msgs, errorObj[k]];
+            if (errorObj[k]) {
+                msgs = [...msgs, errorObj[k]];
+            }
         });
     }
 

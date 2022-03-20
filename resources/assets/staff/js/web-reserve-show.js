@@ -14,6 +14,10 @@ import TopControlBox from "./components/Reserve/TopControlBox";
 import CancelModal from "./components/Reserve/CancelModal";
 import CancelChargeModal from "./components/Reserve/CancelChargeModal";
 import TopStatus from "./components/Reserve/TopStatus";
+import SuccessMessage from "./components/SuccessMessage";
+import ErrorMessage from "./components/ErrorMessage";
+import BaseErrorMessage from "./components/Reserve/Errors/BaseErrorMessage";
+import DetailErrorMessage from "./components/Reserve/Errors/DetailErrorMessage";
 
 /**
  *
@@ -49,10 +53,20 @@ const ReserveShowArea = ({
         defaultValue?.[consts.common.tabCodes?.tab_basic_info]?.updatedAt
     ); // 予約情報更新日時
 
+    const [successMessage, setSuccessMessage] = useState(""); // 成功メッセージ
+    const [baseErrorMessage, setBaseErrorMessage] = useState(""); // 基本情報用エラーメッセージ
+    const [itineraryErrorMessage, setItineraryErrorMessage] = useState(""); // 行程用エラーメッセージ
+    const [documentErrorMessage, setDocumentErrorMessage] = useState(""); // 帳票用エラーメッセージ
+
     // タブクリック
     const handleTabChange = (e, tab) => {
         e.preventDefault();
         setCurrentTab(tab);
+        //メッセージ初期化
+        setSuccessMessage("");
+        setBaseErrorMessage("");
+        setItineraryErrorMessage("");
+        setDocumentErrorMessage("");
     };
 
     // キャンセル処理(チャージあり→チャージ設定ページへ遷移)
@@ -119,22 +133,6 @@ const ReserveShowArea = ({
         }
     };
 
-    // // 上部ステータス部(催行済みか否かで出し分け)
-    // const TopStatus = ({ reserve, status, reserveStatus }) => {
-    //     if (reserve?.is_departed) {
-    //         return <span className="status gray fix">{reserveStatus}</span>;
-    //     } else {
-    //         return (
-    //             <span
-    //                 className="status blue js-modal-open"
-    //                 data-target="mdStatus"
-    //             >
-    //                 {status}
-    //             </span>
-    //         );
-    //     }
-    // };
-
     // パンクズリストindex部(催行済みか否かで出し分け)
     const IndexBreadcrumb = ({
         isDeparted,
@@ -193,6 +191,18 @@ const ReserveShowArea = ({
                 />
             </div>
 
+            {/**基本情報用エラーメッセージ */}
+            <BaseErrorMessage message={baseErrorMessage} />
+            {/**詳細情報用エラーメッセージ */}
+            <DetailErrorMessage
+                itineraryErrorMessage={itineraryErrorMessage}
+                documentErrorMessage={documentErrorMessage}
+            />
+
+            {/**APIがらみのサクセスメッセージ */}
+            <SuccessMessage message={successMessage} />
+
+            {/**ページ遷移時のフラッシュメッセージ */}
             {flashMessage?.success_message && (
                 <div id="successMessage">
                     <p>
@@ -287,6 +297,8 @@ const ReserveShowArea = ({
                     }
                     constsCommon={consts?.common}
                     permission={permission.basic}
+                    errorMessage={baseErrorMessage}
+                    setErrorMessage={setBaseErrorMessage}
                 />
             )}
             {permission.detail.reserve_read && (
@@ -309,6 +321,11 @@ const ReserveShowArea = ({
                     consts={consts?.[consts.common.tabCodes.tab_reserve_detail]}
                     constsCommon={consts?.common}
                     permission={permission.detail}
+                    setSuccessMessage={setSuccessMessage}
+                    itineraryErrorMessage={itineraryErrorMessage}
+                    setItineraryErrorMessage={setItineraryErrorMessage}
+                    documentErrorMessage={documentErrorMessage}
+                    setDocumentErrorMessage={setDocumentErrorMessage}
                 />
             )}
             {permission.consultation.consultation_read && (

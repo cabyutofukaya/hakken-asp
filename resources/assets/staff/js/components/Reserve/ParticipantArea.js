@@ -145,7 +145,8 @@ const ParticipantArea = ({
     countries,
     setDeleteRequestId,
     setCancelRequestId,
-    permission
+    permission,
+    setSuccessMessage
 }) => {
     const { agencyAccount } = useContext(ConstContext);
 
@@ -335,12 +336,15 @@ const ParticipantArea = ({
                 editMode === "create" &&
                 response.data.data.reserve?.reserve_itinerary_exists == 1
             ) {
-                // 新規登録で行程情報がある場合は行程の更新と書類設定の見直しを促す
-                alert(
-                    "参加者を追加しました。\n追加された参加者の料金設定を更新する為、行程の更新、および各種帳票の参加者追加(参加者チェックON)を行ってください。"
-                );
+                // 新規登録で行程情報がある場合は書類設定の見直しと行程の更新を促す
+                $("#successMessage .closeIcon")
+                    .parent()
+                    .slideDown();
+                setSuccessMessage(
+                    "参加者を追加しました。料金情報を更新するため行程を更新し帳票の当該ユーザーの参加をONにして保存しください"
+                ); // メッセージエリアを一旦slideDown(表示状態)してからメッセージをセット
             }
-            fetch(); // リスト再取得。TODO 再取得は負荷が高いので更新した行のみ変更するような処理を検討する
+            fetch();
         }
     };
 
@@ -375,10 +379,15 @@ const ParticipantArea = ({
                     }
                 }, 3000);
             });
-        if (response) {
-            alert(
-                "参加者を取り消しました。\n作成済み行程がある場合は参加者情報を更新するため対象行程の更新を行ってください。"
-            );
+        if (response?.data?.data) {
+            if (response.data.data.reserve?.reserve_itinerary_exists == 1) {
+                $("#successMessage .closeIcon")
+                    .parent()
+                    .slideDown();
+                setSuccessMessage(
+                    "参加者を取り消しました。料金情報を更新するため行程の更新を行ってください"
+                ); // メッセージエリアを一旦slideDown(表示状態)してからメッセージをセット
+            }
             fetch(); // リスト再取得。TODO 再取得は負荷が高いので更新した行のみ変更するような処理を検討する → 代表者を取り消した時に代表者フラグをoffにする処理が必要なので、やはり一覧取得したほうがよいかも
         }
     };
@@ -418,11 +427,16 @@ const ParticipantArea = ({
                     }
                 }, 3000);
             });
-        if (response) {
-            alert(
-                "参加者を削除しました。\n作成済み行程がある場合は参加者情報を更新するため対象行程の更新を行ってください。"
-            );
-            // ページネーションがないので削除後は特にリストの再取得は必要ないと思われるので、listsから不要行のカットで良いと思われる
+        if (response?.data?.data) {
+            if (response.data.data.reserve?.reserve_itinerary_exists == 1) {
+                $("#successMessage .closeIcon")
+                    .parent()
+                    .slideDown();
+                setSuccessMessage(
+                    "参加者を削除しました。料金情報を更新するため行程の更新を行ってください"
+                ); // メッセージエリアを一旦slideDown(表示状態)してからメッセージをセット
+                // ページネーションがないので削除後は特にリストの再取得は必要ないと思われるので、listsから不要行のカットで良いと思われる
+            }
             setLists([...lists.filter(row => row.id !== deleteId)]);
         }
     };

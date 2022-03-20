@@ -82,9 +82,9 @@ class ShowResource extends JsonResource
             "applicant" => $applicant,
             // 有効な行程
             'enabled_reserve_itinerary' => [
-                'sum_gross' => $enabledReserveItinerary ? $enabledReserveItinerary->sum_gross : 0,
-                'sum_net' => $enabledReserveItinerary ? $enabledReserveItinerary->sum_net : 0,
-                'sum_gross_profit' => $enabledReserveItinerary ? $enabledReserveItinerary->sum_gross_profit : 0,
+                'total_gross' => $enabledReserveItinerary ? $enabledReserveItinerary->total_gross : 0,
+                'total_net' => $enabledReserveItinerary ? $enabledReserveItinerary->total_net : 0,
+                'total_gross_profit' => $enabledReserveItinerary ? $enabledReserveItinerary->total_gross_profit : 0,
             ],
             //////// 各種URL ////////
             // 見積書

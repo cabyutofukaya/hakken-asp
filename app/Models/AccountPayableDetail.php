@@ -32,6 +32,7 @@ class AccountPayableDetail extends Model
         'use_date',
         'amount_payment',
         'unpaid_balance',
+        'amount_billed',
     ];
 
     /**

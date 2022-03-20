@@ -385,7 +385,11 @@ class RepositoryServiceProvider extends ServiceProvider
             \App\Repositories\AgencyNotification\AgencyNotificationRepositoryInterface::class,
             \App\Repositories\AgencyNotification\AgencyNotificationRepository::class
         );
-        
+        $this->app->bind(
+            \App\Repositories\PriceRelatedChange\PriceRelatedChangeRepositoryInterface::class,
+            \App\Repositories\PriceRelatedChange\PriceRelatedChangeRepository::class
+        );
+
         // HAKKEN機能
         // $this->app->bind(
         //     \App\Repositories\WebUserSequence\WebUserSequenceRepositoryInterface::class,

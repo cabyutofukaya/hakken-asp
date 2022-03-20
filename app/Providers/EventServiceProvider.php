@@ -69,6 +69,10 @@ class EventServiceProvider extends ServiceProvider
         'App\Events\ReserveInvoiceCreatedEvent' => [
             'App\Listeners\ReserveInvoiceCreatedEventListener',
         ],
+        // 料金変更に関わるイベントが起きた時に呼ぶイベント(参加者が増えた、参加者が減った、参加者を取り消した...etc)
+        'App\Events\PriceRelatedChangeEvent' => [
+            'App\Listeners\PriceRelatedChangeEventListener',
+        ],
         // プラン変更イベント(HAKKEN)
         'App\Events\WebModelcourseChangeEvent' => [
             'App\Listeners\WebModelcourseChangeEventListener',

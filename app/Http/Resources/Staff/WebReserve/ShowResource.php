@@ -48,6 +48,7 @@ class ShowResource extends JsonResource
                     $request->agencyAccount,
                     $this->control_number
                 ]) . $departedQuery,
+                'created_at' => $reserveInvoice ? $reserveInvoice->created_at->format('Y-m-d H:i:s') : null,
             ];
 
             $receipt = [
@@ -116,9 +117,9 @@ class ShowResource extends JsonResource
             "applicant" => $applicant,
             // 有効な行程
             'enabled_reserve_itinerary' => [
-                'sum_gross' => $enabledReserveItinerary ? ($this->is_canceled ? $enabledReserveItinerary->sum_cancel_gross : $enabledReserveItinerary->sum_gross) : 0, // キャンセル予約の場合はキャンセルチャージ合計金額を出力
-                'sum_net' => $enabledReserveItinerary ? ($this->is_canceled ? $enabledReserveItinerary->sum_cancel_net : $enabledReserveItinerary->sum_net) : 0, // キャンセル予約の場合はキャンセルNET合計金額を出力
-                'sum_gross_profit' => $enabledReserveItinerary ? ($this->is_canceled ? $enabledReserveItinerary->sum_cancel_charge_profit : $enabledReserveItinerary->sum_gross_profit) : 0, // キャンセル予約の場合はキャンセル粗利合計金額を出力
+                'total_gross' => $enabledReserveItinerary ? ($this->is_canceled ? $enabledReserveItinerary->total_cancel_charge : $enabledReserveItinerary->total_gross) : 0, // キャンセル予約の場合はキャンセルチャージ合計金額を出力
+                'total_net' => $enabledReserveItinerary ? ($this->is_canceled ? $enabledReserveItinerary->total_cancel_charge_net : $enabledReserveItinerary->total_net) : 0, // キャンセル予約の場合はキャンセルNET合計金額を出力
+                'total_gross_profit' => $enabledReserveItinerary ? ($this->is_canceled ? $enabledReserveItinerary->total_cancel_charge_profit : $enabledReserveItinerary->total_gross_profit) : 0, // キャンセル予約の場合はキャンセル粗利合計金額を出力
             ],
             //////// 各種URL ////////
             // 予約確認書

@@ -312,6 +312,14 @@ class Reserve extends Model
         return $this->hasMany('App\Models\VReserveCustomValue')->where('flg', true);
     }
 
+    /**
+     * 料金に関連する変更の最終日時
+     */
+    public function price_related_change()
+    {
+        return $this->hasOne('App\Models\PriceRelatedChange');
+    }
+
     ////////////////// カスタム項目 ここから ////////////////////
 
     /**
