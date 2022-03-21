@@ -40,6 +40,7 @@ const ReserveShowArea = ({
     const mounted = useMountedRef(); // マウント・アンマウント制御
 
     const [currentTab, setCurrentTab] = useState(defaultTab); //選択中のタブ
+    const [tabBadgeCount, setTabBadgeCount] = useState({}); // タブバッジカウント
 
     const [isCanceling, setIsCanceling] = useState(false); // キャンセル処理中か否か
     const [isDeleting, setIsDeleting] = useState(false); // 削除処理中か否か
@@ -274,6 +275,18 @@ const ReserveShowArea = ({
                                 }
                             >
                                 相談一覧
+                                {tabBadgeCount?.[
+                                    consts.common.tabCodes.tab_consultation
+                                ] && (
+                                    <span>
+                                        {
+                                            tabBadgeCount[
+                                                consts.common.tabCodes
+                                                    .tab_consultation
+                                            ]
+                                        }
+                                    </span>
+                                )}
                             </span>
                         </li>
                     )}
@@ -332,6 +345,7 @@ const ReserveShowArea = ({
                     isShow={
                         currentTab === consts.common.tabCodes.tab_consultation
                     }
+                    tab={consts.common.tabCodes.tab_consultation}
                     targetConsultationNumber={targetConsultationNumber}
                     applicationStep={reserve?.application_step}
                     applicationStepList={consts.common.application_step_list}
@@ -345,6 +359,8 @@ const ReserveShowArea = ({
                     }
                     consts={consts?.[consts.common.tabCodes.tab_consultation]}
                     permission={permission.consultation}
+                    tabBadgeCount={tabBadgeCount}
+                    setTabBadgeCount={setTabBadgeCount}
                 />
             )}
 

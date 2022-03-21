@@ -9,11 +9,14 @@ import ReactLoading from "react-loading";
 
 const ConsultationArea = ({
     isShow,
+    tab,
     userNumber,
     defaultValue,
     formSelects,
     consts,
-    permission
+    permission,
+    tabBadgeCount,
+    setTabBadgeCount
 }) => {
     const { agencyAccount } = useContext(ConstContext);
 
@@ -75,6 +78,11 @@ const ConsultationArea = ({
             setPage(response.data.meta.current_page);
             setLastPage(response.data.meta.last_page);
             setTotal(response.data.meta.total);
+            // 未完了バッジ更新
+            setTabBadgeCount({
+                ...tabBadgeCount,
+                [tab]: response.data.badge.incomplete_count
+            });
         }
     };
 
