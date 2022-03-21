@@ -26,6 +26,7 @@ class ReserveParticipantHotelPrice extends Model implements ParticipantPriceInte
         'reserve_id',
         'reserve_itinerary_id',
         'reserve_purchasing_subject_hotel_id',
+        'purchase_type',
         'agency_id',
         'participant_id',
         'valid',

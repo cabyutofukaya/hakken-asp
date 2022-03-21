@@ -228,9 +228,10 @@ const DepositModal = ({
             className="wideModal modal js-modal mgModal"
             style={{ position: "fixed", left: 0, top: 0 }}
         >
+            {/**.js-modal-closeをはずしてもjquery側からレイヤーclickでレイヤーが消えてまうのでやむを得ずfalseで固定 */}
             <div
                 className={classNames("modal__bg", {
-                    "js-modal-close": !isRegisting && !isDepositDeleting
+                    "js-modal-close": false
                 })}
             ></div>
             <div className="modal__content">

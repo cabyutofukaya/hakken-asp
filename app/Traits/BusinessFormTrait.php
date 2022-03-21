@@ -243,9 +243,8 @@ trait BusinessFormTrait
      * 料金、ホテル情報を取得
      * PDF用
      *
-     * @param bool $isCancelReserve キャンセル予約の場合はtrue ※特に使わないので使用予定がなければ本引数は削除
      */
-    public function getPriceAndHotelInfoPdf(ReserveDocumentInterface $reserveDocument, array $participantIds = [], bool $isCancelReserve)
+    public function getPriceAndHotelInfoPdf(ReserveDocumentInterface $reserveDocument, array $participantIds = [])
     {
         $optionPrices = collect($reserveDocument->option_prices)->filter(function ($row, $key) use ($participantIds) {
             return isset($row['participant_id']) && in_array($row['participant_id'], $participantIds);
@@ -310,10 +309,9 @@ trait BusinessFormTrait
      * 料金内訳、ホテル情報を取得
      *
      * @param ReserveItinerary $reserveItinerary 行程
-     * @param bool $isCancelReserve キャンセル予約の場合はtrue
      * @param bool $getPriceOnly 料金情報のみ取得する場合はtrue。全ての情報を取得する場合はfalse
      */
-    public function getPriceAndHotelInfo(?ReserveItinerary $reserveItinerary, bool $isCancelReserve, bool $getPriceOnly = false)
+    public function getPriceAndHotelInfo(?ReserveItinerary $reserveItinerary, bool $getPriceOnly = false)
     {
         $optionPrices = []; // オプション価格情報
         $airticketPrices = []; // 航空券価格情報
@@ -333,29 +331,35 @@ trait BusinessFormTrait
                         // ホテル（宿泊施設情報、宿泊施設連絡先）
                         foreach ($reserveSchedule->reserve_purchasing_subject_hotels as $subject) {
                             $rooms = []; // $hotelInfoのデータ作成に使用
-                        $guests = []; // $hotelContactsのデータ作成に使用
+                            $guests = []; // $hotelContactsのデータ作成に使用
 
-                        foreach ($subject->reserve_participant_prices as $price) {
+                            foreach ($subject->reserve_participant_prices as $price) {
 
-                            // キャンセル予約か否かでチェックするプロパティを変更（キャンセルの場合...is_cancel、非キャンセル...valid）
-                            $checkProperty = $isCancelReserve ? 'is_cancel' : 'valid';
-
-                            if ($price->{$checkProperty}) { // 有効(is_cancel or valid)
-                                if (!isset($rooms[$price->room_number])) {
-                                    $rooms[$price->room_number] = [];
+                                // キャンセルか否かでチェックするプロパティを変更（キャンセルの場合...is_cancel、非キャンセル...valid）
+                                if ($price->purchase_type == config('consts.const.PURCHASE_NORMAL')) {
+                                    $checkProperty = 'valid';
+                                } elseif ($price->purchase_type == config('consts.const.PURCHASE_CANCEL')) {
+                                    $checkProperty = 'is_cancel';
+                                } else {
+                                    continue;
                                 }
-                                $rooms[$price->room_number][] = [
-                                    'room_number' => $price->room_number,
-                                    'participant_id' => $price->participant->id,
-                                    'user_name' => $price->participant->name,
-                                ]; // 宿泊情報
-    
-                                $guests[] = [
-                                    'participant_id' => $price->participant->id,
-                                    'user_name' => $price->participant->name,
-                                ];
+
+                                if ($price->{$checkProperty}) { // 有効(is_cancel or valid)
+                                    if (!isset($rooms[$price->room_number])) {
+                                        $rooms[$price->room_number] = [];
+                                    }
+                                    $rooms[$price->room_number][] = [
+                                        'room_number' => $price->room_number,
+                                        'participant_id' => $price->participant->id,
+                                        'user_name' => $price->participant->name,
+                                    ]; // 宿泊情報
+        
+                                    $guests[] = [
+                                        'participant_id' => $price->participant->id,
+                                        'user_name' => $price->participant->name,
+                                    ];
+                                }
                             }
-                        }
     
                             if ($rooms) { // 部屋の利用があれば宿泊施設情報をセット
                                 // 部屋タイプ
@@ -369,14 +373,14 @@ trait BusinessFormTrait
                             }
     
                             if ($guests) { // 利用者がいればホテル情報をセット
-                            // 宿泊施設連絡先
-                            $hotel = $subject->only(['hotel_name','address','tel','fax','url']); // 出力に必要な情報のみ抽出
-                            $sha1 = sha1(serialize($hotel)); // ハッシュ値を作成
-                            if (!in_array($sha1, $retained, true)) {
-                                $hotel['guests'] = $guests;
-                                $hotelContacts[] = $hotel;
-                                $retained[] = $sha1;
-                            }
+                                // 宿泊施設連絡先
+                                $hotel = $subject->only(['hotel_name','address','tel','fax','url']); // 出力に必要な情報のみ抽出
+                                $sha1 = sha1(serialize($hotel)); // ハッシュ値を作成
+                                if (!in_array($sha1, $retained, true)) {
+                                    $hotel['guests'] = $guests;
+                                    $hotelContacts[] = $hotel;
+                                    $retained[] = $sha1;
+                                }
                             }
                         }
                     }
@@ -387,18 +391,24 @@ trait BusinessFormTrait
     
                         foreach ($subject->reserve_participant_prices as $price) {
 
-                            // キャンセル予約か否かでチェックするプロパティを変更（キャンセルの場合...is_cancel、非キャンセル...valid）
-                            $checkProperty = $isCancelReserve ? 'is_cancel' : 'valid';
-
+                            // キャンセルか否かでチェックするプロパティを変更（キャンセルの場合...is_cancel、非キャンセル...valid）
+                            if ($price->purchase_type == config('consts.const.PURCHASE_NORMAL')) {
+                                $checkProperty = 'valid';
+                            } elseif ($price->purchase_type == config('consts.const.PURCHASE_CANCEL')) {
+                                $checkProperty = 'is_cancel';
+                            } else {
+                                continue;
+                            }
+                            
                             if ($price->{$checkProperty}) { // 有効
                                 $optionPrices[] = array_merge($tmp, [
+                                    'purchase_type' => $price->purchase_type,
                                     'participant_id' => $price->participant->id,
                                     'user_name' => $price->participant->name,
                                     'gross_ex' => $price->gross_ex,
                                     'quantity' => 1,
                                     'zei_kbn' => $price->zei_kbn,
                                     'gross' => $price->gross,
-                                    'is_cancel' => $price->is_cancel, // キャンセルの場合はis_cancel=trueの商品のみリストアップしているので同カラムは必ず1になるが一応、保持
                                     'cancel_charge' => $price->cancel_charge,
                                 ]);
                             }
@@ -418,11 +428,18 @@ trait BusinessFormTrait
     
                         foreach ($subject->reserve_participant_prices as $price) {
 
-                            // キャンセル予約か否かでチェックするプロパティを変更（キャンセルの場合...is_cancel、非キャンセル...valid）
-                            $checkProperty = $isCancelReserve ? 'is_cancel' : 'valid';
+                            // キャンセルか否かでチェックするプロパティを変更（キャンセルの場合...is_cancel、非キャンセル...valid）
+                            if ($price->purchase_type == config('consts.const.PURCHASE_NORMAL')) {
+                                $checkProperty = 'valid';
+                            } elseif ($price->purchase_type == config('consts.const.PURCHASE_CANCEL')) {
+                                $checkProperty = 'is_cancel';
+                            } else {
+                                continue;
+                            }
 
                             if ($price->{$checkProperty}) { // 有効
                                 $airticketPrices[] = array_merge($tmp, [
+                                    'purchase_type' => $price->purchase_type,
                                     'participant_id' => $price->participant->id,
                                     'user_name' => $price->participant->name,
                                     'seat' => $price->seat,
@@ -431,7 +448,6 @@ trait BusinessFormTrait
                                     'quantity' => 1,
                                     'zei_kbn' => $price->zei_kbn,
                                     'gross' => $price->gross,
-                                    'is_cancel' => $price->is_cancel, // キャンセルの場合はis_cancel=trueの商品のみリストアップしているので同カラムは必ず1になるが一応、保持
                                     'cancel_charge' => $price->cancel_charge,
                                 ]);
                             }
@@ -450,11 +466,18 @@ trait BusinessFormTrait
     
                         foreach ($subject->reserve_participant_prices as $price) {
 
-                            // キャンセル予約か否かでチェックするプロパティを変更（キャンセルの場合...is_cancel、非キャンセル...valid）
-                            $checkProperty = $isCancelReserve ? 'is_cancel' : 'valid';
+                            // キャンセルか否かでチェックするプロパティを変更（キャンセルの場合...is_cancel、非キャンセル...valid）
+                            if ($price->purchase_type == config('consts.const.PURCHASE_NORMAL')) {
+                                $checkProperty = 'valid';
+                            } elseif ($price->purchase_type == config('consts.const.PURCHASE_CANCEL')) {
+                                $checkProperty = 'is_cancel';
+                            } else {
+                                continue;
+                            }
 
                             if ($price->{$checkProperty}) { // 有効
                                 $hotelPrices[] = array_merge($tmp, [
+                                    'purchase_type' => $price->purchase_type,
                                     'participant_id' => $price->participant->id,
                                     'room_number'=> $price->room_number,
                                     'user_name' => $price->participant->name,
@@ -462,7 +485,6 @@ trait BusinessFormTrait
                                     'quantity' => 1,
                                     'zei_kbn' => $price->zei_kbn,
                                     'gross' => $price->gross,
-                                    'is_cancel' => $price->is_cancel, // キャンセルの場合はis_cancel=trueの商品のみリストアップしているので同カラムは必ず1になるが一応、保持
                                     'cancel_charge' => $price->cancel_charge,
                                 ]);
                             }
@@ -492,15 +514,15 @@ trait BusinessFormTrait
     {
         $result = [];
         foreach ($optionPrices as $row) {
-            if (!Arr::get($row, 'is_cancel') && !Arr::get($row, 'gross') && !Arr::get($row, 'gross_ex')) {
-                continue; // 予約状態で単価・税込単価のいずれも0円の場合は表示ナシ
+            if (Arr::get($row, 'purchase_type') == config('consts.const.PURCHASE_NORMAL') && !Arr::get($row, 'gross') && !Arr::get($row, 'gross_ex')) {
+                continue; // 通常仕入で単価・税込単価のいずれも0円の場合は表示ナシ
             }
-            if (Arr::get($row, 'is_cancel') && !Arr::get($row, 'cancel_charge')) {
-                continue; // キャンセル状態でキャンセルチャージが0円の場合は表示ナシ
+            if (Arr::get($row, 'purchase_type') == config('consts.const.PURCHASE_CANCEL') && !Arr::get($row, 'cancel_charge')) {
+                continue; // キャンセル仕入でキャンセルチャージが0円の場合は表示ナシ
             }
 
-            // 名称、単価、キャンセルチャージ、税区分で同一性をチェック ※asp/resources/assets/staff/js/components/BusinessForm/BreakdownPricePreviewArea.jsと同じ処理
-            $key = md5(sprintf("%s_%s_%s_%s", Arr::get($row, 'name'), Arr::get($row, 'gross_ex'), Arr::get($row, 'cancel_charge'), Arr::get($row, 'zei_kbn')));
+            // 仕入タイプ・名称、単価、税込単価、キャンセルチャージ、税区分で同一性をチェック ※asp/resources/assets/staff/js/components/BusinessForm/BreakdownPricePreviewArea.jsと同じ処理
+            $key = md5(sprintf("%s_%s_%s_%s_%s_%s", Arr::get($row, 'purchase_type'), Arr::get($row, 'name'), Arr::get($row, 'gross_ex'), Arr::get($row, 'gross'), Arr::get($row, 'cancel_charge'), Arr::get($row, 'zei_kbn')));
             if (!isset($result[$key])) {
                 // 参加者情報は不要
                 $result[$key] = collect($row)->except(['participant_id', 'user_name'])->all();
@@ -519,15 +541,15 @@ trait BusinessFormTrait
     {
         $result = [];
         foreach ($airticketPrices as $row) {
-            if (!Arr::get($row, 'is_cancel') && !Arr::get($row, 'gross') && !Arr::get($row, 'gross_ex')) {
-                continue; // 予約状態で単価・税込単価のいずれも0円の場合は表示ナシ
+            if (Arr::get($row, 'purchase_type') == config('consts.const.PURCHASE_NORMAL') && !Arr::get($row, 'gross') && !Arr::get($row, 'gross_ex')) {
+                continue; // 通常仕入で単価・税込単価のいずれも0円の場合は表示ナシ
             }
-            if (Arr::get($row, 'is_cancel') && !Arr::get($row, 'cancel_charge')) {
-                continue; // キャンセル状態でキャンセルチャージが0円の場合は表示ナシ
+            if (Arr::get($row, 'purchase_type') == config('consts.const.PURCHASE_CANCEL') && !Arr::get($row, 'cancel_charge')) {
+                continue; // キャンセル仕入でキャンセルチャージが0円の場合は表示ナシ
             }
 
-            // 名前・座席・単価・キャンセルチャージ・税区分で同一性をチェック ※asp/resources/assets/staff/js/components/BusinessForm/BreakdownPricePreviewArea.jsと同じ処理
-            $key = md5(sprintf("%s_%s_%s_%s_%s", Arr::get($row, 'name'), Arr::get($row, 'seat'), Arr::get($row, 'gross_ex'), Arr::get($row, 'cancel_charge'), Arr::get($row, 'zei_kbn')));
+            // 仕入タイプ・名称、単価、税込単価、キャンセルチャージ、税区分で同一性をチェック ※asp/resources/assets/staff/js/components/BusinessForm/BreakdownPricePreviewArea.jsと同じ処理
+            $key = md5(sprintf("%s_%s_%s_%s_%s_%s_%s", Arr::get($row, 'purchase_type'), Arr::get($row, 'name'), Arr::get($row, 'seat'), Arr::get($row, 'gross_ex'), Arr::get($row, 'gross'), Arr::get($row, 'cancel_charge'), Arr::get($row, 'zei_kbn')));
             if (!isset($result[$key])) {
                 // 参加者情報は不要
                 $result[$key] = collect($row)->except(['participant_id', 'user_name'])->all();
@@ -546,15 +568,15 @@ trait BusinessFormTrait
     {
         $result = [];
         foreach ($hotelPrices as $row) {
-            if (!Arr::get($row, 'is_cancel') && !Arr::get($row, 'gross') && !Arr::get($row, 'gross_ex')) {
-                continue; // 予約状態で単価・税込単価のいずれも0円の場合は表示ナシ
+            if (Arr::get($row, 'purchase_type') == config('consts.const.PURCHASE_NORMAL') && !Arr::get($row, 'gross') && !Arr::get($row, 'gross_ex')) {
+                continue; // 通常仕入で単価・税込単価のいずれも0円の場合は表示ナシ
             }
-            if (Arr::get($row, 'is_cancel') && !Arr::get($row, 'cancel_charge')) {
-                continue; // キャンセル状態でキャンセルチャージが0円の場合は表示ナシ
+            if (Arr::get($row, 'purchase_type') == config('consts.const.PURCHASE_CANCEL') && !Arr::get($row, 'cancel_charge')) {
+                continue; // キャンセル仕入でキャンセルチャージが0円の場合は表示ナシ
             }
             
-            // 名前・ルームタイプ・単価・キャンセルチャージ・税区分で同一性をチェック ※asp/resources/assets/staff/js/components/BusinessForm/BreakdownPricePreviewArea.jsと同じ処理
-            $key = md5(sprintf("%s_%s_%s_%s_%s", Arr::get($row, 'name'), Arr::get($row, 'room_type'), Arr::get($row, 'gross_ex'), Arr::get($row, 'cancel_charge'), Arr::get($row, 'zei_kbn')));
+            // 仕入タイプ・名称、単価、税込単価、キャンセルチャージ、税区分で同一性をチェック ※asp/resources/assets/staff/js/components/BusinessForm/BreakdownPricePreviewArea.jsと同じ処理
+            $key = md5(sprintf("%s_%s_%s_%s_%s_%s_%s", Arr::get($row, 'purchase_type'), Arr::get($row, 'name'), Arr::get($row, 'room_type'), Arr::get($row, 'gross_ex'), Arr::get($row, 'gross'), Arr::get($row, 'cancel_charge'), Arr::get($row, 'zei_kbn')));
             if (!isset($result[$key])) {
                 // 参加者情報は不要
                 $result[$key] = collect($row)->except(['participant_id', 'user_name'])->all();

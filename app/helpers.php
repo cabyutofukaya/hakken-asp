@@ -51,21 +51,33 @@ if (! function_exists('get_price_total')) {
         if ($optionPrices) {
             foreach ($optionPrices as $op) {
                 if (in_array(Arr::get($op, 'participant_id'), $participantIds, true)) {
-                    $amountTotal += Arr::get($op, 'gross', 0);
+                    if (Arr::get($op, 'purchase_type') == config('consts.const.PURCHASE_NORMAL')) { // 通常仕入
+                        $amountTotal += Arr::get($op, 'gross', 0);
+                    } elseif (Arr::get($op, 'purchase_type') == config('consts.const.PURCHASE_CANCEL')) { // キャンセル仕入
+                        $amountTotal += Arr::get($op, 'cancel_charge', 0);
+                    }
                 }
             }
         }
         if ($airticketPrices) {
             foreach ($airticketPrices as $ap) {
                 if (in_array(Arr::get($ap, 'participant_id'), $participantIds, true)) {
-                    $amountTotal += Arr::get($ap, 'gross', 0);
+                    if (Arr::get($ap, 'purchase_type') == config('consts.const.PURCHASE_NORMAL')) { // 通常仕入
+                        $amountTotal += Arr::get($ap, 'gross', 0);
+                    } elseif (Arr::get($ap, 'purchase_type') == config('consts.const.PURCHASE_CANCEL')) { // キャンセル仕入
+                        $amountTotal += Arr::get($ap, 'cancel_charge', 0);
+                    }
                 }
             }
         }
         if ($hotelPrices) {
             foreach ($hotelPrices as $hp) {
                 if (in_array(Arr::get($hp, 'participant_id'), $participantIds, true)) {
-                    $amountTotal += Arr::get($hp, 'gross', 0);
+                    if (Arr::get($hp, 'purchase_type') == config('consts.const.PURCHASE_NORMAL')) { // 通常仕入
+                        $amountTotal += Arr::get($hp, 'gross', 0);
+                    } elseif (Arr::get($hp, 'purchase_type') == config('consts.const.PURCHASE_CANCEL')) { // キャンセル仕入
+                        $amountTotal += Arr::get($hp, 'cancel_charge', 0);
+                    }
                 }
             }
         }
@@ -73,43 +85,6 @@ if (! function_exists('get_price_total')) {
     }
 }
 
-if (! function_exists('get_cancel_charge_total')) {
-    /**
-     * オプション科目、航空券科目、ホテル科目のキャンセルチャージ合計を計算
-     *
-     * @param array $participantIds 参加者IDリスト
-     * @param array $optionPrices オプション科目料金リスト
-     * @param array $airticketPrices 航空券科目料金リスト
-     * @param array $hotelPrices ホテル科目料金リスト
-     * @return int
-     */
-    function get_cancel_charge_total(array $participantIds, ?array $optionPrices, ?array $airticketPrices, ?array $hotelPrices) : int
-    {
-        $amountTotal = 0;
-        if ($optionPrices) {
-            foreach ($optionPrices as $op) {
-                if (in_array(Arr::get($op, 'participant_id'), $participantIds, true)) {
-                    $amountTotal += Arr::get($op, 'cancel_charge', 0);
-                }
-            }
-        }
-        if ($airticketPrices) {
-            foreach ($airticketPrices as $ap) {
-                if (in_array(Arr::get($ap, 'participant_id'), $participantIds, true)) {
-                    $amountTotal += Arr::get($ap, 'cancel_charge', 0);
-                }
-            }
-        }
-        if ($hotelPrices) {
-            foreach ($hotelPrices as $hp) {
-                if (in_array(Arr::get($hp, 'participant_id'), $participantIds, true)) {
-                    $amountTotal += Arr::get($hp, 'cancel_charge', 0);
-                }
-            }
-        }
-        return $amountTotal;
-    }
-}
 
 if (! function_exists('get_reserve_price_total')) {
     /**

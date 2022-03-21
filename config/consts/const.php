@@ -20,6 +20,10 @@ return [
   'RECEPTION_TYPE_ASP' => 'asp',
   'RECEPTION_TYPE_WEB' => 'web',
 
+  // 仕入種別(通常orキャンセル)
+  'PURCHASE_NORMAL' => 1, // 通常仕入
+  'PURCHASE_CANCEL' => 2, // キャンセル仕入
+
   // 画像サムネイルサイズ
   'THUMB_M' => 600,
   'THUMB_S' => 150,

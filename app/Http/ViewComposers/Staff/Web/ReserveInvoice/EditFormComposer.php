@@ -261,7 +261,7 @@ class EditFormComposer
 
 
         // オプション価格情報、航空券価格情報、ホテル価格情報、宿泊施設情報、宿泊施設連絡先を取得
-        list($optionPrices, $airticketPrices, $hotelPrices, $hotelInfo, $hotelContacts) = $this->getPriceAndHotelInfo($reserve->enabled_reserve_itinerary->id ? $reserve->enabled_reserve_itinerary : null, $isCanceled, false);
+        list($optionPrices, $airticketPrices, $hotelPrices, $hotelInfo, $hotelContacts) = $this->getPriceAndHotelInfo($reserve->enabled_reserve_itinerary->id ? $reserve->enabled_reserve_itinerary : null, false);
 
         // reactに渡す各種定数
         $jsVars = $this->getJsVars($agencyAccount);

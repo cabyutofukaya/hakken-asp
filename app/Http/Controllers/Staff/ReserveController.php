@@ -251,7 +251,7 @@ class ReserveController extends AppController
                 // キャンセルチャージ料金を保存
                 $this->setCancelCharge($input);
                 
-                $this->reserveService->cancel($reserve->id, true, Arr::get($input, 'reserve.updated_at'));
+                $this->reserveService->cancel($reserve, true, Arr::get($input, 'reserve.updated_at'));
 
                 $this->refreshItineraryTotalAmount($reserve->enabled_reserve_itinerary); // 有効行程の合計金額更新
 

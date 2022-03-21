@@ -193,7 +193,7 @@ class ReserveController extends Controller
         try {
             $result = \DB::transaction(function () use ($reserve) {
                 $this->reserveParticipantPriceService->cancelChargeReset($reserve->enabled_reserve_itinerary->id); // キャンセルチャージをリセット
-                $this->webReserveService->cancel($reserve->id, false, null);
+                $this->webReserveService->cancel($reserve, false, null);
 
                 if ($reserve->enabled_reserve_itinerary->id) {
                     $this->refreshItineraryTotalAmount($reserve->enabled_reserve_itinerary); // 有効行程の合計金額更新

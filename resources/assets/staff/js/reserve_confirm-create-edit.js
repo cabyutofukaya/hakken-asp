@@ -418,9 +418,6 @@ const ReserveConfirmArea = ({
                 .parent()
                 .slideDown();
             setSaveMessage("請求書データを保存しました");
-
-            // ↓ページ遷移すると慌ただしのでひとまず遷移ナシに
-            // location.href = document.referrer ? document.referrer : backUrl;
         }
     };
 

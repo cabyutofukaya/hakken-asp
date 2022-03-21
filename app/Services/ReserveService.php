@@ -158,25 +158,24 @@ class ReserveService extends ReserveEstimateService
     /**
      * 予約キャンセル
      *
-     * @param int $id 予約ID
+     * @param Reserve $reserve 予約情報
      * @param bool $cancelCharge キャンセルチャージの有無
      * @return boolean
      * @throws ExclusiveLockException 同時編集を検知した場合は例外を投げる
      */
-    public function cancel(int $id, bool $cancelCharge, ?string $updatedAt) : bool
+    public function cancel(Reserve $reserve, bool $cancelCharge, ?string $updatedAt) : bool
     {
-        $reserve = $this->reserveRepository->find($id);
         if ($updatedAt && $reserve->updated_at != $updatedAt) {
             throw new ExclusiveLockException;
         }
 
         if (!$reserve->cancel_at) { // cancel_atカラムの値をセットするのは初回のみ
-            return $this->reserveRepository->updateFields($id, [
+            return $this->reserveRepository->updateFields($reserve->id, [
                 'cancel_at' => date('Y-m-d H:i:s'),
                 'cancel_charge' => $cancelCharge
             ]);
         } else {
-            return $this->reserveRepository->updateFields($id, [
+            return $this->reserveRepository->updateFields($reserve->id, [
                 'cancel_charge' => $cancelCharge
             ]);
         }

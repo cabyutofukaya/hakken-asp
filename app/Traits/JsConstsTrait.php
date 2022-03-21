@@ -79,6 +79,8 @@ trait JsConstsTrait
             // 科目カテゴリ一覧
             'subjectCategories' => config('consts.subject_categories.SUBJECT_CATEGORY_LIST'),
             'numberLedgerAllowedMax' => config('consts.const.NUMBER_LEDGER_ALLOWED_MAX'), // 帳票最大追加数
+            'purchaseNormal' => config('consts.const.PURCHASE_NORMAL'), // 通常仕入
+            'purchaseCancel' => config('consts.const.PURCHASE_CANCEL'), // キャンセル仕入
         ];
     }
 }

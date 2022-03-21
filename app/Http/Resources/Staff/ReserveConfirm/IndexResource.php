@@ -63,7 +63,7 @@ class IndexResource extends JsonResource
             ],
             'reserve_itinerary' => [
                 'control_number' => $reserveItineraryControlNumber,
-                'total_gross' => $this->reserve->is_canceled ? ($this->reserve_itinerary->total_cancel_charge ?? 0) : ($this->reserve_itinerary->total_gross ?? 0), // 予約がキャンセル状態、かつ有効行程の場合はキャンセルチャージの合計
+                'total_gross' => $this->reserve_itinerary->total_gross
             ]
         ];
     }

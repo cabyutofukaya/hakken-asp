@@ -82,9 +82,9 @@ class IndexResource extends JsonResource
             "control_number" => $this->control_number,
             "enabled" => $this->enabled,
             "note" => mb_strimwidth($this->note, 0, 30, "..."),
-            "total_gross" => ($this->reserve->is_canceled && $this->enabled) ? $this->total_cancel_charge : $this->total_gross, // 予約がキャンセル状態、かつ有効行程の場合はキャンセルチャージの合計
-            "total_net" => ($this->reserve->is_canceled && $this->enabled) ? $this->total_cancel_charge_net : $this->total_net, // 予約がキャンセル状態、かつ有効行程の場合はキャンセルチャージ(仕入先支払い額)の合計
-            "total_gross_profit" => ($this->reserve->is_canceled && $this->enabled) ? $this->total_cancel_charge_profit : $this->total_gross_profit, // 予約がキャンセル状態、かつ有効行程の場合はキャンセルチャージ粗利の合計
+            "total_gross" => $this->total_gross,
+            "total_net" => $this->total_net,
+            "total_gross_profit" => $this->total_gross_profit,
             "edit_url" => $editUrl,
             "pdf_url" => $pdfUrl,
             "room_list_url" => $roomListUrl,

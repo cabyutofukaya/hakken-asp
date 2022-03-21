@@ -32,7 +32,6 @@ use App\Traits\UserCustomItemTrait;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 
-
 class ReserveItineraryService
 {
     use UserCustomItemTrait;
@@ -120,10 +119,8 @@ class ReserveItineraryService
 
     /**
      * 買い掛け金詳細upsert処理
-     * 
-     * 当該科目が”無効”で出金登録がされていない場合はaccount_payable_detailsテーブル削除
-     * ↓↓↓↓
-     * 消してしまうとキャンセルチャージ処理する際に商品数が合わなくなってしまうので削除はせず金額情報を0円に初期化する
+     *
+     * 無効フラグがONのときは金額情報を0円に初期化。出金登録を消してしまうとキャンセルチャージ処理の際に商品数が合わなくなってしまう
      *
      * @param int $agencyId 会社ID
      * @param int $reserveId 予約ID
@@ -131,31 +128,27 @@ class ReserveItineraryService
      * @param int $reserveTravelDateId 旅行日ID
      * @param int $reserveScheduleId スケジュールID
      * @param bool $valid 科目の有効・無効フラグ
+     * @param bool $isCancel 科目のキャンセルフラグ
      * @param string $useDate 利用日
      * @param string $paymentDate 支払日
      */
-    private function accountPayableDetailCommon(int $agencyId, int $reserveId, int $reserveItineraryId, int $reserveTravelDateId, int $reserveScheduleId, bool $valid, int $accountPayableId, ParticipantPriceInterface $participantPrice, Supplier $supplier, ?string $itemCode, ?string $itemName, string $useDate, ?string $paymentDate) : ?AccountPayableDetail
+    private function accountPayableDetailCommon(int $agencyId, int $reserveId, int $reserveItineraryId, int $reserveTravelDateId, int $reserveScheduleId, bool $valid, bool $isCancel, int $accountPayableId, ParticipantPriceInterface $participantPrice, Supplier $supplier, ?string $itemCode, ?string $itemName, string $useDate, ?string $paymentDate) : ?AccountPayableDetail
     {
         // 検索条件
         $attributes = [
-            // 'account_payable_id' => $accountPayableId,
             'reserve_schedule_id' => $reserveScheduleId,
             'saleable_type' => get_class($participantPrice),
             'saleable_id' => $participantPrice->id,
         ];
 
-        // if (!$valid) { // 無効科目 → 出金登録がなければ削除
-        //     $accountPayableDetail = $this->accountPayableDetailService->findWhere($attributes);
-        //     if ($accountPayableDetail && $accountPayableDetail->agency_withdrawals->isEmpty()) {
-        //         // 論理削除
-        //         $this->accountPayableDetailService->delete($accountPayableDetail->id, true);
-        //     }
-        //     return null;
-        // }
-        // ↑出金登録を消してしまうとキャンセルチャージ処理の際に商品数が合わなくなるので、無効フラグがオンの時は仕入料金を0円で初期化するように修正
+        $amountBilled = 0;
+        if ($participantPrice->purchase_type == config('consts.const.PURCHASE_NORMAL')) {
+            $amountBilled = !$valid ? 0 : ($participantPrice->net ?? 0); // 数字なのでnullの場合は0で初期化
+        } elseif ($participantPrice->purchase_type == config('consts.const.PURCHASE_CANCEL')) {
+            $amountBilled = !$isCancel ? 0 : ($participantPrice->cancel_charge_net ?? 0); // 数字なのでnullの場合は0で初期化
+        }
 
-        $amountBilled = !$valid ? 0 : ($participantPrice->net ?? 0); // 数字なのでnullの場合は0で初期化
-        $amountPayment = !$valid ? 0 : ($participantPrice->cost ?? 0); // 数字なのでnullの場合は0で初期化
+        // $amountPayment = !$valid ? 0 : ($participantPrice->cost ?? 0); // 数字なのでnullの場合は0で初期化
         
         /////////// 更新or登録が必要な場合は以下の処理
 
@@ -172,7 +165,7 @@ class ReserveItineraryService
                 'item_code' => $itemCode,
                 'item_name' => $itemName,
                 'amount_billed' => $amountBilled,
-                'amount_payment' => $amountPayment,
+                // 'amount_payment' => $amountPayment,
                 'use_date' => $useDate,
                 'payment_date' => $paymentDate,
             ]
@@ -259,7 +252,6 @@ class ReserveItineraryService
                                         $this->reserveSchedulePhotoService->deletePhotoFile($oldFileName, false); // 物理削除
                                     }
                                 }
-
                             }
                         }
 
@@ -334,6 +326,7 @@ class ReserveItineraryService
                                                 $reserveTravelDate->id,
                                                 $reserveSchedule->id,
                                                 Arr::get($participantPrice, 'valid') == 1,
+                                                Arr::get($participantPrice, 'is_cancel') == 1,
                                                 $accountPayable->id,
                                                 $price,
                                                 $currentSupplier,
@@ -377,6 +370,7 @@ class ReserveItineraryService
                                                 $reserveTravelDate->id,
                                                 $reserveSchedule->id,
                                                 Arr::get($participantPrice, 'valid') == 1,
+                                                Arr::get($participantPrice, 'is_cancel') == 1,
                                                 $accountPayable->id,
                                                 $price,
                                                 $currentSupplier,
@@ -420,6 +414,7 @@ class ReserveItineraryService
                                                 $reserveTravelDate->id,
                                                 $reserveSchedule->id,
                                                 Arr::get($participantPrice, 'valid') == 1,
+                                                Arr::get($participantPrice, 'is_cancel') == 1,
                                                 $accountPayable->id,
                                                 $price,
                                                 $currentSupplier,
@@ -500,10 +495,6 @@ class ReserveItineraryService
             'total_gross' => $reserveItinerary->sum_gross,
             'total_net' => $reserveItinerary->sum_net,
             'total_gross_profit' => $reserveItinerary->sum_gross_profit,
-            'total_cancel_charge' => $reserveItinerary->sum_cancel_gross,
-            'total_cancel_charge_net' => $reserveItinerary->sum_cancel_net,
-            'total_cancel_charge_profit' => $reserveItinerary->sum_cancel_charge_profit,
-
         ]);
     }
 

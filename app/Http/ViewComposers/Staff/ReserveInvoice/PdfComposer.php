@@ -117,7 +117,7 @@ class PdfComposer
 
         //////// 料金、ホテル情報
 
-        list($optionPrices, $airticketPrices, $hotelPrices, $hotelInfo, $hotelContacts) = $this->getPriceAndHotelInfoPdf($reserveInvoice, $value['participant_ids'], $isCanceled);
+        list($optionPrices, $airticketPrices, $hotelPrices, $hotelInfo, $hotelContacts) = $this->getPriceAndHotelInfoPdf($reserveInvoice, $value['participant_ids']);
 
         // 数量をまとめた配列を取得（オプション科目/航空券科目/ホテル科目）
         $optionPriceBreakdown = $this->getOptionPriceBreakdown($optionPrices);

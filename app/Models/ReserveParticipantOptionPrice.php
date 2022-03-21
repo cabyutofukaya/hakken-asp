@@ -27,6 +27,7 @@ class ReserveParticipantOptionPrice extends Model implements ParticipantPriceInt
         'reserve_id',
         'reserve_itinerary_id',
         'reserve_purchasing_subject_option_id',
+        'purchase_type',
         'agency_id',
         'participant_id',
         'valid',

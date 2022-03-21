@@ -78,7 +78,7 @@ class ReserveParticipantAirplanePriceService implements ReserveParticipantPriceI
      */
     public function setCancelChargeByIds(int $cancelCharge, int $cancelChargeNet, int $cancelChargeProfit, bool $isCancel, array $ids) : bool
     {
-        return $this->reserveParticipantAirplanePriceRepository->updateIds(['cancel_charge' => $cancelCharge, 'cancel_charge_net' => $cancelChargeNet, 'cancel_charge_profit' => $cancelChargeProfit, 'is_cancel' => $isCancel], $ids);
+        return $this->reserveParticipantAirplanePriceRepository->updateIds(['purchase_type' => config('consts.const.PURCHASE_CANCEL'),'cancel_charge' => $cancelCharge, 'cancel_charge_net' => $cancelChargeNet, 'cancel_charge_profit' => $cancelChargeProfit, 'is_cancel' => $isCancel], $ids);
     }
 
     /**
@@ -91,7 +91,7 @@ class ReserveParticipantAirplanePriceService implements ReserveParticipantPriceI
         $targetRows = $this->reserveParticipantAirplanePriceRepository->getWhere(['reserve_itinerary_id' => $reserveItineraryId], [], ['id']);
 
         $this->reserveParticipantAirplanePriceRepository->updateWhere(
-            ['cancel_charge' => $cancelCharge, 'cancel_charge_net' => $cancelChargeNet, 'cancel_charge_profit' => $cancelChargeProfit, 'is_cancel' => $isCancel], 
+            ['purchase_type' => config('consts.const.PURCHASE_CANCEL'), 'cancel_charge' => $cancelCharge, 'cancel_charge_net' => $cancelChargeNet, 'cancel_charge_profit' => $cancelChargeProfit, 'is_cancel' => $isCancel], 
             ['reserve_itinerary_id' => $reserveItineraryId]
         );
 

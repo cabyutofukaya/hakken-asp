@@ -183,7 +183,7 @@ class ReserveInvoiceService extends ReserveDocumentService implements DocumentAd
         $participantIds = $this->getDefaultParticipantCheckIds($this->reserveService->getParticipants($reserve->id, true));
 
         // オプション価格情報、航空券価格情報、ホテル価格情報、宿泊施設情報、宿泊施設連絡先を取得
-        list($optionPrices, $airticketPrices, $hotelPrices, $hotelInfo, $hotelContacts) = $this->getPriceAndHotelInfo($reserve->enabled_reserve_itinerary->id ? $reserve->enabled_reserve_itinerary : null, $reserve->is_canceled, false);
+        list($optionPrices, $airticketPrices, $hotelPrices, $hotelInfo, $hotelContacts) = $this->getPriceAndHotelInfo($reserve->enabled_reserve_itinerary->id ? $reserve->enabled_reserve_itinerary : null, false);
 
         // 請求書書類設定
         $documentRequest = $this->documentRequestService->getDefault($reserve->agency_id);
