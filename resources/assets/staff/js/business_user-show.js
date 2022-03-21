@@ -27,6 +27,7 @@ const BusinessUserShowArea = ({
     const { agencyAccount } = useContext(ConstContext);
 
     const [currentTab, setCurrentTab] = useState(defaultTab); //選択中のタブ
+    const [tabBadgeCount, setTabBadgeCount] = useState({}); // タブバッジカウント
 
     // タブクリック
     const handleTabChange = (e, tab) => {
@@ -122,6 +123,15 @@ const BusinessUserShowArea = ({
                                 }
                             >
                                 相談一覧
+                                {tabBadgeCount?.[tabCodes.tab_consultation] && (
+                                    <span>
+                                        {
+                                            tabBadgeCount[
+                                                tabCodes.tab_consultation
+                                            ]
+                                        }
+                                    </span>
+                                )}
                             </span>
                         </li>
                     )}
@@ -150,11 +160,14 @@ const BusinessUserShowArea = ({
             {permission.consultation.read && (
                 <ConsultationArea
                     isShow={currentTab === tabCodes.tab_consultation}
+                    tab={tabCodes.tab_consultation}
                     userNumber={user?.user_number}
                     formSelects={formSelects?.[tabCodes.tab_consultation]}
                     defaultValue={defaultValue?.[tabCodes.tab_consultation]}
                     consts={consts?.[tabCodes.tab_consultation]}
                     permission={permission?.consultation}
+                    tabBadgeCount={tabBadgeCount}
+                    setTabBadgeCount={setTabBadgeCount}
                 />
             )}
         </>

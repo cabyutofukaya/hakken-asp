@@ -14,11 +14,14 @@ import ReactLoading from "react-loading";
  */
 const ConsultationArea = ({
     isShow,
+    tab,
     userNumber,
     defaultValue,
     formSelects,
     consts,
-    permission
+    permission,
+    tabBadgeCount,
+    setTabBadgeCount
 }) => {
     const { agencyAccount } = useContext(ConstContext);
 
@@ -53,7 +56,6 @@ const ConsultationArea = ({
     // 一覧取得
     const fetch = async () => {
         if (!mounted.current) return;
-        if (!isShow) return;
         if (isLoading) return;
 
         setIsLoading(true); // 二重読み込み禁止
@@ -79,12 +81,17 @@ const ConsultationArea = ({
             setPage(response.data.meta.current_page);
             setLastPage(response.data.meta.last_page);
             setTotal(response.data.meta.total);
+            // 未完了バッジ更新
+            setTabBadgeCount({
+                ...tabBadgeCount,
+                [tab]: response.data.badge.incomplete_count
+            });
         }
     };
 
     useEffect(() => {
         fetch(); // 一覧取得
-    }, [isShow, page, sort, direction]);
+    }, [page, sort, direction]);
 
     // ページリンクをクリックした挙動（ページネーションコンポーネント用）
     const handlePagerClick = (e, targetPage) => {

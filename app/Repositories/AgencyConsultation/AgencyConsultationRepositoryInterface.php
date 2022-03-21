@@ -11,7 +11,7 @@ interface AgencyConsultationRepositoryInterface
 
   public function paginateByAgencyId(int $agencyId, array $params = [], int $limit, array $with = [], array $select =[]) : LengthAwarePaginator;
 
-  // public function paginateByTaxonomy(?string $taxonomy, int $agencyId, $params, $limit, $with, $select) : LengthAwarePaginator;
+  public function getIncompleteCount(string $taxonomy, int $id) :int;
 
   public function create(array $data) : AgencyConsultation;
 

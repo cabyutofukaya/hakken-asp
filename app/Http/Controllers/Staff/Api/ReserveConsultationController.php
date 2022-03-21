@@ -67,7 +67,9 @@ class ReserveConsultationController extends Controller
             ]),
             request()->get("per_page", 5),
             ['manager','v_agency_consultation_custom_values']
-        ));
+        ))->additional(['badge' => [
+            'incomplete_count' => $this->agencyConsultationService->getIncompleteCount(config('consts.agency_consultations.TAXONOMY_RESERVE'), $reserve->id),
+        ]]); // レスポンスに相談の未完了数を追加
     }
     
     /**
@@ -123,8 +125,7 @@ class ReserveConsultationController extends Controller
         string $applicationStep,
         string $controlNumber,
         string $consulNumber
-    )
-    {
+    ) {
         $reserveConsultation = $this->agencyConsultationService->findByControlNumber($consulNumber, $agencyAccount);
 
         if (!$reserveConsultation) {

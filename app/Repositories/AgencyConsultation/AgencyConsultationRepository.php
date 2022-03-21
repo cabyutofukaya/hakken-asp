@@ -60,6 +60,35 @@ class AgencyConsultationRepository implements AgencyConsultationRepositoryInterf
         return $query->where('agency_consultations.agency_id', $agencyId)->sortable()->paginate($limit);// sortableする際にagency_idがリレーション先のテーブルにも存在するのでエラー回避のために明示的にagency_idを指定する
     }
 
+    /**
+     * 未完了数を取得
+     *
+     * @param string $taxonomy 相談種別
+     * @param int $id リレーションID
+     * @return int
+     */
+    public function getIncompleteCount(string $taxonomy, int $id) : int
+    {
+        $query = $this->agencyConsultation;
+
+        if ($taxonomy == config('consts.agency_consultations.TAXONOMY_RESERVE')) {
+            $query = $query->where('taxonomy', $taxonomy)
+                ->where('reserve_id', $id);
+        } elseif ($taxonomy == config('consts.agency_consultations.TAXONOMY_PERSON')) {
+            $query = $query->where('taxonomy', $taxonomy)
+                ->where('user_id', $id);
+        } elseif ($taxonomy == config('consts.agency_consultations.TAXONOMY_BUSINESS')) {
+            $query = $query->where('taxonomy', $taxonomy)
+                ->where('business_user_id', $id);
+        } else {
+            return 0;
+        }
+
+        return $query->where('status', '<>', config('consts.agency_consultations.STATUS_COMPLETION'))->where(function ($q) {
+            $q->whereNotNull('deadline')->where('deadline', '<', date('Y-m-d'));
+        })->count();
+    }
+
     // public function paginateByTaxonomy(?string $taxonomy, int $agencyId, $params, $limit, $with, $select) : LengthAwarePaginator
     // {
     //     // 種別に応じて取得スコープを設定

@@ -101,6 +101,18 @@ class AgencyConsultationService
     }
 
     /**
+     * 未完了数を取得
+     *
+     * @param string $taxonomy 相談種別
+     * @param int $id リレーションID
+     * @return int
+     */
+    public function getIncompleteCount(string $taxonomy, int $id) : int
+    {
+        return $this->agencyConsultationRepository->getIncompleteCount($taxonomy, $id);
+    }
+
+    /**
      * 管理番号を生成
      * 接頭辞に相談管理を表す「D」を付ける
      *

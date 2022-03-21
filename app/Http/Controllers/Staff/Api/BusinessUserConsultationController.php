@@ -49,7 +49,9 @@ class BusinessUserConsultationController extends Controller
             ], // 当該法人顧客の相談
             request()->get("per_page", 5),
             ['manager','v_agency_consultation_custom_values']
-        ));
+        ))->additional(['badge' => [
+            'incomplete_count' => $this->agencyConsultationService->getIncompleteCount(config('consts.agency_consultations.TAXONOMY_BUSINESS'), $businessUser->id),
+        ]]); // レスポンスに相談の未完了数を追加
     }
     
     /**
