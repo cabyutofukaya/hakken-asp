@@ -114,7 +114,7 @@
 
             @endif {{-- 代表ローマ字 --}}
 
-            @if(check_business_form_pdf_item($value, "代表者_代表者(敬称)", 'document_setting.setting.'.config('consts.document_requests.RESERVATION_INFO')))
+            @if(Arr::get($value, 'representative.name') && check_business_form_pdf_item($value, "代表者_代表者(敬称)", 'document_setting.setting.'.config('consts.document_requests.RESERVATION_INFO')))
               様
             @endif {{-- 代表者敬称 --}}
             <br>
