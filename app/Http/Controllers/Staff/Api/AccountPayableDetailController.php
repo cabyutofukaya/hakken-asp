@@ -55,10 +55,10 @@ class AccountPayableDetailController extends Controller
                 $agencyAccount,
                 $search,
                 $limit,
-                true,
                 config('consts.reserves.APPLICATION_STEP_RESERVE'), // スコープ設定は確定済予約情報に
                 ['reserve','agency_withdrawals.v_agency_withdrawal_custom_values','saleable.participant:id,name,deleted_at'],
-                []
+                [],
+                true
             )
         );
     }

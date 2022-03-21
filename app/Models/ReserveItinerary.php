@@ -148,55 +148,130 @@ class ReserveItinerary extends Model
 
     /**
      * GROSS合計（オプション科目+航空券科目+ホテル科目）
-     * valid=trueのみ集計
+     * 通常仕入の場合はvalid=true
+     * キャンセル仕入の場合はis_cancel=trueのみ集計
      */
     public function getSumGrossAttribute()
     {
-        return $this->reserve_participant_option_prices->where('valid', true)->sum('gross') + $this->reserve_participant_hotel_prices->where('valid', true)->sum('gross') + $this->reserve_participant_airplane_prices->where('valid', true)->sum('gross');
+        return 
+            $this->reserve_participant_option_prices
+                ->where('purchase_type', config('consts.const.PURCHASE_NORMAL'))
+                ->where('valid', true)
+                ->sum('gross') + 
+            $this->reserve_participant_option_prices
+                ->where('purchase_type', config('consts.const.PURCHASE_CANCEL'))
+                ->where('is_cancel', true)
+                ->sum('cancel_charge') + 
+            $this->reserve_participant_hotel_prices
+                ->where('purchase_type', config('consts.const.PURCHASE_NORMAL'))
+                ->where('valid', true)
+                ->sum('gross') + 
+            $this->reserve_participant_hotel_prices
+                ->where('purchase_type', config('consts.const.PURCHASE_CANCEL'))
+                ->where('is_cancel', true)
+                ->sum('cancel_charge') + 
+            $this->reserve_participant_airplane_prices
+                ->where('purchase_type', config('consts.const.PURCHASE_NORMAL'))
+                ->where('valid', true)
+                ->sum('gross') + 
+            $this->reserve_participant_airplane_prices
+                ->where('purchase_type', config('consts.const.PURCHASE_CANCEL'))
+                ->where('is_cancel', true)
+                ->sum('cancel_charge');
     }
 
-    /**
-     * キャンセルチャージGROSS合計（オプション科目+航空券科目+ホテル科目）
-     * is_cancel=trueのキャセルチャージの合計
-     */
-    public function getSumCancelGrossAttribute()
-    {
-        return $this->reserve_participant_option_prices->where('is_cancel', true)->sum('cancel_charge') + $this->reserve_participant_hotel_prices->where('is_cancel', true)->sum('cancel_charge') + $this->reserve_participant_airplane_prices->where('is_cancel', true)->sum('cancel_charge');
-    }
+    // /**
+    //  * キャンセルチャージGROSS合計（オプション科目+航空券科目+ホテル科目）
+    //  * is_cancel=trueのキャセルチャージの合計
+    //  */
+    // public function getSumCancelGrossAttribute()
+    // {
+    //     return $this->reserve_participant_option_prices->where('is_cancel', true)->sum('cancel_charge') + $this->reserve_participant_hotel_prices->where('is_cancel', true)->sum('cancel_charge') + $this->reserve_participant_airplane_prices->where('is_cancel', true)->sum('cancel_charge');
+    // }
 
     /**
      * NET合計（オプション科目+航空券科目+ホテル科目）
-     * valid=trueのみ集計
+     * 通常仕入の場合はvalid=true
+     * キャンセル仕入の場合はis_cancel=trueのみ集計
      */
     public function getSumNetAttribute()
     {
-        return $this->reserve_participant_option_prices->where('valid', true)->sum('net') + $this->reserve_participant_hotel_prices->where('valid', true)->sum('net') + $this->reserve_participant_airplane_prices->where('valid', true)->sum('net');
+        return 
+            $this->reserve_participant_option_prices
+                ->where('purchase_type', config('consts.const.PURCHASE_NORMAL'))
+                ->where('valid', true)
+                ->sum('net') + 
+            $this->reserve_participant_option_prices
+                ->where('purchase_type', config('consts.const.PURCHASE_CANCEL'))
+                ->where('is_cancel', true)
+                ->sum('cancel_charge_net') + 
+            $this->reserve_participant_hotel_prices
+                ->where('purchase_type', config('consts.const.PURCHASE_NORMAL'))
+                ->where('valid', true)
+                ->sum('net') + 
+            $this->reserve_participant_hotel_prices
+                ->where('purchase_type', config('consts.const.PURCHASE_CANCEL'))
+                ->where('is_cancel', true)
+                ->sum('cancel_charge_net') + 
+            $this->reserve_participant_airplane_prices
+                ->where('purchase_type', config('consts.const.PURCHASE_NORMAL'))
+                ->where('valid', true)
+                ->sum('net') + 
+            $this->reserve_participant_airplane_prices
+                ->where('purchase_type', config('consts.const.PURCHASE_CANCEL'))
+                ->where('is_cancel', true)
+                ->sum('cancel_charge_net');
     }
 
-    /**
-     * キャンセルチャージNET合計（オプション科目+航空券科目+ホテル科目）
-     * is_cancel=trueのキャセルチャージの合計
-     */
-    public function getSumCancelNetAttribute()
-    {
-        return $this->reserve_participant_option_prices->where('is_cancel', true)->sum('cancel_charge_net') + $this->reserve_participant_hotel_prices->where('is_cancel', true)->sum('cancel_charge_net') + $this->reserve_participant_airplane_prices->where('is_cancel', true)->sum('cancel_charge_net');
-    }
+    // /**
+    //  * キャンセルチャージNET合計（オプション科目+航空券科目+ホテル科目）
+    //  * is_cancel=trueのキャセルチャージの合計
+    //  */
+    // public function getSumCancelNetAttribute()
+    // {
+    //     return $this->reserve_participant_option_prices->where('is_cancel', true)->sum('cancel_charge_net') + $this->reserve_participant_hotel_prices->where('is_cancel', true)->sum('cancel_charge_net') + $this->reserve_participant_airplane_prices->where('is_cancel', true)->sum('cancel_charge_net');
+    // }
 
     /**
      * 粗利合計（オプション科目+航空券科目+ホテル科目）
-     * valid=trueのみ集計
+     * 通常仕入の場合はvalid=true
+     * キャンセル仕入の場合はis_cancel=trueのみ集計
      */
     public function getSumGrossProfitAttribute()
     {
-        return $this->reserve_participant_option_prices->where('valid', true)->sum('gross_profit') + $this->reserve_participant_hotel_prices->where('valid', true)->sum('gross_profit') + $this->reserve_participant_airplane_prices->where('valid', true)->sum('gross_profit');
+        return 
+            $this->reserve_participant_option_prices
+                ->where('purchase_type', config('consts.const.PURCHASE_NORMAL'))
+                ->where('valid', true)
+                ->sum('gross_profit') + 
+            $this->reserve_participant_option_prices
+                ->where('purchase_type', config('consts.const.PURCHASE_CANCEL'))
+                ->where('is_cancel', true)
+                ->sum('cancel_charge_profit') + 
+            $this->reserve_participant_hotel_prices
+                ->where('purchase_type', config('consts.const.PURCHASE_NORMAL'))
+                ->where('valid', true)
+                ->sum('gross_profit') + 
+            $this->reserve_participant_hotel_prices
+                ->where('purchase_type', config('consts.const.PURCHASE_CANCEL'))
+                ->where('is_cancel', true)
+                ->sum('cancel_charge_profit') + 
+            $this->reserve_participant_airplane_prices
+                ->where('purchase_type', config('consts.const.PURCHASE_NORMAL'))
+                ->where('valid', true)
+                ->sum('gross_profit') + 
+            $this->reserve_participant_airplane_prices
+                ->where('purchase_type', config('consts.const.PURCHASE_CANCEL'))
+                ->where('is_cancel', true)
+                ->sum('cancel_charge_profit');
     }
 
-    /**
-     * キャンセルチャージ粗利合計（オプション科目+航空券科目+ホテル科目）
-     * is_cancel=trueのキャセルチャージの合計
-     */
-    public function getSumCancelChargeProfitAttribute()
-    {
-        return $this->reserve_participant_option_prices->where('is_cancel', true)->sum('cancel_charge_profit') + $this->reserve_participant_hotel_prices->where('is_cancel', true)->sum('cancel_charge_profit') + $this->reserve_participant_airplane_prices->where('is_cancel', true)->sum('cancel_charge_profit');
-    }
+    // /**
+    //  * キャンセルチャージ粗利合計（オプション科目+航空券科目+ホテル科目）
+    //  * is_cancel=trueのキャセルチャージの合計
+    //  */
+    // public function getSumCancelChargeProfitAttribute()
+    // {
+    //     return $this->reserve_participant_option_prices->where('is_cancel', true)->sum('cancel_charge_profit') + $this->reserve_participant_hotel_prices->where('is_cancel', true)->sum('cancel_charge_profit') + $this->reserve_participant_airplane_prices->where('is_cancel', true)->sum('cancel_charge_profit');
+    // }
 }

@@ -3,7 +3,6 @@
 namespace App\Http\Requests\Staff;
 
 use App\Rules\CheckTotalAmount;
-use App\Rules\CheckTotalCancelAmount;
 use App\Rules\ExistDocumentCommon;
 use App\Rules\ExistDocumentQuote;
 use Illuminate\Foundation\Http\FormRequest;
@@ -20,18 +19,6 @@ class ReserveConfirmUpdateRequest extends FormRequest
     public function authorize()
     {
         return true;
-    }
-
-    public function withValidator(Validator $validator)
-    {
-        // 合計金額検算(キャンセルか否かで計算メソッドを切り替え)
-        $validator->sometimes('amount_total', ['numeric',new CheckTotalAmount($this->participant_ids, $this->option_prices, $this->airticket_prices, $this->hotel_prices)], function ($input) {
-            return !$input->is_canceled;
-        });
-
-        $validator->sometimes('amount_total', ['numeric',new CheckTotalCancelAmount($this->participant_ids, $this->option_prices, $this->airticket_prices, $this->hotel_prices)], function ($input) {
-            return $input->is_canceled;
-        }); // キャンセル予約
     }
 
     /**
@@ -57,7 +44,7 @@ class ReserveConfirmUpdateRequest extends FormRequest
             'status' => ['nullable',Rule::in(array_values(config("consts.reserve_confirms.STATUS_LIST")))],
             'document_common_setting' => 'nullable|array',
             'document_setting' => 'nullable|array',
-            // 'amount_total' => ['numeric',new CheckTotalAmount($this->participant_ids, $this->option_prices, $this->airticket_prices, $this->hotel_prices)],
+            'amount_total' => ['numeric',new CheckTotalAmount($this->participant_ids, $this->option_prices, $this->airticket_prices, $this->hotel_prices)],
             'is_canceled' => 'boolean',
             'updated_at' => 'nullable',
             // 代金内訳、ホテル情報等

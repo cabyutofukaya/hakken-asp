@@ -151,9 +151,10 @@ class AccountPayableDetailRepository implements AccountPayableDetailRepositoryIn
      *
      * @param ?string $applicationStep 申し込み段階。全レコード対象の場合はnull
      * @var $limit
+     * @param bool $exZero 仕入額・未払い額が0円のレコードを取得しない場合はtrue
      * @return object
      */
-    public function paginateByAgencyId(int $agencyId, array $params, int $limit, bool $isValid = true, ?string $applicationStep, array $with, array $select) : LengthAwarePaginator
+    public function paginateByAgencyId(int $agencyId, array $params, int $limit, ?string $applicationStep, array $with, array $select, bool $exZero = true) : LengthAwarePaginator
     {
         $query = $applicationStep === config('consts.reserves.APPLICATION_STEP_RESERVE') ? $this->accountPayableDetail->decided() : $this->accountPayableDetail; // スコープを設定
         
@@ -191,13 +192,20 @@ class AccountPayableDetailRepository implements AccountPayableDetailRepositoryIn
             }
         }
 
+        if ($exZero) { // 請求額が0円だと、出金履歴が有っても非表示になるので注意。具合悪いようならこのフラグはなくす
+            $query = $query->where(function ($q) {
+                $q->where('amount_billed', "<>", 0)
+                    ->orWhere('unpaid_balance', "<>", 0);
+            })->where('status', '<>', config('consts.account_payable_details.STATUS_NONE'));
+        }
+
         return $query->where('account_payable_details.agency_id', $agencyId)->sortable()->paginate($limit); // sortableする際にagency_idがリレーション先のテーブルにも存在するのでエラー回避のために明示的にagency_idを指定する
     }
 
     // /**
     //  * 当該予約に対するaccount_payment_detailsを取得
     //  * paginateByAgencyIdメソッドを予約番号で検索した場合の結果とほぼ同じ
-    //  * 
+    //  *
     //  * @param ?string $applicationStep 申し込み段階。全レコード対象の場合はnull
     //  */
     // public function getByReserveNumber(string $reserveNumber, int $agencyId, ?string $applicationStep = null, array $with = [], array $select=[]) : Collection

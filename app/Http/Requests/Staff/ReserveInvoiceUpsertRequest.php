@@ -3,7 +3,6 @@
 namespace App\Http\Requests\Staff;
 
 use App\Rules\CheckTotalAmount;
-use App\Rules\CheckTotalCancelAmount;
 use App\Rules\ExistBusinessUser;
 use App\Rules\ExistDocumentCommon;
 use App\Rules\ExistDocumentRequest;
@@ -38,15 +37,6 @@ class ReserveInvoiceUpsertRequest extends FormRequest
         $validator->sometimes('business_user_id', ['required', new ExistBusinessUser(auth('staff')->user()->agency->id)], function () {
             return Arr::get($this->document_address, 'type') === config('consts.reserves.PARTICIPANT_TYPE_BUSINESS');
         });
-
-        // 合計金額検算(キャンセルか否かで計算メソッドを切り替え)
-        $validator->sometimes('amount_total', ['numeric',new CheckTotalAmount($this->participant_ids, $this->option_prices, $this->airticket_prices, $this->hotel_prices)], function ($input) {
-            return !$input->is_canceled;
-        });
-
-        $validator->sometimes('amount_total', ['numeric',new CheckTotalCancelAmount($this->participant_ids, $this->option_prices, $this->airticket_prices, $this->hotel_prices)], function ($input) {
-            return $input->is_canceled;
-        }); // キャンセル予約
     }
 
     /**
@@ -72,7 +62,7 @@ class ReserveInvoiceUpsertRequest extends FormRequest
             'participant_ids' => 'nullable|array',
             'document_common_setting' => 'nullable|array',
             'document_setting' => 'nullable|array',
-            // 'amount_total' => ['numeric',new CheckTotalAmount($this->participant_ids, $this->option_prices, $this->airticket_prices, $this->hotel_prices)],
+            'amount_total' => ['numeric',new CheckTotalAmount($this->participant_ids, $this->option_prices, $this->airticket_prices, $this->hotel_prices)],
             'is_canceled' => 'boolean',
             'status' => ['nullable',Rule::in(array_values(config("consts.reserve_invoices.STATUS_LIST")))],
             // 代金内訳、ホテル情報等

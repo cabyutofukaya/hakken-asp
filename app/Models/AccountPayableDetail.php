@@ -30,7 +30,7 @@ class AccountPayableDetail extends Model
         'last_note',
         'payment_date',
         'use_date',
-        'amount_payment',
+        // 'amount_payment',
         'unpaid_balance',
         'amount_billed',
     ];
@@ -56,7 +56,7 @@ class AccountPayableDetail extends Model
         'saleable_type',
         'saleable_id',
         'amount_billed',
-        'amount_payment', // ←使っていないかも
+        // 'amount_payment', // ←使っていないかも
         'unpaid_balance',
         'official', // ←使っていないかも
         'last_manager_id',
@@ -83,7 +83,7 @@ class AccountPayableDetail extends Model
      */
     protected $casts = [
         'amount_billed' => 'integer',
-        'amount_payment' => 'integer',
+        // 'amount_payment' => 'integer',
         'unpaid_balance' => 'integer',
     ];
 

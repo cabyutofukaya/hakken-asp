@@ -70,6 +70,7 @@ class ReserveItineraryUpdateRequest extends FormRequest
             'dates.*.*.reserve_purchasing_subjects.*.participants.*.zei_kbn' => ['nullable',Rule::in(array_values(config("consts.subject_categories.ZEI_KBN_LIST")))],
             'dates.*.*.reserve_purchasing_subjects.*.participants.*.age_kbn' => ['nullable',Rule::in(array_values(config("consts.users.AGE_KBN_LIST")))],
             'dates.*.*.reserve_purchasing_subjects.*.participants.*.valid' => 'required|boolean',
+            'dates.*.*.reserve_purchasing_subjects.*.participants.*.purchase_type' => 'required',
             // 料金
             'dates.*.*.reserve_purchasing_subjects.*.participants.*.gross_ex' => 'nullable|integer',
             'dates.*.*.reserve_purchasing_subjects.*.participants.*.gross' => 'nullable|integer',
@@ -135,6 +136,7 @@ class ReserveItineraryUpdateRequest extends FormRequest
             'dates.*.*.reserve_purchasing_subjects.*.participants.*.zei_kbn.in' => '税区分の指定が不正です(zei_kbn)。',
             'dates.*.*.reserve_purchasing_subjects.*.participants.*.age_kbn.in' => '年齢区分の指定が不正です。',
             'dates.*.*.reserve_purchasing_subjects.*.participants.*.valid.boolean' => '有効フラグの値が不正です。',
+            'dates.*.*.reserve_purchasing_subjects.*.participants.*.purchase_type.required' => '仕入種別は必須です。',
             // 任意項目
             'dates.*.*.reserve_purchasing_subjects.*.name.max' => '名称が長すぎます。',
             'dates.*.*.reserve_purchasing_subjects.*.address.max' => '住所が長すぎます。',

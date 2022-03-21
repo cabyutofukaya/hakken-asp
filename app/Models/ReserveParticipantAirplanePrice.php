@@ -27,6 +27,7 @@ class ReserveParticipantAirplanePrice extends Model implements ParticipantPriceI
         'reserve_id',
         'reserve_itinerary_id',
         'reserve_purchasing_subject_airplane_id',
+        'purchase_type',
         'agency_id',
         'participant_id',
         'valid',

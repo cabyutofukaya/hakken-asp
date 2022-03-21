@@ -323,7 +323,8 @@ return [
     'status' => [
       'status_none' => '', // 支払いナシ
       'status_unpaid' => '未払',
-      'status_paid' => '支払済み',  
+      'status_paid' => '支払済み',
+      'status_overpaid' => '過払',
     ],
   ],
   'web_users' => [

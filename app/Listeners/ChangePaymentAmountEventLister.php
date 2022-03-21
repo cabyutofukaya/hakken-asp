@@ -40,10 +40,12 @@ class ChangePaymentAmountEventLister
 
         $unpaidAmount = $accountPayableDetail->amount_billed - $withdrawalSum; // 未払金額を計算
 
-        if ($accountPayableDetail->amount_billed) { // 請求金額がある場合
-            $newStatus = $unpaidAmount > 0 ? config('consts.account_payable_details.STATUS_UNPAID') : config('consts.account_payable_details.STATUS_PAID');
-        } else { // 請求金額がない場合のステータスはNone
-            $newStatus = config('consts.account_payable_details.STATUS_NONE'); // 変更後のステータス。NONEで初期化
+        if ($unpaidAmount > 0) { // 支払い残高あり＝未払い
+            $newStatus = config('consts.account_payable_details.STATUS_UNPAID');
+        } elseif ($unpaidAmount < 0) { // 支払い残高がマイナス＝過払い
+            $newStatus = config('consts.account_payable_details.STATUS_OVERPAID');
+        } else { // 支払い残高0
+            $newStatus = $accountPayableDetail->amount_billed ? config('consts.account_payable_details.STATUS_PAID') : config('consts.account_payable_details.STATUS_NONE'); // 請求金額がある場合は支払い済み。それ以外はNoneで初期化
         }
 
         if ($currentStatus != $newStatus || $currentUnpaidAmount != $unpaidAmount) { // ステータスか未払い金額が変更されていたら更新

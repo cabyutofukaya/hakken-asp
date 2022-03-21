@@ -46,13 +46,13 @@ class AccountPayableDetailService
      * @param int $applicationStep 予約段階（見積/予約）
      * @param int $limit
      * @param array $with
-     * @param bool $isValid 有効にチェックが入っている仕入のみ対象の場合はtrue
+     * @param bool $exZero 仕入額・未払い額が0円のレコードを取得しない場合はtrue
      * @param
      */
-    public function paginateByAgencyAccount(string $agencyAccount, array $params, int $limit, bool $isValid = true, ?string $applicationStep = null, array $with = [], array $select=[]) : LengthAwarePaginator
+    public function paginateByAgencyAccount(string $agencyAccount, array $params, int $limit, ?string $applicationStep = null, array $with = [], array $select=[], bool $exZero = true) : LengthAwarePaginator
     {
         $agencyId = $this->agencyRepository->getIdByAccount($agencyAccount);
-        return $this->accountPayableDetailRepository->paginateByAgencyId($agencyId, $params, $limit, $isValid, $applicationStep, $with, $select);
+        return $this->accountPayableDetailRepository->paginateByAgencyId($agencyId, $params, $limit, $applicationStep, $with, $select, $exZero);
     }
 
     /**

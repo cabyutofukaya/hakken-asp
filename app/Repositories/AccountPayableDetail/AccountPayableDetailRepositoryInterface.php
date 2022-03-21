@@ -24,7 +24,7 @@ interface AccountPayableDetailRepositoryInterface
 
   public function updateWhere(array $update, array $where) : bool;
 
-  public function paginateByAgencyId(int $agencyId, array $params, int $limit, bool $isValid = true, ?string $applicationStep, array $with, array $select) : LengthAwarePaginator;
+  public function paginateByAgencyId(int $agencyId, array $params, int $limit, ?string $applicationStep, array $with, array $select, bool $exZero = true) : LengthAwarePaginator;
   
   public function updateOrCreate(array $where, array $params) : AccountPayableDetail;
 

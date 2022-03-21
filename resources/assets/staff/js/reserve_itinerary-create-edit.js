@@ -184,7 +184,9 @@ const ItineraryArea = ({
             </>
         ); // 旅行日未設定
 
-    const { agencyAccount } = useContext(ConstContext);
+    const { agencyAccount, purchaseNormal, purchaseCancel } = useContext(
+        ConstContext
+    );
 
     const mounted = useMountedRef(); // マウント・アンマウント制御
 
@@ -193,6 +195,7 @@ const ItineraryArea = ({
     const [isDeleteChecking, setIsDeleteChecking] = useState(false); // 削除可否チェック中か否か
     const [isSubmitting, setIsSubmitting] = useState(false); // form送信中か否か
 
+    // ParticipantPriceTrait@getInitialDataと同じ処理
     const initialTargetPurchasing = {
         mode: RESERVE_ITINERARY.MODE_CREATE,
         subject: subjectCategoryTypes?.default,
@@ -203,15 +206,23 @@ const ItineraryArea = ({
             ...participants.map(row => {
                 return {
                     participant_id: row.participant_id,
+                    purchase_type: purchaseNormal, // 通常仕入で初期化
                     valid: row.cancel ? 0 : 1, // 取り消し参加者は無効
+                    is_cancel: 0, // キャンセルフラグは無効で初期化。一応、取り消しとは別物として処理
                     age_kbn: row.age_kbn,
-                    zei_kbn: modalInitialValues?.zeiKbnDefault
+                    zei_kbn: modalInitialValues?.zeiKbnDefault,
+                    //　キャンセル金額関連は0円で初期化
+                    cancel_charge: 0,
+                    cancel_charge_net: 0,
+                    cancel_charge_profit: 0
                 };
             })
         ]
     }; // 仕入情報初期値(MODE_CREATE=新規登録)
 
     const [lists, rowDispatch] = useReducer(listsReducer, defaultValue?.dates); // 日程情報の入力制御
+
+    console.log(lists);
 
     const [note, setNote] = useState(defaultValue?.note); // 備考入力制御
     // 追加対象行情報。日付、行番号

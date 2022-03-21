@@ -259,11 +259,11 @@
             <tr>
               <td>
                 {{ Arr::get($row, 'name') }}
-                @if($isCanceled){{ config('consts.const.RESERVE_CANCEL_LABEL') }}@endif {{-- キャンセルの場合はキャセルラベルを表記 --}}
+                @if(Arr::get($row, 'purchase_type') == config('consts.const.PURCHASE_CANCEL')){{ config('consts.const.RESERVE_CANCEL_LABEL') }}@endif {{-- キャンセル仕入の場合はキャセルラベルを表記 --}}
               </td>
               @if(check_business_form_pdf_item($value, "単価・金額", 'document_setting.setting.'.config('consts.document_requests.BREAKDOWN_PRICE')))
                 <td>
-                  @if($isCanceled) {{-- キャンセルの場合はキャンセルチャージ金額 --}}
+                  @if(Arr::get($row, 'purchase_type') == config('consts.const.PURCHASE_CANCEL')) {{-- キャンセル仕入の場合はキャンセルチャージ金額 --}}
                     ￥{{ number_format( Arr::get($row, 'cancel_charge', 0) ) }}
                   @else
                     ￥{{ number_format( Arr::get($row, 'gross_ex', 0) ) }}
@@ -275,7 +275,7 @@
               </td>
               @if(check_business_form_pdf_item($value, "消費税", 'document_setting.setting.'.config('consts.document_requests.BREAKDOWN_PRICE')))
                 <td>
-                  @if($isCanceled) {{-- キャンセルの場合は消費税の表記ナシ --}}
+                  @if(Arr::get($row, 'purchase_type') == config('consts.const.PURCHASE_CANCEL')) {{-- キャンセル仕入の場合は消費税の表記ナシ --}}
                     -
                   @else
                     {{ Arr::get($formSelects['zeiKbns'], Arr::get($row, 'zei_kbn'), "-") }}
@@ -284,7 +284,7 @@
               @endif
               @if(check_business_form_pdf_item($value, "単価・金額", 'document_setting.setting.'.config('consts.document_requests.BREAKDOWN_PRICE')))
                 <td>
-                  @if($isCanceled) {{-- キャンセルの場合はキャンセルチャージ金額で計算 --}}
+                  @if(Arr::get($row, 'purchase_type') == config('consts.const.PURCHASE_CANCEL')) {{-- キャンセル仕入の場合はキャンセルチャージ金額で計算 --}}
                     ￥{{ number_format( Arr::get($row, 'cancel_charge', 0) * Arr::get($row, 'quantity', 0) ) }}
                   @else
                    ￥{{ number_format( Arr::get($row, 'gross', 0) * Arr::get($row, 'quantity', 0) ) }}
@@ -298,11 +298,11 @@
             <tr>
               <td>
                 {{ Arr::get($row, 'name') }} {{ Arr::get($row, 'seat') }}
-                @if($isCanceled){{ config('consts.const.RESERVE_CANCEL_LABEL') }}@endif {{-- キャンセルの場合はキャセルラベルを表記 --}}
+                @if(Arr::get($row, 'purchase_type') == config('consts.const.PURCHASE_CANCEL')){{ config('consts.const.RESERVE_CANCEL_LABEL') }}@endif {{-- キャンセル仕入の場合はキャセルラベルを表記 --}}
               </td>
               @if(check_business_form_pdf_item($value, "単価・金額", 'document_setting.setting.'.config('consts.document_requests.BREAKDOWN_PRICE')))
                 <td>
-                  @if($isCanceled) {{-- キャンセルの場合はキャンセルチャージ金額 --}}
+                  @if(Arr::get($row, 'purchase_type') == config('consts.const.PURCHASE_CANCEL')) {{-- キャンセル仕入の場合はキャンセルチャージ金額 --}}
                     ￥{{ number_format( Arr::get($row, 'cancel_charge', 0) ) }}
                   @else
                     ￥{{ number_format( Arr::get($row, 'gross_ex', 0) ) }}
@@ -314,7 +314,7 @@
               </td>
               @if(check_business_form_pdf_item($value, "消費税", 'document_setting.setting.'.config('consts.document_requests.BREAKDOWN_PRICE')))
                 <td>
-                  @if($isCanceled) {{-- キャンセルの場合は消費税の表記ナシ --}}
+                  @if(Arr::get($row, 'purchase_type') == config('consts.const.PURCHASE_CANCEL')) {{-- キャンセル仕入の場合は消費税の表記ナシ --}}
                     -
                   @else
                     {{ Arr::get($formSelects['zeiKbns'], Arr::get($row, 'zei_kbn'), "-") }}
@@ -323,7 +323,7 @@
               @endif
               @if(check_business_form_pdf_item($value, "単価・金額", 'document_setting.setting.'.config('consts.document_requests.BREAKDOWN_PRICE')))
                 <td>
-                  @if($isCanceled) {{-- キャンセルの場合はキャンセルチャージ金額で計算 --}}
+                  @if(Arr::get($row, 'purchase_type') == config('consts.const.PURCHASE_CANCEL')) {{-- キャンセル仕入の場合はキャンセルチャージ金額で計算 --}}
                     ￥{{ number_format( Arr::get($row, 'cancel_charge', 0) * Arr::get($row, 'quantity', 0) ) }}
                   @else
                     ￥{{ number_format( Arr::get($row, 'gross', 0) * Arr::get($row, 'quantity', 0) ) }}
@@ -337,11 +337,11 @@
             <tr>
               <td>
                 {{ Arr::get($row, 'name') }} {{ Arr::get($row, 'room_type') }} {{ Arr::get($row, 'quantity') }}名
-                @if($isCanceled){{ config('consts.const.RESERVE_CANCEL_LABEL') }}@endif {{-- キャンセルの場合はキャセルラベルを表記 --}}
+                @if(Arr::get($row, 'purchase_type') == config('consts.const.PURCHASE_CANCEL')){{ config('consts.const.RESERVE_CANCEL_LABEL') }}@endif {{-- キャンセル仕入の場合はキャセルラベルを表記 --}}
               </td>
               @if(check_business_form_pdf_item($value, "単価・金額", 'document_setting.setting.'.config('consts.document_requests.BREAKDOWN_PRICE')))
                 <td>
-                  @if($isCanceled) {{-- キャンセルの場合はキャンセルチャージ金額 --}}
+                  @if(Arr::get($row, 'purchase_type') == config('consts.const.PURCHASE_CANCEL')) {{-- キャンセル仕入の場合はキャンセルチャージ金額 --}}
                     ￥{{ number_format( Arr::get($row, 'cancel_charge', 0) ) }}
                   @else
                     ￥{{ number_format( Arr::get($row, 'gross_ex', 0) ) }}
@@ -353,7 +353,7 @@
               </td>
               @if(check_business_form_pdf_item($value, "消費税", 'document_setting.setting.'.config('consts.document_requests.BREAKDOWN_PRICE')))
                 <td>
-                  @if($isCanceled) {{-- キャンセルの場合は消費税の表記ナシ --}}
+                  @if(Arr::get($row, 'purchase_type') == config('consts.const.PURCHASE_CANCEL')) {{-- キャンセル仕入の場合は消費税の表記ナシ --}}
                     -
                   @else
                     {{ Arr::get($formSelects['zeiKbns'], Arr::get($row, 'zei_kbn'), "-") }}
@@ -362,7 +362,7 @@
               @endif
               @if(check_business_form_pdf_item($value, "単価・金額", 'document_setting.setting.'.config('consts.document_requests.BREAKDOWN_PRICE')))
                 <td>
-                  @if($isCanceled) {{-- キャンセルの場合はキャンセルチャージ金額で計算 --}}
+                  @if(Arr::get($row, 'purchase_type') == config('consts.const.PURCHASE_CANCEL')) {{-- キャンセル仕入の場合はキャンセルチャージ金額で計算 --}}
                     ￥{{ number_format( Arr::get($row, 'cancel_charge', 0) * Arr::get($row, 'quantity', 0) ) }}
                   @else
                     ￥{{ number_format( Arr::get($row, 'gross', 0) * Arr::get($row, 'quantity', 0) ) }}
@@ -375,11 +375,12 @@
           <tr className="total">
             <td colSpan="{{ 4 - (check_business_form_pdf_item($value, "消費税", 'document_setting.setting.'.config('consts.document_requests.BREAKDOWN_PRICE')) ? 0 : 1) - (check_business_form_pdf_item($value, "単価・金額", 'document_setting.setting.'.config('consts.document_requests.BREAKDOWN_PRICE')) ? 0 : 2) }}">合計金額</td>
             <td>
-              @if($isCanceled) {{-- キャンセルの場合はキャンセルチャージ金額で計算 --}}
-                ￥{{ number_format(collect($optionPrices)->sum('cancel_charge') + collect($airticketPrices)->sum('cancel_charge') + collect($hotelPrices)->sum('cancel_charge')) }}
-              @else
-                ￥{{ number_format(collect($optionPrices)->sum('gross') + collect($airticketPrices)->sum('gross') + collect($hotelPrices)->sum('gross')) }}
-              @endif
+              {{-- キャンセルチャージとgrossの合計 --}}
+              ￥{{ number_format(
+                collect($optionPrices)->where('purchase_type', config('consts.const.PURCHASE_NORMAL'))->sum('gross') + collect($optionPrices)->where('purchase_type', config('consts.const.PURCHASE_CANCEL'))->sum('cancel_charge') + 
+                collect($airticketPrices)->where('purchase_type', config('consts.const.PURCHASE_NORMAL'))->sum('gross') + collect($airticketPrices)->where('purchase_type', config('consts.const.PURCHASE_CANCEL'))->sum('cancel_charge') + 
+                collect($hotelPrices)->where('purchase_type', config('consts.const.PURCHASE_NORMAL'))->sum('gross') + collect($hotelPrices)->where('purchase_type', config('consts.const.PURCHASE_CANCEL'))->sum('cancel_charge')
+                ) }}
             </td>
           </tr>
         </tbody>

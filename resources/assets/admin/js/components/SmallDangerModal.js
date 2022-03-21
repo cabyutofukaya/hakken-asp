@@ -16,9 +16,10 @@ const SmallDangerModal = ({
                 className="modal js-modal"
                 style={{ position: "fixed", left: 0, top: 0 }}
             >
+                {/**.js-modal-closeをはずしてもjquery側からレイヤーclickでレイヤーが消えてまうのでやむを得ずfalseで固定 */}
                 <div
                     className={classNames("modal__bg", {
-                        "js-modal-close": !isActioning
+                        "js-modal-close": false
                     })}
                 ></div>
                 <div className="modal__content">
