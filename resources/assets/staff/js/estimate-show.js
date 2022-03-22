@@ -208,7 +208,7 @@ const EstimateShowArea = ({
                                 相談一覧
                                 {tabBadgeCount?.[
                                     consts.common.tabCodes.tab_consultation
-                                ] && (
+                                ] > 0 && (
                                     <span>
                                         {
                                             tabBadgeCount[
