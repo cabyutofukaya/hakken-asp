@@ -77,7 +77,9 @@ const CancelChargeModal = ({
                     </li>
                     <li className="wd50 mr00">
                         <button
-                            className="redBtn"
+                            className={classNames("redBtn", {
+                                loading: isActioning
+                            })}
                             onClick={handleSubmit}
                             disabled={isActioning}
                         >

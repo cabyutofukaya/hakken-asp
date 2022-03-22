@@ -387,7 +387,12 @@ const CancelChargeArea = ({ defaultValue, consts, errors }) => {
                         </button>
                     </li>
                     <li className="wd50">
-                        <button className="redBtn" disabled={isSubmitting}>
+                        <button
+                            className={classNames("redBtn", {
+                                loading: isSubmitting
+                            })}
+                            disabled={isSubmitting}
+                        >
                             <span className="material-icons">save</span>{" "}
                             この内容でキャンセルする
                         </button>

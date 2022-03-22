@@ -33,7 +33,9 @@ const CancelModal = ({ id, nonChargeAction, isActioning = false }) => {
                     </li>
                     <li className="wd50 mr00">
                         <button
-                            className="redBtn"
+                            className={classNames("redBtn", {
+                                loading: isActioning
+                            })}
                             onClick={nonChargeAction}
                             disabled={isActioning}
                         >
