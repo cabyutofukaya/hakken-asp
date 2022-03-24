@@ -20,7 +20,9 @@ const ReserveDetail = ({
     itineraryErrorMessage,
     setItineraryErrorMessage,
     documentErrorMessage,
-    setDocumentErrorMessage
+    setDocumentErrorMessage,
+    updatedAt,
+    setUpdatedAt
 }) => {
     // 現在、有効化中の行程番号
     const [currentItineraryNumber, setCurrentItineraryNumber] = useState(null);
@@ -62,6 +64,8 @@ const ReserveDetail = ({
                 setCancelRequestId={setParticipantCancelRequestId}
                 permission={permission}
                 setSuccessMessage={setSuccessMessage}
+                updatedAt={updatedAt}
+                setUpdatedAt={setUpdatedAt}
             />
 
             <ItineraryArea

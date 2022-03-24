@@ -139,14 +139,12 @@ class ParticipantService
     /**
      * 更新
      *
-     * @throws ExclusiveLockException 同時編集を検知した場合は例外を投げる。usersレコード更新時
      */
-    public function update(int $id, array $data): Participant
+    public function update(int $id, array $data): bool
     {
         // 参加者レコードを更新
-        $participant = $this->participantRepository->updateField($id, collect($data)->only(array_merge(self::PARTICIPANT_USERABLE_COLUMN, self::PARTICIPANT_USER_EXT_COLUMN))->toArray());
-
-        return $participant;
+        $this->participantRepository->updateField($id, collect($data)->only(array_merge(self::PARTICIPANT_USERABLE_COLUMN, self::PARTICIPANT_USER_EXT_COLUMN))->toArray());
+        return true;
     }
 
     /**
@@ -167,7 +165,7 @@ class ParticipantService
      * @param int $id 参加者ID
      * @param int $reserveId 予約ID
      */
-    public function setRepresentative(int $id, int $reserveId) : Participant
+    public function setRepresentative(int $id, int $reserveId) : ?Participant
     {
         /**
          * ①当該予約参加者の代表フラグを一旦全てOff
@@ -182,7 +180,9 @@ class ParticipantService
         );
 
         // ②
-        return $this->participantRepository->updateField($id, ['representative' => true]);
+        $this->participantRepository->updateField($id, ['representative' => true]);
+
+        return $this->participantRepository->find($id);
     }
 
     /**
@@ -190,17 +190,19 @@ class ParticipantService
      *
      * @param int $id 参加者ID
      */
-    public function setCancel(int $id) : Participant
+    public function setCancel(int $id) : ?Participant
     {
         // 仕入関連レコードの有効フラグをOffに
         $this->reserveParticipantOptionPriceService->updateValidForParticipant($id, false); // オプション科目
         $this->reserveParticipantAirplanePriceService->updateValidForParticipant($id, false); // 航空券科目
         $this->reserveParticipantHotelPriceService->updateValidForParticipant($id, false); // ホテル科目
 
-        return $this->participantRepository->updateField($id, [
+        $this->participantRepository->updateField($id, [
             'cancel' => true,
             'representative' => false, // 念の為、代表者フラグをOff
         ]);
+
+        return $this->participantRepository->find($id);
     }
 
     /**

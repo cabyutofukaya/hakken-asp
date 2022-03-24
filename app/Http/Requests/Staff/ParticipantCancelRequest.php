@@ -19,8 +19,8 @@ class ParticipantCancelRequest extends FormRequest
     public function validationData()
     {
         return array_merge($this->request->all(), [
-            'application_step' => $this->applicationStep,
-            'control_number' => $this->controlNumber,
+            'reception' => $this->reception,
+            'id' => $this->id,
         ]);
     }
 
@@ -31,19 +31,19 @@ class ParticipantCancelRequest extends FormRequest
      */
     public function rules()
     {
-        $managerId = $this->manager_id;
-
         return [
-            'control_number' => 'required',
-            'application_step' => 'required',
+            'reception' => 'required',
+            'id' => 'required',
+            'reserve.updated_at' => 'required',
         ];
     }
     
     public function messages()
     {
         return [
-            'application_step.required' => '申し込み種別は必須です。',
-            'control_number.required' => '予約/見積番号は必須です。',
+            'reception.required' => '受付種別は必須です。',
+            'id.required' => '参加者IDは必須です。',
+            'reserve.updated_at.required' => '予約更新日時は必須です。',
         ];
     }
 }

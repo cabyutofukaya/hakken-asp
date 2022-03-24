@@ -77,5 +77,7 @@ export const DOCUMENT_REQUEST_ALL = {
 
 export const RESERVE = {
     DELETE_LABEL: "(削除)",
-    CANCEL_LABEL: "(キャンセル)" //※これを変更する場合は asp/config/consts/const.phpも変更すること
+    CANCEL_LABEL: "(キャンセル)", //※これを変更する場合は asp/config/consts/const.phpも変更すること
+    CANCEL_CHARGE_YES: 1, // キャンセルチャージあり値
+    CANCEL_CHARGE_NO: 0 // キャンセルチャージなし値
 };

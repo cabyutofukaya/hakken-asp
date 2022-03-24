@@ -32,11 +32,14 @@ class ReserveParticipantAirplanePriceRepository implements ReserveParticipantAir
      */
     public function updateByParticipantId(int $participantId, bool $valid): bool
     {
-        foreach ($this->reserveParticipantAirplanePrice->where('participant_id', $participantId)->get() as $row) {
-            $row->valid = $valid;
-            $row->save();
-        }
+        $this->reserveParticipantAirplanePrice->where('participant_id', $participantId)->update(['valid' => $valid]);
         return true;
+
+        // foreach ($this->reserveParticipantAirplanePrice->where('participant_id', $participantId)->get() as $row) {
+        //     $row->valid = $valid;
+        //     $row->save();
+        // }
+        // return true;
     }
 
     /**
@@ -78,16 +81,16 @@ class ReserveParticipantAirplanePriceRepository implements ReserveParticipantAir
      */
     public function updateIds(array $update, array $ids) : bool
     {
-        foreach ($this->reserveParticipantAirplanePrice->whereIn('id', $ids)->get() as $row) {
-            foreach ($update as $key => $val) {
-                $row->{$key} = $val;
-            }
-            $row->save();
-        }
-        return true;
-
-        // $this->reserveParticipantAirplanePrice->whereIn('id', $ids)->update($update);
+        // foreach ($this->reserveParticipantAirplanePrice->whereIn('id', $ids)->get() as $row) {
+        //     foreach ($update as $key => $val) {
+        //         $row->{$key} = $val;
+        //     }
+        //     $row->save();
+        // }
         // return true;
+
+        $this->reserveParticipantAirplanePrice->whereIn('id', $ids)->update($update);
+        return true;
     }
 
     /**

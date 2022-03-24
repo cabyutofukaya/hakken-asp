@@ -14,7 +14,7 @@ class AddCancelChargeNetColumnsToReserveParticipantAirplanePricesTable extends M
     public function up()
     {
         Schema::table('reserve_participant_airplane_prices', function (Blueprint $table) {
-            $table->integer('cancel_charge_net')->default(0)->after('cancel_charge')->comment('仕入れ先支払料金(キャンセル時)');
+            $table->integer('cancel_charge_net')->default(0)->after('cancel_charge')->comment('仕入先支払料金合計(キャンセル時)');
         });
     }
 

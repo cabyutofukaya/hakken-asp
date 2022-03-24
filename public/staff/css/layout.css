@@ -1141,10 +1141,6 @@ hr.sepBorder {
     transform: translateY(-50%);
     font-size: 20px;
 }
-#formControl li:last-of-type button span,
-#formControl li:nth-of-type(2) button span {
-    font-size: 30px;
-}
 #formControl button.loading span {
     display: none;
 }
@@ -1158,6 +1154,10 @@ hr.sepBorder {
     left: 24px;
     top: 50%;
     transform: translateY(-50%);
+}
+#formControl li:last-of-type button span,
+#formControl li:nth-of-type(2) button span {
+    font-size: 30px;
 }
 .modal {
     height: 100vh;
@@ -2565,4 +2565,49 @@ hr.sepBorder {
 }
 .baseList .purpose .sideList li {
     margin: 10px 20px 10px 0;
+}
+.timeSchedule {
+    margin-top: 20px;
+    background: #fff;
+    padding: 20px;
+    text-align: center;
+    border-radius: 5px;
+    border: solid 4px #39aed2;
+}
+.timeSchedule p {
+    font-size: 24px;
+    color: #39aed2;
+    font-weight: bold;
+}
+.baseTable.cancelTable tbody tr {
+    background: #ffd6d7;
+    color: #fd595e !important;
+}
+.baseTable.cancelTable tr th {
+    color: #fd595e;
+}
+.baseTable.cancelTable tr th:first-of-type,
+.baseTable.cancelTable tr td:first-of-type {
+    padding-left: 20px;
+}
+.baseTable.cancelTable tr td input {
+    background: #fff;
+}
+.subjectTit.cancel {
+    color: #fd595e;
+}
+.subjectTit.cancel:before {
+    background: #fd595e;
+}
+.itineraryArea .spotBlock .subjectList.cancel h3 {
+    color: #fd595e;
+}
+.itineraryArea .spotBlock .subjectList.cancel .tableCont th,
+.itineraryArea .spotBlock .subjectList.cancel .tableCont td,
+.itineraryArea .spotBlock .subjectList.cancel .tableCont td a {
+    color: #fd595e !important;
+}
+.sideList li p.cancelPrice {
+    padding: 15px 0 0 0;
+    color: #fd595e;
 }

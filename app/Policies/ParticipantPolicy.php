@@ -107,9 +107,9 @@ class ParticipantPolicy
      */
     public function cancel(AppUser $appUser, Participant $participant)
     {
-        if ($participant->reserve->is_canceled) {
-            return Response::deny('キャンセル予約の参加者は取り消しできません(403 Forbidden)'); // 行程等の扱いが複雑になりそうなのでひとまず不許可
-        }
+        // if ($participant->reserve->is_canceled) {
+        //     return Response::deny('キャンセル予約の参加者は取り消しできません(403 Forbidden)'); // 行程等の扱いが複雑になりそうなのでひとまず不許可
+        // }
         
         $model = class_basename(get_class($appUser));
         if ($model === 'Admin') {

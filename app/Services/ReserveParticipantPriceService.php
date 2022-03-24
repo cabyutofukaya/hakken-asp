@@ -24,6 +24,31 @@ class ReserveParticipantPriceService
     }
 
     /**
+     * 当該参加者の仕入データを一括変更
+     *
+     * @param int $participantId 参加者ID
+     * @param int $cancelCharge キャンセルチャージ請求額
+     * @param int $cancelChargeNet キャンセルチャージ支払い額
+     * @param int $cancelChargeProfit キャンセルチャージ粗利
+     * @param bool $isCancel キャンセル料の有効有無
+     * @return bool
+     */
+    public function setCancelDataByParticipantId(int $participantId, int $cancelCharge, int $cancelChargeNet, int $cancelChargeProfit, bool $isCancel) : bool
+    {
+        // オプション科目
+        $this->reserveParticipantOptionPriceService->setCancelChargeByParticipantId($cancelCharge, $cancelChargeNet, $cancelChargeProfit, $isCancel, $participantId);
+
+        // 航空券科目
+        $this->reserveParticipantAirplanePriceService->setCancelChargeByParticipantId($cancelCharge, $cancelChargeNet, $cancelChargeProfit, $isCancel, $participantId);
+
+        // ホテル科目
+        $this->reserveParticipantHotelPriceService->setCancelChargeByParticipantId($cancelCharge, $cancelChargeNet, $cancelChargeProfit, $isCancel, $participantId);
+
+        return true;
+    }
+
+
+    /**
      * キャンセルチャージをリセット
      * 当該予約の有効行程に対して処理
      *
@@ -79,36 +104,109 @@ class ReserveParticipantPriceService
     }
 
     /**
+     * 当該参加者IDに紐づく仕入データがある場合はtrue
+     * (xxxx メソッドと違い、実際のリストを取得するのではなく値があるかどうかをチェックしたバージョン)
+     */
+    public function isExistsPurchaseDataByParticipantId(?int $participantId, ?bool $isValid = null, bool $getDeleted = false) : bool
+    {
+        $res1 = $this->reserveParticipantOptionPriceService->isExistsDataByParticipantId($participantId, $isValid, $getDeleted); // オプション科目
+        if ($res1) {
+            return true;
+        }
+
+        $res2 = $this->reserveParticipantAirplanePriceService->isExistsDataByParticipantId($participantId, $isValid, $getDeleted); // 航空券科目
+        if ($res2) {
+            return true;
+        }
+
+        $res3 = $this->reserveParticipantHotelPriceService->isExistsDataByParticipantId($participantId, $isValid, $getDeleted); // ホテル科目
+        if ($res3) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * 当該行程IDに紐づく仕入データがある場合はtrue
      * (getPurchaseFormDataByReserveItineraryId メソッドと違い、実際のリストを取得するのではなく値があるかどうかをチェックしたバージョン)
      */
-    public function isExistsPurchaseDataByReserveItineraryId(?int $reserveItineraryId, bool $getDeleted = false) : bool
+    public function isExistsPurchaseDataByReserveItineraryId(?int $reserveItineraryId, ?bool $isValid = null, bool $getDeleted = false) : bool
     {
-        $res1 = $this->reserveParticipantOptionPriceService->isExistsDataByReserveItineraryId($reserveItineraryId, $getDeleted); // オプション科目
+        $res1 = $this->reserveParticipantOptionPriceService->isExistsDataByReserveItineraryId($reserveItineraryId, $isValid, $getDeleted); // オプション科目
+        if ($res1) {
+            return true;
+        }
 
-        $res2 = $this->reserveParticipantAirplanePriceService->isExistsDataByReserveItineraryId($reserveItineraryId, $getDeleted); // 航空券科目
+        $res2 = $this->reserveParticipantAirplanePriceService->isExistsDataByReserveItineraryId($reserveItineraryId, $isValid, $getDeleted); // 航空券科目
+        if ($res2) {
+            return true;
+        }
 
-        $res3 = $this->reserveParticipantHotelPriceService->isExistsDataByReserveItineraryId($reserveItineraryId, $getDeleted); // ホテル科目
+        $res3 = $this->reserveParticipantHotelPriceService->isExistsDataByReserveItineraryId($reserveItineraryId, $isValid, $getDeleted); // ホテル科目
+        if ($res3) {
+            return true;
+        }
+        
+        return false;
+    }
 
-        return $res1 || $res2 || $res3;
+    /**
+     * キャンセルチャージページで使う当該参加者の仕入リストを(form項目に合わせたデータ形式で)取得
+     *
+     * @param bool $isValid validの指定。nullの場合は特に指定ナシ
+     * @return array
+     */
+    public function getPurchaseFormDataByParticipantId(int $participantId, ?int $reserveItineraryId, ?bool $isValid = null, bool $getDeleted = false) : array
+    {
+        $options = $this->reserveParticipantOptionPriceService->getByParticipantId($participantId, $reserveItineraryId, $isValid, ['reserve_purchasing_subject_option','reserve_purchasing_subject_option.supplier:id,name'], [], $getDeleted);
+
+        $airplanes = $this->reserveParticipantAirplanePriceService->getByParticipantId($participantId, $reserveItineraryId, $isValid, ['reserve_purchasing_subject_airplane','reserve_purchasing_subject_airplane.supplier:id,name'], [], $getDeleted);
+
+        $hotels = $this->reserveParticipantHotelPriceService->getByParticipantId($participantId, $reserveItineraryId, $isValid, ['reserve_purchasing_subject_hotel','reserve_purchasing_subject_hotel.supplier:id,name'], [], $getDeleted);
+
+        return $this->getPurchaseFormData($options, $airplanes, $hotels);
     }
 
     /**
      * キャンセルチャージページで使う当該予約の仕入リストを(form項目に合わせたデータ形式で)取得
      *
+     * @param bool $isValid validの指定。nullの場合は特に指定ナシ
      * @return array
      */
-    public function getPurchaseFormDataByReserveItineraryId(int $reserveItineraryId, bool $getDeleted = false) : array
+    public function getPurchaseFormDataByReserveItineraryId(int $reserveItineraryId, ?bool $isValid = null, bool $getDeleted = false) : array
     {
-        $options = $this->reserveParticipantOptionPriceService->getByReserveItineraryId($reserveItineraryId, null, ['reserve_purchasing_subject_option.supplier'], [], $getDeleted); // is_validの値に関係なく全て取得
+        $options = $this->reserveParticipantOptionPriceService->getByReserveItineraryId($reserveItineraryId, $isValid, ['reserve_purchasing_subject_option.supplier'], [], $getDeleted);
 
-        $airplanes = $this->reserveParticipantAirplanePriceService->getByReserveItineraryId($reserveItineraryId, null, ['reserve_purchasing_subject_airplane.supplier'], [], $getDeleted); // is_validの値に関係なく全て取得
+        $airplanes = $this->reserveParticipantAirplanePriceService->getByReserveItineraryId($reserveItineraryId, $isValid, ['reserve_purchasing_subject_airplane.supplier'], [], $getDeleted);
 
-        $hotels = $this->reserveParticipantHotelPriceService->getByReserveItineraryId($reserveItineraryId, null, ['reserve_purchasing_subject_hotel.supplier'], [], $getDeleted); // is_validの値に関係なく全て取得
+        $hotels = $this->reserveParticipantHotelPriceService->getByReserveItineraryId($reserveItineraryId, $isValid, ['reserve_purchasing_subject_hotel.supplier'], [], $getDeleted);
 
+        return $this->getPurchaseFormData($options, $airplanes, $hotels);
+    }
+
+    /**
+     * form用にまとめた仕入データ配列を取得
+     */
+    private function getPurchaseFormData($options, $airplanes, $hotels)
+    {
         $list = []; // 結果配列
 
-        $purchasingFields = ['id','valid','gross_ex','gross','cost','commission_rate','net','zei_kbn','gross_profit','cancel_charge','cancel_charge_net','is_cancel'];
+        $purchasingFields = [
+            'id',
+            'valid',
+            'gross_ex',
+            'gross',
+            'cost',
+            'commission_rate',
+            'net',
+            'zei_kbn',
+            'gross_profit',
+            'is_cancel',
+            'cancel_charge',
+            'cancel_charge_net',
+            'cancel_charge_profit',
+        ];
 
         // オプション科目
         foreach ($options as $row) {
@@ -180,7 +278,7 @@ class ReserveParticipantPriceService
                 $tmp[$col] = Arr::get($rows, "0.{$col}");
             }
 
-            foreach (['gross_ex','gross','cost','commission_rate','net','gross_profit','cancel_charge','cancel_charge_net'] as $col) { // 合計を計算
+            foreach (['gross_ex','gross','cost','net','gross_profit','cancel_charge','cancel_charge_net','cancel_charge_profit'] as $col) { // 合計を計算
                 $tmp[$col] = collect($rows)->sum($col);
             }
 

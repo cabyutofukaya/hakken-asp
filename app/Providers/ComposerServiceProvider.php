@@ -91,7 +91,10 @@ class ComposerServiceProvider extends ServiceProvider
         View::composer('staff.reserve_bundle_receipt.edit', VCStaff\ReserveBundleReceipt\EditFormComposer::class); // 作成・編集ページ
         View::composer('staff.reserve_bundle_receipt.pdf', VCStaff\ReserveBundleReceipt\PdfComposer::class); // PDFページ
 
-        // キャンセルチャージ(ASP用)
+        // 参加者キャンセルチャージ(ASP用)
+        View::composer('staff.participant.cancel_charge', VCStaff\Participant\CancelChargeFormComposer::class); // 作成ページ
+
+        // 予約キャンセルチャージ(ASP用)
         View::composer('staff.reserve.cancel_charge', VCStaff\ReserveEstimate\CancelChargeFormComposer::class); // 作成ページ
 
 
@@ -192,7 +195,10 @@ class ComposerServiceProvider extends ServiceProvider
             ],
         ]);
 
-        // キャンセルチャージ(WEB用)
+        // 参加者キャンセルチャージ(WEB用)
+        View::composer('staff.web.participant.cancel_charge', VCStaff\Web\Participant\CancelChargeFormComposer::class); // 作成ページ
+
+        // 予約キャンセルチャージ(WEB用)
         View::composer('staff.web.reserve.cancel_charge', VCStaff\Web\ReserveEstimate\CancelChargeFormComposer::class); // 作成ページ
 
 

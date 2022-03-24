@@ -32,11 +32,14 @@ class ReserveParticipantHotelPriceRepository implements ReserveParticipantHotelP
      */
     public function updateByParticipantId(int $participantId, bool $valid): bool
     {
-        foreach ($this->reserveParticipantHotelPrice->where('participant_id', $participantId)->get() as $row) {
-            $row->valid = $valid;
-            $row->save();
-        }
+        $this->reserveParticipantHotelPrice->where('participant_id', $participantId)->update(['valid' => $valid]);
         return true;
+
+        // foreach ($this->reserveParticipantHotelPrice->where('participant_id', $participantId)->get() as $row) {
+        //     $row->valid = $valid;
+        //     $row->save();
+        // }
+        // return true;
     }
 
     /**
@@ -78,16 +81,16 @@ class ReserveParticipantHotelPriceRepository implements ReserveParticipantHotelP
      */
     public function updateIds(array $update, array $ids) : bool
     {
-        foreach ($this->reserveParticipantHotelPrice->whereIn('id', $ids)->get() as $row) {
-            foreach ($update as $key => $val) {
-                $row->{$key} = $val;
-            }
-            $row->save();
-        }
-        return true;
-
-        // $this->reserveParticipantHotelPrice->whereIn('id', $ids)->update($update);
+        // foreach ($this->reserveParticipantHotelPrice->whereIn('id', $ids)->get() as $row) {
+        //     foreach ($update as $key => $val) {
+        //         $row->{$key} = $val;
+        //     }
+        //     $row->save();
+        // }
         // return true;
+
+        $this->reserveParticipantHotelPrice->whereIn('id', $ids)->update($update);
+        return true;
     }
 
     /**

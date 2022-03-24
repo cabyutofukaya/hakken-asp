@@ -12,6 +12,8 @@ trait ParticipantPriceTrait
 {
     /**
      * 初期化データ。料金情報は年齢区分に応じたものをセット
+     * 
+     * ※ reserve_itinerary-create-edit.jsのinitialTargetPurchasingと同じ処理
      *
      * @param string $participantId 参加者ID（ハッシュ）
      * @param string $ageKbn 年齢区分
@@ -69,12 +71,13 @@ trait ParticipantPriceTrait
                 $priceData[$to] = 0;// 金額は0で初期化
             }
         }
+        // 行程編集前に当該参加者が取り消し状態の可能性もあるので取り消しか否かによって初期値を変更
         return array_merge(
             [
                 'participant_id' => $participantId,
-                'purchase_type' => config('consts.const.PURCHASE_NORMAL'),
-                'valid' => $cancel ? 0 : 1,
-                'is_cancel' => 0,
+                'purchase_type' => $cancel ? config('consts.const.PURCHASE_CANCEL') : config('consts.const.PURCHASE_NORMAL'), // 仕入種別
+                'valid' => $cancel ? 0 : 1, // 取り消しユーザーの場合はvalid=falseで初期化
+                'is_cancel' => 0, // キャンセル料はナシで初期化で良いと思う。TODO 今一度要検討
                 'age_kbn' => $ageKbn,
                 //　キャンセル金額関連は0円で初期化
                 'cancel_charge' => 0,

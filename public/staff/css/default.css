@@ -566,18 +566,6 @@ button:hover:after {
 .redBtn {
     color: #fff;
     border-color: #fd595e;
-    position: relative;
-}
-.redBtn.loading:before {
-    content: "";
-    background: url("../img/shared/oval.svg") center center no-repeat;
-    background-size: 100%;
-    width: 20px;
-    height: 20px;
-    position: absolute;
-    left: 20px;
-    top: 50%;
-    transform: translateY(-50%);
 }
 .redBtn:after {
     background: #fd595e;

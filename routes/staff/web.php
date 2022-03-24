@@ -67,6 +67,10 @@ Route::domain(env('STAFF_DOMAIN', 'asp.hakken-tour.com'))->namespace('Staff')->n
                 Route::get('{reserveNumber}/cancel_charge', 'ReserveController@cancelCharge')->name('cancel_charge.edit'); // キャンセルチャージページ(新規・編集共通)
                 Route::post('{reserveNumber}/cancel_charge', 'ReserveController@cancelChargeUpdate')->name('cancel_charge.update'); // キャンセルチャージ処理
 
+                // 参加者キャンセル(予約時のみ)
+                Route::get('{reserveNumber}/participant/{id}/cancel_charge', 'ParticipantController@cancelCharge')->name('participant_cancel_charge.edit'); // キャンセルチャージページ(新規・編集共通)
+                Route::post('{reserveNumber}/participant/{id}/cancel_charge', 'ParticipantController@cancelChargeUpdate')->name('participant_cancel_charge.update'); // キャンセルチャージ処理
+
             });
 
             // 見積管理
@@ -340,8 +344,15 @@ Route::domain(env('STAFF_DOMAIN', 'asp.hakken-tour.com'))->namespace('Staff')->n
                 // 領収書
                 Route::get('/{reserveNumber}/receipt', 'ReserveReceiptController@edit')->name('receipt.edit'); // 新規作成＆編集ページ
 
+                // 予約キャンセル
                 Route::get('{reserveNumber}/cancel_charge', 'ReserveController@cancelCharge')->name('cancel_charge.edit'); // キャンセルチャージページ(新規・編集共通)
                 Route::post('{reserveNumber}/cancel_charge', 'ReserveController@cancelChargeUpdate')->name('cancel_charge.update'); // キャンセルチャージ処理
+
+
+                // 参加者キャンセル(予約時のみ)
+                Route::get('{reserveNumber}/participant/{id}/cancel_charge', 'ParticipantController@cancelCharge')->name('participant_cancel_charge.edit'); // キャンセルチャージページ(新規・編集共通)
+                Route::post('{reserveNumber}/participant/{id}/cancel_charge', 'ParticipantController@cancelChargeUpdate')->name('participant_cancel_charge.update'); // キャンセルチャージ処理
+
             });
 
             // 見積管理
@@ -367,6 +378,7 @@ Route::domain(env('STAFF_DOMAIN', 'asp.hakken-tour.com'))->namespace('Staff')->n
             // 見積・予約確認書
             Route::get('/{applicationStep}/{controlNumber}/itinerary/{itineraryNumber}/confirm', 'ReserveConfirmController@create')->name('reserve_confirm.create'); // 新規作成ページ
             Route::get('/{applicationStep}/{controlNumber}/itinerary/{itineraryNumber}/confirm/{confirmNumber}/edit', 'ReserveConfirmController@edit')->name('reserve_confirm.edit'); // 編集ページ
+
         });
 
         Route::prefix('front')->name('front.')->namespace('Web')->group(function () {

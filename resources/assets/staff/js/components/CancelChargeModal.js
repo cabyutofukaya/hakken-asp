@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import classNames from "classnames";
+import { RESERVE } from "../constants";
 
 /**
  * 予約キャンセルモーダル(キャンセルチャージ選択付き)
@@ -47,23 +48,27 @@ const CancelChargeModal = ({
                         <input
                             type="radio"
                             name="cancel_charge"
-                            id="charge_n"
-                            value="0"
+                            id={`${id}_charge_n`}
+                            value={RESERVE.CANCEL_CHARGE_NO}
                             onChange={handleChange}
-                            checked={value == 0}
+                            checked={value == RESERVE.CANCEL_CHARGE_NO}
                         />
-                        <label htmlFor="charge_n">キャンセルチャージなし</label>
+                        <label htmlFor={`${id}_charge_n`}>
+                            キャンセルチャージなし
+                        </label>
                     </li>
                     <li>
                         <input
                             type="radio"
                             name="cancel_charge"
-                            id="charge_y"
-                            value="1"
+                            id={`${id}_charge_y`}
+                            value={RESERVE.CANCEL_CHARGE_YES}
                             onChange={handleChange}
-                            checked={value == 1}
+                            checked={value == RESERVE.CANCEL_CHARGE_YES}
                         />
-                        <label htmlFor="charge_y">キャンセルチャージあり</label>
+                        <label htmlFor={`${id}_charge_y`}>
+                            キャンセルチャージあり
+                        </label>
                     </li>
                 </ul>
                 <ul className="sideList">

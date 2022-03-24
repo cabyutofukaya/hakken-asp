@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useContext } from "react";
+import { ConstContext } from "../../ConstApp";
 import CustomField from "../../CustomField";
 import Price from "./Price";
 import ProductNameInput from "./ProductNameInput";
@@ -21,6 +22,7 @@ const Hotel = ({
     customFieldCodes,
     defaultSubjectHotels
 }) => {
+    const { purchaseNormal, purchaseCancel } = useContext(ConstContext);
     /**
      * 登録ボタン押下
      * @param {*} e
@@ -301,218 +303,294 @@ const Hotel = ({
                             </tr>
                         </thead>
                         <tbody>
+                            {/**未キャンセル参加者が存在する場合の出力 */}
                             {participants &&
-                                participants.map((participant, index) => (
-                                    <tr key={index}>
-                                        <td className="wd10">
-                                            {participant.cancel == 0 && (
-                                                <div className="checkBox">
+                                _.findIndex(participants, { cancel: false }) !=
+                                    -1 &&
+                                participants.map((participant, index) => {
+                                    {
+                                        /**通常仕入行のみ抽出 */
+                                    }
+                                    if (
+                                        input?.participants?.[index]
+                                            ?.purchase_type == purchaseNormal
+                                    ) {
+                                        return (
+                                            <tr key={index}>
+                                                <td className="wd10">
+                                                    {participant.cancel ==
+                                                        0 && (
+                                                        <div className="checkBox">
+                                                            <input
+                                                                type="checkbox"
+                                                                value={
+                                                                    input
+                                                                        ?.participants?.[
+                                                                        index
+                                                                    ]?.valid ??
+                                                                    "0"
+                                                                }
+                                                                id={`participant${index}`}
+                                                                onChange={e =>
+                                                                    handleChange(
+                                                                        {
+                                                                            type:
+                                                                                "CHANGE_PARTICIPANT_CHECKBOX",
+                                                                            index,
+                                                                            name:
+                                                                                "valid",
+                                                                            payload:
+                                                                                e
+                                                                                    .target
+                                                                                    .value
+                                                                        }
+                                                                    )
+                                                                }
+                                                                checked={
+                                                                    input
+                                                                        .participants?.[
+                                                                        index
+                                                                    ]?.valid
+                                                                }
+                                                            />
+                                                            <label
+                                                                htmlFor={`participant${index}`}
+                                                            ></label>
+                                                        </div>
+                                                    )}
+                                                </td>
+                                                <td>
                                                     <input
-                                                        type="checkbox"
+                                                        type="text"
                                                         value={
                                                             input
                                                                 ?.participants?.[
                                                                 index
-                                                            ]?.valid ?? "0"
+                                                            ]?.room_number ?? ""
                                                         }
-                                                        id={`participant${index}`}
                                                         onChange={e =>
                                                             handleChange({
                                                                 type:
-                                                                    "CHANGE_PARTICIPANT_CHECKBOX",
+                                                                    "CHANGE_PARTICIPANT_INPUT",
                                                                 index,
-                                                                name: "valid",
+                                                                name:
+                                                                    "room_number",
                                                                 payload:
                                                                     e.target
                                                                         .value
                                                             })
                                                         }
-                                                        checked={
+                                                    />
+                                                </td>
+                                                <td>
+                                                    {participant?.name ?? "-"}
+                                                    {participant?.name_kana && (
+                                                        <>
+                                                            (
+                                                            {
+                                                                participant.name_kana
+                                                            }
+                                                            )
+                                                        </>
+                                                    )}
+                                                </td>
+                                                <td className="txtalc">
+                                                    {participant?.sex_label ??
+                                                        "-"}
+                                                </td>
+                                                <td className="txtalc">
+                                                    {participant?.age ?? "-"}
+                                                </td>
+                                                <td className="txtalc">
+                                                    {participant?.age_kbn_label ??
+                                                        "-"}
+                                                </td>
+                                                <td>
+                                                    <OnlyNumberInput
+                                                        value={
                                                             input
-                                                                .participants?.[
+                                                                ?.participants?.[
                                                                 index
-                                                            ]?.valid
+                                                            ]?.gross_ex ?? 0
+                                                        }
+                                                        handleChange={e =>
+                                                            handleChange({
+                                                                type:
+                                                                    "CHANGE_PARTICIPANT_PRICE_INPUT",
+                                                                index,
+                                                                name:
+                                                                    "gross_ex",
+                                                                payload:
+                                                                    e.target
+                                                                        .value
+                                                            })
                                                         }
                                                     />
-                                                    <label
-                                                        htmlFor={`participant${index}`}
-                                                    ></label>
-                                                </div>
-                                            )}
-                                        </td>
-                                        <td>
-                                            <input
-                                                type="text"
-                                                value={
-                                                    input?.participants?.[index]
-                                                        ?.room_number ?? ""
-                                                }
-                                                onChange={e =>
-                                                    handleChange({
-                                                        type:
-                                                            "CHANGE_PARTICIPANT_INPUT",
-                                                        index,
-                                                        name: "room_number",
-                                                        payload: e.target.value
-                                                    })
-                                                }
-                                            />
-                                        </td>
-                                        <td>
-                                            {participant?.name ?? "-"}(
-                                            {participant?.name_kana ?? "-"})
-                                        </td>
-                                        <td className="txtalc">
-                                            {participant?.sex_label ?? "-"}
-                                        </td>
-                                        <td className="txtalc">
-                                            {participant?.age ?? "-"}
-                                        </td>
-                                        <td className="txtalc">
-                                            {participant?.age_kbn_label ?? "-"}
-                                        </td>
-                                        <td>
-                                            <OnlyNumberInput
-                                                value={
-                                                    input?.participants?.[index]
-                                                        ?.gross_ex ?? 0
-                                                }
-                                                handleChange={e =>
-                                                    handleChange({
-                                                        type:
-                                                            "CHANGE_PARTICIPANT_PRICE_INPUT",
-                                                        index,
-                                                        name: "gross_ex",
-                                                        payload: e.target.value
-                                                    })
-                                                }
-                                            />
-                                        </td>
-                                        <td className="txtalc taxTd">
-                                            <div className="selectBox">
-                                                <select
-                                                    value={
-                                                        input?.participants?.[
-                                                            index
-                                                        ]?.zei_kbn ?? 0
-                                                    }
-                                                    onChange={e =>
-                                                        handleChange({
-                                                            type:
-                                                                "CHANGE_PARTICIPANT_PRICE_INPUT",
-                                                            index,
-                                                            name: "zei_kbn",
-                                                            payload:
-                                                                e.target.value
-                                                        })
-                                                    }
-                                                >
-                                                    {zeiKbns &&
-                                                        Object.keys(
-                                                            zeiKbns
-                                                        ).map((val, index) => (
-                                                            <option
-                                                                key={index}
-                                                                value={val}
-                                                            >
-                                                                {zeiKbns[val]}
-                                                            </option>
-                                                        ))}
-                                                </select>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <OnlyNumberInput
-                                                value={
-                                                    input?.participants?.[index]
-                                                        ?.gross ?? 0
-                                                }
-                                                handleChange={e =>
-                                                    handleChange({
-                                                        type:
-                                                            "CHANGE_PARTICIPANT_PRICE_INPUT",
-                                                        index,
-                                                        name: "gross",
-                                                        payload: e.target.value
-                                                    })
-                                                }
-                                            />
-                                        </td>
-                                        <td>
-                                            <OnlyNumberInput
-                                                value={
-                                                    input?.participants?.[index]
-                                                        ?.cost ?? 0
-                                                }
-                                                handleChange={e =>
-                                                    handleChange({
-                                                        type:
-                                                            "CHANGE_PARTICIPANT_PRICE_INPUT",
-                                                        index,
-                                                        name: "cost",
-                                                        payload: e.target.value
-                                                    })
-                                                }
-                                            />
-                                        </td>
-                                        <td className="txtalc">
-                                            <div className="priceInput per">
-                                                <OnlyNumberInput
-                                                    value={
-                                                        input?.participants?.[
-                                                            index
-                                                        ]?.commission_rate ?? 0
-                                                    }
-                                                    handleChange={e =>
-                                                        handleChange({
-                                                            type:
-                                                                "CHANGE_PARTICIPANT_PRICE_INPUT",
-                                                            index,
-                                                            name:
-                                                                "commission_rate",
-                                                            payload:
-                                                                e.target.value
-                                                        })
-                                                    }
-                                                />
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <OnlyNumberInput
-                                                value={
-                                                    input?.participants?.[index]
-                                                        ?.net ?? 0
-                                                }
-                                                handleChange={e =>
-                                                    handleChange({
-                                                        type:
-                                                            "CHANGE_PARTICIPANT_PRICE_INPUT",
-                                                        index,
-                                                        name: "net",
-                                                        payload: e.target.value
-                                                    })
-                                                }
-                                            />
-                                        </td>
-                                        <td>
-                                            <OnlyNumberInput
-                                                value={
-                                                    input?.participants?.[index]
-                                                        ?.gross_profit ?? 0
-                                                }
-                                                handleChange={e =>
-                                                    handleChange({
-                                                        type:
-                                                            "CHANGE_PARTICIPANT_PRICE_INPUT",
-                                                        index,
-                                                        name: "gross_profit",
-                                                        payload: e.target.value
-                                                    })
-                                                }
-                                            />
-                                        </td>
-                                    </tr>
-                                ))}
+                                                </td>
+                                                <td className="txtalc taxTd">
+                                                    <div className="selectBox">
+                                                        <select
+                                                            value={
+                                                                input
+                                                                    ?.participants?.[
+                                                                    index
+                                                                ]?.zei_kbn ?? 0
+                                                            }
+                                                            onChange={e =>
+                                                                handleChange({
+                                                                    type:
+                                                                        "CHANGE_PARTICIPANT_PRICE_INPUT",
+                                                                    index,
+                                                                    name:
+                                                                        "zei_kbn",
+                                                                    payload:
+                                                                        e.target
+                                                                            .value
+                                                                })
+                                                            }
+                                                        >
+                                                            {zeiKbns &&
+                                                                Object.keys(
+                                                                    zeiKbns
+                                                                ).map(
+                                                                    (
+                                                                        val,
+                                                                        index
+                                                                    ) => (
+                                                                        <option
+                                                                            key={
+                                                                                index
+                                                                            }
+                                                                            value={
+                                                                                val
+                                                                            }
+                                                                        >
+                                                                            {
+                                                                                zeiKbns[
+                                                                                    val
+                                                                                ]
+                                                                            }
+                                                                        </option>
+                                                                    )
+                                                                )}
+                                                        </select>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <OnlyNumberInput
+                                                        value={
+                                                            input
+                                                                ?.participants?.[
+                                                                index
+                                                            ]?.gross ?? 0
+                                                        }
+                                                        handleChange={e =>
+                                                            handleChange({
+                                                                type:
+                                                                    "CHANGE_PARTICIPANT_PRICE_INPUT",
+                                                                index,
+                                                                name: "gross",
+                                                                payload:
+                                                                    e.target
+                                                                        .value
+                                                            })
+                                                        }
+                                                    />
+                                                </td>
+                                                <td>
+                                                    <OnlyNumberInput
+                                                        value={
+                                                            input
+                                                                ?.participants?.[
+                                                                index
+                                                            ]?.cost ?? 0
+                                                        }
+                                                        handleChange={e =>
+                                                            handleChange({
+                                                                type:
+                                                                    "CHANGE_PARTICIPANT_PRICE_INPUT",
+                                                                index,
+                                                                name: "cost",
+                                                                payload:
+                                                                    e.target
+                                                                        .value
+                                                            })
+                                                        }
+                                                    />
+                                                </td>
+                                                <td className="txtalc">
+                                                    <div className="priceInput per">
+                                                        <OnlyNumberInput
+                                                            value={
+                                                                input
+                                                                    ?.participants?.[
+                                                                    index
+                                                                ]
+                                                                    ?.commission_rate ??
+                                                                0
+                                                            }
+                                                            handleChange={e =>
+                                                                handleChange({
+                                                                    type:
+                                                                        "CHANGE_PARTICIPANT_PRICE_INPUT",
+                                                                    index,
+                                                                    name:
+                                                                        "commission_rate",
+                                                                    payload:
+                                                                        e.target
+                                                                            .value
+                                                                })
+                                                            }
+                                                        />
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <OnlyNumberInput
+                                                        value={
+                                                            input
+                                                                ?.participants?.[
+                                                                index
+                                                            ]?.net ?? 0
+                                                        }
+                                                        handleChange={e =>
+                                                            handleChange({
+                                                                type:
+                                                                    "CHANGE_PARTICIPANT_PRICE_INPUT",
+                                                                index,
+                                                                name: "net",
+                                                                payload:
+                                                                    e.target
+                                                                        .value
+                                                            })
+                                                        }
+                                                    />
+                                                </td>
+                                                <td>
+                                                    <OnlyNumberInput
+                                                        value={
+                                                            input
+                                                                ?.participants?.[
+                                                                index
+                                                            ]?.gross_profit ?? 0
+                                                        }
+                                                        handleChange={e =>
+                                                            handleChange({
+                                                                type:
+                                                                    "CHANGE_PARTICIPANT_PRICE_INPUT",
+                                                                index,
+                                                                name:
+                                                                    "gross_profit",
+                                                                payload:
+                                                                    e.target
+                                                                        .value
+                                                            })
+                                                        }
+                                                    />
+                                                </td>
+                                            </tr>
+                                        );
+                                    }
+                                })}
                         </tbody>
                     </table>
                 </div>

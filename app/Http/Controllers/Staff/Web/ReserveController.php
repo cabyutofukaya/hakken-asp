@@ -8,7 +8,7 @@ use App\Events\UpdatedReserveEvent;
 use App\Exceptions\ExclusiveLockException;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Staff\AppController;
-use App\Http\Requests\Staff\CancelChargeUpdateRequest;
+use App\Http\Requests\Staff\ReserveCancelChargeUpdateRequest;
 use App\Http\Requests\Staff\ReserveUpdateRequest;
 use App\Models\Reserve;
 use App\Services\AccountPayableDetailService;
@@ -167,7 +167,7 @@ class ReserveController extends AppController
         }
 
         // 支払い情報を取得
-        $purchasingList = $this->getPurchasingList($reserve);
+        $purchasingList = $this->getPurchasingListByReserve($reserve, null);
 
         return view('staff.web.reserve.cancel_charge', compact('reserve', 'purchasingList'));
     }
@@ -175,7 +175,7 @@ class ReserveController extends AppController
     /**
      * キャンセルチャージ処理
      */
-    public function cancelChargeUpdate(CancelChargeUpdateRequest $request, string $agencyAccount, string $controlNumber)
+    public function cancelChargeUpdate(ReserveCancelChargeUpdateRequest $request, string $agencyAccount, string $controlNumber)
     {
         $reserve = $this->webReserveService->findByControlNumber($controlNumber, $agencyAccount);
 
@@ -191,7 +191,7 @@ class ReserveController extends AppController
             \DB::transaction(function () use ($input, $reserve) {
 
                 // キャンセルチャージ料金を保存
-                $this->setCancelCharge($input);
+                $this->setReserveCancelCharge($input);
                 
                 $this->webReserveService->cancel($reserve, true, Arr::get($input, 'reserve.updated_at'));
 

@@ -16,11 +16,14 @@ class ReserveParticipantOptionPriceRepository implements ReserveParticipantOptio
      */
     public function updateByParticipantId(int $participantId, bool $valid): bool
     {
-        foreach ($this->reserveParticipantOptionPrice->where('participant_id', $participantId)->get() as $row) {
-            $row->valid = $valid;
-            $row->save();
-        }
+        $this->reserveParticipantOptionPrice->where('participant_id', $participantId)->update(['valid' => $valid]);
         return true;
+
+        // foreach ($this->reserveParticipantOptionPrice->where('participant_id', $participantId)->get() as $row) {
+        //     $row->valid = $valid;
+        //     $row->save();
+        // }
+        // return true;
     }
 
     /**
@@ -95,16 +98,16 @@ class ReserveParticipantOptionPriceRepository implements ReserveParticipantOptio
      */
     public function updateIds(array $update, array $ids) : bool
     {
-        foreach ($this->reserveParticipantOptionPrice->whereIn('id', $ids)->get() as $row) {
-            foreach ($update as $key => $val) {
-                $row->{$key} = $val;
-            }
-            $row->save();
-        }
-        return true;
-
-        // $this->reserveParticipantOptionPrice->whereIn('id', $ids)->update($update);
+        // foreach ($this->reserveParticipantOptionPrice->whereIn('id', $ids)->get() as $row) {
+        //     foreach ($update as $key => $val) {
+        //         $row->{$key} = $val;
+        //     }
+        //     $row->save();
+        // }
         // return true;
+
+        $this->reserveParticipantOptionPrice->whereIn('id', $ids)->update($update);
+        return true;
     }
 
     /**

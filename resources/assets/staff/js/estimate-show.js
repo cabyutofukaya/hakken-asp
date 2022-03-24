@@ -268,6 +268,8 @@ const EstimateShowArea = ({
                     setItineraryErrorMessage={setItineraryErrorMessage}
                     documentErrorMessage={documentErrorMessage}
                     setDocumentErrorMessage={setDocumentErrorMessage}
+                    updatedAt={reserveUpdatedAt}
+                    setUpdatedAt={setReserveUpdatedAt}
                 />
             )}
             {permission.consultation.consultation_read && (

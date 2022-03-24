@@ -15,12 +15,12 @@ class ParticipantRepository implements ParticipantRepositoryInterface
         $this->participant = $participant;
     }
 
-    public function find(int $id, array $with = [], array $select = []): Participant
+    public function find(int $id, array $with = [], array $select = []): ?Participant
     {
         $query = $this->participant;
         $query = $with ? $query->with($with) : $query;
         $query = $select ? $query->select($select) : $query;
-        return $query->findOrFail($id);
+        return $query->find($id);
     }
 
     /**
@@ -101,10 +101,10 @@ class ParticipantRepository implements ParticipantRepositoryInterface
     /**
      * 項目更新
      */
-    public function updateField(int $id, array $params) : Participant
+    public function updateField(int $id, array $params) : bool
     {
         $this->participant->where('id', $id)->update($params);
-        return $this->participant->findOrFail($id);
+        return true;
 
         // $participant = $this->participant->findOrFail($id);
         // foreach ($params as $k => $v) {
