@@ -8,7 +8,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 interface ParticipantRepositoryInterface
 {
-  public function find(int $id, array $with = [], array $select = []): Participant;
+  public function find(int $id, array $with = [], array $select = []): ?Participant;
 
   public function isExistsInReserve(int $userId, int $reserveId) : bool;
   public function create(array $data): Participant;
@@ -19,7 +19,7 @@ interface ParticipantRepositoryInterface
 
   public function getByIds(array $ids, array $with=[], $select=[]) : Collection;
 
-  public function updateField(int $id, array $params) : Participant;
+  public function updateField(int $id, array $params) : bool;
 
   public function delete(int $id, bool $isSoftDelete): bool;
 }

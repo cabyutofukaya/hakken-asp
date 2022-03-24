@@ -121,7 +121,8 @@ const UserShowArea = ({
                                 }
                             >
                                 相談一覧
-                                {tabBadgeCount?.[tabCodes.tab_consultation] && (
+                                {tabBadgeCount?.[tabCodes.tab_consultation] >
+                                    0 && (
                                     <span>
                                         {
                                             tabBadgeCount[

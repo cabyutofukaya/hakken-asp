@@ -290,6 +290,8 @@ const EstimateShowArea = ({
                     setItineraryErrorMessage={setItineraryErrorMessage}
                     documentErrorMessage={documentErrorMessage}
                     setDocumentErrorMessage={setDocumentErrorMessage}
+                    updatedAt={reserveUpdatedAt}
+                    setUpdatedAt={setReserveUpdatedAt}
                 />
             )}
             {/**相談エリア */}

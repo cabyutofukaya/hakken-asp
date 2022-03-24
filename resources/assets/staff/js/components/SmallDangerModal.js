@@ -35,7 +35,9 @@ const SmallDangerModal = ({
                         </li>
                         <li className="wd50 mr00">
                             <button
-                                className="redBtn"
+                                className={classNames("redBtn", {
+                                    loading: isActioning
+                                })}
                                 onClick={e => handleAction(e)}
                                 disabled={isActioning}
                             >

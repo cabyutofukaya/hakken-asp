@@ -206,9 +206,9 @@ const ItineraryArea = ({
             ...participants.map(row => {
                 return {
                     participant_id: row.participant_id,
-                    purchase_type: purchaseNormal, // 通常仕入で初期化
-                    valid: row.cancel ? 0 : 1, // 取り消し参加者は無効
-                    is_cancel: 0, // キャンセルフラグは無効で初期化。一応、取り消しとは別物として処理
+                    purchase_type: row.cancel ? purchaseCancel : purchaseNormal, // 仕入種別
+                    valid: row.cancel ? 0 : 1, // 取り消しユーザーの場合はvalid=falseで初期化
+                    is_cancel: 0, // キャンセル料はナシで初期化で良いと思う。TODO 今一度要検討
                     age_kbn: row.age_kbn,
                     zei_kbn: modalInitialValues?.zeiKbnDefault,
                     //　キャンセル金額関連は0円で初期化
@@ -221,8 +221,6 @@ const ItineraryArea = ({
     }; // 仕入情報初期値(MODE_CREATE=新規登録)
 
     const [lists, rowDispatch] = useReducer(listsReducer, defaultValue?.dates); // 日程情報の入力制御
-
-    console.log(lists);
 
     const [note, setNote] = useState(defaultValue?.note); // 備考入力制御
     // 追加対象行情報。日付、行番号
@@ -492,10 +490,11 @@ const ItineraryArea = ({
                 case "CHANGE_PARTICIPANT_PRICE_INPUT": // 参加者行料金入力制御
                     const row = copyState.participants[action.index];
                     // row[action.name] = Number(action.payload); 税区分が数字ではない場合がある
+
                     row[action.name] = action.payload;
                     if (
-                        /gross_ex$/.test(action.name) ||
-                        /zei_kbn$/.test(action.name)
+                        /^gross_ex$/.test(action.name) ||
+                        /^zei_kbn$/.test(action.name)
                     ) {
                         // 税金
                         row["gross"] = calcTaxInclud(
@@ -508,8 +507,8 @@ const ItineraryArea = ({
                             row["net"]
                         );
                     } else if (
-                        /cost$/.test(action.name) ||
-                        /commission_rate$/.test(action.name)
+                        /^cost$/.test(action.name) ||
+                        /^commission_rate$/.test(action.name)
                     ) {
                         // NET単価
                         row["net"] = calcNet(
@@ -522,13 +521,23 @@ const ItineraryArea = ({
                             row["net"]
                         );
                     } else if (
-                        /gross$/.test(action.name) ||
-                        /net$/.test(action.name)
+                        /^gross$/.test(action.name) ||
+                        /^net$/.test(action.name)
                     ) {
                         // 粗利
                         row["gross_profit"] = calcGrossProfit(
                             row["gross"],
                             row["net"]
+                        );
+                    } else if (
+                        // キャンセルチャージorキャンセルチャージ仕入
+                        /^cancel_charge$/.test(action.name) ||
+                        /^cancel_charge_net$/.test(action.name)
+                    ) {
+                        // キャンセル粗利
+                        row["cancel_charge_profit"] = calcGrossProfit(
+                            row["cancel_charge"],
+                            row["cancel_charge_net"]
                         );
                     }
                     return {

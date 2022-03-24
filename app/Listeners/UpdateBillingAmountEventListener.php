@@ -44,8 +44,6 @@ class UpdateBillingAmountEventListener
          * 一括請求関連の更新処理
          */
 
-        // $isCancelReserve = $event->reserve->is_canceled; // キャンセル予約か否か
-
         $reserveItinerary = $event->reserve->enabled_reserve_itinerary->id ? $event->reserve->enabled_reserve_itinerary : null; // 有効な行程が設定されていれば行程情報をセット
 
         $reserveInvoice = null;

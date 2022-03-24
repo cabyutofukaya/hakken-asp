@@ -19,7 +19,7 @@ const CancelChargeArea = ({ defaultValue, consts, errors }) => {
     const [errorObj, setErrorObj] = useState(errors); // エラー文言を保持
 
     const [cancelChargeErrors, setCancelChargeErrors] = useState([]); // キャンセルチャージでエラーがある枠のlists配列キー値を保持
-    const [cancelChargeNetErrors, setCancelChargeNetErrors] = useState([]); // 仕入れ先支払料金でエラーがある枠のlists配列キー値を保持
+    const [cancelChargeNetErrors, setCancelChargeNetErrors] = useState([]); // 仕入先支払料金合計でエラーがある枠のlists配列キー値を保持
 
     const [isSubmitting, setIsSubmitting] = useState(false); // form送信中
 
@@ -79,7 +79,7 @@ const CancelChargeArea = ({ defaultValue, consts, errors }) => {
         //////////////
 
         err = [];
-        // 仕入れ先支払料金の入力値チェック → 仕入れ先支払料金が数量で割り切れない場合はエラーを出す
+        // 仕入先支払料金合計の入力値チェック → 仕入先支払料金合計が数量で割り切れない場合はエラーを出す
         Object.keys(lists).map(key => {
             const cancelChargeNet = Number(lists[key].cancel_charge_net);
             const quantity = lists[key].quantity;
@@ -95,7 +95,7 @@ const CancelChargeArea = ({ defaultValue, consts, errors }) => {
         setCancelChargeNetErrors([...err]);
         if (err.length > 0) {
             errMsg["cancel_charge_net"] = [
-                "「仕入れ先支払料金」は数量で割り切れる金額を設定してください。"
+                "「仕入先支払料金合計」は数量で割り切れる金額を設定してください。"
             ];
         }
 
@@ -152,7 +152,7 @@ const CancelChargeArea = ({ defaultValue, consts, errors }) => {
                                             <span>キャンセル料金</span>
                                         </th>
                                         <th>
-                                            <span>仕入れ先支払料金</span>
+                                            <span>仕入先支払料金合計</span>
                                         </th>
                                         <th>
                                             <span>GRS単価</span>
@@ -387,7 +387,12 @@ const CancelChargeArea = ({ defaultValue, consts, errors }) => {
                         </button>
                     </li>
                     <li className="wd50">
-                        <button className="redBtn" disabled={isSubmitting}>
+                        <button
+                            className={classNames("redBtn", {
+                                loading: isSubmitting
+                            })}
+                            disabled={isSubmitting}
+                        >
                             <span className="material-icons">save</span>{" "}
                             この内容でキャンセルする
                         </button>

@@ -23,5 +23,5 @@
     
 </main>
 
-<script src="{{ mix('/staff/js/cancel_charge-create.js') }}"></script>
+<script src="{{ mix('/staff/js/reserve_cancel_charge-create.js') }}"></script>
 @endsection

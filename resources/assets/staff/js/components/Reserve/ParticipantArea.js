@@ -5,6 +5,8 @@ import SmallDangerModal from "../SmallDangerModal";
 import ParticipantEditModal from "./ParticipantEditModal";
 import ReactLoading from "react-loading";
 import classNames from "classnames";
+import CancelChargeModal from "../CancelChargeModal";
+import { RESERVE } from "../../constants";
 
 // 一覧取得API URL
 const getListApiUrl = (
@@ -83,8 +85,8 @@ const getRepresentativeUpdateApiUrl = (
     }
 };
 
-// 取消API URL
-const getCancelApiUrl = (
+// 取消API URL（キャンセルチャージナシ）
+const getNonChargeCancelApiUrl = (
     reception,
     step,
     types,
@@ -95,12 +97,17 @@ const getCancelApiUrl = (
 ) => {
     switch (step) {
         case types.application_step_draft: // 見積
-            return `/api/${agencyAccount}/estimate/${reception}/${step}/${estimateNumber}/participant/${id}/cancel`;
+            return `/api/${agencyAccount}/estimate/${reception}/participant/${id}/no-cancel-charge/cancel`;
         case types.application_step_reserve: // 予約
-            return `/api/${agencyAccount}/estimate/${reception}/${step}/${reserveNumber}/participant/${id}/cancel`;
+            return `/api/${agencyAccount}/estimate/${reception}/participant/${id}/no-cancel-charge/cancel`;
         default:
             return null;
     }
+};
+
+// キャンセルチャージ設定URL(予約時のみ)
+const getCancelChargeUrl = (reception, agencyAccount, reserveNumber, id) => {
+    return `/${agencyAccount}/estimates/${reception}/reserve/${reserveNumber}/participant/${id}/cancel_charge`;
 };
 
 // 削除API URL
@@ -146,12 +153,13 @@ const ParticipantArea = ({
     setDeleteRequestId,
     setCancelRequestId,
     permission,
-    setSuccessMessage
+    setSuccessMessage,
+    updatedAt,
+    setUpdatedAt
 }) => {
     const { agencyAccount } = useContext(ConstContext);
 
     const mounted = useMountedRef(); // マウント・アンマウント制御
-
     /////////// API URLを定義 ///////////
     // 一覧取得API
     const listApiUrl = getListApiUrl(
@@ -194,6 +202,9 @@ const ParticipantArea = ({
     const [isEditing, setIsEditing] = useState(false); // 編集処理中
     const [isCanceling, setIsCanceling] = useState(false); // 取消処理中
     const [isDeleting, setIsDeleting] = useState(false); // 削除処理中
+    const [isExistsPurchaseChecking, setIsExistsPurchaseChecking] = useState(
+        false
+    ); // 仕入データの存在チェック中か否か
 
     const fetch = async () => {
         if (!mounted.current) return;
@@ -245,6 +256,7 @@ const ParticipantArea = ({
 
         if (mounted.current && response?.data?.data) {
             setRepresentative(id); //代表者をチェック
+            setUpdatedAt(response.data.data.reserve?.updated_at); // 予約レコード更新日時更新
         }
     };
 
@@ -253,10 +265,37 @@ const ParticipantArea = ({
         setInput({ ...input, [e.target.name]: e.target.value });
     };
 
-    // 取り消しモーダル
-    const handleModalCancel = (e, id) => {
+    // 取り消しモーダルを表示
+    // 対象参加者に対する仕入れがあるか無いかでモーダルを出し分け
+    const handleModalCancel = async (e, id) => {
         e.preventDefault();
-        setCancelId(id);
+
+        if (!mounted.current) return;
+        if (isExistsPurchaseChecking) return;
+
+        setIsExistsPurchaseChecking(true);
+
+        const response = await axios
+            .get(
+                `/api/${agencyAccount}/estimate/participant/${id}/is-exists-purchase-data`
+            )
+            .finally(() => {
+                if (mounted.current) {
+                    setIsExistsPurchaseChecking(false);
+                }
+            });
+        if (response?.data?.result) {
+            setCancelId(id); // 対象の参加者IDをセット
+            response.data.result == "yes"
+                ? $("[data-target=mdParticipantCancelChargeCard]").trigger(
+                      "click"
+                  )
+                : $("[data-target=mdParticipantNoCancelChargeCard]").trigger(
+                      "click"
+                  );
+        } else {
+            alert("データの取得に失敗しました");
+        }
     };
 
     // 新規登録モーダル
@@ -331,7 +370,8 @@ const ParticipantArea = ({
                 });
         }
 
-        if (response?.data?.data) {
+        if (mounted.current && response?.data?.data) {
+            setUpdatedAt(response.data.data.reserve.updated_at); // 予約レコード更新日時更新
             if (
                 editMode === "create" &&
                 response.data.data.reserve?.reserve_itinerary_exists == 1
@@ -348,8 +388,8 @@ const ParticipantArea = ({
         }
     };
 
-    // 取消を押した時の挙動
-    const handleCancel = async e => {
+    // 参加者取り消し処理(チャージナシ)
+    const handleNonCharge = async e => {
         if (!mounted.current) return;
         if (isCanceling) return;
 
@@ -357,7 +397,7 @@ const ParticipantArea = ({
 
         const response = await axios
             .post(
-                getCancelApiUrl(
+                getNonChargeCancelApiUrl(
                     reception,
                     applicationStep,
                     applicationStepList,
@@ -367,6 +407,7 @@ const ParticipantArea = ({
                     cancelId
                 ),
                 {
+                    reserve: { updated_at: updatedAt },
                     _method: "put"
                 }
             )
@@ -379,7 +420,8 @@ const ParticipantArea = ({
                     }
                 }, 3000);
             });
-        if (response?.data?.data) {
+        if (mounted.current && response?.data?.data) {
+            setUpdatedAt(response.data.data.reserve.updated_at); // 予約レコード更新日時更新
             if (response.data.data.reserve?.reserve_itinerary_exists == 1) {
                 $("#successMessage .closeIcon")
                     .parent()
@@ -390,6 +432,19 @@ const ParticipantArea = ({
             }
             fetch(); // リスト再取得。TODO 再取得は負荷が高いので更新した行のみ変更するような処理を検討する → 代表者を取り消した時に代表者フラグをoffにする処理が必要なので、やはり一覧取得したほうがよいかも
         }
+    };
+    // 参加者取り消し処理(チャージあり→チャージ設定ページへ遷移)
+    const handleCancelCharge = () => {
+        if (!mounted.current) return;
+        if (isCanceling) return;
+        setIsCanceling(false); // 一応、処理フラグを無効にしておく
+        $(".js-modal-close").trigger("click"); // モーダルクローズ
+        location.href = getCancelChargeUrl(
+            reception,
+            agencyAccount,
+            reserveNumber,
+            cancelId
+        );
     };
 
     // 削除ボタン
@@ -416,7 +471,10 @@ const ParticipantArea = ({
                     estimateNumber,
                     reserveNumber,
                     deleteId
-                )
+                ),
+                {
+                    data: { reserve: { updated_at: updatedAt } }
+                }
             )
             .finally(() => {
                 $(".js-modal-close").trigger("click"); // 削除モーダルclose
@@ -427,7 +485,8 @@ const ParticipantArea = ({
                     }
                 }, 3000);
             });
-        if (response?.data?.data) {
+        if (mounted.current && response?.data?.data) {
+            setUpdatedAt(response.data.data.reserve?.updated_at); // 予約レコード更新日時更新
             if (response.data.data.reserve?.reserve_itinerary_exists == 1) {
                 $("#successMessage .closeIcon")
                     .parent()
@@ -485,18 +544,32 @@ const ParticipantArea = ({
                 <td>{row.passport_number ?? "-"}</td>
                 <td>{row.passport_expiration_date ?? "-"}</td>
                 <td>{row.mobile_phone ?? "-"}</td>
-                <td className="txtalc">
-                    {permission?.participant_cancel && (
-                        <span
-                            className="material-icons js-modal-open"
-                            data-target="mdParticipantCancelCard"
-                            onClick={e => handleModalCancel(e, row?.id)}
-                        >
-                            not_interested
-                        </span>
-                    )}
-                    {!permission?.participant_cancel && <>-</>}
-                </td>
+                {/**↓見積もり時は表示ナシでOK?*/}
+                {applicationStep ==
+                    applicationStepList.application_step_reserve && (
+                    <td className="txtalc">
+                        {permission?.participant_cancel && (
+                            <>
+                                <span
+                                    className="material-icons"
+                                    onClick={e => handleModalCancel(e, row?.id)}
+                                >
+                                    not_interested
+                                </span>
+                                {/**モーダルは仕入の有無によって出し分ける。出し分けの際は以下のダミー要素に対してクリックイベントを発火。仕入有り用と無し用モーダル */}
+                                <span
+                                    className="js-modal-open"
+                                    data-target="mdParticipantNoCancelChargeCard"
+                                ></span>
+                                <span
+                                    className="js-modal-open"
+                                    data-target="mdParticipantCancelChargeCard"
+                                ></span>
+                            </>
+                        )}
+                        {!permission?.participant_cancel && <>-</>}
+                    </td>
+                )}
                 <td className="txtalc">
                     {permission?.participant_delete && (
                         <span
@@ -612,9 +685,13 @@ const ParticipantArea = ({
                                 <th>
                                     <span>電話番号</span>
                                 </th>
-                                <th className="txtalc wd10">
-                                    <span>取消</span>
-                                </th>
+                                {/**↓見積もり時は不要でok? */}
+                                {applicationStep ==
+                                    applicationStepList.application_step_reserve && (
+                                    <th className="txtalc wd10">
+                                        <span>取消</span>
+                                    </th>
+                                )}
                                 <th className="txtalc wd10">
                                     <span>削除</span>
                                 </th>
@@ -673,12 +750,23 @@ const ParticipantArea = ({
                 permission={permission}
             />
 
+            {/**キャンセルモーダル(キャンセルチャージナシ) */}
             <SmallDangerModal
-                id="mdParticipantCancelCard"
+                id="mdParticipantNoCancelChargeCard"
                 title="参加者を取り消しますか？"
-                handleAction={handleCancel}
+                handleAction={handleNonCharge}
                 isActioning={isCanceling}
                 actionLabel="取り消す"
+            />
+            {/**キャンセルモーダル(キャンセルチャージあり) */}
+            <CancelChargeModal
+                id="mdParticipantCancelChargeCard"
+                defaultCheck={RESERVE.CANCEL_CHARGE_NO}
+                nonChargeAction={handleNonCharge}
+                chargeAction={handleCancelCharge}
+                isActioning={isCanceling}
+                title={"参加者を取り消しますか？"}
+                positiveLabel={"取り消す"}
             />
 
             <SmallDangerModal

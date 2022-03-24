@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Staff\Api;
 
+use App\Events\UpdateBillingAmountEvent;
+use App\Traits\CancelChargeTrait;
 use App\Events\ReserveChangeHeadcountEvent;
 use App\Events\ReserveChangeRepresentativeEvent;
 use App\Events\PriceRelatedChangeEvent;
@@ -33,6 +35,8 @@ use App\Services\WebReserveService;
 use App\Services\ReserveParticipantOptionPriceService;
 use App\Services\ReserveParticipantAirplanePriceService;
 use App\Services\ReserveParticipantHotelPriceService;
+use App\Services\ReserveParticipantPriceService;
+use App\Services\ReserveItineraryService;
 use App\Traits\ReserveTrait;
 use DB;
 use Exception;
@@ -43,7 +47,7 @@ use Log;
 
 class ParticipantController extends Controller
 {
-    use ReserveTrait;
+    use ReserveTrait, CancelChargeTrait;
 
     public function __construct(
         BusinessUserManagerService $businessUserManagerService,
@@ -57,7 +61,9 @@ class ParticipantController extends Controller
         WebReserveService $webReserveService,
         ReserveParticipantOptionPriceService $reserveParticipantOptionPriceService,
         ReserveParticipantAirplanePriceService $reserveParticipantAirplanePriceService,
-        ReserveParticipantHotelPriceService $reserveParticipantHotelPriceService
+        ReserveParticipantHotelPriceService $reserveParticipantHotelPriceService,
+        ReserveParticipantPriceService $reserveParticipantPriceService,
+        ReserveItineraryService $reserveItineraryService
     ) {
         $this->businessUserManagerService = $businessUserManagerService;
         $this->estimateService = $estimateService;
@@ -71,6 +77,9 @@ class ParticipantController extends Controller
         $this->reserveParticipantOptionPriceService = $reserveParticipantOptionPriceService;
         $this->reserveParticipantAirplanePriceService = $reserveParticipantAirplanePriceService;
         $this->reserveParticipantHotelPriceService = $reserveParticipantHotelPriceService;
+        $this->reserveParticipantPriceService = $reserveParticipantPriceService;
+        // traitで使用
+        $this->reserveItineraryService = $reserveItineraryService;
     }
 
     /**
@@ -218,7 +227,10 @@ class ParticipantController extends Controller
             }
 
             $result = DB::transaction(function () use ($participant, $input, $reception) {
-                $res = $this->participantService->update($participant->id, $input);
+                if (!$this->participantService->update($participant->id, $input)) {
+                    throw new Exception("participantService update error.");
+                }
+                $res = $this->participantService->find($participant->id);
 
                 // 参加者情報を更新してもマスターとなるusersレコードとは連動させないが、ageカラムがusersで編集できる箇所がないので例外的に更新
                 $this->userService->upsertAgeByUserId(Arr::get($input, 'age', null), $res->user_id, $res->agency_id);
@@ -298,14 +310,25 @@ class ParticipantController extends Controller
     }
 
     /**
-     * 取消
+     * 当該参加者に対する仕入データが存在するか否か
      *
-     * @param string $applicationStep 申込段階（見積or予約）。本パラメータは処理には特に使っていない
+     * @param string $agencyAccount 会社アカウント
+     * @param int $id 参加者ID
+     */
+    public function isExistsPurchaseData(string $agencyAccount, int $id)
+    {
+        $result = $this->reserveParticipantPriceService->isExistsPurchaseDataByParticipantId($id, true);
+
+        return ['result' => $result ? 'yes' : 'no']; // 仕入データがある場合はyes
+    }
+
+    /**
+     * ノンチャージキャンセル
+     *
      * @param string $reception 受付種別(WEB or ASP)
-     * @param string $controlNumber 管理番号（見積番号or予約番号）。処理には特に使っていない
      * @param string $id 参加者ID
      */
-    public function setCancel(ParticipantCancelRequest $request, string $agencyAccount, string $reception, string $applicationStep, string $controlNumber, int $id)
+    public function noCancelChargeCancel(ParticipantCancelRequest $request, string $agencyAccount, string $reception, int $id)
     {
         $oldParticipant = $this->participantService->find($id);
         if (!$oldParticipant) {
@@ -318,17 +341,29 @@ class ParticipantController extends Controller
             abort(403, $response->message());
         }
 
+        // 受付種別で分ける
+        if ($reception === config('consts.const.RECEPTION_TYPE_ASP')) { // ASP受付
+            $reserve = $this->reserveEstimateService->find($oldParticipant->reserve_id);
+        } elseif ($reception === config('consts.const.RECEPTION_TYPE_WEB')) { // WEB受付
+            $reserve = $this->webReserveEstimateService->find($oldParticipant->reserve_id);
+        } else {
+            abort(500);
+        }
+
         try {
-            $newParticipant = DB::transaction(function () use ($oldParticipant, $reception) {
+            $input = $request->all();
+
+            if ($reserve->updated_at != Arr::get($input, "reserve.updated_at")) {
+                throw new ExclusiveLockException;
+            }
+
+            $newParticipant = DB::transaction(function () use ($oldParticipant, $reserve, $input) {
                 $newParticipant = $this->participantService->setCancel($oldParticipant->id);
-    
-                // 受付種別で分ける
-                if ($reception === config('consts.const.RECEPTION_TYPE_ASP')) { // ASP受付
-                    $reserve = $this->reserveEstimateService->find($oldParticipant->reserve_id);
-                } elseif ($reception === config('consts.const.RECEPTION_TYPE_WEB')) { // WEB受付
-                    $reserve = $this->webReserveEstimateService->find($oldParticipant->reserve_id);
-                } else {
-                    abort(500);
+                
+                $this->reserveParticipantPriceService->setCancelDataByParticipantId($oldParticipant->id, 0, 0, 0, false); // 全ての仕入情報をキャンセルチャージ0円で初期化
+
+                if ($reserve->enabled_reserve_itinerary->id) {
+                    $this->refreshItineraryTotalAmount($reserve->enabled_reserve_itinerary); // 有効行程の合計金額更新。不要かもしれないが、念の為
                 }
 
                 if ($oldParticipant->representative) { // 当該参加者が代表者"だった"場合
@@ -337,6 +372,8 @@ class ParticipantController extends Controller
     
                 event(new ReserveChangeHeadcountEvent($reserve)); // 参加者人数変更イベント
 
+                event(new UpdateBillingAmountEvent($reserve)); // 請求金額変更イベント
+
                 event(new PriceRelatedChangeEvent($reserve->id, date('Y-m-d H:i:s', strtotime("now +1 seconds")))); // 料金変更に関わるイベント。参加者情報を更新すると関連する行程レコードもtouchで日時が更新されてしまうので、他のレコードよりも確実に新しい日時で更新されるように1秒後の時間をセット
 
                 return $newParticipant;
@@ -344,11 +381,66 @@ class ParticipantController extends Controller
             if ($newParticipant) {
                 return new UpdateResource($newParticipant, 200);
             }
+        } catch (ExclusiveLockException $e) { // 同時編集エラー
+            abort(409, "他のユーザーによる編集済みレコードです。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
         } catch (Exception $e) {
             Log::error($e);
         }
         abort(500);
     }
+
+    // /**
+    //  * 取消
+    //  *
+    //  * @param string $applicationStep 申込段階（見積or予約）。本パラメータは処理には特に使っていない
+    //  * @param string $reception 受付種別(WEB or ASP)
+    //  * @param string $controlNumber 管理番号（見積番号or予約番号）。処理には特に使っていない
+    //  * @param string $id 参加者ID
+    //  */
+    // public function setCancel(ParticipantCancelRequest $request, string $agencyAccount, string $reception, string $applicationStep, string $controlNumber, int $id)
+    // {
+    //     $oldParticipant = $this->participantService->find($id);
+    //     if (!$oldParticipant) {
+    //         abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+    //     }
+
+    //     // 認可チェック
+    //     $response = Gate::inspect('cancel', [$oldParticipant]);
+    //     if (!$response->allowed()) {
+    //         abort(403, $response->message());
+    //     }
+
+    //     try {
+    //         $newParticipant = DB::transaction(function () use ($oldParticipant, $reception) {
+    //             $newParticipant = $this->participantService->setCancel($oldParticipant->id);
+    
+    //             // 受付種別で分ける
+    //             if ($reception === config('consts.const.RECEPTION_TYPE_ASP')) { // ASP受付
+    //                 $reserve = $this->reserveEstimateService->find($oldParticipant->reserve_id);
+    //             } elseif ($reception === config('consts.const.RECEPTION_TYPE_WEB')) { // WEB受付
+    //                 $reserve = $this->webReserveEstimateService->find($oldParticipant->reserve_id);
+    //             } else {
+    //                 abort(500);
+    //             }
+
+    //             if ($oldParticipant->representative) { // 当該参加者が代表者"だった"場合
+    //                 event(new ReserveChangeRepresentativeEvent($reserve)); // 代表者更新イベント
+    //             }
+    
+    //             event(new ReserveChangeHeadcountEvent($reserve)); // 参加者人数変更イベント
+
+    //             event(new PriceRelatedChangeEvent($reserve->id, date('Y-m-d H:i:s', strtotime("now +1 seconds")))); // 料金変更に関わるイベント。参加者情報を更新すると関連する行程レコードもtouchで日時が更新されてしまうので、他のレコードよりも確実に新しい日時で更新されるように1秒後の時間をセット
+
+    //             return $newParticipant;
+    //         });
+    //         if ($newParticipant) {
+    //             return new UpdateResource($newParticipant, 200);
+    //         }
+    //     } catch (Exception $e) {
+    //         Log::error($e);
+    //     }
+    //     abort(500);
+    // }
 
     /**
      * 参加者削除
@@ -371,10 +463,22 @@ class ParticipantController extends Controller
         if (!$response->allowed()) {
             abort(403, $response->message());
         }
-
+        
         try {
+            $input = $request->all();
+
+            if ($reception === config('consts.const.RECEPTION_TYPE_ASP')) { // ASP受付
+                $reserve = $this->reserveEstimateService->find($participant->reserve_id);
+            } elseif ($reception === config('consts.const.RECEPTION_TYPE_WEB')) { // WEB受付
+                $reserve = $this->webReserveEstimateService->find($participant->reserve_id);
+            }
+
+            if ($reserve->updated_at != Arr::get($input, "reserve.updated_at")) {
+                throw new ExclusiveLockException;
+            }
+
             // 予約データからの紐付け解除と参加者データ・参加者に紐づく料金情報の削除
-            list($result, $reserve) = DB::transaction(function () use ($participant, $reception) {
+            $result = DB::transaction(function () use ($participant, $reception) {
 
                 // 受付種別で分ける
                 if ($reception === config('consts.const.RECEPTION_TYPE_ASP')) { // ASP受付
@@ -409,17 +513,28 @@ class ParticipantController extends Controller
 
                 event(new PriceRelatedChangeEvent($reserve->id, date('Y-m-d H:i:s', strtotime("now +1 seconds")))); // 料金変更に関わるイベント。参加者情報を更新すると関連する行程レコードもtouchで日時が更新されてしまうので、他のレコードよりも確実に新しい日時で更新されるように1秒後の時間をセット
 
-                return [$result, $reserve];
+                return $result;
             });
             if ($result) {
+
+                // 最新予約情報を取得
+                if ($reception === config('consts.const.RECEPTION_TYPE_ASP')) { // ASP受付
+                    $reserve = $this->reserveEstimateService->find($participant->reserve_id);
+                } elseif ($reception === config('consts.const.RECEPTION_TYPE_WEB')) { // WEB受付
+                    $reserve = $this->webReserveEstimateService->find($participant->reserve_id);
+                }
+
                 return [
                     'data' => [
                         'reserve' => [
-                            'reserve_itinerary_exists' => $reserve->reserve_itinerary_exists ? 1 : 0
+                            'reserve_itinerary_exists' => $reserve->reserve_itinerary_exists ? 1 : 0,
+                            'updated_at' => $reserve->updated_at->format('Y-m-d H:i:s')
                             ]
                         ]
                     ];
             }
+        } catch (ExclusiveLockException $e) { // 同時編集エラー
+            abort(409, "他のユーザーによる編集済みレコードです。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
         } catch (Exception $e) {
             Log::error($e);
         }
