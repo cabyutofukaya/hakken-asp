@@ -63,6 +63,7 @@ const WebEstimateDetail = ({
                 setDeleteRequestId={setParticipantDeleteRequestId}
                 setCancelRequestId={setParticipantCancelRequestId}
                 permission={permission}
+                constsCommon={constsCommon}
                 setSuccessMessage={setSuccessMessage}
                 updatedAt={updatedAt}
                 setUpdatedAt={setUpdatedAt}

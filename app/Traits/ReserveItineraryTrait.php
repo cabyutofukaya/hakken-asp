@@ -59,7 +59,7 @@ trait ReserveItineraryTrait
         $defaultValue['dates'][$date][$i]['reserve_purchasing_subjects'][$j] = array_merge(
             Arr::except($subject->subjectable->toArray(), ['reserve_participant_prices','v_reserve_purchasing_subject_custom_values'], []),
             $userCustomItem,
-            ['mode' => 'EDIT', 'subject' => $subjectCagetory, 'id' => $subject->subjectable ? $subject->subjectable->id : null]
+            ['mode' => config('consts.reserve_itineraries.PURCHASING_MODE_EDIT'), 'subject' => $subjectCagetory, 'id' => $subject->subjectable ? $subject->subjectable->id : null]
         ); // 仕入科目。保存データ・カスタム項目・定数データ(mode等)を結合して初期化。mode=新規or編集、subject=科目種別
 
         // participantを一旦空に

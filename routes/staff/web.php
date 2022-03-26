@@ -16,6 +16,7 @@ Route::pattern('userCustomCategoryItem', '[0-9]+');
 Route::pattern('applicationStep', 'normal|reserve');
 Route::pattern('controlNumber', '[0-9A-Z\-]+');
 Route::pattern('courseNo', 'MD[0-9]{4}');
+Route::pattern('id', '[0-9]+');
 
 Route::get('/', 'Staff\DefaultController@index');
 

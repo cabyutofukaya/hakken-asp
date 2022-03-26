@@ -224,7 +224,9 @@ class ShowFormComposer
         $estimateIndexUrl = route('staff.asp.estimates.normal.index', [$agencyAccount]);
         $reserveIndexUrl = route('staff.asp.estimates.reserve.index', [$agencyAccount]);
         $departedIndexUrl = route('staff.estimates.departed.index', $agencyAccount); // 催行済
-        $cancelChargeUrl = $applicationStep === config('consts.reserves.APPLICATION_STEP_RESERVE') ? route('staff.asp.estimates.reserve.cancel_charge.edit', [$agencyAccount, $reserve->control_number]) : ''; // 予約状態の場合はキャンセルチャージ
+        $cancelChargeUrl = $applicationStep === config('consts.reserves.APPLICATION_STEP_RESERVE') ? route('staff.asp.estimates.reserve.cancel_charge.edit', [$agencyAccount, $reserve->control_number]) . $departedQuery : ''; // 予約状態の場合はキャンセルチャージ
+        $participantCancelChargeUrlPattern = $applicationStep === config('consts.reserves.APPLICATION_STEP_RESERVE') ? route("staff.asp.estimates.reserve.participant_cancel_charge.edit", [$agencyAccount, $reserve->control_number, "#id#"]) . $departedQuery : ''; // 予約状態の場合は参加者チャンセルチャージURL(ID部分はjavascriptで変更)
+
 
         $afterDeletedUrl = ''; // 予約情報削除後の転送先
         if ($applicationStep === config('consts.reserves.APPLICATION_STEP_RESERVE')) { // 予約状態
@@ -254,7 +256,8 @@ class ShowFormComposer
                 'estimateIndexUrl' => $estimateIndexUrl,
                 'reserveIndexUrl' => $reserveIndexUrl,
                 'departedIndexUrl' => $departedIndexUrl,
-                'cancelChargeUrl' => $cancelChargeUrl . $departedQuery,
+                'cancelChargeUrl' => $cancelChargeUrl,
+                'participantCancelChargeUrlPattern' => $participantCancelChargeUrlPattern,
                 'afterDeletedUrl' => $afterDeletedUrl, // 削除後の転送先
                 'afterCancelUrl' => $afterCancelUrl,
             ],

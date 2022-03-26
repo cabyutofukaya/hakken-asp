@@ -12,7 +12,7 @@ import WebConsultationArea from "./components/Reserve/WebConsultationArea";
 import WebReserveDetail from "./components/Reserve/WebReserveDetail";
 import TopControlBox from "./components/Reserve/TopControlBox";
 import CancelModal from "./components/Reserve/CancelModal";
-import CancelChargeModal from "./components/CancelChargeModal";
+import CancelChargeModal from "./components/Reserve/CancelChargeModal";
 import TopStatus from "./components/Reserve/TopStatus";
 import SuccessMessage from "./components/SuccessMessage";
 import ErrorMessage from "./components/ErrorMessage";

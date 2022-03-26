@@ -1,8 +1,11 @@
-import React from "react";
+import React, { useContext } from "react";
+import { ConstContext } from "../../components/ConstApp";
+import CancelSubtotalRow from "./CancelSubtotalRow";
 import ScheduleInputRows from "./ScheduleInputRows";
 import SubtotalRow from "./SubtotalRow";
 import TransportInputRow from "./TransportInputRow";
 import PickupSpot from "./PickupSpot";
+import { existsIsAliveCancelRow } from "../../libs";
 
 /**
  *
@@ -23,6 +26,7 @@ const WaypointImage = ({
     canDown,
     index,
     date,
+    participants,
     input,
     thumbSBaseUrl,
     transportations,
@@ -39,6 +43,8 @@ const WaypointImage = ({
     setDeletePurchasingRowInfo,
     targetPurchasingDispatch
 }) => {
+    const { purchaseCancel } = useContext(ConstContext);
+
     const inputName = `dates[${date}][${index}]`;
 
     // 仕入追加ボタン押下時処理。編集対象の仕入詳細データを初期化
@@ -60,6 +66,23 @@ const WaypointImage = ({
      * @param {*} no 行番号
      */
     const handleEditPurchasingModal = (e, no) => {
+        e.preventDefault();
+        targetPurchasingDispatch({
+            type: "INITIAL_EDIT",
+            payload: {
+                date,
+                index,
+                no
+            }
+        });
+    };
+
+    /**
+     * キャンセル仕入行の編集リンク押下時
+     * @param {*} e
+     * @param {*} no
+     */
+    const handleEditCancelPurchasingModal = (e, no) => {
         e.preventDefault();
         targetPurchasingDispatch({
             type: "INITIAL_EDIT",
@@ -172,6 +195,22 @@ const WaypointImage = ({
                         />
                     )}
                 </div>
+                {/**キャンセル仕入行あり */}
+                {existsIsAliveCancelRow(
+                    input?.reserve_purchasing_subjects ?? []
+                ) && (
+                    <CancelSubtotalRow
+                        date={date}
+                        reservePurchasingSubjects={
+                            input.reserve_purchasing_subjects
+                        }
+                        inputName={inputName}
+                        zeiKbns={zeiKbns}
+                        handleEditCancelPurchasingModal={
+                            handleEditCancelPurchasingModal
+                        }
+                    />
+                )}
             </div>
             <TransportInputRow
                 date={date}

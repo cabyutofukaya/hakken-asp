@@ -41,6 +41,7 @@ class ReserveParticipantHotelPrice extends Model implements ParticipantPriceInte
         'cancel_charge',
         'cancel_charge_net',
         'cancel_charge_profit',
+        'is_alive_cancel',
         'is_cancel',
     ];
 

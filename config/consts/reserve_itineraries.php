@@ -1,6 +1,13 @@
 <?php
 
 return [
+  // 編集タイプ
+  'PURCHASING_MODE_EDIT' => 'edit',
+  'PURCHASING_MODE_CREATE' => 'create',
+  'MODE_LIST' => [
+    'purchasing_mode_edit' => 'edit',
+    'purchasing_mode_create' => 'create'
+  ],
   // 行程タイプ
   'ITINERARY_TYPE_WAYPOINT' => 'waypoint',
   'ITINERARY_TYPE_WAYPOINT_IMAGE' => 'waypoint_image',

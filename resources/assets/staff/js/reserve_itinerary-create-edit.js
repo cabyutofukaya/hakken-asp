@@ -11,6 +11,7 @@ import Waypoint from "./components/ReserveItinerary/Waypoint";
 import WaypointImage from "./components/ReserveItinerary/WaypointImage";
 import Destination from "./components/ReserveItinerary/Destination";
 import SubjectModal from "./components/ReserveItinerary/SubjectModal";
+import CancelSubjectModal from "./components/ReserveItinerary/CancelSubjectModal";
 import { calcTaxInclud, calcNet, calcGrossProfit } from "./libs";
 import { RESERVE_ITINERARY } from "./constants";
 import UnderButton from "./components/ReserveItinerary/UnderButton";
@@ -190,14 +191,16 @@ const ItineraryArea = ({
 
     const mounted = useMountedRef(); // マウント・アンマウント制御
 
-    const { subjectCategoryTypes } = useContext(ReserveItineraryConstContext);
+    const { subjectCategoryTypes, modes } = useContext(
+        ReserveItineraryConstContext
+    );
 
     const [isDeleteChecking, setIsDeleteChecking] = useState(false); // 削除可否チェック中か否か
     const [isSubmitting, setIsSubmitting] = useState(false); // form送信中か否か
 
     // ParticipantPriceTrait@getInitialDataと同じ処理
     const initialTargetPurchasing = {
-        mode: RESERVE_ITINERARY.MODE_CREATE,
+        mode: modes.purchasing_mode_create,
         subject: subjectCategoryTypes?.default,
         ad_zei_kbn: modalInitialValues?.zeiKbnDefault,
         ch_zei_kbn: modalInitialValues?.zeiKbnDefault,
@@ -218,7 +221,7 @@ const ItineraryArea = ({
                 };
             })
         ]
-    }; // 仕入情報初期値(MODE_CREATE=新規登録)
+    }; // 仕入情報初期値(PURCHASING_MODE_CREATE=新規登録)
 
     const [lists, rowDispatch] = useReducer(listsReducer, defaultValue?.dates); // 日程情報の入力制御
 
@@ -543,7 +546,7 @@ const ItineraryArea = ({
                     return {
                         ...copyState
                     };
-                case "INITIAL_EDIT": //編集データセット
+                case "INITIAL_EDIT": //編集データセット（通常仕入・キャンセル仕入）
                     setTargetAddRow({
                         date: action.payload.date,
                         index: action.payload.index
@@ -558,7 +561,7 @@ const ItineraryArea = ({
                             "reserve_purchasing_subjects"
                         ][action.payload.no];
                     let copyData = _.cloneDeep(data);
-                    copyData.mode = RESERVE_ITINERARY.MODE_EDIT; // MODE_EDIT=編集
+                    copyData.mode = modes.purchasing_mode_edit; // PURCHASING_MODE_EDIT=編集
                     return { ...copyData };
                 case "ADD_PURCHASING_MODAL": //仕入行追加ボタン押下
                     setTargetAddRow({
@@ -898,6 +901,7 @@ const ItineraryArea = ({
                                                     index={index}
                                                     input={row}
                                                     date={date}
+                                                    participants={participants}
                                                     transportations={
                                                         formSelects?.transportations
                                                     }
@@ -946,6 +950,7 @@ const ItineraryArea = ({
                                                     index={index}
                                                     input={row}
                                                     date={date}
+                                                    participants={participants}
                                                     thumbSBaseUrl={
                                                         consts?.thumbSBaseUrl
                                                     }
@@ -996,6 +1001,7 @@ const ItineraryArea = ({
                                                     index={index}
                                                     input={row}
                                                     date={date}
+                                                    participants={participants}
                                                     zeiKbns={
                                                         formSelects?.zeiKbns
                                                     }
@@ -1121,6 +1127,25 @@ const ItineraryArea = ({
                 defaultSubjectOptions={formSelects?.defaultSubjectOptions}
                 defaultSubjectAirplanes={formSelects?.defaultSubjectAirplanes}
             />
+
+            <CancelSubjectModal
+                subjectCategories={formSelects?.subjectCategories}
+                input={targetPurchasing}
+                targetAddRow={targetAddRow}
+                editPurchasingRowInfo={editPurchasingRowInfo}
+                zeiKbns={formSelects?.zeiKbns}
+                participants={participants}
+                suppliers={formSelects?.suppliers}
+                cities={formSelects?.cities}
+                handleChange={targetPurchasingDispatch}
+                rowDispatch={rowDispatch}
+                customFields={customFields}
+                subjectCustomCategoryCode={subjectCustomCategoryCode}
+                customFieldCodes={consts?.customFieldCodes}
+                defaultSubjectHotels={formSelects?.defaultSubjectHotels}
+                defaultSubjectOptions={formSelects?.defaultSubjectOptions}
+                defaultSubjectAirplanes={formSelects?.defaultSubjectAirplanes}
+            />
         </>
     );
 };
@@ -1168,7 +1193,8 @@ if (Element) {
                     reserveNumber,
                     subjectCategoryTypes: parsedConsts?.subjectCategoryTypes,
                     isCanceled,
-                    isEnabled
+                    isEnabled,
+                    modes: parsedConsts?.modes
                 }}
             >
                 <ItineraryArea

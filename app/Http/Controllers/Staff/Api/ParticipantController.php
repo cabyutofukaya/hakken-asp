@@ -362,6 +362,8 @@ class ParticipantController extends Controller
                 
                 $this->reserveParticipantPriceService->setCancelDataByParticipantId($oldParticipant->id, 0, 0, 0, false); // 全ての仕入情報をキャンセルチャージ0円で初期化
 
+                $this->reserveParticipantPriceService->setIsAliveCancelByParticipantId($oldParticipant->id); // 全有効仕入行に対し、is_alive_cancelフラグをONにする。
+
                 if ($reserve->enabled_reserve_itinerary->id) {
                     $this->refreshItineraryTotalAmount($reserve->enabled_reserve_itinerary); // 有効行程の合計金額更新。不要かもしれないが、念の為
                 }
