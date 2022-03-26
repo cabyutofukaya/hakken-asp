@@ -229,6 +229,8 @@ class EditFormComposer
                 'default' => config('consts.reserve_itineraries.DEFAULT_TRANSPORTATION'), // デフォルト値
                 'others' => config('consts.reserve_itineraries.TRANSPORTATION_OTHERS')
             ],
+            // 編集モード定数
+            'modes' => config('consts.reserve_itineraries.MODE_LIST'),
             // 旅程種別定数
             'itineraryTypes' => [
                 'waypoint' => config('consts.reserve_itineraries.ITINERARY_TYPE_WAYPOINT'), // スポット・経由地

@@ -54,9 +54,14 @@ trait CancelChargeTrait
      *
      * TODO
      * 本メソッド、処理が重すぎるようなら非同期で実行することも検討
+     * @return 処理対象の参加者商品情報ID配列を返す
      */
-    public function setParticipantCancelCharge(array $input)
+    public function setParticipantCancelCharge(array $input) : array
     {
+        $optionIds = [];
+        $airplaneIds = [];
+        $hotelIds = [];
+
         // キャンセルチャージ料金を保存
         foreach (Arr::get($input, 'rows', []) as $key => $row) { // $keyは [科目名]_(仕入ID_...)という形式
             $info = explode(config('consts.const.CANCEL_CHARGE_DATA_DELIMITER'), $key);
@@ -81,10 +86,12 @@ trait CancelChargeTrait
             }
 
             if ($subject == config('consts.subject_categories.SUBJECT_CATEGORY_OPTION')) { // オプション科目
-                $this->reserveParticipantOptionPriceService->setCancelChargeByIds($cancelCharge, $cancelChargeNet, $cancelChargeProfit, $isCancel, $ids); // ユーザー側
+                $optionIds = $ids;
+
+                $this->reserveParticipantOptionPriceService->setCancelChargeByIds($cancelCharge, $cancelChargeNet, $cancelChargeProfit, $isCancel, $optionIds); // ユーザー側
 
                 // 仕入先支払い情報を更新
-                foreach ($ids as $id) {
+                foreach ($optionIds as $id) {
                     $this->accountPayableDetailService->setCancelChargeBySaleableId($cancelChargeNet, 'App\Models\ReserveParticipantOptionPrice', $id, false);
 
                     $accountPayableDetail = $this->accountPayableDetailService->findWhere(['saleable_type' => 'App\Models\ReserveParticipantOptionPrice', 'saleable_id' => $id], [], ['id']);
@@ -95,10 +102,12 @@ trait CancelChargeTrait
                     }
                 }
             } elseif ($subject == config('consts.subject_categories.SUBJECT_CATEGORY_AIRPLANE')) { // 航空券科目
-                $this->reserveParticipantAirplanePriceService->setCancelChargeByIds($cancelCharge, $cancelChargeNet, $cancelChargeProfit, $isCancel, $ids); // ユーザー側
+                $airplaneIds = $ids;
+
+                $this->reserveParticipantAirplanePriceService->setCancelChargeByIds($cancelCharge, $cancelChargeNet, $cancelChargeProfit, $isCancel, $airplaneIds); // ユーザー側
 
                 // 仕入先支払い情報を更新
-                foreach ($ids as $id) {
+                foreach ($airplaneIds as $id) {
                     $this->accountPayableDetailService->setCancelChargeBySaleableId($cancelChargeNet, 'App\Models\ReserveParticipantAirplanePrice', $id, false);
 
                     $accountPayableDetail = $this->accountPayableDetailService->findWhere(['saleable_type' => 'App\Models\ReserveParticipantAirplanePrice', 'saleable_id' => $id], [], ['id']);
@@ -109,10 +118,12 @@ trait CancelChargeTrait
                     }
                 }
             } elseif ($subject == config('consts.subject_categories.SUBJECT_CATEGORY_HOTEL')) { // ホテル科目
-                $this->reserveParticipantHotelPriceService->setCancelChargeByIds($cancelCharge, $cancelChargeNet, $cancelChargeProfit, $isCancel, $ids); // ユーザー側
+                $hotelIds = $ids;
+
+                $this->reserveParticipantHotelPriceService->setCancelChargeByIds($cancelCharge, $cancelChargeNet, $cancelChargeProfit, $isCancel, $hotelIds); // ユーザー側
 
                 // 仕入先支払い情報を更新
-                foreach ($ids as $id) {
+                foreach ($hotelIds as $id) {
                     $this->accountPayableDetailService->setCancelChargeBySaleableId($cancelChargeNet, 'App\Models\ReserveParticipantHotelPrice', $id, false);
 
                     $accountPayableDetail = $this->accountPayableDetailService->findWhere(['saleable_type' => 'App\Models\ReserveParticipantHotelPrice', 'saleable_id' => $id], [], ['id']);
@@ -124,6 +135,12 @@ trait CancelChargeTrait
                 }
             }
         }
+
+        return [
+            $optionIds,
+            $airplaneIds,
+            $hotelIds
+        ];
     }
 
     /**

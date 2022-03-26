@@ -5,7 +5,7 @@ import SmallDangerModal from "../SmallDangerModal";
 import ParticipantEditModal from "./ParticipantEditModal";
 import ReactLoading from "react-loading";
 import classNames from "classnames";
-import CancelChargeModal from "../CancelChargeModal";
+import ParticipantCancelChargeModal from "./ParticipantCancelChargeModal";
 import { RESERVE } from "../../constants";
 
 // 一覧取得API URL
@@ -106,8 +106,8 @@ const getNonChargeCancelApiUrl = (
 };
 
 // キャンセルチャージ設定URL(予約時のみ)
-const getCancelChargeUrl = (reception, agencyAccount, reserveNumber, id) => {
-    return `/${agencyAccount}/estimates/${reception}/reserve/${reserveNumber}/participant/${id}/cancel_charge`;
+const getCancelChargeUrl = (urlPattern, id) => {
+    return urlPattern.replace("#id#", id); // url文字列のID部分を置換
 };
 
 // 削除API URL
@@ -153,6 +153,7 @@ const ParticipantArea = ({
     setDeleteRequestId,
     setCancelRequestId,
     permission,
+    constsCommon,
     setSuccessMessage,
     updatedAt,
     setUpdatedAt
@@ -440,9 +441,7 @@ const ParticipantArea = ({
         setIsCanceling(false); // 一応、処理フラグを無効にしておく
         $(".js-modal-close").trigger("click"); // モーダルクローズ
         location.href = getCancelChargeUrl(
-            reception,
-            agencyAccount,
-            reserveNumber,
+            constsCommon.participantCancelChargeUrlPattern,
             cancelId
         );
     };
@@ -759,7 +758,7 @@ const ParticipantArea = ({
                 actionLabel="取り消す"
             />
             {/**キャンセルモーダル(キャンセルチャージあり) */}
-            <CancelChargeModal
+            <ParticipantCancelChargeModal
                 id="mdParticipantCancelChargeCard"
                 defaultCheck={RESERVE.CANCEL_CHARGE_NO}
                 nonChargeAction={handleNonCharge}

@@ -1,6 +1,4 @@
 export const RESERVE_ITINERARY = {
-    MODE_EDIT: "MODE_EDIT",
-    MODE_CREATE: "MODE_CREATE",
     WAYPOINT: "waypoint",
     WAYPOINT_IMAGE: "waypoint_image",
     DESTINATION: "destination"

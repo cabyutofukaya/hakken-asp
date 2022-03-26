@@ -13,6 +13,8 @@ if (Element) {
     const parsedDefaultValue = defaultValue && JSON.parse(defaultValue);
     const errors = Element.getAttribute("errors");
     const parsedErrors = errors && JSON.parse(errors);
+    const participant = Element.getAttribute("participant");
+    const parsedParticipant = participant && JSON.parse(participant);
 
     render(
         <ConstApp jsVars={parsedJsVars}>
@@ -20,6 +22,7 @@ if (Element) {
                 consts={parsedConsts}
                 defaultValue={parsedDefaultValue}
                 errors={parsedErrors}
+                participant={parsedParticipant}
             />
         </ConstApp>,
         document.getElementById("cancelChargeArea")

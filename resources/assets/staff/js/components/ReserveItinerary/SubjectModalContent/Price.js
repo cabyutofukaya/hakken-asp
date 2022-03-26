@@ -2,6 +2,7 @@ import React from "react";
 import OnlyNumberInput from "../../OnlyNumberInput";
 
 /**
+ * 料金エリア
  *
  * @param {*} participants 参加者情報
  * @returns

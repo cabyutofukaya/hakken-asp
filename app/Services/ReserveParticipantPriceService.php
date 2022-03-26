@@ -47,6 +47,39 @@ class ReserveParticipantPriceService
         return true;
     }
 
+    /**
+     * 有効仕入(valid=true)行に対し、キャンセル設定フラグ(is_alive_cancel)をオンに。is_alive_cancel=trueの行は行程編集ページの「キャンセルした仕入」一覧にリストアップされる。ノーチャージキャンセル用
+     */
+    public function setIsAliveCancelByParticipantId(int $participantId) : bool
+    {
+        // オプション科目
+        $this->reserveParticipantOptionPriceService->setIsAliveCancelByParticipantId($participantId);
+
+        // 航空券科目
+        $this->reserveParticipantAirplanePriceService->setIsAliveCancelByParticipantId($participantId);
+
+        // ホテル科目
+        $this->reserveParticipantHotelPriceService->setIsAliveCancelByParticipantId($participantId);
+
+        return true;
+    }
+
+    /**
+     * 当該参加者仕入情報IDのキャンセル設定フラグ(is_alive_cancel)をオンに。is_alive_cancel=trueの行は行程編集ページの「キャンセルした仕入」一覧にリストアップされる。キャンセルチャージ処理用
+     */
+    public function setIsAliveCancelByReserveParticipantPriceIds(array $optionIds = [], array $airplaneIds = [], array $hotelIds = []) : bool
+    {
+        // オプション科目
+        $this->reserveParticipantOptionPriceService->setIsAliveCancelByIds($optionIds);
+
+        // 航空券科目
+        $this->reserveParticipantAirplanePriceService->setIsAliveCancelByIds($airplaneIds);
+
+        // ホテル科目
+        $this->reserveParticipantHotelPriceService->setIsAliveCancelByIds($hotelIds);
+
+        return true;
+    }
 
     /**
      * キャンセルチャージをリセット

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import classNames from "classnames";
-import { RESERVE } from "../constants";
+import { RESERVE } from "../../constants";
 
 /**
  * 予約キャンセルモーダル(キャンセルチャージ選択付き)

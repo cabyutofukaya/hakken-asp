@@ -9,7 +9,7 @@ import classNames from "classnames";
  *
  * @returns
  */
-const CancelChargeArea = ({ defaultValue, consts, errors }) => {
+const CancelChargeArea = ({ participant, defaultValue, consts, errors }) => {
     const { documentZeiKbns } = useContext(ConstContext);
 
     const csrfToken = document.head.querySelector('meta[name="csrf-token"]')
@@ -119,7 +119,8 @@ const CancelChargeArea = ({ defaultValue, consts, errors }) => {
             <ErrorMessage errorObj={errorObj} />
 
             <h2 className="subTit">
-                <span className="material-icons"> subject </span>仕入れ先情報
+                <span className="material-icons"> subject </span>仕入れ先情報{" "}
+                {participant?.name && <>({participant.name})</>}
             </h2>
             <form
                 name="cancelChargeForm"

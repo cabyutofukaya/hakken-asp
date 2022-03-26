@@ -192,10 +192,10 @@ class ParticipantService
      */
     public function setCancel(int $id) : ?Participant
     {
-        // 仕入関連レコードの有効フラグをOffに
-        $this->reserveParticipantOptionPriceService->updateValidForParticipant($id, false); // オプション科目
-        $this->reserveParticipantAirplanePriceService->updateValidForParticipant($id, false); // 航空券科目
-        $this->reserveParticipantHotelPriceService->updateValidForParticipant($id, false); // ホテル科目
+        // // 仕入関連レコードの有効フラグをOffに
+        // $this->reserveParticipantOptionPriceService->updateValidForParticipant($id, false); // オプション科目
+        // $this->reserveParticipantAirplanePriceService->updateValidForParticipant($id, false); // 航空券科目
+        // $this->reserveParticipantHotelPriceService->updateValidForParticipant($id, false); // ホテル科目
 
         $this->participantRepository->updateField($id, [
             'cancel' => true,

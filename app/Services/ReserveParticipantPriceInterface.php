@@ -17,6 +17,10 @@ interface ReserveParticipantPriceInterface
     public function getByReserveItineraryId(int $reserveItineraryId, ?bool $isValid = null, array $with = [], array $select = [], bool $getDeleted = false) : Collection;
 
     public function setCancelChargeByIds(int $cancelCharge, int $cancelChargeNet, int $cancelChargeProfit, bool $isCancel, array $ids) : bool;
+    
+    public function setIsAliveCancelByParticipantId(int $participantId) : bool;
+
+    public function setIsAliveCancelByIds(array $ids) : bool;
 
     public function setCancelChargeByReserveItineraryId(int $cancelCharge, int $cancelChargeNet, int $cancelChargeProfit, bool $isCancel, int $reserveItineraryId) : array;
 

@@ -19,6 +19,7 @@
     jsVars='@json($jsVars)'
     defaultValue='@json($defaultValue)'
     errors='@json($errors->toArray())'
+    participant='@json($participant)'
   ></div>
     
 </main>

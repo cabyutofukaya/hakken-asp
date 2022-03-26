@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
+import { ConstContext } from "../ConstApp";
 import { ReserveItineraryConstContext } from "../ReserveItineraryConstApp";
 import SettingItem from "./SettingItem";
-import SubjectHiddenRow from "./SubjectHiddenRow";
 import _ from "lodash";
 
 /**
@@ -16,6 +16,7 @@ const SubtotalRow = ({
     handleEditPurchasingModal,
     handlePurchasingDeleteModal
 }) => {
+    const { purchaseNormal, purchaseCancel } = useContext(ConstContext);
     const { subjectCategoryTypes } = useContext(ReserveItineraryConstContext);
 
     return (
@@ -78,7 +79,7 @@ const SubtotalRow = ({
                                     </a>
                                 </td>
                                 <td className="txtalc">
-                                    {/**ホテル科目は同一番号の部屋数を数量とする。valid==1のレコードに絞る */}
+                                    {/**ホテル科目は同一番号の部屋数を数量とする。valid==1のレコードに絞る。仕入タイプはpurchaseNormal */}
                                     {item?.subject ===
                                         subjectCategoryTypes.hotel &&
                                         (Object.keys(
@@ -88,6 +89,8 @@ const SubtotalRow = ({
                                                         item?.participants,
                                                         function(item) {
                                                             return (
+                                                                item?.purchase_type ==
+                                                                    purchaseNormal &&
                                                                 item?.valid == 1
                                                             );
                                                         }
@@ -107,21 +110,29 @@ const SubtotalRow = ({
                                             )
                                         ).length ??
                                             0)}
-                                    {/**ホテル科目以外は有効にチェックのある行数計
+                                    {/**ホテル科目以外は有効にチェックのある行数計。仕入タイプはpurchaseNormal
                                      */}
                                     {item?.subject !==
                                         subjectCategoryTypes.hotel &&
-                                        _.sumBy(item?.participants, row => {
-                                            return parseInt(row?.valid, 10);
-                                        })}
+                                        _.sumBy(
+                                            _.filter(item?.participants, {
+                                                purchase_type: purchaseNormal
+                                            }),
+                                            row => {
+                                                return parseInt(row?.valid, 10);
+                                            }
+                                        )}
                                 </td>
                                 <td>
                                     ￥
                                     {_.sumBy(item?.participants, row => {
                                         {
-                                            /**有効にチェックがある行のみ集計 */
+                                            /**有効にチェックがある行のみ集計。仕入種別はpurchaseNormal */
                                         }
-                                        return row?.valid && row?.gross
+                                        return row?.purchase_type ==
+                                            purchaseNormal &&
+                                            row?.valid &&
+                                            row?.gross
                                             ? parseInt(row.gross, 10)
                                             : 0;
                                     }).toLocaleString()}
@@ -130,9 +141,12 @@ const SubtotalRow = ({
                                     ￥
                                     {_.sumBy(item?.participants, row => {
                                         {
-                                            /**有効にチェックがある行のみ集計 */
+                                            /**有効にチェックがある行のみ集計。仕入種別はpurchaseNormal */
                                         }
-                                        return row?.valid && row?.cost
+                                        return row?.purchase_type ==
+                                            purchaseNormal &&
+                                            row?.valid &&
+                                            row?.cost
                                             ? parseInt(row.cost, 10)
                                             : 0;
                                     }).toLocaleString()}
@@ -141,9 +155,11 @@ const SubtotalRow = ({
                                     {_.isNaN(
                                         _.meanBy(item?.participants, row => {
                                             {
-                                                /**有効にチェックがある行のみ集計 */
+                                                /**有効にチェックがある行のみ集計。仕入種別はpurchaseNormal */
                                             }
-                                            return row?.valid &&
+                                            return row?.purchase_type ==
+                                                purchaseNormal &&
+                                                row?.valid &&
                                                 row?.commission_rate
                                                 ? parseInt(
                                                       row.commission_rate,
@@ -155,9 +171,11 @@ const SubtotalRow = ({
                                         ? "0"
                                         : _.meanBy(item?.participants, row => {
                                               {
-                                                  /**有効にチェックがある行のみ集計 */
+                                                  /**有効にチェックがある行のみ集計。仕入種別はpurchaseNormal */
                                               }
-                                              return row?.valid &&
+                                              return row?.purchase_type ==
+                                                  purchaseNormal &&
+                                                  row?.valid &&
                                                   row?.commission_rate
                                                   ? parseInt(
                                                         row.commission_rate,
@@ -171,9 +189,12 @@ const SubtotalRow = ({
                                     ￥
                                     {_.sumBy(item?.participants, row => {
                                         {
-                                            /**有効にチェックがある行のみ集計 */
+                                            /**有効にチェックがある行のみ集計。仕入種別はpurchaseNormal */
                                         }
-                                        return row?.valid && row?.net
+                                        return row?.purchase_type ==
+                                            purchaseNormal &&
+                                            row?.valid &&
+                                            row?.net
                                             ? parseInt(row.net, 10)
                                             : 0;
                                     }).toLocaleString()}
@@ -182,6 +203,7 @@ const SubtotalRow = ({
                                     {/** 税区分の選択が全て同じ場合はその値を、異なる場合は不明扱い*/}
                                     {item?.participants?.length > 0 &&
                                     _.filter(item?.participants, {
+                                        purchase_type: purchaseNormal,
                                         valid: 1
                                     }).every(row => {
                                         return (

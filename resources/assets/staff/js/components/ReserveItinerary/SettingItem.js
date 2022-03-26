@@ -38,7 +38,7 @@ const SettingItem = ({ date, item } = {}) => {
         subjectCategoryTypes
     } = useContext(ReserveItineraryConstContext);
 
-    const { agencyAccount } = useContext(ConstContext);
+    const { agencyAccount, purchaseNormal } = useContext(ConstContext);
 
     const pdfBaseUrl = getPdBasefUrl(
         reception,
@@ -50,12 +50,17 @@ const SettingItem = ({ date, item } = {}) => {
     );
 
     if (item.subject !== subjectCategoryTypes.hotel) return <>-</>;
-    // 有効参加者が一人もいない場合はリンク出力ナシ
+
+    // 有効参加者が一人もいない場合はリンク出力ナシ。条件は仕入タイプがpurchaseNormalで有効仕入
     if (
         item.subject === subjectCategoryTypes.hotel &&
-        !_.some(item?.participants, p => p.valid)
+        !_.some(
+            item?.participants,
+            p => p?.purchase_type == purchaseNormal && p?.valid
+        )
     )
         return <>-</>;
+
     return (
         <>
             {item.subject === subjectCategoryTypes?.hotel && (
@@ -67,7 +72,10 @@ const SettingItem = ({ date, item } = {}) => {
                             ""}&` +
                         item?.participants
                             .map(p => {
-                                if (p?.valid) {
+                                if (
+                                    p?.purchase_type == purchaseNormal &&
+                                    p?.valid
+                                ) {
                                     return `rn[]=${p?.room_number ??
                                         ""}&pi[]=${p?.participant_id ?? ""}`;
                                 }
