@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import { ConstContext } from "../ConstApp";
 import { ReserveItineraryConstContext } from "../ReserveItineraryConstApp";
+import { existsIsAliveCancelParticipant } from "../../libs";
 import _ from "lodash";
 
 /**
@@ -65,9 +66,9 @@ const CancelSubtotalRow = ({
                                     /**キャンセル仕入行があれば表示 */
                                 }
                                 if (
-                                    _.some(item?.participants ?? [], {
-                                        is_alive_cancel: 1
-                                    })
+                                    existsIsAliveCancelParticipant(
+                                        item?.participants ?? []
+                                    )
                                 ) {
                                     return (
                                         <tr key={index}>

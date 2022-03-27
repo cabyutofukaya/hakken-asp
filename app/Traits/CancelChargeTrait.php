@@ -23,11 +23,6 @@ trait CancelChargeTrait
         // 仕入情報を取得
         $purchasingList = $this->reserveParticipantPriceService->getPurchaseFormDataByParticipantId($participantId, $reserveItineraryId, $isValid);
         
-        // // キャンセルチャージをvalidで初期化
-        // foreach ($purchasingList as $key => $row) {
-        //     $purchasingList[$key]['is_cancel'] = $row['valid'] ? 1 : 0;
-        // }
-
         return $purchasingList;
     }
 
@@ -86,12 +81,11 @@ trait CancelChargeTrait
             }
 
             if ($subject == config('consts.subject_categories.SUBJECT_CATEGORY_OPTION')) { // オプション科目
-                $optionIds = $ids;
 
-                $this->reserveParticipantOptionPriceService->setCancelChargeByIds($cancelCharge, $cancelChargeNet, $cancelChargeProfit, $isCancel, $optionIds); // ユーザー側
+                $this->reserveParticipantOptionPriceService->setCancelChargeByIds($cancelCharge, $cancelChargeNet, $cancelChargeProfit, $isCancel, $ids); // ユーザー側
 
                 // 仕入先支払い情報を更新
-                foreach ($optionIds as $id) {
+                foreach ($ids as $id) {
                     $this->accountPayableDetailService->setCancelChargeBySaleableId($cancelChargeNet, 'App\Models\ReserveParticipantOptionPrice', $id, false);
 
                     $accountPayableDetail = $this->accountPayableDetailService->findWhere(['saleable_type' => 'App\Models\ReserveParticipantOptionPrice', 'saleable_id' => $id], [], ['id']);
@@ -101,13 +95,16 @@ trait CancelChargeTrait
                         event(new ChangePaymentAmountEvent($accountPayableDetail->id));
                     }
                 }
-            } elseif ($subject == config('consts.subject_categories.SUBJECT_CATEGORY_AIRPLANE')) { // 航空券科目
-                $airplaneIds = $ids;
 
-                $this->reserveParticipantAirplanePriceService->setCancelChargeByIds($cancelCharge, $cancelChargeNet, $cancelChargeProfit, $isCancel, $airplaneIds); // ユーザー側
+                // 処理したIDを追記
+                $optionIds = array_merge($optionIds, $ids);
+
+            } elseif ($subject == config('consts.subject_categories.SUBJECT_CATEGORY_AIRPLANE')) { // 航空券科目
+
+                $this->reserveParticipantAirplanePriceService->setCancelChargeByIds($cancelCharge, $cancelChargeNet, $cancelChargeProfit, $isCancel, $ids); // ユーザー側
 
                 // 仕入先支払い情報を更新
-                foreach ($airplaneIds as $id) {
+                foreach ($ids as $id) {
                     $this->accountPayableDetailService->setCancelChargeBySaleableId($cancelChargeNet, 'App\Models\ReserveParticipantAirplanePrice', $id, false);
 
                     $accountPayableDetail = $this->accountPayableDetailService->findWhere(['saleable_type' => 'App\Models\ReserveParticipantAirplanePrice', 'saleable_id' => $id], [], ['id']);
@@ -117,13 +114,16 @@ trait CancelChargeTrait
                         event(new ChangePaymentAmountEvent($accountPayableDetail->id));
                     }
                 }
-            } elseif ($subject == config('consts.subject_categories.SUBJECT_CATEGORY_HOTEL')) { // ホテル科目
-                $hotelIds = $ids;
 
-                $this->reserveParticipantHotelPriceService->setCancelChargeByIds($cancelCharge, $cancelChargeNet, $cancelChargeProfit, $isCancel, $hotelIds); // ユーザー側
+                // 処理したIDを追記
+                $airplaneIds = array_merge($airplaneIds, $ids);
+
+            } elseif ($subject == config('consts.subject_categories.SUBJECT_CATEGORY_HOTEL')) { // ホテル科目
+
+                $this->reserveParticipantHotelPriceService->setCancelChargeByIds($cancelCharge, $cancelChargeNet, $cancelChargeProfit, $isCancel, $ids); // ユーザー側
 
                 // 仕入先支払い情報を更新
-                foreach ($hotelIds as $id) {
+                foreach ($ids as $id) {
                     $this->accountPayableDetailService->setCancelChargeBySaleableId($cancelChargeNet, 'App\Models\ReserveParticipantHotelPrice', $id, false);
 
                     $accountPayableDetail = $this->accountPayableDetailService->findWhere(['saleable_type' => 'App\Models\ReserveParticipantHotelPrice', 'saleable_id' => $id], [], ['id']);
@@ -133,6 +133,9 @@ trait CancelChargeTrait
                         event(new ChangePaymentAmountEvent($accountPayableDetail->id));
                     }
                 }
+
+                // 処理したIDを追記
+                $hotelIds = array_merge($hotelIds, $ids);
             }
         }
 
