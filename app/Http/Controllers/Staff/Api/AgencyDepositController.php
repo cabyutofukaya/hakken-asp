@@ -42,7 +42,7 @@ class AgencyDepositController extends Controller
 
         // 認可チェック
         if (!$reserveInvoice) {
-            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+            abort(404, "データが見つかりません。編集する前に画面を再読み込みして最新情報を表示してください。");
         }
 
         // reserve_invoicesを使い、対象請求が操作ユーザー会社所有データであることも確認
@@ -106,7 +106,7 @@ class AgencyDepositController extends Controller
         $agencyDeposit = $this->agencyDepositService->find($agencyDepositlId);
 
         if (!$agencyDeposit) {
-            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+            abort(404, "データが見つかりません。編集する前に画面を再読み込みして最新情報を表示してください。");
         }
 
         $response = \Gate::authorize('delete', $agencyDeposit);

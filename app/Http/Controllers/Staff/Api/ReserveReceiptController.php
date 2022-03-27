@@ -45,7 +45,7 @@ class ReserveReceiptController extends Controller
         $reserveInvoice = $this->reserveInvoiceService->findByReserveId(data_get($reserve, 'id'));
 
         if (!$reserve || !$reserveInvoice) {
-            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+            abort(404, "データが見つかりません。編集する前に画面を再読み込みして最新情報を表示してください。");
         }
 
         $reserveReceipt = $this->reserveReceiptService->findByReserveInvoiceId($reserveInvoice->id);
@@ -115,7 +115,7 @@ class ReserveReceiptController extends Controller
         $reserveReceipt = $this->reserveReceiptService->find($reserveReceiptId);
         
         if (!$reserveReceipt) {
-            abort(404, "領収書データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+            abort(404, "領収書データが見つかりません。編集する前に画面を再読み込みして最新情報を表示してください。");
         }
 
         $response = \Gate::authorize('update', $reserveReceipt);

@@ -24,7 +24,7 @@ class BaseWebUserController extends Controller
         $webUser = $this->baseWebUserService->find($webUserId);
 
         if (!$webUser) {
-            return response("データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 404);
+            return response("データが見つかりません。編集する前に画面を再読み込みして最新情報を表示してください。", 404);
         }
 
         // 認可チェック
@@ -48,7 +48,7 @@ class BaseWebUserController extends Controller
         $webUser = $this->baseWebUserService->find($webUserId);
 
         if (!$webUser) {
-            return response("データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 404);
+            return response("データが見つかりません。編集する前に画面を再読み込みして最新情報を表示してください。", 404);
         }
 
         // 認可チェック

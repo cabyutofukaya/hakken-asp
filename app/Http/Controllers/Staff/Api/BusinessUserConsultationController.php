@@ -32,7 +32,7 @@ class BusinessUserConsultationController extends Controller
     {
         $businessUser = $this->businessUserService->findByUserNumber($userNumber, $agencyAccount);
         if (!$businessUser) {
-            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+            abort(404, "データが見つかりません。編集する前に画面を再読み込みして最新情報を表示してください。");
         }
 
         // 認可チェック
@@ -67,7 +67,7 @@ class BusinessUserConsultationController extends Controller
 
         $businessUser = $this->businessUserService->findByUserNumber($userNumber, $agencyAccount);
         if (!$businessUser) {
-            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+            abort(404, "データが見つかりません。編集する前に画面を再読み込みして最新情報を表示してください。");
         }
 
         $input = $request->all();
@@ -93,7 +93,7 @@ class BusinessUserConsultationController extends Controller
     {
         $businessUserConsultation = $this->agencyConsultationService->findByControlNumber($consultationNumber, $agencyAccount);
         if (!$businessUserConsultation) {
-            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+            abort(404, "データが見つかりません。編集する前に画面を再読み込みして最新情報を表示してください。");
         }
 
         // 認可チェック
@@ -128,7 +128,7 @@ class BusinessUserConsultationController extends Controller
     //     $businessUserConsultation = $this->businessUserConsultationService->find((int)$decodeId);
 
     //     if (!$businessUserConsultation) {
-    //         return response("データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 404);
+    //         return response("データが見つかりません。編集する前に画面を再読み込みして最新情報を表示してください。", 404);
     //     }
 
     //     // 認可チェック

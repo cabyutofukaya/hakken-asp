@@ -50,7 +50,7 @@ class EstimateController extends Controller
         $estimate = $this->estimateService->findByEstimateNumber($estimateNumber, $agencyAccount);
 
         if (!$estimate) {
-            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+            abort(404, "データが見つかりません。編集する前に画面を再読み込みして最新情報を表示してください。");
         }
 
         // 認可チェック
@@ -117,7 +117,7 @@ class EstimateController extends Controller
         $estimate = $this->estimateService->findByEstimateNumber($estimateNumber, $agencyAccount);
 
         if (!$estimate) {
-            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+            abort(404, "データが見つかりません。編集する前に画面を再読み込みして最新情報を表示してください。");
         }
 
         // 認可チェック
@@ -173,7 +173,7 @@ class EstimateController extends Controller
         $estimate = $this->estimateService->findByEstimateNumber($estimateNumber, $agencyAccount);
 
         if (!$estimate) {
-            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+            abort(404, "データが見つかりません。編集する前に画面を再読み込みして最新情報を表示してください。");
         }
 
         $response = Gate::authorize('updateStatus', $estimate);
@@ -220,7 +220,7 @@ class EstimateController extends Controller
         $reserve = $this->estimateService->findByEstimateNumber($estimateNumber, $agencyAccount);
 
         if (!$reserve) {
-            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+            abort(404, "データが見つかりません。編集する前に画面を再読み込みして最新情報を表示してください。");
         }
 
         // 認可チェック

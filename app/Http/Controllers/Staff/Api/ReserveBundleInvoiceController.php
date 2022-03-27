@@ -38,7 +38,7 @@ class ReserveBundleInvoiceController extends Controller
         $reserveBundleInvoice = $this->reserveBundleInvoiceService->find($reserveBundleInvoiceId);
 
         if (!$reserveBundleInvoice) {
-            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+            abort(404, "データが見つかりません。編集する前に画面を再読み込みして最新情報を表示してください。");
         }
 
         // 認可チェック
@@ -116,7 +116,7 @@ class ReserveBundleInvoiceController extends Controller
         $reserveBundleInvoice = $this->reserveBundleInvoiceService->find($reserveBundleInvoiceId);
         
         if (!$reserveBundleInvoice) {
-            abort(404, "請求データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+            abort(404, "請求データが見つかりません。編集する前に画面を再読み込みして最新情報を表示してください。");
         }
 
         $response = \Gate::authorize('update', $reserveBundleInvoice);

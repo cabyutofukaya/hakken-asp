@@ -64,7 +64,7 @@ class SubjectOptionController extends Controller
         $subjectOption = $this->subjectOptionService->find((int)$decodeId);
 
         if (!$subjectOption) {
-            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+            abort(404, "データが見つかりません。編集する前に画面を再読み込みして最新情報を表示してください。");
         }
 
         // 認可チェック
