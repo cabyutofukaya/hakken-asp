@@ -131,11 +131,18 @@ export function checkReturnDate(returnDate) {
     });
 }
 
-// 商品レコード種別が編集で参加者仕入行にキャンセル仕入行があるか。行程作成・編集ページの仕入れの取り消し行の表示判定に使用
+// 当該商品を仕入とする参加者一覧の中にis_alive_cancelがある場合はtrue。行程作成・編集ページの仕入れの取り消し行の表示判定に使用
 export function existsIsAliveCancelRow(items) {
     return items.some(item => {
         return _.some(item?.participants, {
             is_alive_cancel: 1
         });
+    });
+}
+
+// 参加者配列の中にis_alive_cancelがある場合はtrue
+export function existsIsAliveCancelParticipant(participants) {
+    return _.some(participants, {
+        is_alive_cancel: 1
     });
 }

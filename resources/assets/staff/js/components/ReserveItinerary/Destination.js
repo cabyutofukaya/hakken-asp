@@ -96,13 +96,20 @@ const Destination = ({
             <div className="spotControl">
                 <ul>
                     <li>
-                        <span
-                            className="material-icons js-modal-open"
-                            data-target="mdScheduleDelete"
-                            onClick={handleDelete}
-                        >
-                            delete
-                        </span>
+                        {/**キャンセル仕入商品がある場合は削除不可 */}
+                        {!existsIsAliveCancelRow(
+                            input?.reserve_purchasing_subjects ?? []
+                        ) ? (
+                            <span
+                                className="material-icons js-modal-open"
+                                data-target="mdScheduleDelete"
+                                onClick={handleDelete}
+                            >
+                                delete
+                            </span>
+                        ) : (
+                            <></>
+                        )}
                     </li>
                 </ul>
             </div>

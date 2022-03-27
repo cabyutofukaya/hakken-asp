@@ -36,6 +36,10 @@ class CancelChargeFormComposer
         $defaultValue = session()->getOldInput();
         if (!isset($defaultValue['rows'])) {
             $defaultValue['rows'] = $purchasingList;
+            // 初期設定時はis_cancelはtrueで初期化
+            foreach ($defaultValue['rows'] as $key => $row) {
+                $defaultValue['rows'][$key]['is_cancel'] = 1;
+            }
         }
         if (!isset($defaultValue['reserve']['updated_at'])) {
             $defaultValue['reserve']['updated_at'] = $reserve->updated_at->format('Y-m-d H:i:s');

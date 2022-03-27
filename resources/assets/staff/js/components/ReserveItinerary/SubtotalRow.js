@@ -3,6 +3,7 @@ import { ConstContext } from "../ConstApp";
 import { ReserveItineraryConstContext } from "../ReserveItineraryConstApp";
 import SettingItem from "./SettingItem";
 import _ from "lodash";
+import { existsIsAliveCancelParticipant } from "../../libs";
 
 /**
  * 科目小計
@@ -61,12 +62,6 @@ const SubtotalRow = ({
                         {reservePurchasingSubjects.map((item, index) => (
                             <tr key={index}>
                                 <td>
-                                    {/**form送信しなくなったので↓不要に */}
-                                    {/* <SubjectHiddenRow
-                                        item={item}
-                                        index={index}
-                                        inputName={inputName}
-                                    /> */}
                                     <a
                                         href="#"
                                         className="js-modal-open"
@@ -221,18 +216,25 @@ const SubtotalRow = ({
                                 </td>
                                 <td>{item?.note ?? "-"}</td>
                                 <td className="txtalc">
-                                    <span
-                                        className="material-icons js-modal-open"
-                                        data-target="mdPurchasingDelete"
-                                        onClick={e =>
-                                            handlePurchasingDeleteModal(
-                                                e,
-                                                index
-                                            )
-                                        }
-                                    >
-                                        delete
-                                    </span>
+                                    {/**キャンセル仕入行がなければ削除可。ある場合は削除不可 */}
+                                    {!existsIsAliveCancelParticipant(
+                                        item?.participants ?? []
+                                    ) ? (
+                                        <span
+                                            className="material-icons js-modal-open"
+                                            data-target="mdPurchasingDelete"
+                                            onClick={e =>
+                                                handlePurchasingDeleteModal(
+                                                    e,
+                                                    index
+                                                )
+                                            }
+                                        >
+                                            delete
+                                        </span>
+                                    ) : (
+                                        <>-</>
+                                    )}
                                 </td>
                             </tr>
                         ))}

@@ -46,7 +46,8 @@ const WaypointImage = ({
     const { purchaseCancel } = useContext(ConstContext);
 
     const inputName = `dates[${date}][${index}]`;
-
+    console.log("waypointimage");
+    console.log(input);
     // 仕入追加ボタン押下時処理。編集対象の仕入詳細データを初期化
     const handleAddPurchasingModal = e => {
         e.preventDefault();
@@ -131,13 +132,20 @@ const WaypointImage = ({
                         </li>
                     )}
                     <li>
-                        <span
-                            className="material-icons js-modal-open"
-                            data-target="mdScheduleDelete"
-                            onClick={handleDelete}
-                        >
-                            delete
-                        </span>
+                        {/**キャンセル仕入商品がある場合は削除不可 */}
+                        {!existsIsAliveCancelRow(
+                            input?.reserve_purchasing_subjects ?? []
+                        ) ? (
+                            <span
+                                className="material-icons js-modal-open"
+                                data-target="mdScheduleDelete"
+                                onClick={handleDelete}
+                            >
+                                delete
+                            </span>
+                        ) : (
+                            <></>
+                        )}
                     </li>
                 </ul>
             </div>
