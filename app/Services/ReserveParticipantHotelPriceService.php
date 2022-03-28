@@ -154,4 +154,12 @@ class ReserveParticipantHotelPriceService implements ReserveParticipantPriceInte
     {
         return $this->reserveParticipantHotelPriceRepository->updateIds(['is_alive_cancel' => true], $ids);
     }
+
+    public function setIsAliveCancelByReserveId(int $reserveId, int $reserveItineraryId) : bool
+    {
+        return $this->reserveParticipantHotelPriceRepository->updateWhere(
+            ['is_alive_cancel' => true], 
+            ['reserve_id' => $reserveId, 'reserve_itinerary_id' => $reserveItineraryId, 'purchase_type' => config('consts.const.PURCHASE_CANCEL'), 'valid' => true]
+        );
+    }
 }

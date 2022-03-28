@@ -48,7 +48,7 @@ class ReserveParticipantPriceService
     }
 
     /**
-     * 有効仕入(valid=true)行に対し、キャンセル設定フラグ(is_alive_cancel)をオンに。is_alive_cancel=trueの行は行程編集ページの「キャンセルした仕入」一覧にリストアップされる。ノーチャージキャンセル用
+     * 当該参加者に紐づく有効仕入(valid=true)行に対し、キャンセル設定フラグ(is_alive_cancel)をオンに。is_alive_cancel=trueの行は行程編集ページの「キャンセルした仕入」一覧にリストアップされる。ノーチャージキャンセル用
      */
     public function setIsAliveCancelByParticipantId(int $participantId) : bool
     {
@@ -77,6 +77,31 @@ class ReserveParticipantPriceService
 
         // ホテル科目
         $this->reserveParticipantHotelPriceService->setIsAliveCancelByIds($hotelIds);
+
+        return true;
+    }
+
+    /**
+     * 当該予約に紐づく有効仕入(valid=true)行に対し、キャンセル設定フラグ(is_alive_cancel)をオンに。is_alive_cancel=trueの行は行程編集ページの「キャンセルした仕入」一覧にリストアップされる。ノーチャージキャンセル用。
+     * 引数には念の為、行程IDも渡す
+     *
+     * @param int $reserveId 予約ID
+     * @param int $reserveItineraryId 行程ID
+     */
+    public function setIsAliveCancelByReserveId(int $reserveId, ?int $reserveItineraryId) : bool
+    {
+        if (!$reserveItineraryId) {
+            return true;
+        }
+        
+        // オプション科目
+        $this->reserveParticipantOptionPriceService->setIsAliveCancelByReserveId($reserveId, $reserveItineraryId);
+
+        // 航空券科目
+        $this->reserveParticipantAirplanePriceService->setIsAliveCancelByReserveId($reserveId, $reserveItineraryId);
+
+        // ホテル科目
+        $this->reserveParticipantHotelPriceService->setIsAliveCancelByReserveId($reserveId, $reserveItineraryId);
 
         return true;
     }

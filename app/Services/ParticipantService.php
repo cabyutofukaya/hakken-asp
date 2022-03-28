@@ -186,6 +186,17 @@ class ParticipantService
     }
 
     /**
+     * 参加者をキャンセルするためのパラメータ
+     */
+    private function getCancelParam()
+    {
+        return [
+            'cancel' => true,
+            'representative' => false, // 念の為、代表者フラグをOff
+        ];
+    }
+
+    /**
      * 取り消し
      *
      * @param int $id 参加者ID
@@ -197,12 +208,23 @@ class ParticipantService
         // $this->reserveParticipantAirplanePriceService->updateValidForParticipant($id, false); // 航空券科目
         // $this->reserveParticipantHotelPriceService->updateValidForParticipant($id, false); // ホテル科目
 
-        $this->participantRepository->updateField($id, [
-            'cancel' => true,
-            'representative' => false, // 念の為、代表者フラグをOff
-        ]);
+        $this->participantRepository->updateField($id, $this->getCancelParam());
 
         return $this->participantRepository->find($id);
+    }
+
+    /**
+     * 当該予約に紐づく参加者をキャンセル
+     *
+     * @param int $reserveId 予約ID
+     */
+    public function setCancelByReserveId(int $reserveId) : bool
+    {
+        $this->participantRepository->updateWhere(
+            ['reserve_id' => $reserveId],
+            $this->getCancelParam()
+        );
+        return true;
     }
 
     /**
