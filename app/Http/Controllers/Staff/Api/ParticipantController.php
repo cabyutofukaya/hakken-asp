@@ -109,7 +109,7 @@ class ParticipantController extends Controller
             }
 
             if (!$reserve) {
-                abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+                abort(404, "データが見つかりません。編集する前に画面を再読み込みして最新情報を表示してください。");
             }
     
             return IndexResource::collection($this->reserveEstimateService->getParticipants($reserve->id));
@@ -124,7 +124,7 @@ class ParticipantController extends Controller
             }
 
             if (!$reserve) {
-                abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+                abort(404, "データが見つかりません。編集する前に画面を再読み込みして最新情報を表示してください。");
             }
     
             return IndexResource::collection($this->webReserveEstimateService->getParticipants($reserve->id));
@@ -166,7 +166,7 @@ class ParticipantController extends Controller
         }
 
         if (!$reserve) {
-            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+            abort(404, "データが見つかりません。編集する前に画面を再読み込みして最新情報を表示してください。");
         }
 
         // 認可チェック
@@ -210,7 +210,7 @@ class ParticipantController extends Controller
     {
         $participant = $this->participantService->find($id);
         if (!$participant) {
-            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+            abort(404, "データが見つかりません。編集する前に画面を再読み込みして最新情報を表示してください。");
         }
 
         // 認可チェック
@@ -274,7 +274,7 @@ class ParticipantController extends Controller
     {
         $participant = $this->participantService->find($request->participant_id);
         if (!$participant) {
-            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+            abort(404, "データが見つかりません。編集する前に画面を再読み込みして最新情報を表示してください。");
         }
 
         // 認可チェック
@@ -332,7 +332,7 @@ class ParticipantController extends Controller
     {
         $oldParticipant = $this->participantService->find($id);
         if (!$oldParticipant) {
-            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+            abort(404, "データが見つかりません。編集する前に画面を再読み込みして最新情報を表示してください。");
         }
 
         // 認可チェック
@@ -403,7 +403,7 @@ class ParticipantController extends Controller
     // {
     //     $oldParticipant = $this->participantService->find($id);
     //     if (!$oldParticipant) {
-    //         abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+    //         abort(404, "データが見つかりません。編集する前に画面を再読み込みして最新情報を表示してください。");
     //     }
 
     //     // 認可チェック
@@ -457,7 +457,7 @@ class ParticipantController extends Controller
         $participant = $this->participantService->find($id);
 
         if (!$participant) {
-            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+            abort(404, "データが見つかりません。編集する前に画面を再読み込みして最新情報を表示してください。");
         }
 
         // 認可チェック

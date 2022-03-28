@@ -55,7 +55,7 @@ class AgencyController extends Controller
         $agency = $this->agencyService->find($id);
 
         if (!$agency) {
-            return response("データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 404);
+            return response("データが見つかりません。編集する前に画面を再読み込みして最新情報を表示してください。", 404);
         }
 
         // 認可チェック
@@ -79,7 +79,7 @@ class AgencyController extends Controller
         $agency = $this->agencyService->find($id);
 
         if (!$agency) {
-            return response("データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 404);
+            return response("データが見つかりません。編集する前に画面を再読み込みして最新情報を表示してください。", 404);
         }
 
         // 認可チェック

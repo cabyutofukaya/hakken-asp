@@ -88,6 +88,7 @@ const ReserveShowArea = ({
                 `/api/${agencyAccount}/reserve/${reserve?.control_number}/no-cancel-charge/cancel`,
                 {
                     set_message: true, // API処理完了後、flashメッセージセットを要求
+                    updated_at: reserveUpdatedAt,
                     _method: "put"
                 }
             )

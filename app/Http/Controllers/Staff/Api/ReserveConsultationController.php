@@ -48,7 +48,7 @@ class ReserveConsultationController extends Controller
         }
 
         if (!$reserve) {
-            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+            abort(404, "データが見つかりません。編集する前に画面を再読み込みして最新情報を表示してください。");
         }
 
         // 一応検索に使用するパラメータだけに絞る
@@ -96,7 +96,7 @@ class ReserveConsultationController extends Controller
 
 
         if (!$reserve) {
-            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+            abort(404, "データが見つかりません。編集する前に画面を再読み込みして最新情報を表示してください。");
         }
 
         $input = $request->all();
@@ -129,7 +129,7 @@ class ReserveConsultationController extends Controller
         $reserveConsultation = $this->agencyConsultationService->findByControlNumber($consulNumber, $agencyAccount);
 
         if (!$reserveConsultation) {
-            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+            abort(404, "データが見つかりません。編集する前に画面を再読み込みして最新情報を表示してください。");
         }
 
         // 認可チェック
@@ -164,7 +164,7 @@ class ReserveConsultationController extends Controller
     //     $reserveConsultation = $this->agencyConsultationService->find((int)$decodeId);
 
     //     if (!$reserveConsultation) {
-    //         return response("データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 404);
+    //         return response("データが見つかりません。編集する前に画面を再読み込みして最新情報を表示してください。", 404);
     //     }
 
     //     // 認可チェック

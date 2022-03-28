@@ -32,7 +32,7 @@ class AgencyWithdrawalController extends Controller
         // 認可チェック
         
         if (!$accountPayableDetail) {
-            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+            abort(404, "データが見つかりません。編集する前に画面を再読み込みして最新情報を表示してください。");
         }
 
         // account_payable_detailsを使い、対象支払いが操作ユーザー会社所有データであることも確認
@@ -81,7 +81,7 @@ class AgencyWithdrawalController extends Controller
         $agencyWithdrawal = $this->agencyWithdrawalService->find((int)$agencyWithdrawalId);
 
         if (!$agencyWithdrawal) {
-            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+            abort(404, "データが見つかりません。編集する前に画面を再読み込みして最新情報を表示してください。");
         }
 
         $response = \Gate::authorize('delete', $agencyWithdrawal);

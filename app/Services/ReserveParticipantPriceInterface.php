@@ -22,6 +22,8 @@ interface ReserveParticipantPriceInterface
 
     public function setIsAliveCancelByIds(array $ids) : bool;
 
+    public function setIsAliveCancelByReserveId(int $reserveId, int $reserveItineraryId) : bool;
+
     public function setCancelChargeByReserveItineraryId(int $cancelCharge, int $cancelChargeNet, int $cancelChargeProfit, bool $isCancel, int $reserveItineraryId) : array;
 
     public function setCancelChargeByParticipantId(int $cancelCharge, int $cancelChargeNet, int $cancelChargeProfit, bool $isCancel, int $participantId) : bool;

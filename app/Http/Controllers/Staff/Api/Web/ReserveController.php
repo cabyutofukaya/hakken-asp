@@ -4,9 +4,12 @@ namespace App\Http\Controllers\Staff\Api\Web;
 
 use App\Events\ReserveUpdateStatusEvent;
 use App\Events\UpdateBillingAmountEvent;
+use App\Events\PriceRelatedChangeEvent;
+use App\Events\ReserveChangeHeadcountEvent;
 use App\Exceptions\ExclusiveLockException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Staff\ReserveStatusUpdateRequest;
+use App\Http\Requests\Staff\ReserveNoCancelChargeCancelRequest;
 use App\Http\Resources\Staff\WebReserve\IndexResource;
 use App\Http\Resources\Staff\WebReserve\ShowResource;
 use App\Http\Resources\Staff\WebReserve\StatusResource;
@@ -20,6 +23,7 @@ use App\Services\UserService;
 use App\Services\VAreaService;
 use App\Services\WebReserveService;
 use App\Services\ReserveItineraryService;
+use App\Services\ParticipantService;
 use App\Traits\CancelChargeTrait;
 use DB;
 use Exception;
@@ -33,7 +37,7 @@ class ReserveController extends Controller
 {
     use CancelChargeTrait;
     
-    public function __construct(UserService $userService, BusinessUserManagerService $businessUserManagerService, VAreaService $vAreaService, WebReserveService $webReserveService, ReserveCustomValueService $reserveCustomValueService, UserCustomItemService $userCustomItemService, ReserveParticipantPriceService $reserveParticipantPriceService, ReserveItineraryService $reserveItineraryService)
+    public function __construct(UserService $userService, BusinessUserManagerService $businessUserManagerService, VAreaService $vAreaService, WebReserveService $webReserveService, ReserveCustomValueService $reserveCustomValueService, UserCustomItemService $userCustomItemService, ReserveParticipantPriceService $reserveParticipantPriceService, ReserveItineraryService $reserveItineraryService, ParticipantService $participantService)
     {
         $this->webReserveService = $webReserveService;
         $this->userService = $userService;
@@ -43,6 +47,7 @@ class ReserveController extends Controller
         $this->userCustomItemService = $userCustomItemService;
         $this->reserveParticipantPriceService = $reserveParticipantPriceService;
         $this->reserveItineraryService = $reserveItineraryService;
+        $this->participantService = $participantService;
     }
 
     // 一件取得
@@ -51,7 +56,7 @@ class ReserveController extends Controller
         $reserve = $this->webReserveService->findByControlNumber($reserveNumber, $agencyAccount);
 
         if (!$reserve) {
-            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+            abort(404, "データが見つかりません。編集する前に画面を再読み込みして最新情報を表示してください。");
         }
 
         // 認可チェック
@@ -134,7 +139,7 @@ class ReserveController extends Controller
         $reserve = $this->webReserveService->findByControlNumber($reserveNumber, $agencyAccount);
 
         if (!$reserve) {
-            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+            abort(404, "データが見つかりません。編集する前に画面を再読み込みして最新情報を表示してください。");
         }
 
         $response = Gate::authorize('updateStatus', $reserve);
@@ -176,12 +181,12 @@ class ReserveController extends Controller
      *
      * @param string $reserveNumber 予約番号
      */
-    public function noCancelChargeCancel(Request $request, $agencyAccount, $reserveNumber)
+    public function noCancelChargeCancel(ReserveNoCancelChargeCancelRequest $request, $agencyAccount, $reserveNumber)
     {
         $reserve = $this->webReserveService->findByControlNumber($reserveNumber, $agencyAccount);
 
         if (!$reserve) {
-            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+            abort(404, "データが見つかりません。編集する前に画面を再読み込みして最新情報を表示してください。");
         }
 
         // 認可チェック
@@ -191,13 +196,27 @@ class ReserveController extends Controller
         }
 
         try {
+
+            // 同時編集チェック
+            if ($reserve->updated_at != $request->updated_at) {
+                throw new ExclusiveLockException;
+            }    
+
             $result = \DB::transaction(function () use ($reserve) {
-                $this->reserveParticipantPriceService->cancelChargeReset($reserve->enabled_reserve_itinerary->id); // キャンセルチャージをリセット
-                $this->webReserveService->cancel($reserve, false, null);
+
+                $this->participantService->setCancelByReserveId($reserve->id); // 当該予約の参加者を全てキャンセル
+
+                $this->webReserveService->cancel($reserve, false); // 予約レコードのキャンセルフラグをON
+
+                $this->reserveParticipantPriceService->cancelChargeReset($reserve->enabled_reserve_itinerary->id); // 全ての仕入情報をキャンセルチャージ0円で初期化
+
+                $this->reserveParticipantPriceService->setIsAliveCancelByReserveId($reserve->id, $reserve->enabled_reserve_itinerary->id); // 全有効仕入行に対し、is_alive_cancelフラグをONにする。
 
                 if ($reserve->enabled_reserve_itinerary->id) {
                     $this->refreshItineraryTotalAmount($reserve->enabled_reserve_itinerary); // 有効行程の合計金額更新
                 }
+
+                event(new ReserveChangeHeadcountEvent($reserve)); // 参加者人数変更イベント
 
                 event(new UpdateBillingAmountEvent($this->webReserveService->find($reserve->id))); // 請求金額変更イベント
 
@@ -213,6 +232,8 @@ class ReserveController extends Controller
                     event(new ReserveUpdateStatusEvent($this->webReserveService->find($reserve->id)));
                 }
 
+                event(new PriceRelatedChangeEvent($reserve->id, date('Y-m-d H:i:s', strtotime("now +1 seconds")))); // 料金変更に関わるイベント。参加者情報を更新すると関連する行程レコードもtouchで日時が更新されてしまうので、他のレコードよりも確実に新しい日時で更新されるように1秒後の時間をセット
+
                 return true;
             });
 
@@ -223,6 +244,8 @@ class ReserveController extends Controller
 
                 return response('', 200);
             }
+        } catch (ExclusiveLockException $e) { // 同時編集エラー
+            abort(409, "他のユーザーによる編集済みレコードです。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
         } catch (Exception $e) {
             Log::error($e);
         }
@@ -240,7 +263,7 @@ class ReserveController extends Controller
         $reserve = $this->webReserveService->find((int)$id);
 
         if (!$reserve) {
-            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+            abort(404, "データが見つかりません。編集する前に画面を再読み込みして最新情報を表示してください。");
         }
 
         // 認可チェック

@@ -33,7 +33,7 @@ class UserVisaController extends Controller
         $user = $this->userService->findByUserNumber($userNumber, $agencyAccount);
 
         if (!$user) {
-            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+            abort(404, "データが見つかりません。編集する前に画面を再読み込みして最新情報を表示してください。");
         }
 
         // 認可チェック
@@ -62,7 +62,7 @@ class UserVisaController extends Controller
         $user = $this->userService->findByUserNumber($userNumber, $agencyAccount);
 
         if (!$user) {
-            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+            abort(404, "データが見つかりません。編集する前に画面を再読み込みして最新情報を表示してください。");
         }
 
         $input = $request->all();
@@ -85,7 +85,7 @@ class UserVisaController extends Controller
         $userVisa = $this->userVisaService->find($id);
 
         if (!$userVisa) {
-            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+            abort(404, "データが見つかりません。編集する前に画面を再読み込みして最新情報を表示してください。");
         }
 
         // 認可チェック
@@ -119,7 +119,7 @@ class UserVisaController extends Controller
         $userVisa = $this->userVisaService->find($id);
 
         if (!$userVisa) {
-            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+            abort(404, "データが見つかりません。編集する前に画面を再読み込みして最新情報を表示してください。");
         }
 
         // 認可チェック

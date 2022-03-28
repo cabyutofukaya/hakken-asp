@@ -86,7 +86,7 @@ class ReserveBundleReceiptController extends Controller
         $reserveBundleReceipt = $this->reserveBundleReceiptService->find($reserveBundleReceiptId);
         
         if (!$reserveBundleReceipt) {
-            abort(404, "領収書データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+            abort(404, "領収書データが見つかりません。編集する前に画面を再読み込みして最新情報を表示してください。");
         }
 
         $response = \Gate::authorize('update', $reserveBundleReceipt);

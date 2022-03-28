@@ -47,12 +47,12 @@ class ParticipantController extends Controller
         $reserve = $this->webReserveService->findByControlNumber($controlNumber, $agencyAccount);
 
         if (!$reserve) {
-            return response("データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 404);
+            return response("データが見つかりません。編集する前に画面を再読み込みして最新情報を表示してください。", 404);
         }
 
         $participant = $this->participantService->find($id);
         if (!$participant) {
-            return response("データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。", 404);
+            return response("データが見つかりません。編集する前に画面を再読み込みして最新情報を表示してください。", 404);
         }
 
         // 支払い情報を取得。第二引数は有効行程ID
@@ -68,7 +68,7 @@ class ParticipantController extends Controller
     {
         $participant = $this->participantService->find($participantId);
         if (!$participant) {
-            abort(404, "データが見つかりません。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+            abort(404, "データが見つかりません。編集する前に画面を再読み込みして最新情報を表示してください。");
         }
 
         // 認可チェック
