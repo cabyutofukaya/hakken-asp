@@ -188,6 +188,8 @@ class ReserveParticipantPriceService
     /**
      * 当該行程IDに紐づく仕入データがある場合はtrue
      * (getPurchaseFormDataByReserveItineraryId メソッドと違い、実際のリストを取得するのではなく値があるかどうかをチェックしたバージョン)
+     * 
+     * @param bool $isValid 対象とする仕入フラグ(valid)
      */
     public function isExistsPurchaseDataByReserveItineraryId(?int $reserveItineraryId, ?bool $isValid = null, bool $getDeleted = false) : bool
     {

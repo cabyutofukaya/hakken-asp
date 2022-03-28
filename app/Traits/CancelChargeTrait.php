@@ -34,13 +34,6 @@ trait CancelChargeTrait
         // 有効行程から仕入情報を取得
         $purchasingList = $this->reserveParticipantPriceService->getPurchaseFormDataByReserveItineraryId($reserve->enabled_reserve_itinerary->id, $isValid);
 
-        // キャンセルチャージを新たに設定(store時)する場合はis_cancelカラムはvalidで初期化
-        if (!$reserve->cancel_charge) {
-            foreach ($purchasingList as $key => $row) {
-                $purchasingList[$key]['is_cancel'] = $row['valid'] ? 1 : 0;
-            }
-        }
-
         return $purchasingList;
     }
 

@@ -257,7 +257,7 @@ class ShowFormComposer
                 'senderTypes' => config('consts.web_online_schedules.SENDER_TYPE_LIST'),
                 'onlineRequestStatuses' => config('consts.web_online_schedules.ONLINE_REQUEST_STATUS_LIST'),
                 'isCanceled' => $reserve->is_canceled, // キャンセル済みか否か
-                'existPurchaseData' => $this->reserveParticipantPriceService->isExistsPurchaseDataByReserveItineraryId($reserve->enabled_reserve_itinerary->id, null, false), // 仕入情報がある場合はtrue
+                'existPurchaseData' => $this->reserveParticipantPriceService->isExistsPurchaseDataByReserveItineraryId($reserve->enabled_reserve_itinerary->id, true, false), // 仕入情報がある場合はtrue
                 'estimateIndexUrl' => $estimateIndexUrl,
                 'reserveIndexUrl' => $reserveIndexUrl,
                 'departedIndexUrl' => $departedIndexUrl,

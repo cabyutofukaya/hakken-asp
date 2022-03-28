@@ -224,8 +224,8 @@ class ReserveController extends AppController
             abort(404);
         }
 
-        // 支払い情報を取得
-        $purchasingList = $this->getPurchasingListByReserve($reserve, null);
+        // 支払い情報を取得。有効仕入(valid=true)のみ取得
+        $purchasingList = $this->getPurchasingListByReserve($reserve, true);
 
         return view('staff.reserve.cancel_charge', compact('reserve', 'purchasingList'));
     }
