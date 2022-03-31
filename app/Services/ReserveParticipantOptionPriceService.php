@@ -107,7 +107,7 @@ class ReserveParticipantOptionPriceService implements ReserveParticipantPriceInt
 
     /**
      * 対象行程IDのキャンセルチャージ料金、キャンセルフラグを保存
-     * 
+     *
      * @return array 処理対象のレコードIDリスト
      */
     public function setCancelChargeByReserveItineraryId(int $cancelCharge, int $cancelChargeNet, int $cancelChargeProfit, bool $isCancel, int $reserveItineraryId) : array
@@ -116,7 +116,7 @@ class ReserveParticipantOptionPriceService implements ReserveParticipantPriceInt
         $targetRows = $this->reserveParticipantOptionPriceRepository->getWhere(['reserve_itinerary_id' => $reserveItineraryId, 'purchase_type' => config('consts.const.PURCHASE_NORMAL')], [], ['id']);
 
         $this->reserveParticipantOptionPriceRepository->updateWhere(
-            ['purchase_type' => config('consts.const.PURCHASE_CANCEL'), 'cancel_charge' => $cancelCharge, 'cancel_charge_net' => $cancelChargeNet, 'cancel_charge_profit' => $cancelChargeProfit, 'is_cancel' => $isCancel], 
+            ['purchase_type' => config('consts.const.PURCHASE_CANCEL'), 'cancel_charge' => $cancelCharge, 'cancel_charge_net' => $cancelChargeNet, 'cancel_charge_profit' => $cancelChargeProfit, 'is_cancel' => $isCancel],
             ['reserve_itinerary_id' => $reserveItineraryId, 'purchase_type' => config('consts.const.PURCHASE_NORMAL')]
         );
 
@@ -125,12 +125,12 @@ class ReserveParticipantOptionPriceService implements ReserveParticipantPriceInt
 
     /**
      * 対象参加者IDのキャンセルチャージ料金、キャンセルフラグを保存
-     * 
+     *
      */
     public function setCancelChargeByParticipantId(int $cancelCharge, int $cancelChargeNet, int $cancelChargeProfit, bool $isCancel, int $participantId) : bool
     {
         $this->reserveParticipantOptionPriceRepository->updateWhere(
-            ['purchase_type' => config('consts.const.PURCHASE_CANCEL'), 'cancel_charge' => $cancelCharge, 'cancel_charge_net' => $cancelChargeNet, 'cancel_charge_profit' => $cancelChargeProfit, 'is_cancel' => $isCancel], 
+            ['purchase_type' => config('consts.const.PURCHASE_CANCEL'), 'cancel_charge' => $cancelCharge, 'cancel_charge_net' => $cancelChargeNet, 'cancel_charge_profit' => $cancelChargeProfit, 'is_cancel' => $isCancel],
             ['participant_id' => $participantId]
         );
 
@@ -143,7 +143,7 @@ class ReserveParticipantOptionPriceService implements ReserveParticipantPriceInt
     public function setIsAliveCancelByParticipantId(int $participantId) : bool
     {
         return $this->reserveParticipantOptionPriceRepository->updateWhere(
-            ['is_alive_cancel' => true], 
+            ['is_alive_cancel' => true],
             ['participant_id' => $participantId, 'purchase_type' => config('consts.const.PURCHASE_CANCEL'), 'valid' => true]
         );
     }
@@ -159,8 +159,18 @@ class ReserveParticipantOptionPriceService implements ReserveParticipantPriceInt
     public function setIsAliveCancelByReserveId(int $reserveId, int $reserveItineraryId) : bool
     {
         return $this->reserveParticipantOptionPriceRepository->updateWhere(
-            ['is_alive_cancel' => true], 
+            ['is_alive_cancel' => true],
             ['reserve_id' => $reserveId, 'reserve_itinerary_id' => $reserveItineraryId, 'purchase_type' => config('consts.const.PURCHASE_CANCEL'), 'valid' => true]
         );
+    }
+
+    /**
+     * バルクアップデート
+     *
+     * @param array $params
+     */
+    public function updateBulk(array $params) : bool
+    {
+        return $this->reserveParticipantOptionPriceRepository->updateBulk($params);
     }
 }

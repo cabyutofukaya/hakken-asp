@@ -163,4 +163,14 @@ class ReserveParticipantAirplanePriceService implements ReserveParticipantPriceI
             ['reserve_id' => $reserveId, 'reserve_itinerary_id' => $reserveItineraryId, 'purchase_type' => config('consts.const.PURCHASE_CANCEL'), 'valid' => true]
         );
     }
+
+    /**
+     * バルクアップデート
+     *
+     * @param array $params
+     */
+    public function updateBulk(array $params) : bool
+    {
+        return $this->reserveParticipantAirplanePriceRepository->updateBulk($params);
+    }
 }

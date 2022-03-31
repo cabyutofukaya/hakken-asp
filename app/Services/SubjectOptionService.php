@@ -15,7 +15,6 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use App\Traits\SubjectSuggestTrait;
 
-
 class SubjectOptionService
 {
     use ConstsTrait, UserCustomItemTrait, SubjectSuggestTrait;
@@ -50,6 +49,16 @@ class SubjectOptionService
     public function find(int $id, array $select=[])
     {
         return $this->subjectOptionRepository->find($id, $select);
+    }
+
+    /**
+     * 当該仕入コードを一件取得
+     *
+     * @param string $code 仕入コード
+     */
+    public function findByCode(int $agencyId, string $code) : ?SubjectOption
+    {
+        return $this->subjectOptionRepository->findWhere(['agency_id' => $agencyId, 'code' => $code]);
     }
 
     /**
@@ -91,7 +100,7 @@ class SubjectOptionService
 
     /**
      * 検索
-     * 
+     *
      * @param int $limit 取得件数。nullの場合は全件取得
      */
     public function search(string $agencyAccount, string $str, array $with=[], array $select=[], $limit=null) : Collection
@@ -122,5 +131,4 @@ class SubjectOptionService
     {
         return $this->subjectOptionRepository->delete($id, $isSoftDelete);
     }
-
 }

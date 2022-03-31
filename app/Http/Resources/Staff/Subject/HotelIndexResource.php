@@ -23,7 +23,7 @@ class HotelIndexResource extends JsonResource
         });
 
         $base = [
-            "id" => $this->id,
+            // "id" => $this->id,
             "name" => $this->name,
             "hotel_name" => $this->hotel_name,
             "address" => $this->address,

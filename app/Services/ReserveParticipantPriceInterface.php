@@ -27,4 +27,6 @@ interface ReserveParticipantPriceInterface
     public function setCancelChargeByReserveItineraryId(int $cancelCharge, int $cancelChargeNet, int $cancelChargeProfit, bool $isCancel, int $reserveItineraryId) : array;
 
     public function setCancelChargeByParticipantId(int $cancelCharge, int $cancelChargeNet, int $cancelChargeProfit, bool $isCancel, int $participantId) : bool;
+
+    public function updateBulk(array $params) : bool;
 }

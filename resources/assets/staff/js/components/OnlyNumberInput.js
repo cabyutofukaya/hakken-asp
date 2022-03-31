@@ -15,7 +15,8 @@ const OnlyNumberInput = ({
     negativeValuePermit = true,
     maxLength = 10,
     placeholder = "",
-    className = ""
+    className = "",
+    readOnly = false
 } = {}) => {
     const changeValue = e => {
         e.target.value = e.target.value.replace(/[０-９]/g, function(s) {
@@ -61,6 +62,7 @@ const OnlyNumberInput = ({
             placeholder={placeholder}
             onFocus={focusFunc}
             onBlur={blurFunc}
+            readOnly={readOnly}
         />
     );
 };

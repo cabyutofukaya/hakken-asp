@@ -188,7 +188,7 @@ class ReserveParticipantPriceService
     /**
      * 当該行程IDに紐づく仕入データがある場合はtrue
      * (getPurchaseFormDataByReserveItineraryId メソッドと違い、実際のリストを取得するのではなく値があるかどうかをチェックしたバージョン)
-     * 
+     *
      * @param bool $isValid 対象とする仕入フラグ(valid)
      */
     public function isExistsPurchaseDataByReserveItineraryId(?int $reserveItineraryId, ?bool $isValid = null, bool $getDeleted = false) : bool
@@ -219,11 +219,11 @@ class ReserveParticipantPriceService
      */
     public function getPurchaseFormDataByParticipantId(int $participantId, ?int $reserveItineraryId, ?bool $isValid = null, bool $getDeleted = false) : array
     {
-        $options = $this->reserveParticipantOptionPriceService->getByParticipantId($participantId, $reserveItineraryId, $isValid, ['reserve_purchasing_subject_option','reserve_purchasing_subject_option.supplier:id,name'], [], $getDeleted);
+        $options = $this->reserveParticipantOptionPriceService->getByParticipantId($participantId, $reserveItineraryId, $isValid, ['reserve_purchasing_subject_option.supplier:id,name,deleted_at'], [], $getDeleted);
 
-        $airplanes = $this->reserveParticipantAirplanePriceService->getByParticipantId($participantId, $reserveItineraryId, $isValid, ['reserve_purchasing_subject_airplane','reserve_purchasing_subject_airplane.supplier:id,name'], [], $getDeleted);
+        $airplanes = $this->reserveParticipantAirplanePriceService->getByParticipantId($participantId, $reserveItineraryId, $isValid, ['reserve_purchasing_subject_airplane.supplier:id,name,deleted_at'], [], $getDeleted);
 
-        $hotels = $this->reserveParticipantHotelPriceService->getByParticipantId($participantId, $reserveItineraryId, $isValid, ['reserve_purchasing_subject_hotel','reserve_purchasing_subject_hotel.supplier:id,name'], [], $getDeleted);
+        $hotels = $this->reserveParticipantHotelPriceService->getByParticipantId($participantId, $reserveItineraryId, $isValid, ['reserve_purchasing_subject_hotel.supplier:id,name,deleted_at'], [], $getDeleted);
 
         return $this->getPurchaseFormData($options, $airplanes, $hotels);
     }
@@ -234,15 +234,48 @@ class ReserveParticipantPriceService
      * @param bool $isValid validの指定。nullの場合は特に指定ナシ
      * @return array
      */
-    public function getPurchaseFormDataByReserveItineraryId(int $reserveItineraryId, ?bool $isValid = null, bool $getDeleted = false) : array
+    public function getPurchaseFormDataByReserveItineraryId(int $reserveItineraryId, array $participants, ?bool $isValid = null, bool $getDeleted = false) : array
     {
-        $options = $this->reserveParticipantOptionPriceService->getByReserveItineraryId($reserveItineraryId, $isValid, ['reserve_purchasing_subject_option.supplier'], [], $getDeleted);
+        $options = $this->reserveParticipantOptionPriceService->getByReserveItineraryId($reserveItineraryId, $isValid, ['reserve_purchasing_subject_option.supplier:id,name,deleted_at'], [], $getDeleted);
 
-        $airplanes = $this->reserveParticipantAirplanePriceService->getByReserveItineraryId($reserveItineraryId, $isValid, ['reserve_purchasing_subject_airplane.supplier'], [], $getDeleted);
+        $airplanes = $this->reserveParticipantAirplanePriceService->getByReserveItineraryId($reserveItineraryId, $isValid, ['reserve_purchasing_subject_airplane.supplier:id,name,deleted_at'], [], $getDeleted);
 
-        $hotels = $this->reserveParticipantHotelPriceService->getByReserveItineraryId($reserveItineraryId, $isValid, ['reserve_purchasing_subject_hotel.supplier'], [], $getDeleted);
+        $hotels = $this->reserveParticipantHotelPriceService->getByReserveItineraryId($reserveItineraryId, $isValid, ['reserve_purchasing_subject_hotel.supplier:id,name,deleted_at'], [], $getDeleted);
 
-        return $this->getPurchaseFormData($options, $airplanes, $hotels);
+        $purchaseFormData = $this->getPurchaseFormData($options, $airplanes, $hotels);
+
+
+        // 集計した仕入情報に明細行をセット
+        foreach ($purchaseFormData as $key => $pfd) {
+            $info = explode(config('consts.const.CANCEL_CHARGE_DATA_DELIMITER'), $key);
+    
+            $subject = $info[0]; // $infoの1番目の配列は科目名
+            $ids = array_slice($info, 1); // idリスト
+
+            if ($subject == config('consts.subject_categories.SUBJECT_CATEGORY_OPTION')) { // オプション科目
+                $rows = $options->whereIn('id', $ids);
+            } elseif ($subject == config('consts.subject_categories.SUBJECT_CATEGORY_AIRPLANE')) { // 航空券科目
+                $rows = $airplanes->whereIn('id', $ids);
+            } elseif ($subject == config('consts.subject_categories.SUBJECT_CATEGORY_HOTEL')) { // ホテル科目
+                $rows = $hotels->whereIn('id', $ids);
+            }
+
+            $purchaseFormData[$key]['participants'] = [];
+            foreach ($rows as $row) {
+                // $tmp = Arr::except($row->toArray(), ['reserve_purchasing_subject_option','reserve_purchasing_subject_airplane','reserve_purchasing_subject_hotel']);
+                $tmp = array_merge(
+                    $participants[$row->participant_id],
+                    Arr::except($row->toArray(), ['reserve_purchasing_subject_option','reserve_purchasing_subject_airplane','reserve_purchasing_subject_hotel'])
+                );
+
+                $purchaseFormData[$key]['participants'][] = $tmp; // 同一人物に同一商品が複数紐づいているケースがあるので同じ人が複数リストされるケースあり。同一人物でまとめてしまうと料金等は同じでも部屋番号やチケット番号などが異なる場合にまとめられないのでこの形式に
+            }
+
+            usort($purchaseFormData[$key]['participants'], function ($value1, $value2) {
+                return intval($value1['participant_id']) - intval($value2['participant_id']);
+            }); // みやすいように参加者ID順に並べ替え
+        }
+        return $purchaseFormData;
     }
 
     /**
@@ -254,6 +287,7 @@ class ReserveParticipantPriceService
 
         $purchasingFields = [
             'id',
+            'purchase_type', // 必要かどうか要検討
             'valid',
             'gross_ex',
             'gross',
@@ -319,9 +353,13 @@ class ReserveParticipantPriceService
             $list[] = $tmp;
         }
 
+        // 仕分け基準フィールド。仕入科目、仕入コード、商品名、仕入先で比較 ←TODO これで良いか要確認。purchase_typeを含めないとリストは綺麗に纏まるが、例えばキャンセルチャージナシで個別にキャンセルした人がいた場合、仕入商品ごとにまとまってしまうとその設定が無視されてまとまってしまうので比較カラムとしておくべき。この基準はvalidとis_candelも同じ理屈。validについてはそもそもvalid=trueの条件で抽出しているのでvalid=falseのレコードは無い前提
+        $sortingCriteria = ['purchase_type','subject','code','name','supplier_id','supplier_name','valid','is_cancel'];
+
         $res = []; // 数量を求めるために同じ商品ごとに配列にまとめる
         foreach ($list as $l) {
-            $key = sha1(serialize(collect($l)->except(['id'])->all())); // ID以外の値で比較
+            // $key = sha1(serialize(collect($l)->except(['id'])->all())); // ID以外の値で比較
+            $key = sha1(serialize(collect($l)->only($sortingCriteria)->all())); //
             if (!isset($res[$key])) {
                 $res[$key] = [];
             }
@@ -334,8 +372,17 @@ class ReserveParticipantPriceService
 
             $tmp['quantity'] = count($rows); // 数量
 
-            foreach (['code','name','supplier_id','supplier_name','zei_kbn','commission_rate','valid','is_cancel'] as $col) { // 共通値
+            foreach ($sortingCriteria as $col) { // 共通値
                 $tmp[$col] = Arr::get($rows, "0.{$col}");
+            }
+
+            // 合算できない数値系。税区分と手数料率は合算できないので全て同じ値であれば値をセット
+            foreach (['zei_kbn','commission_rate'] as $col) { 
+                if (count(array_unique(collect($rows)->pluck($col)->all())) == 1) {
+                    $tmp[$col] = Arr::get($rows, "0.{$col}");
+                } else {
+                    $tmp[$col] = ""; // 計算不可として処理
+                }
             }
 
             foreach (['gross_ex','gross','cost','net','gross_profit','cancel_charge','cancel_charge_net','cancel_charge_profit'] as $col) { // 合計を計算

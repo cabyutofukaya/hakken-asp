@@ -3,6 +3,7 @@ import CustomField from "../../CustomField";
 import Price from "./Price";
 import ProductNameInput from "./ProductNameInput";
 import { getNameExObj } from "../../../libs";
+import { ConstContext } from "../../ConstApp";
 import { ReserveItineraryConstContext } from "../../ReserveItineraryConstApp"; // 下層コンポーネントに定数などを渡すコンテキスト
 import ParticipantArea2 from "./ParticipantArea2";
 
@@ -20,12 +21,13 @@ const Hotel = ({
     editPurchasingRowInfo,
     handleChange,
     rowDispatch,
-    subjectCategories,
     customFields,
     subjectCustomCategoryCode,
     customFieldCodes,
     defaultSubjectHotels
 }) => {
+    const { subjectCategoryNames } = useContext(ConstContext);
+
     const { modes } = useContext(ReserveItineraryConstContext);
 
     /**
@@ -107,11 +109,11 @@ const Hotel = ({
                                     })
                                 }
                             >
-                                {subjectCategories &&
-                                    Object.keys(subjectCategories).map(
+                                {subjectCategoryNames &&
+                                    Object.keys(subjectCategoryNames).map(
                                         (val, index) => (
                                             <option key={index} value={val}>
-                                                {subjectCategories[val]}
+                                                {subjectCategoryNames[val]}
                                             </option>
                                         )
                                     )}

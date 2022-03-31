@@ -66,7 +66,28 @@ class AccountPayableDetailRepository implements AccountPayableDetailRepositoryIn
             }
             $query = $query->where($key, $val);
         }
-        return $query->get();
+        // return $query->get();
+
+        // ↓一気に取得すると危険なので以下のようにした方が良いかも
+        $res = [];
+        $query->chunk(1000, function ($rows) use (&$res) {
+            foreach ($rows as $row) {
+                $res[] = $row;
+            }
+        });
+        
+        return collect($res);
+    }
+
+    /**
+     * 当該仕入IDリストに紐づくid一覧を取得
+     *
+     * @param string $saleableType 仕入科目
+     * @param array $saleableIds 仕入科目ID一覧
+     */
+    public function getIdsBySaleableIds(string $saleableType, array $saleableIds) : array
+    {
+        return $this->accountPayableDetail->select('id')->where('saleable_type', $saleableType)->whereIn('saleable_id', $saleableIds)->pluck("id")->toArray();
     }
 
     /**
@@ -141,6 +162,19 @@ class AccountPayableDetailRepository implements AccountPayableDetailRepositoryIn
             }
             $row->save();
         }
+        return true;
+    }
+
+    /**
+     * 当該saleble_typeに関連するレコードをバルクアップデート
+     */
+    public function updateWhereBulk(array $where, array $params, string $id='id') : bool
+    {
+        $query = $this->accountPayableDetail;
+        foreach ($where as $key => $val) {
+            $query = $query->where($key, $val);
+        }
+        $query->updateBulk($params, $id);
         return true;
     }
 

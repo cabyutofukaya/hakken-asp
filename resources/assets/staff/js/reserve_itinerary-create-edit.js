@@ -1110,7 +1110,6 @@ const ItineraryArea = ({
             />
 
             <SubjectModal
-                subjectCategories={formSelects?.subjectCategories}
                 input={targetPurchasing}
                 targetAddRow={targetAddRow}
                 editPurchasingRowInfo={editPurchasingRowInfo}
@@ -1129,7 +1128,6 @@ const ItineraryArea = ({
             />
 
             <CancelSubjectModal
-                subjectCategories={formSelects?.subjectCategories}
                 input={targetPurchasing}
                 targetAddRow={targetAddRow}
                 editPurchasingRowInfo={editPurchasingRowInfo}

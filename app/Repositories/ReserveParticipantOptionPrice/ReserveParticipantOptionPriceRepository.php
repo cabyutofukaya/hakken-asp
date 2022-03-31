@@ -27,6 +27,17 @@ class ReserveParticipantOptionPriceRepository implements ReserveParticipantOptio
     }
 
     /**
+     * バルクアップデート
+     *
+     * @param array $params
+     */
+    public function updateBulk(array $params) : bool
+    {
+        $this->reserveParticipantOptionPrice->updateBulk($params);
+        return true;
+    }
+
+    /**
      * 当該参加者IDに紐づくレコードを削除
      */
     public function deleteByParticipantId(int $participantId, bool $ifExistWithdrawalDelete = false, bool $isSoftDelete=true): bool
@@ -69,12 +80,22 @@ class ReserveParticipantOptionPriceRepository implements ReserveParticipantOptio
         foreach ($where as $key => $val) {
             $query = $query->where($key, $val);
         }
-        return $query->get();
+
+        // return $query->get();
+        // ↓一気に取得すると危険なので以下のようにした方が良いかも
+        $res = [];
+        $query->chunk(1000, function ($rows) use (&$res) {
+            foreach ($rows as $row) {
+                $res[] = $row;
+            }
+        });
+
+        return collect($res);
     }
 
     /**
      * 条件にマッチするレコードが存在するか否か
-     * 
+     *
      * @param array $where
      * @param bool $getDeleted
      * @return bool

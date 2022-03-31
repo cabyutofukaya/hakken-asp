@@ -12,6 +12,8 @@ interface AccountPayableDetailRepositoryInterface
 
   public function getWhere(array $where, array $with=[], array $select=[]) : Collection;
   
+  public function getIdsBySaleableIds(string $saleableType, array $saleableIds) : array;
+  
   public function findWhere(array $where, array $with=[], array $select=[]) : ?AccountPayableDetail;
 
   public function whereExists($where) : ?AccountPayableDetail;
@@ -23,6 +25,8 @@ interface AccountPayableDetailRepositoryInterface
   public function updateField(int $id, array $data): AccountPayableDetail;
 
   public function updateWhere(array $update, array $where) : bool;
+
+  public function updateWhereBulk(array $where, array $params, string $id='id') : bool;
 
   public function paginateByAgencyId(int $agencyId, array $params, int $limit, ?string $applicationStep, array $with, array $select, bool $exZero = true) : LengthAwarePaginator;
   

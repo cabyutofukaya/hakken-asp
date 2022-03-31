@@ -10,6 +10,7 @@ use App\Exceptions\ExclusiveLockException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Staff\ReserveStatusUpdateRequest;
 use App\Http\Requests\Staff\ReserveNoCancelChargeCancelRequest;
+use App\Http\Requests\Staff\ReserveCancelChargeUpdateRequest;
 use App\Http\Resources\Staff\Reserve\IndexResource;
 use App\Http\Resources\Staff\Reserve\ShowResource;
 use App\Http\Resources\Staff\Reserve\StatusResource;
@@ -24,6 +25,10 @@ use App\Services\UserService;
 use App\Services\VAreaService;
 use App\Services\ReserveItineraryService;
 use App\Services\ParticipantService;
+use App\Services\ReserveParticipantOptionPriceService;
+use App\Services\ReserveParticipantAirplanePriceService;
+use App\Services\ReserveParticipantHotelPriceService;
+use App\Services\AccountPayableDetailService;
 use App\Traits\CancelChargeTrait;
 use DB;
 use Exception;
@@ -36,7 +41,7 @@ class ReserveController extends Controller
 {
     use CancelChargeTrait;
     
-    public function __construct(UserService $userService, BusinessUserManagerService $businessUserManagerService, VAreaService $vAreaService, ReserveService $reserveService, ReserveCustomValueService $reserveCustomValueService, UserCustomItemService $userCustomItemService, ReserveParticipantPriceService $reserveParticipantPriceService, ReserveItineraryService $reserveItineraryService, ParticipantService $participantService)
+    public function __construct(UserService $userService, BusinessUserManagerService $businessUserManagerService, VAreaService $vAreaService, ReserveService $reserveService, ReserveCustomValueService $reserveCustomValueService, UserCustomItemService $userCustomItemService, ReserveParticipantPriceService $reserveParticipantPriceService, ReserveItineraryService $reserveItineraryService, ParticipantService $participantService, ReserveParticipantOptionPriceService $reserveParticipantOptionPriceService, ReserveParticipantAirplanePriceService $reserveParticipantAirplanePriceService, ReserveParticipantHotelPriceService $reserveParticipantHotelPriceService, AccountPayableDetailService $accountPayableDetailService)
     {
         $this->reserveService = $reserveService;
         $this->userService = $userService;
@@ -47,6 +52,11 @@ class ReserveController extends Controller
         $this->reserveParticipantPriceService = $reserveParticipantPriceService;
         $this->reserveItineraryService = $reserveItineraryService;
         $this->participantService = $participantService;
+        // トレイトで使用
+        $this->reserveParticipantOptionPriceService = $reserveParticipantOptionPriceService;
+        $this->reserveParticipantAirplanePriceService = $reserveParticipantAirplanePriceService;
+        $this->reserveParticipantHotelPriceService = $reserveParticipantHotelPriceService;
+        $this->accountPayableDetailService = $accountPayableDetailService;
     }
 
     // 一件取得
@@ -241,7 +251,7 @@ class ReserveController extends Controller
                     $request->session()->flash('success_message', "{$reserve->control_number}」のキャンセル処理が完了しました。"); // set_messageは処理成功のフラッシュメッセージのセットを要求するパラメータ
                 }
 
-                return response('', 200);
+                return ['result' => 'ok'];
             }
         } catch (ExclusiveLockException $e) { // 同時編集エラー
             abort(409, "他のユーザーによる編集済みレコードです。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
@@ -250,6 +260,64 @@ class ReserveController extends Controller
             Log::error($e);
         }
         return abort(500);
+    }
+
+    /**
+     * キャンセルチャージ処理
+     */
+    public function cancelChargeUpdate(ReserveCancelChargeUpdateRequest $request, string $agencyAccount, string $controlNumber)
+    {
+        $reserve = $this->reserveService->findByControlNumber($controlNumber, $agencyAccount);
+
+        // 認可チェック
+        $response = Gate::inspect('cancel', [$reserve]);
+        if (!$response->allowed()) {
+            abort(403);
+        }
+
+        try {
+            $input = $request->validated();
+
+            // 同時編集チェック
+            if ($reserve->updated_at != Arr::get($input, 'reserve.updated_at')) {
+                throw new ExclusiveLockException;
+            }
+
+            DB::transaction(function () use ($input, $reserve) {
+
+                // キャンセルチャージ料金を保存
+                $this->setReserveCancelCharge($input);
+
+                $this->reserveService->cancel($reserve, true);
+
+                $this->refreshItineraryTotalAmount($reserve->enabled_reserve_itinerary); // 有効行程の合計金額更新
+
+                event(new UpdateBillingAmountEvent($this->reserveService->find($reserve->id))); // 請求金額変更イベント
+
+                /**カスタムステータスを「キャンセル」に更新 */
+
+                // ステータスのカスタム項目を取得
+                $customStatus =$this->userCustomItemService->findByCodeForAgency($reserve->agency_id, config('consts.user_custom_items.CODE_APPLICATION_RESERVE_STATUS'), ['key'], null);
+
+                if ($customStatus) {
+                    $this->reserveCustomValueService->upsertCustomFileds([$customStatus->key => config('consts.reserves.RESERVE_CANCEL_STATUS')], $reserve->id);
+
+                    // ステータス更新イベント
+                    event(new ReserveUpdateStatusEvent($this->reserveService->find($reserve->id)));
+                }
+            });
+
+            if ($request->input("set_message")) {
+                $request->session()->flash('success_message', "{$reserve->control_number}」のキャンセル処理が完了しました。"); // set_messageは処理成功のフラッシュメッセージのセットを要求するパラメータ
+            }
+            return ['result' => 'ok'];
+
+        } catch (ExclusiveLockException $e) { // 同時編集エラー
+            abort(409, "他のユーザーによる編集済みレコードです。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+        } catch (Exception $e) {
+            Log::error($e);
+        }
+        abort(500);
     }
 
     /**

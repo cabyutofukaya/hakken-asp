@@ -19,5 +19,7 @@ interface ReserveParticipantOptionPriceRepositoryInterface
 
   public function updateWhere(array $update, array $where) : bool;
 
+  public function updateBulk(array $params) : bool;
+
   public function whereExists(array $where, bool $getDeleted = false) : bool;
 }

@@ -9,6 +9,7 @@ use Illuminate\Support\Collection;
 interface SubjectHotelRepositoryInterface
 {
   public function find(int $id, array $select = []) : SubjectHotel;
+  public function findWhere(array $where, array $with=[], array $select=[]) : ?SubjectHotel;
   public function paginateByAgencyId(int $agencyId, array $params, int $limit, array $with, array $select) : LengthAwarePaginator;
   public function create(array $data) : SubjectHotel;
   public function update(int $id, array $data) : SubjectHotel;

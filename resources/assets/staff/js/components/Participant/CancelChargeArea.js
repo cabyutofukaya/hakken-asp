@@ -332,11 +332,12 @@ const CancelChargeArea = ({ participant, defaultValue, consts, errors }) => {
                                                         />
                                                     </td>
                                                     <td>
-                                                        {(
-                                                            lists[key]
-                                                                ?.commission_rate ??
-                                                            0
-                                                        ).toLocaleString()}
+                                                        {lists[key]
+                                                            ?.commission_rate
+                                                            ? lists[
+                                                                  key
+                                                              ].commission_rate.toLocaleString()
+                                                            : "-"}
                                                         %
                                                         <input
                                                             type="hidden"

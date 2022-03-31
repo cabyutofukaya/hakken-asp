@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import CustomField from "../../CustomField";
 import CancelParticipantArea1 from "./CancelParticipantArea1";
+import { ConstContext } from "../../ConstApp";
 import { ReserveItineraryConstContext } from "../../ReserveItineraryConstApp"; // 下層コンポーネントに定数などを渡すコンテキスト
 
 /**
@@ -18,12 +19,13 @@ const CancelAirplane = ({
     editPurchasingRowInfo,
     handleChange,
     rowDispatch,
-    subjectCategories,
     customFields,
     subjectCustomCategoryCode,
     customFieldCodes,
     defaultSubjectAirplanes
 }) => {
+    const { subjectCategoryNames } = useContext(ConstContext);
+
     const { modes } = useContext(ReserveItineraryConstContext);
 
     /**
@@ -70,11 +72,11 @@ const CancelAirplane = ({
                                 value={input?.subject ?? ""}
                                 disabled={true}
                             >
-                                {subjectCategories &&
-                                    Object.keys(subjectCategories).map(
+                                {subjectCategoryNames &&
+                                    Object.keys(subjectCategoryNames).map(
                                         (val, index) => (
                                             <option key={index} value={val}>
-                                                {subjectCategories[val]}
+                                                {subjectCategoryNames[val]}
                                             </option>
                                         )
                                     )}

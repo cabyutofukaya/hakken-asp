@@ -52,6 +52,15 @@ class Participant extends Model
         'cancel' => 'boolean',
     ];
 
+    /**
+     * The attributes that should be hidden for arrays.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'created_at'
+    ];
+
     public static function boot()
     {
         parent::boot();

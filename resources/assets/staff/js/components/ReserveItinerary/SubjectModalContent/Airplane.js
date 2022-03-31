@@ -3,6 +3,7 @@ import CustomField from "../../CustomField";
 import Price from "./Price";
 import ProductNameInput from "./ProductNameInput";
 import { getNameExObj } from "../../../libs";
+import { ConstContext } from "../../ConstApp";
 import { ReserveItineraryConstContext } from "../../ReserveItineraryConstApp"; // 下層コンポーネントに定数などを渡すコンテキスト
 import ParticipantArea1 from "./ParticipantArea1";
 
@@ -21,12 +22,13 @@ const Airplane = ({
     editPurchasingRowInfo,
     handleChange,
     rowDispatch,
-    subjectCategories,
     customFields,
     subjectCustomCategoryCode,
     customFieldCodes,
     defaultSubjectAirplanes
 }) => {
+    const { subjectCategoryNames } = useContext(ConstContext);
+
     const { modes } = useContext(ReserveItineraryConstContext);
     /**
      * 登録ボタン押下
@@ -107,11 +109,11 @@ const Airplane = ({
                                     })
                                 }
                             >
-                                {subjectCategories &&
-                                    Object.keys(subjectCategories).map(
+                                {subjectCategoryNames &&
+                                    Object.keys(subjectCategoryNames).map(
                                         (val, index) => (
                                             <option key={index} value={val}>
-                                                {subjectCategories[val]}
+                                                {subjectCategoryNames[val]}
                                             </option>
                                         )
                                     )}

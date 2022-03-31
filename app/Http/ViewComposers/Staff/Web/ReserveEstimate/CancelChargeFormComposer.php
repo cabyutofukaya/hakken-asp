@@ -33,7 +33,11 @@ class CancelChargeFormComposer
             $defaultValue['rows'] = $purchasingList;
             // 初期設定時はis_cancelはtrueで初期化
             foreach ($defaultValue['rows'] as $key => $row) {
-                $defaultValue['rows'][$key]['is_cancel'] = 1;
+                if ($row['purchase_type'] == config('consts.const.PURCHASE_NORMAL')) { // 通常仕入行の場合はis_cancelはtrueで初期化
+                    $defaultValue['rows'][$key]['is_cancel'] = 1;
+                } elseif ($row['purchase_type'] == config('consts.const.PURCHASE_CANCEL')) { // キャンセル仕入の場合はis_cancelの値で初期化
+                    $defaultValue['rows'][$key]['is_cancel'] = Arr::get($row, 'is_cancel', 0);
+                }
             }
         }
         if (!isset($defaultValue['reserve']['updated_at'])) {
@@ -41,8 +45,9 @@ class CancelChargeFormComposer
         }
 
         $consts = [
-            'reserveUrl' => route('staff.web.estimates.reserve.show', [$agencyAccount, $reserve->control_number]),
-            'cancelChargeUpdateUrl' => route('staff.web.estimates.reserve.cancel_charge.update', [$agencyAccount, $reserve->control_number]),
+            'reserveUrl' => $reserve->is_departed ? route('staff.estimates.departed.show', [$agencyAccount, $reserve->control_number]) : route('staff.web.estimates.reserve.show', [$agencyAccount, $reserve->control_number]), // 予約詳細ページ。催行済みか否かで出し分け
+            'cancelChargeUpdateUrl' => route('staff.api.web.cancel_charge.update', [$agencyAccount, $reserve->control_number]),
+            'cancelChargeUpdateAfterUrl' => route('staff.web.estimates.reserve.show', [$agencyAccount, $reserve->control_number]), // キャンセルチャージ処理後の転送URL。催行済みか否かにかかわらず予約詳細ページへ転送
         ];
 
         // reactに渡す各種定数
