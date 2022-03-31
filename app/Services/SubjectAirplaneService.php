@@ -15,7 +15,6 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use App\Traits\SubjectSuggestTrait;
 
-
 class SubjectAirplaneService
 {
     use ConstsTrait, UserCustomItemTrait, SubjectSuggestTrait;
@@ -53,8 +52,18 @@ class SubjectAirplaneService
     }
 
     /**
+     * 当該仕入コードを一件取得
+     *
+     * @param string $code 仕入コード
+     */
+    public function findByCode(int $agencyId, string $code) : ?SubjectAirplane
+    {
+        return $this->subjectAirplaneRepository->findWhere(['agency_id' => $agencyId, 'code' => $code]);
+    }
+
+    /**
      * 検索
-     * 
+     *
      * @param int $limit 取得件数。nullの場合は全件取得
      */
     public function search(string $agencyAccount, string $str, array $with=[], array $select=[], $limit=null) : Collection

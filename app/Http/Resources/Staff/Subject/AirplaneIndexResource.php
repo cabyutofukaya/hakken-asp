@@ -23,7 +23,7 @@ class AirplaneIndexResource extends JsonResource
         });
 
         $base = [
-            "id" => $this->id,
+            // "id" => $this->id,
             "name" => $this->name,
             "booking_class" => $this->booking_class,
             "code" => $this->code,

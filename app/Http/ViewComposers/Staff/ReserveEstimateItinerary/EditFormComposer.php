@@ -207,7 +207,6 @@ class EditFormComposer
 
         $formSelects = [
             'transportations' => get_const_item('reserve_itineraries', 'transportation'),
-            'subjectCategories' => get_const_item('subject_categories', 'subject_category'), // 科目カテゴリ
             'suppliers' => ['' => '---'] + $this->supplierService->getNameSelectByAgencyAccount($agencyAccount, true),
             'cities' => ['' => '---'] + $this->cityService->getNameSelectByAgencyAccount($agencyAccount),
             'zeiKbns' => get_const_item('subject_categories', 'zei_kbn'),

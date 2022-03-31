@@ -78,6 +78,8 @@ trait JsConstsTrait
             'documentZeiKbns' => get_const_item('subject_categories', 'document_zei_kbn'),
             // 科目カテゴリ一覧
             'subjectCategories' => config('consts.subject_categories.SUBJECT_CATEGORY_LIST'),
+            // 科目カテゴリ名一覧
+            'subjectCategoryNames' => get_const_item('subject_categories', 'subject_category'),
             'numberLedgerAllowedMax' => config('consts.const.NUMBER_LEDGER_ALLOWED_MAX'), // 帳票最大追加数
             'purchaseNormal' => config('consts.const.PURCHASE_NORMAL'), // 通常仕入
             'purchaseCancel' => config('consts.const.PURCHASE_CANCEL'), // キャンセル仕入

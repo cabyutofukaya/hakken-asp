@@ -133,7 +133,7 @@ class ReservePurchasingSubjectOption extends Model
     // 仕入先
     public function supplier()
     {
-        return $this->belongsTo('App\Models\Supplier')->withDefault();
+        return $this->belongsTo('App\Models\Supplier')->withDefault()->withTrashed(); // 削除済みも取得
     }
 
     // 参加者料金

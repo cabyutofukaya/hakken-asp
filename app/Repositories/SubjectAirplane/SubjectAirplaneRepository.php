@@ -25,6 +25,25 @@ class SubjectAirplaneRepository implements SubjectAirplaneRepositoryInterface
     }
 
     /**
+     * 検索して1件取得
+     */
+    public function findWhere(array $where, array $with=[], array $select=[]) : ?SubjectAirplane
+    {
+        $query = $this->subjectAirplane;
+        
+        $query = $with ? $query->with($with) : $query;
+        $query = $select ? $query->select($select) : $query;
+
+        foreach ($where as $key => $val) {
+            if (is_empty($val)) {
+                continue;
+            }
+            $query = $query->where($key, $val);
+        }
+        return $query->first();
+    }
+
+    /**
      * ページネーション で取得（for 会社ID）
      *
      * @var $limit

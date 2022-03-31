@@ -31,6 +31,9 @@ Route::domain(env('STAFF_DOMAIN', 'api.hakken-tour.com'))->namespace('Staff\Api'
         Route::get('reserve/list', 'ReserveController@index'); // 一覧
         Route::get('reserve/{reserveNumber}', 'ReserveController@show'); // 詳細
         Route::get('participant/search', 'ParticipantController@participantSearch'); // 顧客検索
+
+        Route::post('reserve/{reserveNumber}/cancel_charge', 'ReserveController@cancelChargeUpdate')->name('cancel_charge.update'); // キャンセルチャージ処理
+
         Route::delete('reserve/{reserveNumber}', 'ReserveController@destroy'); // 削除
         Route::put('reserve/{reserveNumber}/no-cancel-charge/cancel', 'ReserveController@noCancelChargeCancel'); // キャンセル
         Route::get('v_area/search', 'ReserveController@vAreaSearch'); // 国・地域検索
@@ -100,8 +103,9 @@ Route::domain(env('STAFF_DOMAIN', 'api.hakken-tour.com'))->namespace('Staff\Api'
         Route::put('bundle_invoice/{id}/status', 'ReserveBundleInvoiceController@statusUpdate'); // ステータス更新
 
 
-        // 科目前半
+        // 科目全般
         Route::post('subject/search', 'SubjectController@search'); // 科目検索
+        Route::get('subject/{subjectCategory}/code/{code}', 'SubjectController@showByCode'); // 当該コードの科目情報を取得
 
 
         // 予約・見積相談
@@ -243,6 +247,7 @@ Route::domain(env('STAFF_DOMAIN', 'api.hakken-tour.com'))->namespace('Staff\Api'
             Route::delete('reserve/{hashId}', 'ReserveController@destroy'); // 削除
             Route::put('reserve/{reserveNumber}/no-cancel-charge/cancel', 'ReserveController@noCancelChargeCancel'); // キャンセル
             // Route::get('v_area/search', 'ReserveController@vAreaSearch'); // 国・地域検索
+            Route::post('reserve/{reserveNumber}/cancel_charge', 'ReserveController@cancelChargeUpdate')->name('cancel_charge.update'); // キャンセルチャージ処理
             Route::put('reserve/{reserveNumber}/status', 'ReserveController@statusUpdate'); // ステータスを更新
 
             // 見積

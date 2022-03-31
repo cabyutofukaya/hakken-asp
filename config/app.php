@@ -179,6 +179,7 @@ return [
         App\Providers\ComposerServiceProvider::class,
         App\Providers\ValidatorServiceProvider::class,
         Barryvdh\Snappy\ServiceProvider::class,
+        App\Providers\MySqlBulkUpdateServiceProvider::class, // バルクアップデート
     ],
 
     /*

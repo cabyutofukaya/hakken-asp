@@ -100,12 +100,12 @@ class AccountPayableDetailService
     /**
      * 仕入先へのキャンセルチャージ料金を設定
      *
-     * @param int $cancelCharge キャンセルチャージ金額
+     * @param int $cancelChargeNet キャンセルチャージNet金額
      * @param string $saleableType 販売種別
      * @param int $saleableId 販売ID
      * @param bool $getUpdatedId 更新対象のレコードIDがを取得する場合はtrue
      */
-    public function setCancelChargeBySaleableId(int $cancelCharge, string $saleableType, int $saleableId, bool $getUpdatedId = false) : ?int
+    public function setCancelChargeBySaleableId(int $cancelChargeNet, string $saleableType, int $saleableId, bool $getUpdatedId = false) : ?int
     {
         $updatedId = null;
         if ($getUpdatedId) {
@@ -113,11 +113,23 @@ class AccountPayableDetailService
             $updatedId = $res->id;
         }
         $this->accountPayableDetailRepository->updateWhere(
-            ['amount_billed' => $cancelCharge],
+            ['amount_billed' => $cancelChargeNet],
             ['saleable_type' => $saleableType, 'saleable_id' => $saleableId]
         );
 
         return $updatedId;
+    }
+
+    /**
+     * 仕入先のキャンセルチャージ仕入料金を更新(バルクアップデート)
+     *
+     * @param string $saleableType 科目タイプ
+     * @param array $params 更新パラメータ
+     * @param string $id 更新ID
+     */
+    public function setAmountBilledBulk(string $saleableType, array $params, string $id) : bool
+    {
+        return $this->accountPayableDetailRepository->updateWhereBulk(['saleable_type' => $saleableType], $params, $id);
     }
 
     /**
@@ -126,6 +138,17 @@ class AccountPayableDetailService
     public function getByReserveId(int $reserveId, array $with = [], array $select = []) : Collection
     {
         return $this->accountPayableDetailRepository->getWhere(['reserve_id' => $reserveId], $with, $select);
+    }
+
+    /**
+     * 当該仕入IDリストに紐づくid一覧を取得
+     *
+     * @param string $saleableType 仕入科目
+     * @param array $saleableIds 仕入科目ID一覧
+     */
+    public function getIdsBySaleableIds(string $saleableType, array $saleableIds) : array
+    {
+        return $this->accountPayableDetailRepository->getIdsBySaleableIds($saleableType, $saleableIds);
     }
     
     /**

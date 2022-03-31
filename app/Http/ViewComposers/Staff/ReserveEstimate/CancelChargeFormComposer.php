@@ -13,10 +13,6 @@ class CancelChargeFormComposer
 {
     use JsConstsTrait;
     
-    public function __construct(
-    ) {
-    }
-
     /**
      * @param View $view
      * @return void
@@ -29,20 +25,29 @@ class CancelChargeFormComposer
         $purchasingList = Arr::get($data, 'purchasingList');
 
         ////////////
-        
+
         $agencyAccount = request()->agencyAccount;
 
         $defaultValue = session()->getOldInput();
         if (!isset($defaultValue['rows'])) {
             $defaultValue['rows'] = $purchasingList;
+            foreach ($defaultValue['rows'] as $key => $row) {
+                if ($row['purchase_type'] == config('consts.const.PURCHASE_NORMAL')) { // 通常仕入行の場合はis_cancelはtrueで初期化
+                    $defaultValue['rows'][$key]['is_cancel'] = 1;
+                } elseif ($row['purchase_type'] == config('consts.const.PURCHASE_CANCEL')) { // キャンセル仕入の場合はis_cancelの値で初期化
+                    $defaultValue['rows'][$key]['is_cancel'] = Arr::get($row, 'is_cancel', 0);
+                }
+            }
         }
+
         if (!isset($defaultValue['reserve']['updated_at'])) {
             $defaultValue['reserve']['updated_at'] = $reserve->updated_at->format('Y-m-d H:i:s');
         }
 
         $consts = [
-            'reserveUrl' => route('staff.asp.estimates.reserve.show', [$agencyAccount, $reserve->control_number]),
-            'cancelChargeUpdateUrl' => route('staff.asp.estimates.reserve.cancel_charge.update', [$agencyAccount, $reserve->control_number]),
+            'reserveUrl' => $reserve->is_departed ? route('staff.estimates.departed.show', [$agencyAccount, $reserve->control_number]) : route('staff.asp.estimates.reserve.show', [$agencyAccount, $reserve->control_number]), // 予約詳細ページ。催行済みか否かで出し分け
+            'cancelChargeUpdateUrl' => route('staff.api.cancel_charge.update', [$agencyAccount, $reserve->control_number]),
+            'cancelChargeUpdateAfterUrl' => route('staff.asp.estimates.reserve.show', [$agencyAccount, $reserve->control_number]), // キャンセルチャージ処理後の転送URL。催行済みか否かにかかわらず予約詳細ページへ転送
         ];
 
         // reactに渡す各種定数

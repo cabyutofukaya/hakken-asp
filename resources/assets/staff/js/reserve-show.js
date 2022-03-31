@@ -101,8 +101,10 @@ const ReserveShowArea = ({
                 }, 3000);
             });
 
-        if (response) {
+        if (response?.data?.result == "ok") {
             location.href = consts.common.afterCancelUrl;
+        } else {
+            alert("キャンセル処理に失敗しました。");
         }
     };
 

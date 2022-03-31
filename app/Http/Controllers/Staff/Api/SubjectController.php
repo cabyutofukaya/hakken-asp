@@ -50,10 +50,27 @@ class SubjectController extends Controller
                 return OptionIndexResource::collection($this->subjectOptionService->search($agencyAccount, $str, ['supplier','v_subject_option_custom_values'], [], 100));
             case config('consts.subject_categories.SUBJECT_CATEGORY_AIRPLANE'):
                 return AirplaneIndexResource::collection($this->subjectAirplaneService->search($agencyAccount, $str, ['supplier','v_subject_airplane_custom_values'], [], 100));
-                break;
             case config('consts.subject_categories.SUBJECT_CATEGORY_HOTEL'):
                 return HotelIndexResource::collection($this->subjectHotelService->search($agencyAccount, $str, ['supplier','v_subject_hotel_custom_values'], [], 100));
-                break;
+            default:
+                return [];
+        }
+    }
+
+    /**
+     * 当該商品コードのレコード情報を取得
+     */
+    public function showByCode(Request $request, string $agencyAccount, string $subjectCategory, string $code)
+    {
+        $agencyId = auth('staff')->user()->agency_id;
+
+        switch ($subjectCategory) {
+            case config('consts.subject_categories.SUBJECT_CATEGORY_OPTION'):
+                return new OptionIndexResource($this->subjectOptionService->findByCode($agencyId, $code));
+            case config('consts.subject_categories.SUBJECT_CATEGORY_AIRPLANE'):
+                return new AirplaneIndexResource($this->subjectAirplaneService->findByCode($agencyId, $code));
+            case config('consts.subject_categories.SUBJECT_CATEGORY_HOTEL'):
+                return new HotelIndexResource($this->subjectHotelService->findByCode($agencyId, $code));
             default:
                 return [];
         }

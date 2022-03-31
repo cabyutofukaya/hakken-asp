@@ -22,7 +22,6 @@ const CancelSubjectModal = ({
     editPurchasingRowInfo,
     handleChange,
     rowDispatch,
-    subjectCategories,
     customFields,
     subjectCustomCategoryCode,
     customFieldCodes,
@@ -51,7 +50,6 @@ const CancelSubjectModal = ({
                         editPurchasingRowInfo={editPurchasingRowInfo}
                         handleChange={handleChange}
                         rowDispatch={rowDispatch}
-                        subjectCategories={subjectCategories}
                         subjectCustomCategoryCode={subjectCustomCategoryCode}
                         customFields={
                             customFields?.[subjectCategoryTypes?.option]
@@ -72,7 +70,6 @@ const CancelSubjectModal = ({
                         editPurchasingRowInfo={editPurchasingRowInfo}
                         handleChange={handleChange}
                         rowDispatch={rowDispatch}
-                        subjectCategories={subjectCategories}
                         subjectCustomCategoryCode={subjectCustomCategoryCode}
                         customFields={
                             customFields?.[subjectCategoryTypes?.airplane]
@@ -92,7 +89,6 @@ const CancelSubjectModal = ({
                         editPurchasingRowInfo={editPurchasingRowInfo}
                         handleChange={handleChange}
                         rowDispatch={rowDispatch}
-                        subjectCategories={subjectCategories}
                         subjectCustomCategoryCode={subjectCustomCategoryCode}
                         customFields={
                             customFields?.[subjectCategoryTypes?.hotel]

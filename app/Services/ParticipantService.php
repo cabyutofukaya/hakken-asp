@@ -192,7 +192,7 @@ class ParticipantService
     {
         return [
             'cancel' => true,
-            'representative' => false, // 念の為、代表者フラグをOff
+            // 'representative' => false, // 念の為、代表者フラグをOff。 → キャンセル時も特にoffにする必要もない気がするので一旦無効化
         ];
     }
 

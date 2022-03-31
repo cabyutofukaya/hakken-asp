@@ -23,7 +23,7 @@ class OptionIndexResource extends JsonResource
         });
 
         $base = [
-            "id" => $this->id,
+            // "id" => $this->id,
             "name" => $this->name,
             "code" => $this->code,
             "ad_gross_ex" => $this->ad_gross_ex,

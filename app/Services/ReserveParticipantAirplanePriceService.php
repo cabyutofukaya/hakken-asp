@@ -112,11 +112,12 @@ class ReserveParticipantAirplanePriceService implements ReserveParticipantPriceI
      */
     public function setCancelChargeByReserveItineraryId(int $cancelCharge, int $cancelChargeNet, int $cancelChargeProfit, bool $isCancel, int $reserveItineraryId) : array
     {
-        $targetRows = $this->reserveParticipantAirplanePriceRepository->getWhere(['reserve_itinerary_id' => $reserveItineraryId], [], ['id']);
+        // 処理対象は当該行程の”通常仕入レコード(purchase_type=PURCHASE_NORMAL)”。全てのレコードをリセットしてしまうとキャンセル済みレコードの情報までリセットされてしまうので注意
+        $targetRows = $this->reserveParticipantAirplanePriceRepository->getWhere(['reserve_itinerary_id' => $reserveItineraryId, 'purchase_type' => config('consts.const.PURCHASE_NORMAL')], [], ['id']);
 
         $this->reserveParticipantAirplanePriceRepository->updateWhere(
             ['purchase_type' => config('consts.const.PURCHASE_CANCEL'), 'cancel_charge' => $cancelCharge, 'cancel_charge_net' => $cancelChargeNet, 'cancel_charge_profit' => $cancelChargeProfit, 'is_cancel' => $isCancel], 
-            ['reserve_itinerary_id' => $reserveItineraryId]
+            ['reserve_itinerary_id' => $reserveItineraryId, 'purchase_type' => config('consts.const.PURCHASE_NORMAL')]
         );
 
         return $targetRows->pluck("id")->toArray();
@@ -161,5 +162,15 @@ class ReserveParticipantAirplanePriceService implements ReserveParticipantPriceI
             ['is_alive_cancel' => true], 
             ['reserve_id' => $reserveId, 'reserve_itinerary_id' => $reserveItineraryId, 'purchase_type' => config('consts.const.PURCHASE_CANCEL'), 'valid' => true]
         );
+    }
+
+    /**
+     * バルクアップデート
+     *
+     * @param array $params
+     */
+    public function updateBulk(array $params) : bool
+    {
+        return $this->reserveParticipantAirplanePriceRepository->updateBulk($params);
     }
 }

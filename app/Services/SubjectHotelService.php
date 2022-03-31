@@ -15,7 +15,6 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use App\Traits\SubjectSuggestTrait;
 
-
 class SubjectHotelService
 {
     use ConstsTrait, UserCustomItemTrait, SubjectSuggestTrait;
@@ -50,6 +49,16 @@ class SubjectHotelService
     public function find(int $id, array $select=[])
     {
         return $this->subjectHotelRepository->find($id, $select);
+    }
+
+    /**
+     * 当該仕入コードを一件取得
+     *
+     * @param string $code 仕入コード
+     */
+    public function findByCode(int $agencyId, string $code) : ?SubjectHotel
+    {
+        return $this->subjectHotelRepository->findWhere(['agency_id' => $agencyId, 'code' => $code]);
     }
 
     /**

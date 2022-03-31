@@ -368,9 +368,10 @@ class ParticipantController extends Controller
                     $this->refreshItineraryTotalAmount($reserve->enabled_reserve_itinerary); // 有効行程の合計金額更新。不要かもしれないが、念の為
                 }
 
-                if ($oldParticipant->representative) { // 当該参加者が代表者"だった"場合
-                    event(new ReserveChangeRepresentativeEvent($reserve)); // 代表者更新イベント
-                }
+                // キャンセル時も特にoffにする必要もない気がするので一旦無効化
+                // if ($oldParticipant->representative) { // 当該参加者が代表者"だった"場合
+                //     event(new ReserveChangeRepresentativeEvent($reserve)); // 代表者更新イベント
+                // }
     
                 event(new ReserveChangeHeadcountEvent($reserve)); // 参加者人数変更イベント
 

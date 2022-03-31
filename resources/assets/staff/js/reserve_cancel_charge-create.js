@@ -1,7 +1,7 @@
 import React from "react";
 import ConstApp from "./components/ConstApp";
 import { render } from "react-dom";
-import CancelChargeArea from "./components/Reserve/CancelChargeArea";
+import CancelChargeArea from "./components/Reserve/CancelCharge/CancelChargeArea";
 
 const Element = document.getElementById("cancelChargeArea");
 if (Element) {

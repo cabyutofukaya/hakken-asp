@@ -10,7 +10,6 @@ use App\Events\UpdateBillingAmountEvent;
 use App\Events\UpdatedReserveEvent;
 use App\Exceptions\ExclusiveLockException;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Staff\ReserveCancelChargeUpdateRequest;
 use App\Http\Requests\Staff\ReserveStoretRequest;
 use App\Http\Requests\Staff\ReserveUpdateRequest;
 use App\Models\Reserve;
@@ -26,6 +25,7 @@ use App\Services\UserCustomItemService;
 use App\Services\ReserveItineraryService;
 use App\Traits\CancelChargeTrait;
 use App\Traits\ReserveControllerTrait;
+use App\Traits\ReserveItineraryTrait;
 use DB;
 use Exception;
 use Gate;
@@ -35,7 +35,7 @@ use Log;
 
 class ReserveController extends AppController
 {
-    use ReserveControllerTrait,CancelChargeTrait;
+    use ReserveControllerTrait,CancelChargeTrait,ReserveItineraryTrait;
 
     public function __construct(ReserveService $reserveService, ReserveInvoiceService $reserveInvoiceService, ReserveParticipantPriceService $reserveParticipantPriceService, ReserveParticipantOptionPriceService $reserveParticipantOptionPriceService, ReserveParticipantAirplanePriceService $reserveParticipantAirplanePriceService, ReserveParticipantHotelPriceService $reserveParticipantHotelPriceService, ReserveCustomValueService $reserveCustomValueService, UserCustomItemService $userCustomItemService, AccountPayableDetailService $accountPayableDetailService, ReserveItineraryService $reserveItineraryService)
     {
@@ -224,64 +224,15 @@ class ReserveController extends AppController
             abort(404);
         }
 
-        // 支払い情報を取得
-        $purchasingList = $this->getPurchasingListByReserve($reserve, null);
+        // 参加者情報
+        $participants = array();
+        foreach ($reserve->participants as $participant) {
+            $participants[$participant->id] = $this->getPaticipantRow($participant);
+        }
+
+        // 支払い情報を取得。有効仕入(valid=true)のみ取得
+        $purchasingList = $this->getPurchasingListByReserve($reserve, $participants, true);
 
         return view('staff.reserve.cancel_charge', compact('reserve', 'purchasingList'));
-    }
-
-    /**
-     * キャンセルチャージ処理
-     */
-    public function cancelChargeUpdate(ReserveCancelChargeUpdateRequest $request, string $agencyAccount, string $controlNumber)
-    {
-        $reserve = $this->reserveService->findByControlNumber($controlNumber, $agencyAccount);
-
-        // 認可チェック
-        $response = Gate::inspect('cancel', [$reserve]);
-        if (!$response->allowed()) {
-            abort(403);
-        }
-
-        try {
-            $input = $request->validated();
-
-            // 同時編集チェック
-            if ($reserve->updated_at != Arr::get($input, 'reserve.updated_at')) {
-                throw new ExclusiveLockException;
-            }
-
-            DB::transaction(function () use ($input, $reserve) {
-
-                // キャンセルチャージ料金を保存
-                $this->setReserveCancelCharge($input);
-                
-                $this->reserveService->cancel($reserve, true);
-
-                $this->refreshItineraryTotalAmount($reserve->enabled_reserve_itinerary); // 有効行程の合計金額更新
-
-                event(new UpdateBillingAmountEvent($this->reserveService->find($reserve->id))); // 請求金額変更イベント
-
-                /**カスタムステータスを「キャンセル」に更新 */
-
-                // ステータスのカスタム項目を取得
-                $customStatus =$this->userCustomItemService->findByCodeForAgency($reserve->agency_id, config('consts.user_custom_items.CODE_APPLICATION_RESERVE_STATUS'), ['key'], null);
-
-                if ($customStatus) {
-                    $this->reserveCustomValueService->upsertCustomFileds([$customStatus->key => config('consts.reserves.RESERVE_CANCEL_STATUS')], $reserve->id);
-
-                    // ステータス更新イベント
-                    event(new ReserveUpdateStatusEvent($this->reserveService->find($reserve->id)));
-                }
-            });
-
-            // 予約詳細ページへリダイレクト
-            return redirect()->route('staff.asp.estimates.reserve.show', [$agencyAccount, $controlNumber])->with('success_message', "「{$controlNumber}」のキャンセルチャージ処理が完了しました");
-        } catch (ExclusiveLockException $e) { // 同時編集エラー
-            return back()->withInput()->with('error_message', "他のユーザーによる編集済みレコードです。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
-        } catch (Exception $e) {
-            Log::error($e);
-        }
-        abort(500);
     }
 }
