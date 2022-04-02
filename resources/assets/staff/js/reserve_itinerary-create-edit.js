@@ -195,7 +195,11 @@ const ItineraryArea = ({
         ReserveItineraryConstContext
     );
 
-    const [isDeleteChecking, setIsDeleteChecking] = useState(false); // 削除可否チェック中か否か
+    const [isDeleteChecking, setIsDeleteChecking] = useState(false); //
+    const [
+        isPurchasingItemCanEditChecking,
+        setIsPurchasingItemCanEditChecking
+    ] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false); // form送信中か否か
 
     // ParticipantPriceTrait@getInitialDataと同じ処理
@@ -253,11 +257,44 @@ const ItineraryArea = ({
         ...newState
     }));
 
+    /**
+     * 仕入商品が編集可能かチェック
+     * 入金登録がなく、かつキャンセルユーザーがいない場合はtrue
+     */
+    const checkPurchasingItemCanEdit = async (subject, id, listInfo) => {
+        if (!mounted.current) return;
+        if (isPurchasingItemCanEditChecking) return;
+
+        setIsPurchasingItemCanEditChecking(true);
+
+        const response = await axios
+            .get(
+                `/api/${agencyAccount}/purchasing_subject/${subject}/${id}/can_edit`
+            )
+            .finally(() => {
+                if (mounted.current) {
+                    setIsPurchasingItemCanEditChecking(false);
+                }
+            });
+        if (mounted.current && response?.data?.result == "yes") {
+            targetPurchasingDispatch({
+                type: "CHANGE_PURCHASING_LOCK",
+                payload: {
+                    date: listInfo?.date,
+                    index: listInfo?.index,
+                    no: listInfo?.no,
+                    is_lock: false
+                }
+            });
+        } else {
+            console.log("checkPurchasingItemCanEdit api error.");
+        }
+    };
+
     // 現在、入力対象になっている仕入行情報の入力制御。下層プロパティの値を変更する際はディープコピーを使用すること！
     const [targetPurchasing, targetPurchasingDispatch] = useReducer(
         (state, action) => {
             let copyState = _.cloneDeep(state); // 下層プロパティを変更する処理が多いので一応、stateはディープコピーしたものを使用する
-
             switch (action.type) {
                 case "CHANGE_SUBJECT": //科目変更。subjectの値以外をリセット
                     return { ...initialTargetPurchasing, ...action.payload };
@@ -562,6 +599,18 @@ const ItineraryArea = ({
                         ][action.payload.no];
                     let copyData = _.cloneDeep(data);
                     copyData.mode = modes.purchasing_mode_edit; // PURCHASING_MODE_EDIT=編集
+                    copyData.purchasingLock = copyData?.id ? true : false; // 編集時(IDあり)は仕入情報編集ロックをtrueで初期化。「出金登録がないこと」と「キャンセルユーザーがいないこと」が確認できたらfalse(編集可能状態)に切り替える
+                    if (copyData?.id) {
+                        checkPurchasingItemCanEdit(
+                            copyData?.subject,
+                            copyData?.id,
+                            {
+                                date: action.payload.date,
+                                index: action.payload.index,
+                                no: action.payload.no
+                            }
+                        );
+                    }
                     return { ...copyData };
                 case "ADD_PURCHASING_MODAL": //仕入行追加ボタン押下
                     setTargetAddRow({
@@ -569,6 +618,14 @@ const ItineraryArea = ({
                         index: action.payload.index
                     }); // 追加対象行情報を設定
                     return { ...initialTargetPurchasing };
+                case "CHANGE_PURCHASING_LOCK": // 編集制御フラグを変更
+                    let rowData =
+                        lists[action.payload.date][action.payload.index][
+                            "reserve_purchasing_subjects"
+                        ][action.payload.no];
+                    let copyRowData = _.cloneDeep(rowData);
+                    copyRowData.purchasingLock = action.payload.is_lock;
+                    return { ...copyRowData };
                 default:
                     return copyState;
             }
@@ -761,7 +818,7 @@ const ItineraryArea = ({
 
                 const response = await axios
                     .get(
-                        `/api/${agencyAccount}/purchasing_subject/${row?.subject}/${row.id}/exist_withdrawal`
+                        `/api/${agencyAccount}/purchasing_subject/${row?.subject}/${row.id}/can_edit`
                     )
                     .finally(() => {
                         if (mounted.current) {
@@ -769,7 +826,7 @@ const ItineraryArea = ({
                         }
                     });
                 if (mounted.current && response?.data) {
-                    if (response.data === "no") {
+                    if (response?.data?.result == "yes") {
                         // 仕入行削除
                         rowDispatch({
                             type: "DELETE_PURCHASING_ROW",
@@ -779,10 +836,8 @@ const ItineraryArea = ({
                                 no
                             }
                         });
-                    } else if (response.data === "yes") {
-                        alert(
-                            "出金データがあるため削除できません。\n支払管理より、当該商品の出金履歴を削除してからご変更ください。"
-                        );
+                    } else if (response?.data?.result == "no") {
+                        alert(response?.data?.message);
                         $(".js-modal-close").trigger("click"); // 削除モーダルclose
                     }
                 }
@@ -848,12 +903,6 @@ const ItineraryArea = ({
 
     return (
         <>
-            {/**更新日時 */}
-            {/* <input
-                type="hidden"
-                name="updated_at"
-                value={defaultValue?.updated_at ?? ""}
-            /> */}
             <h2 className="subTit">
                 <span className="material-icons">subject </span>備考欄
             </h2>

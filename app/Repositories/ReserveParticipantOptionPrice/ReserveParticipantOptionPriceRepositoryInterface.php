@@ -13,13 +13,17 @@ interface ReserveParticipantOptionPriceRepositoryInterface
 
   public function existWithdrawalHistoryByReservePurchasingSubjectOptionId(int $reservePurchasingSubjectOptionId) : bool;
 
+  public function existCancelByReservePurchasingSubjectOptionId(int $reservePurchasingSubjectOptionId) : bool;
+  
   public function getWhere(array $where, array $with = [], array $select = [], bool $getDeleted = false): Collection;
 
   public function updateIds(array $update, array $ids) : bool;
 
   public function updateWhere(array $update, array $where) : bool;
 
-  public function updateBulk(array $params) : bool;
+  public function insert(array $params) : bool;
+
+  public function updateBulk(array $params, string $id) : bool;
 
   public function whereExists(array $where, bool $getDeleted = false) : bool;
 }

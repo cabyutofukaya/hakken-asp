@@ -35,6 +35,7 @@ class IndexResource extends JsonResource
             'use_date' => $this->use_date,
             'status' => $this->status,
             'status_label' => $this->status_label,
+            'supplier_id' => $this->supplier_id,
             'supplier_name' => $this->supplier_name,
             'item_code' => $this->item_code,
             'item_name' => $this->item_name,

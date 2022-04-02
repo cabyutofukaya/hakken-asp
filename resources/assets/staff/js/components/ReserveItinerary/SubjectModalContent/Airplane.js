@@ -108,6 +108,7 @@ const Airplane = ({
                                         payload: { subject: e.target.value }
                                     })
                                 }
+                                disabled={input?.purchasingLock}
                             >
                                 {subjectCategoryNames &&
                                     Object.keys(subjectCategoryNames).map(
@@ -134,6 +135,7 @@ const Airplane = ({
                             }
                             name="name"
                             defaultOptions={defaultSubjectAirplanes}
+                            readOnly={input?.purchasingLock}
                         />
                     </li>
                     <li className="wd50">
@@ -147,6 +149,7 @@ const Airplane = ({
                                         payload: { supplier_id: e.target.value }
                                     })
                                 }
+                                disabled={input?.purchasingLock}
                             >
                                 {suppliers &&
                                     Object.keys(suppliers)

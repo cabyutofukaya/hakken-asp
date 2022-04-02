@@ -28,6 +28,9 @@ use App\Services\ReserveScheduleService;
 use App\Services\ReserveService;
 use App\Services\ReserveTravelDateService;
 use App\Services\SupplierService;
+use App\Services\ReserveParticipantOptionPriceService;
+use App\Services\ReserveParticipantAirplanePriceService;
+use App\Services\ReserveParticipantHotelPriceService;
 use App\Traits\UserCustomItemTrait;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
@@ -54,7 +57,10 @@ class ReserveItineraryService
         SupplierRepository $supplierRepository,
         AccountPayableDetailService $accountPayableDetailService,
         SupplierService $supplierService,
-        ReserveRepository $reserveRepository
+        ReserveRepository $reserveRepository,
+        ReserveParticipantOptionPriceService $reserveParticipantOptionPriceService,
+        ReserveParticipantAirplanePriceService $reserveParticipantAirplanePriceService,
+        ReserveParticipantHotelPriceService $reserveParticipantHotelPriceService
     ) {
         $this->accountPayableDetailService = $accountPayableDetailService;
         $this->accountPayableService = $accountPayableService;
@@ -74,6 +80,9 @@ class ReserveItineraryService
         $this->reserveTravelDateService = $reserveTravelDateService;
         $this->supplierRepository = $supplierRepository;
         $this->supplierService = $supplierService;
+        $this->reserveParticipantOptionPriceService = $reserveParticipantOptionPriceService;
+        $this->reserveParticipantAirplanePriceService = $reserveParticipantAirplanePriceService;
+        $this->reserveParticipantHotelPriceService = $reserveParticipantHotelPriceService;
     }
 
     /**
@@ -118,9 +127,7 @@ class ReserveItineraryService
     }
 
     /**
-     * 買い掛け金詳細upsert処理
-     *
-     * 無効フラグがONのときは金額情報を0円に初期化。出金登録を消してしまうとキャンセルチャージ処理の際に商品数が合わなくなってしまう
+     * 買い掛け金詳細レコードを作成or更新するためのパラメータを生成
      *
      * @param int $agencyId 会社ID
      * @param int $reserveId 予約ID
@@ -132,27 +139,42 @@ class ReserveItineraryService
      * @param string $useDate 利用日
      * @param string $paymentDate 支払日
      */
-    private function accountPayableDetailCommon(int $agencyId, int $reserveId, int $reserveItineraryId, int $reserveTravelDateId, int $reserveScheduleId, bool $valid, bool $isCancel, int $accountPayableId, ParticipantPriceInterface $participantPrice, Supplier $supplier, ?string $itemCode, ?string $itemName, string $useDate, ?string $paymentDate) : ?AccountPayableDetail
-    {
-        // 検索条件
-        $attributes = [
-            'reserve_schedule_id' => $reserveScheduleId,
-            'saleable_type' => get_class($participantPrice),
-            'saleable_id' => $participantPrice->id,
-        ];
-
+    private function accountPayableDetailCommon(
+        &$insertRows,
+        &$updateRows,
+        int $agencyId,
+        int $reserveId,
+        int $reserveItineraryId,
+        int $reserveTravelDateId,
+        int $reserveScheduleId,
+        bool $valid,
+        bool $isCancel,
+        int $accountPayableId,
+        ParticipantPriceInterface $participantPrice,
+        Supplier $supplier,
+        ?string $itemCode,
+        ?string $itemName,
+        string $useDate,
+        ?string $paymentDate
+    ) : void {
         $amountBilled = 0;
         if ($participantPrice->purchase_type == config('consts.const.PURCHASE_NORMAL')) {
             $amountBilled = !$valid ? 0 : ($participantPrice->net ?? 0); // 数字なのでnullの場合は0で初期化
         } elseif ($participantPrice->purchase_type == config('consts.const.PURCHASE_CANCEL')) {
             $amountBilled = !$isCancel ? 0 : ($participantPrice->cancel_charge_net ?? 0); // 数字なのでnullの場合は0で初期化
         }
-
-        // $amountPayment = !$valid ? 0 : ($participantPrice->cost ?? 0); // 数字なのでnullの場合は0で初期化
         
-        /////////// 更新or登録が必要な場合は以下の処理
+        // 新規か更新かを判断してパラメータを準備
+        $attributes = [
+            'reserve_schedule_id' => $reserveScheduleId,
+            'saleable_type' => get_class($participantPrice),
+            'saleable_id' => $participantPrice->id,
+        ];
 
-        $accountPayableDetail = $this->accountPayableDetailService->updateOrCreate(
+        $result = $this->accountPayableDetailService->findWhere($attributes, [], ['id']);
+
+        //SQLに渡すパラメータ
+        $tmp = array_merge(
             $attributes,
             [
                 'account_payable_id' => $accountPayableId,
@@ -165,16 +187,77 @@ class ReserveItineraryService
                 'item_code' => $itemCode,
                 'item_name' => $itemName,
                 'amount_billed' => $amountBilled,
-                // 'amount_payment' => $amountPayment,
                 'use_date' => $useDate,
                 'payment_date' => $paymentDate,
             ]
         );
 
-        event(new ChangePaymentAmountEvent($accountPayableDetail->id));
-    
-        return $accountPayableDetail;
+        if ($result) { // 更新
+            $tmp['id'] = $result->id;
+            $updateRows[] = $tmp;
+        } else { // 新規
+            $insertRows[] = $tmp;
+        }
     }
+
+    // /**
+    //  * 買い掛け金詳細upsert処理
+    //  *
+    //  * 無効フラグがONのときは金額情報を0円に初期化。出金登録を消してしまうとキャンセルチャージ処理の際に商品数が合わなくなってしまう
+    //  *
+    //  * @param int $agencyId 会社ID
+    //  * @param int $reserveId 予約ID
+    //  * @param int $reserveItineraryId 行程ID
+    //  * @param int $reserveTravelDateId 旅行日ID
+    //  * @param int $reserveScheduleId スケジュールID
+    //  * @param bool $valid 科目の有効・無効フラグ
+    //  * @param bool $isCancel 科目のキャンセルフラグ
+    //  * @param string $useDate 利用日
+    //  * @param string $paymentDate 支払日
+    //  */
+    // private function accountPayableDetailCommon(int $agencyId, int $reserveId, int $reserveItineraryId, int $reserveTravelDateId, int $reserveScheduleId, bool $valid, bool $isCancel, int $accountPayableId, ParticipantPriceInterface $participantPrice, Supplier $supplier, ?string $itemCode, ?string $itemName, string $useDate, ?string $paymentDate) : ?AccountPayableDetail
+    // {
+    //     // 検索条件
+    //     $attributes = [
+    //         'reserve_schedule_id' => $reserveScheduleId,
+    //         'saleable_type' => get_class($participantPrice),
+    //         'saleable_id' => $participantPrice->id,
+    //     ];
+
+    //     $amountBilled = 0;
+    //     if ($participantPrice->purchase_type == config('consts.const.PURCHASE_NORMAL')) {
+    //         $amountBilled = !$valid ? 0 : ($participantPrice->net ?? 0); // 数字なのでnullの場合は0で初期化
+    //     } elseif ($participantPrice->purchase_type == config('consts.const.PURCHASE_CANCEL')) {
+    //         $amountBilled = !$isCancel ? 0 : ($participantPrice->cancel_charge_net ?? 0); // 数字なのでnullの場合は0で初期化
+    //     }
+
+    //     // $amountPayment = !$valid ? 0 : ($participantPrice->cost ?? 0); // 数字なのでnullの場合は0で初期化
+        
+    //     /////////// 更新or登録が必要な場合は以下の処理
+
+    //     $accountPayableDetail = $this->accountPayableDetailService->updateOrCreate(
+    //         $attributes,
+    //         [
+    //             'account_payable_id' => $accountPayableId,
+    //             'agency_id' => $agencyId,
+    //             'reserve_id' => $reserveId,
+    //             'reserve_itinerary_id' => $reserveItineraryId,
+    //             'reserve_travel_date_id' => $reserveTravelDateId,
+    //             'supplier_id' => $supplier->id,
+    //             'supplier_name' => $supplier->name,
+    //             'item_code' => $itemCode,
+    //             'item_name' => $itemName,
+    //             'amount_billed' => $amountBilled,
+    //             // 'amount_payment' => $amountPayment,
+    //             'use_date' => $useDate,
+    //             'payment_date' => $paymentDate,
+    //         ]
+    //     );
+
+    //     event(new ChangePaymentAmountEvent($accountPayableDetail->id));
+    
+    //     return $accountPayableDetail;
+    // }
 
     /**
      * 登録、編集の共通処理
@@ -192,6 +275,13 @@ class ReserveItineraryService
 
         // 支払い先情報は、仕入先名の取得や支払日計算に使うので何度もDBから取得しないように配列に保持
         $suppliers = [];
+
+        // reserve_participant_option_pricesのカラム一覧
+        $reserveParticipantOptionPriceColumns = \Schema::getColumnListing('reserve_participant_option_prices');
+        // reserve_participant_airplane_pricesのカラム一覧
+        $reserveParticipantAirplanePriceColumns = \Schema::getColumnListing('reserve_participant_airplane_prices');
+        // reserve_participant_hotel_pricesのカラム一覧
+        $reserveParticipantHotelPriceColumns = \Schema::getColumnListing('reserve_participant_hotel_prices');
 
         if ($dates) {
             foreach ($dates as $date) {
@@ -292,7 +382,6 @@ class ReserveItineraryService
                                 // 仕入業者に対する支払日を算出
                                 $paymentDate = $this->accountPayableService->calcPaymentDate($currentSupplier, $reserveItinerary->reserve);
 
-
                                 if ($purchasingSubject['subject'] === config('consts.subject_categories.SUBJECT_CATEGORY_OPTION')) { // オプション科目
 
                                     $subject = $this->reservePurchasingSubjectOptionService->updateOrCreate(
@@ -309,24 +398,48 @@ class ReserveItineraryService
                                     // 参加者の料金テーブル保存
                                     $participantPrices = Arr::get($purchasingSubject, "participants", []);
                                     if ($participantPrices) { // 参加者料金
-                                        foreach ($participantPrices as $participantPrice) {
-                                            $price = $subject->reserve_participant_prices()->updateOrCreate(
-                                                ['id' => Arr::get($participantPrice, 'id')],
-                                                array_merge(
-                                                    $participantPrice,
-                                                    ['agency_id' => $agencyId, 'reserve_itinerary_id' => $reserveItinerary->id, 'reserve_id' => $reserveItinerary->reserve_id]
-                                                )
-                                            );
 
-                                            // 買い掛け金明細管理
+                                        /** バルクインサート、バルクアップデートに使用するパラメータを保存 */
+                                        $insertRows = [];
+                                        $updateRows = [];
+                                        $accountPayableDetailInsertRows = [];
+                                        $accountPayableDetailUpdateRows = [];
+                                        // saleable_idリストを保存。後に処理する編集対象となるaccount_payable_detailsを検索するために使用
+                                        $saleableIds = [];
+
+                                        foreach ($participantPrices as $participantPrice) {
+                                            $tmp=[];
+                                            if (($pid=Arr::get($participantPrice, 'id'))) { // IDあり -> 更新
+                                                $tmp = array_merge(
+                                                    collect($participantPrice)->only($reserveParticipantOptionPriceColumns)->toArray(),
+                                                    ['agency_id' => $agencyId, 'reserve_itinerary_id' => $reserveItinerary->id, 'reserve_id' => $reserveItinerary->reserve_id, 'reserve_purchasing_subject_option_id' => $subject->id]
+                                                );
+                                                $updateRows[] = $tmp;
+                                            } else { // IDナシ -> 新規
+                                                $tmp = array_merge(
+                                                    collect($participantPrice)->only($reserveParticipantOptionPriceColumns)->toArray(),
+                                                    ['agency_id' => $agencyId, 'reserve_itinerary_id' => $reserveItinerary->id, 'reserve_id' => $reserveItinerary->reserve_id, 'reserve_purchasing_subject_option_id' => $subject->id]
+                                                );
+                                                unset($tmp['id']); // 一応IDカラム除去
+                                                $insertRows[] = $tmp;
+                                            }
+                                        }
+
+                                        // reserve_participant_option_pricesレコードをバルクインサートとバルクアップデート
+                                        $insertRows && $this->reserveParticipantOptionPriceService->insert($insertRows);
+                                        $updateRows && $this->reserveParticipantOptionPriceService->updateBulk($updateRows, 'id');
+
+                                        foreach (\App\Models\ReserveParticipantOptionPrice::where('reserve_purchasing_subject_option_id', $subject->id)->get() as $price) {
                                             $this->accountPayableDetailCommon(
+                                                $accountPayableDetailInsertRows,
+                                                $accountPayableDetailUpdateRows,
                                                 $agencyId,
                                                 $reserveItinerary->reserve_id,
                                                 $reserveItinerary->id,
                                                 $reserveTravelDate->id,
                                                 $reserveSchedule->id,
-                                                Arr::get($participantPrice, 'valid') == 1,
-                                                Arr::get($participantPrice, 'is_cancel') == 1,
+                                                $price->valid == 1,
+                                                $price->is_cancel == 1,
                                                 $accountPayable->id,
                                                 $price,
                                                 $currentSupplier,
@@ -335,6 +448,18 @@ class ReserveItineraryService
                                                 $date,
                                                 $paymentDate
                                             );
+
+                                            $saleableIds[] = $price->id;
+                                        }
+                                        // print_r($accountPayableDetailInsertRows);
+                                        // print_r($accountPayableDetailUpdateRows);
+
+                                        // account_payable_detailsをバルクインサートとバルクアップデート
+                                        $accountPayableDetailInsertRows && $this->accountPayableDetailService->insert($accountPayableDetailInsertRows);
+                                        $accountPayableDetailUpdateRows && $this->accountPayableDetailService->updateBulk($accountPayableDetailUpdateRows, 'id');
+
+                                        foreach (\App\Models\AccountPayableDetail::select("id")->where('reserve_schedule_id', $reserveSchedule->id)->where('saleable_type', 'App\Models\ReserveParticipantOptionPrice')->whereIn('saleable_id', $saleableIds)->get() as $accountPayableDetail) {
+                                            event(new ChangePaymentAmountEvent($accountPayableDetail->id));
                                         }
                                     }
                                 } elseif ($purchasingSubject['subject'] === config('consts.subject_categories.SUBJECT_CATEGORY_AIRPLANE')) { // 航空科目
@@ -353,24 +478,51 @@ class ReserveItineraryService
                                     // 参加者の料金テーブル保存
                                     $participantPrices = Arr::get($purchasingSubject, "participants", []);
                                     if ($participantPrices) { // 参加者料金
-                                        foreach ($participantPrices as $participantPrice) {
-                                            $price = $subject->reserve_participant_prices()->updateOrCreate(
-                                                ['id' => Arr::get($participantPrice, 'id')],
-                                                array_merge(
-                                                    $participantPrice,
-                                                    ['agency_id' => $agencyId, 'reserve_itinerary_id' => $reserveItinerary->id, 'reserve_id' => $reserveItinerary->reserve_id]
-                                                )
-                                            );
 
-                                            // 買い掛け金明細管理
+                                        /** バルクインサート、バルクアップデートに使用するパラメータを保存 */
+                                        $insertRows = [];
+                                        $updateRows = [];
+                                        $accountPayableDetailInsertRows = [];
+                                        $accountPayableDetailUpdateRows = [];
+                                        // saleable_idリストを保存。後に処理する編集対象となるaccount_payable_detailsを検索するために使用
+                                        $saleableIds = [];
+
+                                        foreach ($participantPrices as $participantPrice) {
+                                            $tmp=[];
+                                            if (($pid=Arr::get($participantPrice, 'id'))) { // IDあり -> 更新
+                                                $tmp = array_merge(
+                                                    collect($participantPrice)->only($reserveParticipantAirplanePriceColumns)->toArray(),
+                                                    ['agency_id' => $agencyId, 'reserve_itinerary_id' => $reserveItinerary->id, 'reserve_id' => $reserveItinerary->reserve_id, 'reserve_purchasing_subject_airplane_id' => $subject->id]
+                                                );
+                                                $updateRows[] = $tmp;
+                                            } else { // IDナシ -> 新規
+                                                $tmp = array_merge(
+                                                    collect($participantPrice)->only($reserveParticipantAirplanePriceColumns)->toArray(),
+                                                    ['agency_id' => $agencyId, 'reserve_itinerary_id' => $reserveItinerary->id, 'reserve_id' => $reserveItinerary->reserve_id, 'reserve_purchasing_subject_airplane_id' => $subject->id]
+                                                );
+                                                unset($tmp['id']); // 一応IDカラム除去
+                                                $insertRows[] = $tmp;
+                                            }
+                                        }
+
+                                        // print_r($insertRows);
+                                        // print_r($updateRows);
+                                            
+                                        // reserve_participant_airplane_pricesレコードをバルクインサートとバルクアップデート
+                                        $insertRows && $this->reserveParticipantAirplanePriceService->insert($insertRows);
+                                        $updateRows && $this->reserveParticipantAirplanePriceService->updateBulk($updateRows, 'id');
+
+                                        foreach (\App\Models\ReserveParticipantAirplanePrice::where('reserve_purchasing_subject_airplane_id', $subject->id)->get() as $price) {
                                             $this->accountPayableDetailCommon(
+                                                $accountPayableDetailInsertRows,
+                                                $accountPayableDetailUpdateRows,
                                                 $agencyId,
                                                 $reserveItinerary->reserve_id,
                                                 $reserveItinerary->id,
                                                 $reserveTravelDate->id,
                                                 $reserveSchedule->id,
-                                                Arr::get($participantPrice, 'valid') == 1,
-                                                Arr::get($participantPrice, 'is_cancel') == 1,
+                                                $price->valid == 1,
+                                                $price->is_cancel == 1,
                                                 $accountPayable->id,
                                                 $price,
                                                 $currentSupplier,
@@ -379,6 +531,18 @@ class ReserveItineraryService
                                                 $date,
                                                 $paymentDate
                                             );
+    
+                                            $saleableIds[] = $price->id;
+                                        }
+                                        // print_r($accountPayableDetailInsertRows);
+                                        // print_r($accountPayableDetailUpdateRows);
+
+                                        // account_payable_detailsをバルクインサートとバルクアップデート
+                                        $accountPayableDetailInsertRows && $this->accountPayableDetailService->insert($accountPayableDetailInsertRows);
+                                        $accountPayableDetailUpdateRows && $this->accountPayableDetailService->updateBulk($accountPayableDetailUpdateRows, 'id');
+
+                                        foreach (\App\Models\AccountPayableDetail::select("id")->where('reserve_schedule_id', $reserveSchedule->id)->where('saleable_type', 'App\Models\ReserveParticipantAirplanePrice')->whereIn('saleable_id', $saleableIds)->get() as $accountPayableDetail) {
+                                            event(new ChangePaymentAmountEvent($accountPayableDetail->id));
                                         }
                                     }
                                 } elseif ($purchasingSubject['subject'] === config('consts.subject_categories.SUBJECT_CATEGORY_HOTEL')) { // ホテル科目
@@ -397,24 +561,49 @@ class ReserveItineraryService
                                     // 参加者の料金テーブル保存
                                     $participantPrices = Arr::get($purchasingSubject, "participants", []);
                                     if ($participantPrices) { // 参加者料金
-                                        foreach ($participantPrices as $participantPrice) {
-                                            $price = $subject->reserve_participant_prices()->updateOrCreate(
-                                                ['id' => Arr::get($participantPrice, 'id')],
-                                                array_merge(
-                                                    $participantPrice,
-                                                    ['agency_id' => $agencyId, 'reserve_itinerary_id' => $reserveItinerary->id, 'reserve_id' => $reserveItinerary->reserve_id]
-                                                )
-                                            );
 
-                                            // 買い掛け金明細管理
+                                        /** バルクインサート、バルクアップデートに使用するパラメータを保存 */
+                                        $insertRows = [];
+                                        $updateRows = [];
+                                        $accountPayableDetailInsertRows = [];
+                                        $accountPayableDetailUpdateRows = [];
+                                        // saleable_idリストを保存。後に処理する編集対象となるaccount_payable_detailsを検索するために使用
+                                        $saleableIds = [];
+
+                                        foreach ($participantPrices as $participantPrice) {
+                                            $tmp=[];
+                                            if (($pid=Arr::get($participantPrice, 'id'))) { // IDあり -> 更新
+                                                $tmp = array_merge(
+                                                    collect($participantPrice)->only($reserveParticipantHotelPriceColumns)->toArray(),
+                                                    ['agency_id' => $agencyId, 'reserve_itinerary_id' => $reserveItinerary->id, 'reserve_id' => $reserveItinerary->reserve_id, 'reserve_purchasing_subject_hotel_id' => $subject->id]
+                                                );
+                                                $updateRows[] = $tmp;
+                                            } else { // IDナシ -> 新規
+                                                $tmp = array_merge(
+                                                    collect($participantPrice)->only($reserveParticipantHotelPriceColumns)->toArray(),
+                                                    ['agency_id' => $agencyId, 'reserve_itinerary_id' => $reserveItinerary->id, 'reserve_id' => $reserveItinerary->reserve_id, 'reserve_purchasing_subject_hotel_id' => $subject->id]
+                                                );
+                                                unset($tmp['id']); // 一応IDカラム除去
+                                                $insertRows[] = $tmp;
+                                            }
+                                        }
+                                        // print_r($insertRows);
+                                        // print_r($updateRows);
+                                        // reserve_participant_hotel_pricesレコードをバルクインサートとバルクアップデート
+                                        $insertRows && $this->reserveParticipantHotelPriceService->insert($insertRows);
+                                        $updateRows && $this->reserveParticipantHotelPriceService->updateBulk($updateRows, 'id');
+
+                                        foreach (\App\Models\ReserveParticipantHotelPrice::where('reserve_purchasing_subject_hotel_id', $subject->id)->get() as $price) {
                                             $this->accountPayableDetailCommon(
+                                                $accountPayableDetailInsertRows,
+                                                $accountPayableDetailUpdateRows,
                                                 $agencyId,
                                                 $reserveItinerary->reserve_id,
                                                 $reserveItinerary->id,
                                                 $reserveTravelDate->id,
                                                 $reserveSchedule->id,
-                                                Arr::get($participantPrice, 'valid') == 1,
-                                                Arr::get($participantPrice, 'is_cancel') == 1,
+                                                $price->valid == 1,
+                                                $price->is_cancel == 1,
                                                 $accountPayable->id,
                                                 $price,
                                                 $currentSupplier,
@@ -423,6 +612,20 @@ class ReserveItineraryService
                                                 $date,
                                                 $paymentDate
                                             );
+
+                                            $saleableIds[] = $price->id;
+                                        }
+
+                                        // print_r($saleableIds);
+                                        // print_r($accountPayableDetailInsertRows);
+                                        // print_r($accountPayableDetailUpdateRows);
+
+                                        // account_payable_detailsをバルクインサートとバルクアップデート
+                                        $accountPayableDetailInsertRows && $this->accountPayableDetailService->insert($accountPayableDetailInsertRows);
+                                        $accountPayableDetailUpdateRows && $this->accountPayableDetailService->updateBulk($accountPayableDetailUpdateRows, 'id');
+
+                                        foreach (\App\Models\AccountPayableDetail::select("id")->where('reserve_schedule_id', $reserveSchedule->id)->where('saleable_type', 'App\Models\ReserveParticipantHotelPrice')->whereIn('saleable_id', $saleableIds)->get() as $accountPayableDetail) {
+                                            event(new ChangePaymentAmountEvent($accountPayableDetail->id));
                                         }
                                     }
                                 } else { // 未定義科目

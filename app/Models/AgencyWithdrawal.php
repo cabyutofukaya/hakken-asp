@@ -29,11 +29,11 @@ class AgencyWithdrawal extends Model
         'reserve_travel_date_id',
         'account_payable_detail_id',
         'amount',
-        // 'withdrawal_method',
         'withdrawal_date',
         'record_date',
         'manager_id',
         'participant_id',
+        'supplier_id_log',
         'note',
     ];
 

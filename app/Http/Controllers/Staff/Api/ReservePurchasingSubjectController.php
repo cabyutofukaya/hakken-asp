@@ -24,7 +24,7 @@ class ReservePurchasingSubjectController extends Controller
 
     /**
      * 当該スケジュールに出金登録がされている場合はyes
-     * 
+     *
      * @param int $reserveScheduleId スケジュールID
      */
     public function existScheduleWithdrawal(string $agencyAccount, int $reserveScheduleId)
@@ -35,21 +35,42 @@ class ReservePurchasingSubjectController extends Controller
     }
 
     /**
-     * 当該科目に出金登録がされている場合はyes
+     * 当該仕入商品が編集可能か否か
+     * 出金登録がなくキャンセルユーザーがいなければ編集可
      */
-    public function existSubjectWithdrawal(string $agencyAccount, string $subject, int $id)
+    public function canItemEdit(string $agencyAccount, string $subject, int $id)
     {
-        $result = null;
+        $exists1 = true;
+        $exists2 = true;
+
         if ($subject === config('consts.subject_categories.SUBJECT_CATEGORY_OPTION')) {
-            $result = $this->reserveParticipantOptionPriceService->existWithdrawalHistoryByReservePurchasingSubjectOptionId($id);
+            $exists1 = $this->reserveParticipantOptionPriceService->existWithdrawalHistoryByReservePurchasingSubjectOptionId($id); // 出金登録の有無を確認
+
+            $exists2 = $this->reserveParticipantOptionPriceService->existCancelByReservePurchasingSubjectOptionId($id); // キャンセルレコードの有無を確認
         } elseif ($subject === config('consts.subject_categories.SUBJECT_CATEGORY_AIRPLANE')) {
-            $result = $this->reserveParticipantAirplanePriceService->existWithdrawalHistoryByReservePurchasingSubjectAirplaneId($id);
+            $exists1 = $this->reserveParticipantAirplanePriceService->existWithdrawalHistoryByReservePurchasingSubjectAirplaneId($id); // 出金登録の有無を確認
+
+            $exists2 = $this->reserveParticipantAirplanePriceService->existCancelByReservePurchasingSubjectAirplaneId($id); // キャンセルレコードの有無を確認
         } elseif ($subject === config('consts.subject_categories.SUBJECT_CATEGORY_HOTEL')) {
-            $result = $this->reserveParticipantHotelPriceService->existWithdrawalHistoryByReservePurchasingSubjectHotelId($id);
+            $exists1 = $this->reserveParticipantHotelPriceService->existWithdrawalHistoryByReservePurchasingSubjectHotelId($id); // 出金登録の有無を確認
+
+            $exists2 = $this->reserveParticipantHotelPriceService->existCancelByReservePurchasingSubjectHotelId($id); // キャンセルレコードの有無を確認
         } else {
             abort(400);
         }
-        
-        return response($result ? 'yes' : 'no', 200);
+
+        if (!$exists1 && !$exists2) {
+            return ['result' => 'yes'];
+        } else {
+            $err = [];
+            if ($exists1) {
+                $err[] = "出金データがあるため削除できません。支払管理より、当該商品の出金履歴を削除してからご変更ください。";
+            }
+            if ($exists2) {
+                $err[] = "キャンセル参加者情報があるため削除できません。";
+            }
+
+            return ['result' => 'no', 'message' => implode("\n", $err)];
+        }
     }
 }

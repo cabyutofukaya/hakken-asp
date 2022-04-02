@@ -29,6 +29,17 @@ class ReserveParticipantHotelPriceService implements ReserveParticipantPriceInte
     }
 
     /**
+     * 当該reserve_purchasing_subject_hotel_idに紐づくキャンセルレコードが存在する場合はtrue
+     *
+     * @param int $reservePurchasingSubjectHotelId
+     * @return bool
+     */
+    public function existCancelByReservePurchasingSubjectHotelId(int $reservePurchasingSubjectHotelId)
+    {
+        return $this->reserveParticipantHotelPriceRepository->existCancelByReservePurchasingSubjectHotelId($reservePurchasingSubjectHotelId);
+    }
+
+    /**
      * 参加者IDに紐づくレコードを削除
      *
      * @param int $participantId 参加者ID
@@ -165,12 +176,20 @@ class ReserveParticipantHotelPriceService implements ReserveParticipantPriceInte
     }
 
     /**
+     * バルクインサート
+     */
+    public function insert(array $params) : bool
+    {
+        return $this->reserveParticipantHotelPriceRepository->insert($params);
+    }
+
+    /**
      * バルクアップデート
      *
      * @param array $params
      */
-    public function updateBulk(array $params) : bool
+    public function updateBulk(array $params, string $id = "id") : bool
     {
-        return $this->reserveParticipantHotelPriceRepository->updateBulk($params);
+        return $this->reserveParticipantHotelPriceRepository->updateBulk($params, $id);
     }
 }

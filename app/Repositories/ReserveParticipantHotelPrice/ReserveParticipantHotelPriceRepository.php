@@ -52,14 +52,24 @@ class ReserveParticipantHotelPriceRepository implements ReserveParticipantHotelP
         // return true;
     }
 
+        
+    /**
+     * バルクインサート
+     */
+    public function insert(array $params) : bool
+    {
+        $this->reserveParticipantHotelPrice->insert($params);
+        return true;
+    }
+
     /**
      * バルクアップデート
      *
      * @param array $params
      */
-    public function updateBulk(array $params) : bool
+    public function updateBulk(array $params, string $id) : bool
     {
-        $this->reserveParticipantHotelPrice->updateBulk($params);
+        $this->reserveParticipantHotelPrice->updateBulk($params, $id);
         return true;
     }
 
@@ -85,12 +95,28 @@ class ReserveParticipantHotelPriceRepository implements ReserveParticipantHotelP
      */
     public function existWithdrawalHistoryByReservePurchasingSubjectHotelId(int $reservePurchasingSubjectHotelId) : bool
     {
-        // 有効ステータスのみ対象
+        // 有効無効全ステータスが対象
         return
-            $this->reserveParticipantHotelPrice->isValid() // 有効のみチェック対象に
-            ->where('reserve_purchasing_subject_hotel_id', $reservePurchasingSubjectHotelId)
-            ->whereHas("account_payable_detail.agency_withdrawals")
-            ->exists();
+            $this->reserveParticipantHotelPrice
+                ->where('reserve_purchasing_subject_hotel_id', $reservePurchasingSubjectHotelId)
+                ->whereHas("account_payable_detail.agency_withdrawals")
+                ->exists();
+    }
+
+    /**
+     * 当該reserve_purchasing_subject_hotel_idに紐づくキャンセルレコードが存在する場合はtrue
+     *
+     * @param int $reservePurchasingSubjectHotelId
+     * @return bool
+     */
+    public function existCancelByReservePurchasingSubjectHotelId(int $reservePurchasingSubjectHotelId) : bool
+    {
+        // 有効無効全ステータスが対象
+        return
+            $this->reserveParticipantHotelPrice
+                ->where('reserve_purchasing_subject_hotel_id', $reservePurchasingSubjectHotelId)
+                ->where('is_alive_cancel', true) // 明示的なキャンセル
+                ->exists();
     }
 
     /**

@@ -16,7 +16,7 @@ interface AccountPayableDetailRepositoryInterface
   
   public function findWhere(array $where, array $with=[], array $select=[]) : ?AccountPayableDetail;
 
-  public function whereExists($where) : ?AccountPayableDetail;
+  public function whereExists($where) : bool;
 
   public function save($data) : AccountPayableDetail;
 
@@ -28,6 +28,10 @@ interface AccountPayableDetailRepositoryInterface
 
   public function updateWhereBulk(array $where, array $params, string $id='id') : bool;
 
+  public function insert(array $params) : bool;
+
+  public function updateBulk(array $params, string $id) : bool;
+  
   public function paginateByAgencyId(int $agencyId, array $params, int $limit, ?string $applicationStep, array $with, array $select, bool $exZero = true) : LengthAwarePaginator;
   
   public function updateOrCreate(array $where, array $params) : AccountPayableDetail;

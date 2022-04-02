@@ -93,13 +93,13 @@ class AccountPayableDetailRepository implements AccountPayableDetailRepositoryIn
     /**
      * 当該条件のレコードが存在するか
      */
-    public function whereExists($where) : ?AccountPayableDetail
+    public function whereExists($where) : bool
     {
         $query = $this->accountPayableDetail;
         foreach ($where as $key => $val) {
             $query = $query->where($key, $val);
         }
-        return $query->first();
+        return $query->exists();
     }
 
     /**
@@ -175,6 +175,26 @@ class AccountPayableDetailRepository implements AccountPayableDetailRepositoryIn
             $query = $query->where($key, $val);
         }
         $query->updateBulk($params, $id);
+        return true;
+    }
+
+    /**
+     * バルクインサート
+     */
+    public function insert(array $params) : bool
+    {
+        $this->accountPayableDetail->insert($params);
+        return true;
+    }
+    
+    /**
+     * バルクアップデート
+     *
+     * @param array $params
+     */
+    public function updateBulk(array $params, string $id) : bool
+    {
+        $this->accountPayableDetail->updateBulk($params, $id);
         return true;
     }
 

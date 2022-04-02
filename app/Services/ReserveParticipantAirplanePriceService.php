@@ -29,6 +29,17 @@ class ReserveParticipantAirplanePriceService implements ReserveParticipantPriceI
     }
 
     /**
+     * 当該reserve_purchasing_subject_airplane_idに紐づくキャンセルレコードが存在する場合はtrue
+     *
+     * @param int $reservePurchasingSubjectAirplaneId
+     * @return bool
+     */
+    public function existCancelByReservePurchasingSubjectAirplaneId(int $reservePurchasingSubjectAirplaneId)
+    {
+        return $this->reserveParticipantAirplanePriceRepository->existCancelByReservePurchasingSubjectAirplaneId($reservePurchasingSubjectAirplaneId);
+    }
+
+    /**
      * 参加者IDに紐づくレコードを削除
      *
      * @param int $participantId 参加者ID
@@ -169,8 +180,17 @@ class ReserveParticipantAirplanePriceService implements ReserveParticipantPriceI
      *
      * @param array $params
      */
-    public function updateBulk(array $params) : bool
+    public function updateBulk(array $params, string $id = "id") : bool
     {
-        return $this->reserveParticipantAirplanePriceRepository->updateBulk($params);
+        return $this->reserveParticipantAirplanePriceRepository->updateBulk($params, $id);
     }
+
+    /**
+     * バルクインサート
+     */
+    public function insert(array $params) : bool
+    {
+        return $this->reserveParticipantAirplanePriceRepository->insert($params);
+    }
+
 }
