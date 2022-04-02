@@ -28,5 +28,5 @@ interface ReserveParticipantPriceInterface
 
     public function setCancelChargeByParticipantId(int $cancelCharge, int $cancelChargeNet, int $cancelChargeProfit, bool $isCancel, int $participantId) : bool;
 
-    public function updateBulk(array $params) : bool;
+    public function updateBulk(array $params, string $id) : bool;
 }

@@ -107,6 +107,7 @@ const Option = ({
                                         payload: { subject: e.target.value }
                                     })
                                 }
+                                disabled={input?.purchasingLock}
                             >
                                 {subjectCategoryNames &&
                                     Object.keys(subjectCategoryNames).map(
@@ -155,6 +156,7 @@ const Option = ({
                             }
                             name="name"
                             defaultOptions={defaultSubjectOptions}
+                            readOnly={input?.purchasingLock}
                         />
                     </li>
                     <li className="wd50">
@@ -168,6 +170,7 @@ const Option = ({
                                         payload: { supplier_id: e.target.value }
                                     })
                                 }
+                                disabled={input?.purchasingLock}
                             >
                                 {suppliers &&
                                     Object.keys(suppliers)

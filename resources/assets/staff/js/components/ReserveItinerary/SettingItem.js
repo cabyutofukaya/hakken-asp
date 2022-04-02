@@ -74,7 +74,7 @@ const SettingItem = ({ date, item } = {}) => {
                             .map(p => {
                                 if (
                                     p?.purchase_type == purchaseNormal &&
-                                    p?.valid
+                                    p?.valid // この抽出条件はapp/Http/ViewComposer/Staff/ReserveEstimateItinerary/Pdf/ItineraryRoomingListComposer.phpと同じ
                                 ) {
                                     return `rn[]=${p?.room_number ??
                                         ""}&pi[]=${p?.participant_id ?? ""}`;

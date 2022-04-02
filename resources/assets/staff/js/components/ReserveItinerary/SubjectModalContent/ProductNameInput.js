@@ -1,8 +1,20 @@
-import React, { useState, useContext } from "react";
+import React, { useContext } from "react";
 import { ConstContext } from "../../ConstApp";
 import AsyncSelect from "react-select/async";
 
-function AreaInput({ handleChange, subject, value, name, defaultOptions }) {
+/**
+ *
+ * @param {*} readOnly 読み取り専用
+ * @returns
+ */
+function ProductNameInput({
+    handleChange,
+    subject,
+    value,
+    name,
+    defaultOptions,
+    readOnly = false
+}) {
     const { agencyAccount } = useContext(ConstContext);
 
     // const [selectedOption, setSelectedOption] = useState({});
@@ -105,8 +117,13 @@ function AreaInput({ handleChange, subject, value, name, defaultOptions }) {
         // }, 1000);
     };
 
-    return (
-        <>
+    // 読み取り専用の場合は変更不可
+    if (readOnly) {
+        return (
+            <input type="text" value={value?.label ?? ""} readOnly={readOnly} />
+        );
+    } else {
+        return (
             <AsyncSelect
                 cacheOptions
                 name={name}
@@ -116,8 +133,8 @@ function AreaInput({ handleChange, subject, value, name, defaultOptions }) {
                 loadOptions={loadOptions}
                 placeholder=""
             />
-        </>
-    );
+        );
+    }
 }
 
-export default AreaInput;
+export default ProductNameInput;

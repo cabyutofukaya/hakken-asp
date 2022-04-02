@@ -40,6 +40,15 @@ class AccountPayableDetailService
     }
 
     /**
+     * 検索条件にマッチするレコードがあるか
+     */
+    public function whereExists(array $where) : bool
+    {
+        return $this->accountPayableDetailRepository->whereExists($where);
+    }
+
+
+    /**
      * 一覧を取得
      *
      * @param string $agencyAccount
@@ -141,6 +150,14 @@ class AccountPayableDetailService
     }
 
     /**
+     * 検索して全件取得
+     */
+    public function getWhere(array $where, array $with=[], array $select=[]) : Collection
+    {
+        return $this->accountPayableDetailRepository->getWhere($where, $with, $select);
+    }
+
+    /**
      * 当該仕入IDリストに紐づくid一覧を取得
      *
      * @param string $saleableType 仕入科目
@@ -160,5 +177,23 @@ class AccountPayableDetailService
     public function delete(int $id, bool $isSoftDelete=true): bool
     {
         return $this->accountPayableDetailRepository->delete($id, $isSoftDelete);
+    }
+
+    /**
+     * バルクインサート
+     */
+    public function insert(array $params) : bool
+    {
+        return $this->accountPayableDetailRepository->insert($params);
+    }
+
+    /**
+     * バルクアップデート
+     *
+     * @param array $params
+     */
+    public function updateBulk(array $params, string $id = "id") : bool
+    {
+        return $this->accountPayableDetailRepository->updateBulk($params, $id);
     }
 }

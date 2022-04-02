@@ -137,7 +137,8 @@ class AccountPayableDetailController extends Controller
             $data = array_merge(
                 $input['input'], 
                 [
-                    'participant_id' => Arr::get($row, "participant_id")
+                    'participant_id' => Arr::get($row, "participant_id"),
+                    'supplier_id_log' => Arr::get($row, "supplier_id_log")
                 ],
                 [
                     'amount' => $accountPayableDetail['unpaid_balance'],

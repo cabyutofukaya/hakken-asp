@@ -108,6 +108,7 @@ const Hotel = ({
                                         payload: { subject: e.target.value }
                                     })
                                 }
+                                disabled={input?.purchasingLock}
                             >
                                 {subjectCategoryNames &&
                                     Object.keys(subjectCategoryNames).map(
@@ -156,6 +157,7 @@ const Hotel = ({
                             }
                             name="name"
                             defaultOptions={defaultSubjectHotels}
+                            readOnly={input?.purchasingLock}
                         />
                     </li>
                     <li className="wd50">
@@ -169,6 +171,7 @@ const Hotel = ({
                                         payload: { supplier_id: e.target.value }
                                     })
                                 }
+                                disabled={input?.purchasingLock}
                             >
                                 {suppliers &&
                                     Object.keys(suppliers)

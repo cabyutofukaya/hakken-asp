@@ -53,7 +53,7 @@ class ReservePurchasingSubjectRepository implements ReservePurchasingSubjectRepo
      */
     public function existWithdrawalHistoryByReserveScheduleId(int $reserveScheduleId) : bool
     {
-        // subjectableポリモーフィックリレーションそれぞれに対して有効(enabled_reserve_participant_prices)な入金履歴があるか確認。ちょっとSQLが強引なので、リファクタリングできないか検討
+        // subjectableポリモーフィックリレーションそれぞれに対して出金履歴があるか確認。ちょっとSQLが強引なので、リファクタリングできないか検討
         return $this->reservePurchasingSubject
             ->where('reserve_schedule_id', $reserveScheduleId)
             ->whereHasMorph('subjectable', [
@@ -61,7 +61,8 @@ class ReservePurchasingSubjectRepository implements ReservePurchasingSubjectRepo
                 'App\Models\ReservePurchasingSubjectAirplane',
                 'App\Models\ReservePurchasingSubjectHotel'
             ], function ($q) {
-                $q->whereHas('enabled_reserve_participant_prices.account_payable_detail.agency_withdrawals');
+                // $q->whereHas('enabled_reserve_participant_prices.account_payable_detail.agency_withdrawals');
+                $q->whereHas('reserve_participant_prices.account_payable_detail.agency_withdrawals');
             })->exists();
     }
 }

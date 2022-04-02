@@ -114,8 +114,8 @@ Route::domain(env('STAFF_DOMAIN', 'api.hakken-tour.com'))->namespace('Staff\Api'
         Route::put('estimate/{applicationStep}/{reserveNumber}/consultation/{consulNumber}', 'ReserveConsultationController@update'); // 更新
 
         // 工程ページ
-        Route::get('purchasing_subject/{subject}/{id}/exist_withdrawal', 'ReservePurchasingSubjectController@existSubjectWithdrawal'); // 出金登録チェック(仕入科目削除時)
         Route::get('reserve_schedule/{id}/exist_withdrawal', 'ReservePurchasingSubjectController@existScheduleWithdrawal'); // 出金登録チェック(行程削除時)
+        Route::get('purchasing_subject/{subject}/{id}/can_edit', 'ReservePurchasingSubjectController@canItemEdit'); // 当該仕入が編集可能か(出金登録がなく、キャンセルユーザーもいない場合はOK)
 
         // 相談履歴
         Route::get('consultation/list', 'AgencyConsultationController@index'); // 一覧

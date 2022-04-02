@@ -59,6 +59,7 @@ const PaymentBatchModal = ({
                 let tmp = {};
                 tmp["id"] = id;
                 tmp["participant_id"] = targetRow?.saleable?.participant?.id;
+                tmp["supplier_id_log"] = targetRow?.supplier_id;
                 tmp["updated_at"] = targetRow.updated_at ?? null;
 
                 data.push(tmp);

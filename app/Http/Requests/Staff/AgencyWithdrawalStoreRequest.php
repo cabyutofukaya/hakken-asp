@@ -40,6 +40,7 @@ class AgencyWithdrawalStoreRequest extends FormRequest
             'participant_id' => ['required', new ExistParticipant(auth('staff')->user()->agency->id)],
             'manager_id' => ['nullable', new ExistStaff(auth('staff')->user()->agency->id)],
             'note' => 'nullable|max:1500',
+            'supplier_id_log' => 'required',
             'account_payable_detail.updated_at' => 'nullable',
         ];
     }
@@ -54,6 +55,7 @@ class AgencyWithdrawalStoreRequest extends FormRequest
             'withdrawal_date.date' => '出金日の入力入力形式が不正です(YYYY/MM/DD)',
             'record_date.date' => '登録日の入力入力形式が不正です(YYYY/MM/DD)',
             'participant_id.required' => '参加者IDは必須です。',
+            'supplier_id_log.required' => '仕入先IDは必須です。',
             'note.max' => '備考が長すぎます(1500文字まで)',
         ];
     }

@@ -49,6 +49,14 @@ class ReserveParticipantOptionPriceService implements ReserveParticipantPriceInt
     }
 
     /**
+     * 当該reserve_purchasing_subject_option_idに紐づくキャンセルレコードが存在する場合はtrue
+     */
+    public function existCancelByReservePurchasingSubjectOptionId(int $reservePurchasingSubjectOptionId) : bool
+    {
+        return $this->reserveParticipantOptionPriceRepository->existCancelByReservePurchasingSubjectOptionId($reservePurchasingSubjectOptionId);
+    }
+
+    /**
      * 当該参加者IDに紐づく仕入データがある場合はtrue
      */
     public function isExistsDataByParticipantId(int $participantId, ?bool $isValid = null, bool $getDeleted = false) : bool
@@ -165,12 +173,20 @@ class ReserveParticipantOptionPriceService implements ReserveParticipantPriceInt
     }
 
     /**
+     * バルクインサート
+     */
+    public function insert(array $params) : bool
+    {
+        return $this->reserveParticipantOptionPriceRepository->insert($params);
+    }
+
+    /**
      * バルクアップデート
      *
      * @param array $params
      */
-    public function updateBulk(array $params) : bool
+    public function updateBulk(array $params, string $id = "id") : bool
     {
-        return $this->reserveParticipantOptionPriceRepository->updateBulk($params);
+        return $this->reserveParticipantOptionPriceRepository->updateBulk($params, $id);
     }
 }

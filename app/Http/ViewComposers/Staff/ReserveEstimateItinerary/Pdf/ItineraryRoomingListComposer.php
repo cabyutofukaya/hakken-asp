@@ -61,7 +61,7 @@ class ItineraryRoomingListComposer
                         if (!isset($roomingList[$reserveTravelDate->travel_date][$reservePurchasingSubjectHotel->hotel_name][$roomType][$reserveParticipantPrice->room_number])) {
                             $roomingList[$reserveTravelDate->travel_date][$reservePurchasingSubjectHotel->hotel_name][$roomType][$reserveParticipantPrice->room_number] = [];
                         }
-                        if ($reserveParticipantPrice->valid) {
+                        if ($reserveParticipantPrice->purchase_type == config('consts.const.PURCHASE_NORMAL') && $reserveParticipantPrice->valid) {
                             $roomingList[$reserveTravelDate->travel_date][$reservePurchasingSubjectHotel->hotel_name][$roomType][$reserveParticipantPrice->room_number][] = $reserveParticipantPrice->participant;
                         }
                     }

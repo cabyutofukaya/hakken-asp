@@ -201,7 +201,7 @@ trait CancelChargeTrait
 
         // キャンセル料金カラムをバルクアップデート
         if ($options) { // オプション科目
-            $this->reserveParticipantOptionPriceService->updateBulk($options);
+            $this->reserveParticipantOptionPriceService->updateBulk($options, 'id');
 
             // 仕入先支払レコードの金額情報を更新
             $params = [];
@@ -221,7 +221,7 @@ trait CancelChargeTrait
             }
         }
         if ($airplanes) { // 航空券科目
-            $this->reserveParticipantAirplanePriceService->updateBulk($airplanes);
+            $this->reserveParticipantAirplanePriceService->updateBulk($airplanes, 'id');
 
             // 仕入先支払レコードの金額情報を更新
             $params = [];
@@ -241,7 +241,7 @@ trait CancelChargeTrait
             }
         }
         if ($hotels) { // ホテル科目
-            $this->reserveParticipantHotelPriceService->updateBulk($hotels);
+            $this->reserveParticipantHotelPriceService->updateBulk($hotels, 'id');
 
             // 仕入先支払レコードの金額情報を更新
             $params = [];

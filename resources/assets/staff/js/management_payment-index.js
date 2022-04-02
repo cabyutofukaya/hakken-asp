@@ -107,7 +107,8 @@ const PaymentList = ({
                 withdrawalData: {
                     ...withdrawalInitial,
                     manager_id: paymentData.manager_id ?? "",
-                    note: paymentData.note ?? ""
+                    note: paymentData.note ?? "",
+                    supplier_id_log: paymentData.supplier_id
                 }
             };
         } else if (action.type === MANAGEMENT_PAYMENT.INIT_WITHDRAWALBATCH) {
