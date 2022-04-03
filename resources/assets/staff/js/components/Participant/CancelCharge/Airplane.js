@@ -1,10 +1,10 @@
 import React, { useContext } from "react";
 import { ConstContext } from "../../ConstApp";
 import { calcCancelProfit } from "./CancelChargeArea";
-import ParticipantArea2 from "./ParticipantArea2";
+import ParticipantArea1 from "./ParticipantArea1";
 import Price from "./Price";
 
-const Hotel = ({
+const Airplane = ({
     data,
     setData,
     priceSetting,
@@ -101,7 +101,7 @@ const Hotel = ({
                     handleBulkChange={handleBulkChange}
                 />
                 <hr className="sepBorder" />
-                <ParticipantArea2
+                <ParticipantArea1
                     participants={data?.participants}
                     handleChange={handleChange}
                 />
@@ -130,4 +130,4 @@ const Hotel = ({
     );
 };
 
-export default Hotel;
+export default Airplane;

@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Events\ChangePaymentAmountEvent;
+use App\Models\Participant;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use App\Services\ReserveParticipantOptionPriceService;
@@ -217,15 +218,19 @@ class ReserveParticipantPriceService
      * @param bool $isValid validの指定。nullの場合は特に指定ナシ
      * @return array
      */
-    public function getPurchaseFormDataByParticipantId(int $participantId, ?int $reserveItineraryId, ?bool $isValid = null, bool $getDeleted = false) : array
+    public function getPurchaseFormDataByParticipantId(array $participant, ?int $reserveItineraryId, ?bool $isValid = null, bool $getDeleted = false) : array
     {
-        $options = $this->reserveParticipantOptionPriceService->getByParticipantId($participantId, $reserveItineraryId, $isValid, ['reserve_purchasing_subject_option.supplier:id,name,deleted_at'], [], $getDeleted);
+        $options = $this->reserveParticipantOptionPriceService->getByParticipantId(Arr::get($participant, 'participant_id'), $reserveItineraryId, $isValid, ['reserve_purchasing_subject_option.supplier:id,name,deleted_at'], [], $getDeleted);
 
-        $airplanes = $this->reserveParticipantAirplanePriceService->getByParticipantId($participantId, $reserveItineraryId, $isValid, ['reserve_purchasing_subject_airplane.supplier:id,name,deleted_at'], [], $getDeleted);
+        $airplanes = $this->reserveParticipantAirplanePriceService->getByParticipantId(Arr::get($participant, 'participant_id'), $reserveItineraryId, $isValid, ['reserve_purchasing_subject_airplane.supplier:id,name,deleted_at'], [], $getDeleted);
 
-        $hotels = $this->reserveParticipantHotelPriceService->getByParticipantId($participantId, $reserveItineraryId, $isValid, ['reserve_purchasing_subject_hotel.supplier:id,name,deleted_at'], [], $getDeleted);
+        $hotels = $this->reserveParticipantHotelPriceService->getByParticipantId(Arr::get($participant, 'participant_id'), $reserveItineraryId, $isValid, ['reserve_purchasing_subject_hotel.supplier:id,name,deleted_at'], [], $getDeleted);
 
-        return $this->getPurchaseFormData($options, $airplanes, $hotels);
+        $purchaseFormData = $this->getPurchaseFormData($options, $airplanes, $hotels);
+
+        // 集計した仕入情報に明細行をセット
+        return $this->setDetailsToPurchaseFormData($purchaseFormData, [Arr::get($participant, 'participant_id') => $participant], $options, $airplanes, $hotels);
+
     }
 
     /**
@@ -244,7 +249,17 @@ class ReserveParticipantPriceService
 
         $purchaseFormData = $this->getPurchaseFormData($options, $airplanes, $hotels);
 
+        // 集計した仕入情報に明細行をセット
+        return $this->setDetailsToPurchaseFormData($purchaseFormData, $participants, $options, $airplanes, $hotels);
+    }
 
+    /**
+     * 集計した仕入情報に明細行をセット
+     *
+     * @param array $participants 参加者ID=>参加者データ 形式の配列
+     */
+    private function setDetailsToPurchaseFormData(array $purchaseFormData, array $participants, $options, $airplanes, $hotels)
+    {
         // 集計した仕入情報に明細行をセット
         foreach ($purchaseFormData as $key => $pfd) {
             $info = explode(config('consts.const.CANCEL_CHARGE_DATA_DELIMITER'), $key);
@@ -275,11 +290,14 @@ class ReserveParticipantPriceService
                 return intval($value1['participant_id']) - intval($value2['participant_id']);
             }); // みやすいように参加者ID順に並べ替え
         }
+
         return $purchaseFormData;
     }
 
+
     /**
      * form用にまとめた仕入データ配列を取得
+     *
      */
     private function getPurchaseFormData($options, $airplanes, $hotels)
     {
@@ -377,7 +395,7 @@ class ReserveParticipantPriceService
             }
 
             // 合算できない数値系。税区分と手数料率は合算できないので全て同じ値であれば値をセット
-            foreach (['zei_kbn','commission_rate'] as $col) { 
+            foreach (['zei_kbn','commission_rate'] as $col) {
                 if (count(array_unique(collect($rows)->pluck($col)->all())) == 1) {
                     $tmp[$col] = Arr::get($rows, "0.{$col}");
                 } else {

@@ -2,12 +2,6 @@ import React, { useContext } from "react";
 import OnlyNumberInput from "../../OnlyNumberInput";
 import { ConstContext } from "../../ConstApp";
 
-/**
- * オプション科目、航空券科目用
- *
- * @param {*} param0
- * @returns
- */
 const ParticipantArea1 = ({ participants, handleChange }) => {
     const { documentZeiKbns } = useContext(ConstContext);
 

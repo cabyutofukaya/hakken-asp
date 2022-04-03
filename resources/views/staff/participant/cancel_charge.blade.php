@@ -3,7 +3,7 @@
 @section('content')
 <main>
   <div id="pageHead">
-    <h1><span class="material-icons">event_note</span>キャンセルチャージ設定</h1>
+    <h1><span class="material-icons">event_note</span>{{ $participant->name }} キャンセルチャージ設定</h1>
     @include('staff.reserve._breadcrumb', [
       'reserve' => $reserve,
       'agencyAccount' => $agencyAccount,

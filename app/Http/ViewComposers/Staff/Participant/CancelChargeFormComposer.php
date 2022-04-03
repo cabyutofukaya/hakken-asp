@@ -13,10 +13,6 @@ class CancelChargeFormComposer
 {
     use JsConstsTrait;
     
-    public function __construct(
-    ) {
-    }
-
     /**
      * @param View $view
      * @return void
