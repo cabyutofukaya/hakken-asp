@@ -2,13 +2,7 @@ import React, { useContext } from "react";
 import OnlyNumberInput from "../../OnlyNumberInput";
 import { ConstContext } from "../../ConstApp";
 
-/**
- * オプション科目、航空券科目用
- *
- * @param {*} param0
- * @returns
- */
-const ParticipantArea1 = ({ participants, handleChange }) => {
+const ParticipantArea2 = ({ participants, handleChange }) => {
     const { documentZeiKbns } = useContext(ConstContext);
 
     return (
@@ -16,8 +10,7 @@ const ParticipantArea1 = ({ participants, handleChange }) => {
             <table className="baseTable cancelTable">
                 <thead>
                     <tr>
-                        <th>座席</th>
-                        <th>REF番号</th>
+                        <th>部屋番号</th>
                         <th>氏名</th>
                         <th className="txtalc">性別</th>
                         <th className="txtalc">年齢</th>
@@ -35,8 +28,7 @@ const ParticipantArea1 = ({ participants, handleChange }) => {
                     {participants &&
                         participants.map((row, index) => (
                             <tr key={index}>
-                                <td>{row.seat ?? "-"}</td>
-                                <td>{row.reference_number ?? "-"}</td>
+                                <td>{row.room_number ?? "-"}</td>
                                 <td>
                                     {row.name ?? "-"}
                                     {row.name_kana && <>({row.name_kana})</>}
@@ -100,4 +92,4 @@ const ParticipantArea1 = ({ participants, handleChange }) => {
     );
 };
 
-export default ParticipantArea1;
+export default ParticipantArea2;

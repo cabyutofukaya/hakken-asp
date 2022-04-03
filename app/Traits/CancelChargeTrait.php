@@ -16,12 +16,13 @@ trait CancelChargeTrait
     /**
      * 仕入情報を取得
      *
+     * @param array participant 参加者情報。配列形式
      * @param int $reserveItineraryId 対象行程ID
      */
-    public function getPurchasingListByParticipant(int $participantId, ?int $reserveItineraryId, ?bool $isValid = null)
+    public function getPurchasingListByParticipant(array $participant, ?int $reserveItineraryId, ?bool $isValid = null)
     {
         // 仕入情報を取得
-        $purchasingList = $this->reserveParticipantPriceService->getPurchaseFormDataByParticipantId($participantId, $reserveItineraryId, $isValid);
+        $purchasingList = $this->reserveParticipantPriceService->getPurchaseFormDataByParticipantId($participant, $reserveItineraryId, $isValid);
         
         return $purchasingList;
     }

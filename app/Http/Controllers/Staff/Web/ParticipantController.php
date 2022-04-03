@@ -8,6 +8,7 @@ use App\Events\ReserveChangeHeadcountEvent;
 use App\Events\ReserveChangeRepresentativeEvent;
 use App\Events\UpdateBillingAmountEvent;
 use App\Traits\CancelChargeTrait;
+use App\Traits\ReserveItineraryTrait;
 use App\Services\WebReserveService;
 use App\Services\ParticipantService;
 use App\Services\ReserveParticipantPriceService;
@@ -24,7 +25,7 @@ use Illuminate\Support\Arr;
 
 class ParticipantController extends Controller
 {
-    use CancelChargeTrait;
+    use CancelChargeTrait, ReserveItineraryTrait;
 
     public function __construct(WebReserveService $webReserveService, ParticipantService $participantService, ReserveParticipantPriceService $reserveParticipantPriceService, ReserveParticipantOptionPriceService $reserveParticipantOptionPriceService, ReserveParticipantAirplanePriceService $reserveParticipantAirplanePriceService, ReserveParticipantHotelPriceService $reserveParticipantHotelPriceService, AccountPayableDetailService $accountPayableDetailService, ReserveItineraryService $reserveItineraryService)
     {
@@ -55,8 +56,11 @@ class ParticipantController extends Controller
             return response("データが見つかりません。編集する前に画面を再読み込みして最新情報を表示してください。", 404);
         }
 
-        // 支払い情報を取得。第二引数は有効行程ID
-        $purchasingList = $this->getPurchasingListByParticipant($participant->id, $reserve->enabled_reserve_itinerary->id, true);
+        // 支払い情報を取得。有効仕入(valid=true)のみ取得
+        $purchasingList = $this->getPurchasingListByParticipant(
+            $this->getPaticipantRow($participant), // ラベル情報などを付与した参加者情報
+            $reserve->enabled_reserve_itinerary->id, 
+            true);
 
         return view('staff.web.participant.cancel_charge', compact('participant', 'reserve', 'purchasingList'));
     }
