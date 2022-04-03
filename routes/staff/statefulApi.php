@@ -134,6 +134,10 @@ Route::domain(env('STAFF_DOMAIN', 'api.hakken-tour.com'))->namespace('Staff\Api'
 
         Route::get('estimate/participant/{id}/is-exists-purchase-data', 'ParticipantController@isExistsPurchaseData'); // 当該参加者の仕入データが存在するか否かチェックするAPI
         Route::put('estimate/{reception}/participant/{id}/no-cancel-charge/cancel', 'ParticipantController@noCancelChargeCancel'); // ノンチャージキャンセル
+
+        Route::post('estimate/{reception}/participant/{id}/cancel_charge', 'ParticipantController@cancelChargeUpdate')->name('participant_cancel_charge.update'); // キャンセルチャージ処理
+
+
         Route::delete('/estimate/{reception}/{applicationStep}/{controlNumber}/participant/{id}', 'ParticipantController@destroy'); // 削除
 
         Route::get('mail/list', 'MailTemplateController@index'); // メールテンプレート一覧

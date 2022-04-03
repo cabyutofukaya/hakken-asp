@@ -51,7 +51,8 @@ class CancelChargeFormComposer
 
         $consts = [
             'reserveUrl' => route('staff.web.estimates.reserve.show', [$agencyAccount, $reserve->control_number]) . "?tab=" . config('consts.reserves.TAB_RESERVE_DETAIL'),
-            'cancelChargeUpdateUrl' => route('staff.web.estimates.reserve.participant_cancel_charge.update', [$agencyAccount, $reserve->control_number, $participant->id]),
+            'cancelChargeUpdateUrl' => route('staff.api.participant_cancel_charge.update',[$agencyAccount, config('consts.const.RECEPTION_TYPE_WEB'), $participant->id]),
+            'cancelChargeUpdateAfterUrl' => $reserve->is_departed ? route('staff.estimates.departed.show', ['agencyAccount' => $agencyAccount, 'reserveNumber' => $reserve->control_number, 'tab' => config('consts.reserves.TAB_RESERVE_DETAIL')]) : route('staff.web.estimates.reserve.show', ['agencyAccount' => $agencyAccount, 'reserveNumber' => $reserve->control_number, 'tab' => config('consts.reserves.TAB_RESERVE_DETAIL')]), // キャンセルチャージ処理後のリダイレクト先。催行済か否かで出し分け
         ];
 
         // reactに渡す各種定数

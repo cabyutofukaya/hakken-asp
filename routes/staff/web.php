@@ -69,7 +69,7 @@ Route::domain(env('STAFF_DOMAIN', 'asp.hakken-tour.com'))->namespace('Staff')->n
 
                 // 参加者キャンセル(予約時のみ)
                 Route::get('{reserveNumber}/participant/{id}/cancel_charge', 'ParticipantController@cancelCharge')->name('participant_cancel_charge.edit'); // キャンセルチャージページ(新規・編集共通)
-                Route::post('{reserveNumber}/participant/{id}/cancel_charge', 'ParticipantController@cancelChargeUpdate')->name('participant_cancel_charge.update'); // キャンセルチャージ処理
+                // Route::post('{reserveNumber}/participant/{id}/cancel_charge', 'ParticipantController@cancelChargeUpdate')->name('participant_cancel_charge.update'); // キャンセルチャージ処理
 
             });
 
@@ -349,7 +349,7 @@ Route::domain(env('STAFF_DOMAIN', 'asp.hakken-tour.com'))->namespace('Staff')->n
 
                 // 参加者キャンセル(予約時のみ)
                 Route::get('{reserveNumber}/participant/{id}/cancel_charge', 'ParticipantController@cancelCharge')->name('participant_cancel_charge.edit'); // キャンセルチャージページ(新規・編集共通)
-                Route::post('{reserveNumber}/participant/{id}/cancel_charge', 'ParticipantController@cancelChargeUpdate')->name('participant_cancel_charge.update'); // キャンセルチャージ処理
+                // Route::post('{reserveNumber}/participant/{id}/cancel_charge', 'ParticipantController@cancelChargeUpdate')->name('participant_cancel_charge.update'); // キャンセルチャージ処理
 
             });
 

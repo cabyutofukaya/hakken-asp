@@ -16,7 +16,6 @@ use App\Services\ReserveParticipantHotelPriceService;
 use App\Services\ReserveParticipantOptionPriceService;
 use App\Services\AccountPayableDetailService;
 use App\Services\ReserveItineraryService;
-use App\Http\Requests\Staff\ParticipantCancelChargeUpdateRequest;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -58,78 +57,5 @@ class ParticipantController extends Controller
         $purchasingList = $this->getPurchasingListByParticipant($participant->id, $reserve->enabled_reserve_itinerary->id, true);
 
         return view('staff.participant.cancel_charge', compact('participant', 'reserve', 'purchasingList'));
-    }
-
-    /**
-     * キャンセルチャージ処理
-     */
-    public function cancelChargeUpdate(ParticipantCancelChargeUpdateRequest $request, string $agencyAccount, string $controlNumber, int $participantId)
-    {
-        $participant = $this->participantService->find($participantId);
-        if (!$participant) {
-            abort(404, "データが見つかりません。編集する前に画面を再読み込みして最新情報を表示してください。");
-        }
-
-        // 認可チェック
-        $response = \Gate::inspect('cancel', [$participant]);
-        if (!$response->allowed()) {
-            abort(403, $response->message());
-        }
-
-        try {
-            $input = $request->validated();
-
-            if (!Arr::get($input, "rows")) {
-                return back()->withInput()->with('error_message', "仕入データがありません。");
-            }
-
-            $reserve = $this->reserveService->findByControlNumber($controlNumber, $agencyAccount);
-            if (!$reserve) {
-                abort(404);
-            }
-
-            if ($reserve->updated_at != Arr::get($input, "reserve.updated_at")) {
-                throw new ExclusiveLockException; // 同時編集エラー
-            }
-
-            \DB::transaction(function () use ($input, $participant, $reserve) {
-                $newParticipant = $this->participantService->setCancel($participant->id);
-
-                $this->reserveParticipantPriceService->setCancelDataByParticipantId($participant->id, 0, 0, 0, false); // 全ての仕入情報をキャンセルチャージ0円で初期化。valid=0の仕入行もこの処理でリセットされる
-
-                // キャンセルチャージ料金を保存
-                list($optionIds, $airplaneIds, $hotelIds) = $this->setParticipantCancelCharge($input);
-
-                $this->reserveParticipantPriceService->setIsAliveCancelByReserveParticipantPriceIds($optionIds, $airplaneIds, $hotelIds); // 対象参加者商品仕入IDに対し、is_alive_cancelフラグをONに。
-
-                $this->refreshItineraryTotalAmount($reserve->enabled_reserve_itinerary); // 有効行程の合計金額更新
-
-                // キャンセル時に代表者をOFFにする必要もない気がするので一旦無効化
-                // if ($participant->representative) { // 当該参加者が代表者"だった"場合
-                //     event(new ReserveChangeRepresentativeEvent($reserve)); // 代表者更新イベント
-                // }
-                
-                event(new ReserveChangeHeadcountEvent($reserve)); // 参加者人数変更イベント
-
-                event(new UpdateBillingAmountEvent($this->reserveService->find($reserve->id))); // 請求金額変更イベント
-                
-
-                event(new PriceRelatedChangeEvent($reserve->id, date('Y-m-d H:i:s', strtotime("now +1 seconds")))); // 料金変更に関わるイベント。参加者情報を更新すると関連する行程レコードもtouchで日時が更新されてしまうので、他のレコードよりも確実に新しい日時で更新されるように1秒後の時間をセット
-            });
-
-            if ($reserve->is_departed) { // 催行済の場合は催行ページへ
-                // 催行済詳細ページへリダイレクト
-                return redirect()->route('staff.estimates.departed.show', ['agencyAccount' => $agencyAccount, 'reserveNumber' => $controlNumber, 'tab' => config('consts.reserves.TAB_RESERVE_DETAIL')])->with('success_message', "「{$controlNumber}」のキャンセルチャージ処理が完了しました");
-            } else {
-                // 予約詳細ページへリダイレクト
-                return redirect()->route('staff.asp.estimates.reserve.show', ['agencyAccount' => $agencyAccount, 'reserveNumber' => $controlNumber, 'tab' => config('consts.reserves.TAB_RESERVE_DETAIL')])->with('success_message', "「{$controlNumber}」のキャンセルチャージ処理が完了しました");
-            }
-
-        } catch (ExclusiveLockException $e) { // 同時編集エラー
-            return back()->withInput()->with('error_message', "他のユーザーによる編集済みレコードです。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
-        } catch (Exception $e) {
-            Log::error($e);
-        }
-        abort(500);
     }
 }

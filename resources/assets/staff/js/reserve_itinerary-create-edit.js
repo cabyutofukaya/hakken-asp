@@ -221,14 +221,25 @@ const ItineraryArea = ({
                     //　キャンセル金額関連は0円で初期化
                     cancel_charge: 0,
                     cancel_charge_net: 0,
-                    cancel_charge_profit: 0
+                    cancel_charge_profit: 0,
+                    // 料金関連
+                    gross_ex: 0,
+                    gross: 0,
+                    cost: 0,
+                    commission_rate: 0,
+                    net: 0,
+                    gross_profit: 0,
+                    // 座席等のカラム
+                    seat: null,
+                    reference_number: null,
+                    room_number: null
                 };
             })
         ]
     }; // 仕入情報初期値(PURCHASING_MODE_CREATE=新規登録)
 
     const [lists, rowDispatch] = useReducer(listsReducer, defaultValue?.dates); // 日程情報の入力制御
-
+    console.log(lists);
     const [note, setNote] = useState(defaultValue?.note); // 備考入力制御
     // 追加対象行情報。日付、行番号
     const [targetAddRow, setTargetAddRow] = useReducer((state, newState) => ({

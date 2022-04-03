@@ -83,6 +83,10 @@ trait ParticipantPriceTrait
                 'cancel_charge' => 0,
                 'cancel_charge_net' => 0,
                 'cancel_charge_profit' => 0,
+                // 座席等のカラム
+                'seat' => null,
+                'reference_number' => null,
+                'room_number' => null
             ],
             $priceData,
         );// 仕入種別は通常、有効フラグはon、キャンセルフラグはoffで初期化
