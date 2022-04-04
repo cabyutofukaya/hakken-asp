@@ -894,6 +894,8 @@ const ItineraryArea = ({
                       dates: params,
                       note,
                       updated_at: defaultValue?.updated_at,
+                      price_related_change_at:
+                          defaultValue?.price_related_change_at,
                       set_message: 1,
                       _method: "PUT"
                   }

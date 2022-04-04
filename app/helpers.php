@@ -92,6 +92,7 @@ if (! function_exists('get_reserve_price_total')) {
      *
      * @param array $partnerManagerIds 担当者IDリスト
      * @param array $reservePrices 料金内訳リスト（一括請求書作成で使っている内訳データ）
+     * @parma array $reserveCancelInfo 未使用パラメータ
      * @return int
      */
     function get_reserve_price_total(array $partnerManagerIds, array $reservePrices, array $reserveCancelInfo) : int
@@ -101,10 +102,12 @@ if (! function_exists('get_reserve_price_total')) {
             if (in_array($managerId, $partnerManagerIds, true)) {
                 foreach ($reserves as $reserveNumber => $zeiKbns) {
                     foreach ($zeiKbns as $zeiKbn => $rows) {
-                        if (Arr::get($reserveCancelInfo, $reserveNumber, false)) { // キャンセル予約の場合はキャンセルチャージの金額を足す
-                            $amountTotal += collect($rows)->sum('cancel_charge');
-                        } else {
-                            $amountTotal += collect($rows)->sum('gross');
+                        foreach ($rows as $row) {
+                            if (Arr::get($row, 'purchase_type') == config('consts.const.PURCHASE_NORMAL')) { // 通常仕入
+                                $amountTotal += Arr::get($row, 'gross', 0);
+                            } elseif (Arr::get($row, 'purchase_type') == config('consts.const.PURCHASE_CANCEL')) { // キャンセル仕入
+                                $amountTotal += Arr::get($row, 'cancel_charge', 0);
+                            }
                         }
                     }
                 }

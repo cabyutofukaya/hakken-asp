@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Staff\Api;
 
 use App\Models\AgencyWithdrawal;
 use App\Events\ChangePaymentAmountEvent;
+use App\Events\PriceRelatedChangeEvent;
 use App\Exceptions\ExclusiveLockException;
+use App\Exceptions\NotFoundException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Staff\AccountPayableDetailPaymentBatchRequest;
 use App\Http\Requests\Staff\AccountPayableDetailUpdateRequest;
@@ -119,60 +121,69 @@ class AccountPayableDetailController extends Controller
 
         $input['input']['agency_id'] = auth('staff')->user()->agency_id; // form値に会社IDをセット
 
-        // 出金データを一行ずつ処理
-        foreach ($input['data'] as $row) {
-            $accountPayableDetail = $this->accountPayableDetailService->find(Arr::get($row, "id"));
+        $changeAtArr = []; // 予約IDごとにバッチ処理時間を記録
+        
+        try {
 
-            if (!$accountPayableDetail) {
-                abort(404, "データが見つかりません。編集する前に画面を再読み込みして最新情報を表示してください。");
-            }
-    
-            // account_payable_detailsを使い、対象支払いが操作ユーザー会社所有データであることも確認。
-            $response = \Gate::inspect('create', [new AgencyWithdrawal, $accountPayableDetail]);
-            if (!$response->allowed()) {
-                abort(403, $response->message());
-            }
+            // 出金データを一行ずつ処理
+            foreach ($input['data'] as $row) {
+                $accountPayableDetail = $this->accountPayableDetailService->find(Arr::get($row, "id"));
 
-            // 保存用データ配列に利用者ID、amount、account_payable_detail_id値をセット
-            $data = array_merge(
-                $input['input'], 
-                [
-                    'participant_id' => Arr::get($row, "participant_id"),
-                    'supplier_id_log' => Arr::get($row, "supplier_id_log")
-                ],
-                [
-                    'amount' => $accountPayableDetail['unpaid_balance'],
-                    'account_payable_detail_id' => $accountPayableDetail->id, // 仕入明細ID
-                    'reserve_id' => $accountPayableDetail->reserve_id,
-                    'reserve_travel_date_id' => $accountPayableDetail->reserve_travel_date_id,
-                ]
-            );
-            $data['account_payable_detail']['updated_at'] = Arr::get($row, "updated_at"); // 書類更新日時(同時編集チェック用)
+                if (!$accountPayableDetail) {
+                    throw new NotFoundException("データが見つかりません。編集する前に画面を再読み込みして最新情報を表示してください。");
+                }
 
-            try {
-                $agencyWithdrawal = \DB::transaction(function () use ($data) {
+                // account_payable_detailsを使い、対象支払いが操作ユーザー会社所有データであることも確認。
+                $response = \Gate::inspect('create', [new AgencyWithdrawal, $accountPayableDetail]);
+                if (!$response->allowed()) {
+                    throw new \Illuminate\Auth\Access\AuthorizationException($response->message());
+                }
+
+                // 保存用データ配列に利用者ID、amount、account_payable_detail_id値をセット
+                $data = array_merge(
+                    $input['input'],
+                    [
+                        'participant_id' => Arr::get($row, "participant_id"),
+                        'supplier_id_log' => Arr::get($row, "supplier_id_log")
+                    ],
+                    [
+                        'amount' => $accountPayableDetail['unpaid_balance'],
+                        'account_payable_detail_id' => $accountPayableDetail->id, // 仕入明細ID
+                        'reserve_id' => $accountPayableDetail->reserve_id,
+                        'reserve_travel_date_id' => $accountPayableDetail->reserve_travel_date_id,
+                    ]
+                );
+                $data['account_payable_detail']['updated_at'] = Arr::get($row, "updated_at"); // 書類更新日時(同時編集チェック用)
+
+                $agencyWithdrawal = \DB::transaction(function () use ($data, &$changeAtArr) {
                     $agencyWithdrawal = $this->agencyWithdrawalService->create($data, true);// 一応、同時編集もチェック
-                    
+                        
                     // ステータスと支払い残高計算
                     event(new ChangePaymentAmountEvent($agencyWithdrawal->account_payable_detail->id));
-    
+                        
+                    $changeAtArr[$agencyWithdrawal->reserve_id] = date('Y-m-d H:i:s'); // PriceRelatedChangeEventに保存する予約IDごとの最新日時を記録
+
                     return $agencyWithdrawal;
                 });
-            } catch (ExclusiveLockException $e) { // 同時編集エラー
-                abort(409, "他のユーザーによる編集済みレコードです。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
-            } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
-                return response($e->getMessage(), 403);    
-            } catch (\Exception $e) {
-                \Log::error($e);
             }
+
+            foreach ($changeAtArr as $reserveId => $updatedAt) {
+                event(new PriceRelatedChangeEvent($reserveId, $updatedAt)); // 料金変更に関わるイベントが起きた際に日時を記録
+            }
+        
+            return $this->search(
+                $input['params'],
+                $request->get("per_page", 10),
+                $agencyAccount
+            );
+        } catch (ExclusiveLockException $e) { // 同時編集エラー
+            abort(409, "他のユーザーによる編集済みレコードです。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+        } catch (NotFoundException $e) {
+            return response($e->getMessage(), 404);
+        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+            return response($e->getMessage(), 403);
+        } catch (\Exception $e) {
+            \Log::error($e);
         }
-
-        return $this->search(
-            $input['params'],
-            $request->get("per_page", 10),
-            $agencyAccount
-        );
-
-        // return response('', 200);
     }
 }

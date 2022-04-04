@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Staff\Api;
 
 use App\Models\AgencyWithdrawal;
 use App\Events\ChangePaymentAmountEvent;
+use App\Events\PriceRelatedChangeEvent;
 use App\Exceptions\ExclusiveLockException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Staff\AgencyWithdrawalStoreRequest;
@@ -30,7 +31,6 @@ class AgencyWithdrawalController extends Controller
         $accountPayableDetail = $this->accountPayableDetailService->find($accountPayableDetailId);
 
         // 認可チェック
-        
         if (!$accountPayableDetail) {
             abort(404, "データが見つかりません。編集する前に画面を再読み込みして最新情報を表示してください。");
         }
@@ -54,6 +54,8 @@ class AgencyWithdrawalController extends Controller
                 
                 // ステータスと支払い残高計算
                 event(new ChangePaymentAmountEvent($agencyWithdrawal->account_payable_detail->id));
+
+                event(new PriceRelatedChangeEvent($agencyWithdrawal->reserve_id, date('Y-m-d H:i:s'))); // 料金変更に関わるイベントが起きた際に日時を記録
 
                 return $agencyWithdrawal;
             });
@@ -93,6 +95,8 @@ class AgencyWithdrawalController extends Controller
             $this->agencyWithdrawalService->delete($agencyWithdrawal->id, true); // 論理削除
 
             event(new ChangePaymentAmountEvent($agencyWithdrawal->account_payable_detail_id));
+
+            event(new PriceRelatedChangeEvent($agencyWithdrawal->reserve_id, date('Y-m-d H:i:s'))); // 料金変更に関わるイベントが起きた際に日時を記録
 
             return true;
         });

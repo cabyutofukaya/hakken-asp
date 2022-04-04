@@ -12,10 +12,10 @@ const ParticipantArea1 = ({ participants, handleChange }) => {
                     <tr>
                         <th>座席</th>
                         <th>REF番号</th>
-                        <th>氏名</th>
+                        {/* <th>氏名</th>
                         <th className="txtalc">性別</th>
                         <th className="txtalc">年齢</th>
-                        <th className="txtalc">年齢区分</th>
+                        <th className="txtalc">年齢区分</th> */}
                         <th>キャンセル料金</th>
                         <th>仕入先支払料金</th>
                         <th>税抜単価</th>
@@ -31,7 +31,7 @@ const ParticipantArea1 = ({ participants, handleChange }) => {
                             <tr key={index}>
                                 <td>{row.seat ?? "-"}</td>
                                 <td>{row.reference_number ?? "-"}</td>
-                                <td>
+                                {/* <td>
                                     {row.name ?? "-"}
                                     {row.name_kana && <>({row.name_kana})</>}
                                 </td>
@@ -41,7 +41,7 @@ const ParticipantArea1 = ({ participants, handleChange }) => {
                                 <td className="txtalc">{row.age ?? "-"}</td>
                                 <td className="txtalc">
                                     {row.age_kbn_label ?? "-"}
-                                </td>
+                                </td> */}
                                 <td>
                                     <OnlyNumberInput
                                         value={row?.cancel_charge ?? 0}

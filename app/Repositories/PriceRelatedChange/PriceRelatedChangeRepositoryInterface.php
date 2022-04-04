@@ -9,4 +9,6 @@ use Illuminate\Pagination\LengthAwarePaginator;
 interface PriceRelatedChangeRepositoryInterface
 {
     public function updateOrCreate(array $attributes, array $values = []) : PriceRelatedChange;
+
+    public function findWhereValue(array $where, string $value);
 }
