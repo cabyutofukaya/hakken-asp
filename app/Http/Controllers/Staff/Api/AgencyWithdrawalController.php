@@ -8,9 +8,11 @@ use App\Events\PriceRelatedChangeEvent;
 use App\Exceptions\ExclusiveLockException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Staff\AgencyWithdrawalStoreRequest;
+use App\Http\Requests\Staff\AgencyWithdrawalDeleteRequest;
 use App\Http\Resources\Staff\AccountPayableDetail\IndexResource;
 use App\Services\AccountPayableDetailService;
 use App\Services\AgencyWithdrawalService;
+use Illuminate\Support\Arr;
 
 /**
  * 出金管理
@@ -50,7 +52,7 @@ class AgencyWithdrawalController extends Controller
 
         try {
             $agencyWithdrawal = \DB::transaction(function () use ($input) {
-                $agencyWithdrawal = $this->agencyWithdrawalService->create($input);
+                $agencyWithdrawal = $this->agencyWithdrawalService->create($input); // 同時編集チェック。出金登録リクエストと入れ違いで行程が変更された(仕入先が変更された等)場合などは例外が投げられる
                 
                 // ステータスと支払い残高計算
                 event(new ChangePaymentAmountEvent($agencyWithdrawal->account_payable_detail->id));
@@ -68,7 +70,7 @@ class AgencyWithdrawalController extends Controller
                 // return new StoreResource($agencyWithdrawal, 201);
             }
         } catch (ExclusiveLockException $e) { // 同時編集エラー
-            abort(409, "他のユーザーによる編集済みレコードです。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+            abort(409, "料金情報が変更されたか他のユーザーによる編集済みレコードです。編集する前に画面を再読み込みして最新情報を表示してください。");
         } catch (\Exception $e) {
             \Log::error($e);
         }
@@ -78,7 +80,7 @@ class AgencyWithdrawalController extends Controller
     /**
      * 出金データ削除
      */
-    public function destroy($agencyAccount, $agencyWithdrawalId)
+    public function destroy(AgencyWithdrawalDeleteRequest $request, $agencyAccount, $agencyWithdrawalId)
     {
         $agencyWithdrawal = $this->agencyWithdrawalService->find((int)$agencyWithdrawalId);
 
@@ -91,21 +93,33 @@ class AgencyWithdrawalController extends Controller
             abort(403, $response->message());
         }
 
-        $result = \DB::transaction(function () use ($agencyWithdrawal) {
-            $this->agencyWithdrawalService->delete($agencyWithdrawal->id, true); // 論理削除
+        try {
+            $input = $request->all();
 
-            event(new ChangePaymentAmountEvent($agencyWithdrawal->account_payable_detail_id));
-
-            event(new PriceRelatedChangeEvent($agencyWithdrawal->reserve_id, date('Y-m-d H:i:s'))); // 料金変更に関わるイベントが起きた際に日時を記録
-
-            return true;
-        });
-
-        if ($result) {
-            $accountPayableDetail = $this->accountPayableDetailService->find($agencyWithdrawal->account_payable_detail_id, ['reserve','supplier', 'agency_withdrawals.v_agency_withdrawal_custom_values'], );
-
-            // 当該出金データの親レコードとなる仕入詳細データを返す
-            return new IndexResource($accountPayableDetail, 200);
+            if ($agencyWithdrawal->account_payable_detail->updated_at != Arr::get($input, 'account_payable_detail.updated_at')) { // 念の為、同時編集チェック
+                throw new ExclusiveLockException;
+            }
+            
+            $result = \DB::transaction(function () use ($agencyWithdrawal) {
+                $this->agencyWithdrawalService->delete($agencyWithdrawal->id, true); // 論理削除
+    
+                event(new ChangePaymentAmountEvent($agencyWithdrawal->account_payable_detail_id));
+    
+                event(new PriceRelatedChangeEvent($agencyWithdrawal->reserve_id, date('Y-m-d H:i:s'))); // 料金変更に関わるイベントが起きた際に日時を記録
+    
+                return true;
+            });
+    
+            if ($result) {
+                $accountPayableDetail = $this->accountPayableDetailService->find($agencyWithdrawal->account_payable_detail_id, ['reserve','supplier', 'agency_withdrawals.v_agency_withdrawal_custom_values'], );
+    
+                // 当該出金データの親レコードとなる仕入詳細データを返す
+                return new IndexResource($accountPayableDetail, 200);
+            }
+        } catch (ExclusiveLockException $e) { // 同時編集エラー
+            abort(409, "料金情報が変更されたか他のユーザーによる編集済みレコードです。編集する前に画面を再読み込みして最新情報を表示してください。");
+        } catch (\Exception $e) {
+            \Log::error($e);
         }
         abort(500);
     }

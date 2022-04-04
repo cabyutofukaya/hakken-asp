@@ -76,7 +76,14 @@ const PaymentModal = ({
 
         const response = await axios
             .delete(
-                `/api/${agencyAccount}/management/withdrawal/${deleteWithdrawalId}`
+                `/api/${agencyAccount}/management/withdrawal/${deleteWithdrawalId}`,
+                {
+                    data: {
+                        account_payable_detail: {
+                            updated_at: currentPaymentData?.updated_at
+                        } // 同時編集チェックのために支払明細レコード更新日時もセット}
+                    }
+                }
             )
             .finally(() => {
                 $(".js-modal-close").trigger("click"); // モーダルclose
