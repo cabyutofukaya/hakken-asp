@@ -59,63 +59,6 @@ class ReserveItineraryController extends AppController
         return view('staff.reserve_itinerary.create', compact('reserve'));
     }
 
-    // APIに移動
-    // /**
-    //  * Store a newly created resource in storage.
-    //  *
-    //  * @param  \Illuminate\Http\Request  $request
-    //  * @return \Illuminate\Http\Response
-    //  */
-    // public function store(ReserveItineraryStoreRequest $request, string $agencyAccount, string $applicationStep, string $controlNumber)
-    // {
-    //     // 見積or予約で処理を分ける
-    //     if ($applicationStep == config("consts.reserves.APPLICATION_STEP_DRAFT")) { // 見積
-    //         $reserve = $this->estimateService->findByEstimateNumber($controlNumber, $agencyAccount);
-    //     } elseif ($applicationStep == config("consts.reserves.APPLICATION_STEP_RESERVE")) { // 予約
-    //         $reserve = $this->reserveService->findByControlNumber($controlNumber, $agencyAccount);
-    //     } else {
-    //         abort(404);
-    //     }
-
-
-    //     if (!$reserve) {
-    //         return response("データが見つかりません。編集する前に画面を再読み込みして最新情報を表示してください。", 404);
-    //     }
-
-    //     // 認可チェック
-    //     $response = Gate::inspect('create', [new ReserveItinerary, $reserve]);
-    //     if (!$response->allowed()) {
-    //         return $this->forbiddenRedirect($response->message());
-    //     }
-
-    //     $input = $request->all();
-
-    //     try {
-    //         $reserveItinerary = \DB::transaction(function () use ($reserve, $input) {
-    //             $reserveItinerary = $this->reserveItineraryService->create($reserve, $input);
-
-    //             if ($reserveItinerary->enabled) {
-    //                 event(new ReserveChangeSumGrossEvent($reserveItinerary)); // 旅行代金変更イベント
-    //             }
-
-    //             event(new CreateItineraryEvent($reserveItinerary)); // 行程作成時イベント
-
-    //             return $reserveItinerary;
-    //         });
-
-    //         if ($reserveItinerary) {
-    //             if ($applicationStep == config("consts.reserves.APPLICATION_STEP_DRAFT")) { // 見積
-    //                 return redirect()->route('staff.asp.estimates.normal.show', ['agencyAccount' => $agencyAccount, 'estimateNumber' => $controlNumber, 'tab' => config('consts.reserves.TAB_RESERVE_DETAIL')])->with('success_message', "行程「{$reserveItinerary->control_number}」を登録しました");
-    //             } elseif ($applicationStep == config("consts.reserves.APPLICATION_STEP_RESERVE")) { // 予約
-    //                 return redirect()->route('staff.asp.estimates.reserve.show', ['agencyAccount' => $agencyAccount, 'reserveNumber' => $controlNumber, 'tab' => config('consts.reserves.TAB_RESERVE_DETAIL')])->with('success_message', "行程「{$reserveItinerary->control_number}」を登録しました");
-    //             }
-    //         }
-    //     } catch (Exception $e) {
-    //         \Log::error($e);
-    //     }
-    //     abort(500);
-    // }
-
     /**
      * Show the form for editing the specified resource.
      *
@@ -170,72 +113,6 @@ class ReserveItineraryController extends AppController
 
         return view('staff.reserve_itinerary.edit', compact('reserveItinerary'));
     }
-
-    // APIに移動
-    // /**
-    //  * Update the specified resource in storage.
-    //  *
-    //  * @param  \Illuminate\Http\Request  $request
-    //  * @param  int  $id
-    //  * @return \Illuminate\Http\Response
-    //  */
-    // public function update(ReserveItineraryUpdateRequest $request, string $agencyAccount, string $applicationStep, string $controlNumber, string $itineraryNumber)
-    // {
-    //     // 見積or予約で処理を分ける
-    //     if ($applicationStep == config("consts.reserves.APPLICATION_STEP_DRAFT")) { // 見積
-
-    //         $reserve = $this->estimateService->findByEstimateNumber($controlNumber, $agencyAccount);
-
-    //         $reserveItinerary = $this->reserveItineraryService->findByItineraryNumber($reserve->id, $itineraryNumber, $reserve->agency_id);
-    //     } elseif ($applicationStep == config("consts.reserves.APPLICATION_STEP_RESERVE")) { // 予約
-
-    //         $reserve = $this->reserveService->findByControlNumber($controlNumber, $agencyAccount);
-
-    //         $reserveItinerary = $this->reserveItineraryService->findByItineraryNumber($reserve->id, $itineraryNumber, $reserve->agency_id);
-    //     } else {
-    //         abort(404);
-    //     }
-
-    //     // 認可チェック
-    //     $response = Gate::inspect('update', [$reserveItinerary]);
-    //     if (!$response->allowed()) {
-    //         return $this->forbiddenRedirect($response->message());
-    //     }
-
-    //     try {
-    //         $input = $request->all();
-
-    //         $reserveItinerary = \DB::transaction(function () use ($reserveItinerary, $input) {
-    //             $newReserveItinerary = $this->reserveItineraryService->update($reserveItinerary->id, $input);
-
-    //             if ($newReserveItinerary->enabled) {
-    //                 event(new ReserveChangeSumGrossEvent($newReserveItinerary)); // 旅行代金変更イベント
-    //             }
-
-    //             event(new UpdateBillingAmountEvent($newReserveItinerary)); // 請求金額変更イベント
-
-    //             return $newReserveItinerary;
-    //         });
-
-    //         if ($reserveItinerary) {
-    //             if ($applicationStep == config("consts.reserves.APPLICATION_STEP_DRAFT")) { // 見積
-    //                 return redirect()->route('staff.asp.estimates.normal.show', ['agencyAccount' => $agencyAccount, 'estimateNumber' => $controlNumber, 'tab' => config('consts.reserves.TAB_RESERVE_DETAIL')])->with('success_message', "行程「{$reserveItinerary->control_number}」を更新しました");
-    //             } elseif ($applicationStep == config("consts.reserves.APPLICATION_STEP_RESERVE")) { // 予約
-    //                 // 催行済みか否かでリダイレクト先変更
-    //                 if ($reserveItinerary->reserve->is_departed) {
-    //                     return redirect()->route('staff.estimates.departed.show', ['agencyAccount' => $agencyAccount, 'reserveNumber' => $controlNumber, 'tab' => config('consts.reserves.TAB_RESERVE_DETAIL')])->with('success_message', "行程「{$reserveItinerary->control_number}」を更新しました");
-    //                 } else {
-    //                     return redirect()->route('staff.asp.estimates.reserve.show', ['agencyAccount' => $agencyAccount, 'reserveNumber' => $controlNumber, 'tab' => config('consts.reserves.TAB_RESERVE_DETAIL')])->with('success_message', "行程「{$reserveItinerary->control_number}」を更新しました");
-    //                 }
-    //             }
-    //         }
-    //     } catch (ExclusiveLockException $e) { // 同時編集エラー
-    //         return back()->withInput()->with('error_message', "他のユーザーによる編集済みレコードです。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
-    //     } catch (Exception $e) {
-    //         \Log::error($e);
-    //     }
-    //     abort(500);
-    // }
 
     /**
      * Show the form for editing the specified resource.

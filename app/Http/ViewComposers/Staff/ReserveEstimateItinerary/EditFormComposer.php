@@ -12,6 +12,7 @@ use App\Services\SubjectHotelService;
 use App\Services\SubjectOptionService;
 use App\Services\SupplierService;
 use App\Services\UserCustomItemService;
+use App\Services\PriceRelatedChangeService;
 use App\Traits\ConstsTrait;
 use App\Traits\JsConstsTrait;
 use App\Traits\ReserveItineraryTrait;
@@ -28,7 +29,7 @@ class EditFormComposer
 {
     use UserCustomItemTrait, ConstsTrait, ReserveItineraryTrait, JsConstsTrait, ReserveTrait;
     
-    public function __construct(ReserveService $reserveService, UserCustomItemService $userCustomItemService, SupplierService $supplierService, ReserveParticipantOptionPriceService $reserveParticipantOptionPriceService, CityService $cityService, SubjectHotelService $subjectHotelService, SubjectOptionService $subjectOptionService, SubjectAirplaneService $subjectAirplaneService, ReservePurchasingSubjectHotelService $reservePurchasingSubjectHotelService, ReserveEstimateService $reserveEstimateService)
+    public function __construct(ReserveService $reserveService, UserCustomItemService $userCustomItemService, SupplierService $supplierService, ReserveParticipantOptionPriceService $reserveParticipantOptionPriceService, CityService $cityService, SubjectHotelService $subjectHotelService, SubjectOptionService $subjectOptionService, SubjectAirplaneService $subjectAirplaneService, ReservePurchasingSubjectHotelService $reservePurchasingSubjectHotelService, ReserveEstimateService $reserveEstimateService, PriceRelatedChangeService $priceRelatedChangeService)
     {
         $this->reserveParticipantOptionPriceService = $reserveParticipantOptionPriceService;
         $this->reserveService = $reserveService;
@@ -40,6 +41,7 @@ class EditFormComposer
         $this->subjectAirplaneService = $subjectAirplaneService;
         $this->reservePurchasingSubjectHotelService = $reservePurchasingSubjectHotelService;
         $this->reserveEstimateService = $reserveEstimateService;
+        $this->priceRelatedChangeService = $priceRelatedChangeService;
     }
 
     /**
@@ -69,42 +71,40 @@ class EditFormComposer
         if ($reserve->application_step == config("consts.reserves.APPLICATION_STEP_DRAFT")) { // 見積
             
             $postUrl = route('staff.api.itinerary.update', [
-                'agencyAccount' => $agencyAccount, 
+                'agencyAccount' => $agencyAccount,
                 'reception' => config('consts.const.RECEPTION_TYPE_ASP'),
-                'applicationStep' =>config("consts.reserves.APPLICATION_STEP_DRAFT"), 
+                'applicationStep' =>config("consts.reserves.APPLICATION_STEP_DRAFT"),
                 'controlNumber' => $reserve->estimate_number,
                 'itineraryNumber' => $reserveItinerary->control_number,
             ]);
 
             $backUrl = route('staff.asp.estimates.normal.show', [
-                'agencyAccount' => $agencyAccount, 
+                'agencyAccount' => $agencyAccount,
                 'estimateNumber' => $reserve->estimate_number,
                 'tab' => $transitionTab
             ]);
-
         } elseif ($reserve->application_step == config("consts.reserves.APPLICATION_STEP_RESERVE")) { // 予約
 
             $postUrl = route('staff.api.itinerary.update', [
-                'agencyAccount' => $agencyAccount, 
+                'agencyAccount' => $agencyAccount,
                 'reception' => config('consts.const.RECEPTION_TYPE_ASP'),
-                'applicationStep' =>config("consts.reserves.APPLICATION_STEP_RESERVE"), 
+                'applicationStep' =>config("consts.reserves.APPLICATION_STEP_RESERVE"),
                 'controlNumber' => $reserve->control_number,
                 'itineraryNumber' => $reserveItinerary->control_number,
             ]);
 
             // 催行済みの場合は催行済み詳細ページへ戻る
-            $backUrl = $reserve->is_departed ? 
+            $backUrl = $reserve->is_departed ?
             route('staff.estimates.departed.show', [
-                'agencyAccount' => $agencyAccount, 
+                'agencyAccount' => $agencyAccount,
                 'reserveNumber' => $reserve->control_number,
                 'tab' => $transitionTab
-            ]) : 
+            ]) :
             route('staff.asp.estimates.reserve.show', [
-                'agencyAccount' => $agencyAccount, 
+                'agencyAccount' => $agencyAccount,
                 'reserveNumber' => $reserve->control_number,
                 'tab' => $transitionTab
             ]);
-
         } else {
             abort(404);
         }
@@ -164,6 +164,9 @@ class EditFormComposer
         }
         if (!isset($defaultValue['updated_at'])) { // 更新日時
             $defaultValue['updated_at'] = $reserveItinerary->updated_at->format('Y-m-d H:i:s');
+        }
+        if (!isset($defaultValue['price_related_change_at'])) { // 料金関連更新日時
+            $defaultValue['price_related_change_at'] = $this->priceRelatedChangeService->getChangeAt($reserve->id);
         }
 
         foreach ($travelDates as $date) {

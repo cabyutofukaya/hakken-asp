@@ -94,13 +94,14 @@ const Hotel = ({
                     </li>
                 </ul>
                 <hr className="sepBorder" />
-                <Price
+                {/**料金区分エリアは非表示に */}
+                {/* <Price
                     priceSetting={priceSetting}
                     setPriceSetting={setPriceSetting}
                     subjectInfo={subjectInfo}
                     handleBulkChange={handleBulkChange}
                 />
-                <hr className="sepBorder" />
+                <hr className="sepBorder" /> */}
                 <ParticipantArea2
                     participants={data?.participants}
                     handleChange={handleChange}

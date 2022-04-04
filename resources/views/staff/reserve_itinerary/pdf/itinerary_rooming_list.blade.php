@@ -27,6 +27,7 @@
             <?php $i=1;?>
             @foreach($hotelRows as $roomType => $roomTypeRows)
               @foreach($roomTypeRows as $roomNumber => $participants)
+                @if(!$participants) @continue @endif {{-- 参加者情報がなければスキップ --}}
                 <table class="roomTable">
                   <tbody>
                     @foreach($participants as $participant)

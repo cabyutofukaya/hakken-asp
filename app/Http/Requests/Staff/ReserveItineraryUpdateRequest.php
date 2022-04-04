@@ -27,6 +27,7 @@ class ReserveItineraryUpdateRequest extends FormRequest
     {
         return [
             'updated_at' => 'nullable|date',
+            'price_related_change_at' => 'nullable|date',
             'dates.*.*.id' => 'nullable|integer',
             'dates.*.*.type' => 'required',
             // 'dates.*.*.seq' => 'nullable|numeric',
@@ -85,6 +86,7 @@ class ReserveItineraryUpdateRequest extends FormRequest
     {
         return [
             'updated_at.date' => '更新日時のフォーマットが不正です。',
+            'price_related_change_at.date' => '料金更新日時のフォーマットが不正です。',
             'dates.*.*.id.integer' => '日程IDのフォーマットが不正です。',
             'dates.*.*.type.required' => '日程種別は必須です。',
             // 'dates.*.*.seq.numeric' => '並び順の値が数字以外で指定されています。',

@@ -2,24 +2,29 @@
 
 namespace App\Http\Controllers\Staff\Api;
 
-use App\Events\UpdateBillingAmountEvent;
 use App\Events\CreateItineraryEvent;
+use App\Events\PriceRelatedChangeEvent;
 use App\Events\ReserveChangeSumGrossEvent;
+use App\Events\UpdateBillingAmountEvent;
 use App\Exceptions\ExclusiveLockException;
+use App\Exceptions\PriceRelatedChangeException;
+use Illuminate\Support\Arr;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Staff\ReserveItineraryDestroyRequest;
 use App\Http\Requests\Staff\ReserveItineraryEnabledRequest;
 use App\Http\Requests\Staff\ReserveItineraryStoreRequest;
 use App\Http\Requests\Staff\ReserveItineraryUpdateRequest;
 use App\Http\Resources\Staff\ReserveItinerary\IndexResource;
-use App\Http\Resources\Staff\ReserveItinerary\UpdateResource;
 use App\Http\Resources\Staff\ReserveItinerary\StoreResource;
+use App\Http\Resources\Staff\ReserveItinerary\UpdateResource;
 use App\Models\ReserveItinerary;
+use App\Services\EstimateService;
 use App\Services\ReserveItineraryService;
 use App\Services\ReserveService;
-use App\Services\EstimateService;
-use App\Services\WebReserveService;
 use App\Services\WebEstimateService;
+use App\Services\WebReserveService;
+use App\Services\PriceRelatedChangeService;
+use App\Traits\PriceRelatedChangeTrait;
 use DB;
 use Exception;
 use Gate;
@@ -32,13 +37,16 @@ use Log;
  */
 class ReserveItineraryController extends Controller
 {
-    public function __construct(ReserveService $reserveService, ReserveItineraryService $reserveItineraryService, EstimateService $estimateService, WebReserveService $webReserveService, WebEstimateService $webEstimateService)
+    use PriceRelatedChangeTrait;
+
+    public function __construct(ReserveService $reserveService, ReserveItineraryService $reserveItineraryService, EstimateService $estimateService, WebReserveService $webReserveService, WebEstimateService $webEstimateService, PriceRelatedChangeService $priceRelatedChangeService)
     {
         $this->reserveService = $reserveService;
         $this->estimateService = $estimateService;
         $this->reserveItineraryService = $reserveItineraryService;
         $this->webReserveService = $webReserveService;
         $this->webEstimateService = $webEstimateService;
+        $this->priceRelatedChangeService = $priceRelatedChangeService; // traitで使用
     }
 
     /**
@@ -216,6 +224,8 @@ class ReserveItineraryController extends Controller
 
                 event(new CreateItineraryEvent($reserveItinerary)); // 行程作成時イベント
 
+                event(new PriceRelatedChangeEvent($reserve->id, date('Y-m-d H:i:s'))); // 料金変更に関わるイベントが起きた際に日時を記録
+
                 return $reserveItinerary;
             });
 
@@ -273,7 +283,6 @@ class ReserveItineraryController extends Controller
             abort(404);
         }
 
-
         // 認可チェック
         $response = Gate::inspect('update', [$reserveItinerary]);
         if (!$response->allowed()) {
@@ -284,6 +293,11 @@ class ReserveItineraryController extends Controller
             $input = $request->all();
 
             $reserveItinerary = \DB::transaction(function () use ($reserveItinerary, $input) {
+
+                if (!$this->checkPriceUpdatedAt($reserveItinerary->reserve_id, Arr::get($input, 'price_related_change_at'))) { // 料金情報更新チェック
+                    throw new PriceRelatedChangeException;
+                }
+
                 $newReserveItinerary = $this->reserveItineraryService->update($reserveItinerary->id, $input);
 
                 if ($newReserveItinerary->enabled) {
@@ -291,6 +305,8 @@ class ReserveItineraryController extends Controller
                 }
 
                 event(new UpdateBillingAmountEvent($newReserveItinerary->reserve)); // 請求金額変更イベント
+
+                event(new PriceRelatedChangeEvent($newReserveItinerary->reserve_id, date('Y-m-d H:i:s'))); // 料金変更に関わるイベントが起きた際に日時を記録
 
                 return $newReserveItinerary;
             });
@@ -301,8 +317,10 @@ class ReserveItineraryController extends Controller
                 }
                 return new UpdateResource($reserveItinerary);
             }
+        } catch (PriceRelatedChangeException $e) { // 料金更新エラー
+            abort(409, "料金情報が更新されています。編集する前に画面を再読み込みして最新情報を表示してください。");
         } catch (ExclusiveLockException $e) { // 同時編集エラー
-            abort(409, "他のユーザーによる編集済みレコードです。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+            abort(409, "他のユーザーによる編集済みレコードです。編集する前に画面を再読み込みして最新情報を表示してください。");
         } catch (Exception $e) {
             \Log::error($e);
         }

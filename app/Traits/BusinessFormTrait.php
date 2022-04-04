@@ -36,7 +36,7 @@ trait BusinessFormTrait
      * 予約金額情報と予約キャンセル情報を取得
      *
      * ・担当者ID > 予約番号 > 税区分 > 金額データ の構造でまとめた配列
-     * ・予約番号 => キャンセルか否かの配列
+     * ・予約番号 => キャンセル予約か否かの配列
      *
      * @param Collection $reserveInvoices 請求データ
      * @return array
@@ -72,11 +72,19 @@ trait BusinessFormTrait
                         }
 
                         $tmp = [];
-                        $tmp['gross_ex'] = Arr::get($row, 'gross_ex', 0);
-                        $tmp['quantity'] = Arr::get($row, 'quantity', 0);
-                        $tmp['zei_kbn'] = Arr::get($row, 'zei_kbn', null);
-                        $tmp['gross'] = Arr::get($row, 'gross', 0);
-                        $tmp['cancel_charge'] = Arr::get($row, 'cancel_charge', 0);
+                        if (Arr::get($row, 'purchase_type') == config('consts.const.PURCHASE_CANCEL')) { // キャンセル仕入行
+                            $tmp['purchase_type'] = Arr::get($row, 'purchase_type');
+                            $tmp['quantity'] = Arr::get($row, 'quantity', 0);
+                            $tmp['zei_kbn'] = null; // 税区分ナシ
+                            $tmp['cancel_charge'] = Arr::get($row, 'cancel_charge', 0);
+                        } elseif (Arr::get($row, 'purchase_type') == config('consts.const.PURCHASE_NORMAL')) { // 通常仕入行
+                            $tmp['purchase_type'] = Arr::get($row, 'purchase_type');
+                            $tmp['gross_ex'] = Arr::get($row, 'gross_ex', 0);
+                            $tmp['quantity'] = Arr::get($row, 'quantity', 0);
+                            $tmp['zei_kbn'] = Arr::get($row, 'zei_kbn', null);
+                            $tmp['gross'] = Arr::get($row, 'gross', 0);
+                            $tmp['cancel_charge'] = Arr::get($row, 'cancel_charge', 0);
+                        }
 
                         $zeiKbn = $tmp['zei_kbn'];
                         if (!Arr::get($res[$partnerManagerId][$reserveNumber], $zeiKbn, false)) {

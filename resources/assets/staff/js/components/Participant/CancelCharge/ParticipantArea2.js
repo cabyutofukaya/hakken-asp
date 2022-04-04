@@ -11,10 +11,11 @@ const ParticipantArea2 = ({ participants, handleChange }) => {
                 <thead>
                     <tr>
                         <th>部屋番号</th>
-                        <th>氏名</th>
+                        {/**氏名・性別・年齢・年齢区分は同一人物なので非表示に */}
+                        {/* <th>氏名</th>
                         <th className="txtalc">性別</th>
                         <th className="txtalc">年齢</th>
-                        <th className="txtalc">年齢区分</th>
+                        <th className="txtalc">年齢区分</th> */}
                         <th>キャンセル料金</th>
                         <th>仕入先支払料金</th>
                         <th>税抜単価</th>
@@ -29,7 +30,7 @@ const ParticipantArea2 = ({ participants, handleChange }) => {
                         participants.map((row, index) => (
                             <tr key={index}>
                                 <td>{row.room_number ?? "-"}</td>
-                                <td>
+                                {/* <td>
                                     {row.name ?? "-"}
                                     {row.name_kana && <>({row.name_kana})</>}
                                 </td>
@@ -39,7 +40,7 @@ const ParticipantArea2 = ({ participants, handleChange }) => {
                                 <td className="txtalc">{row.age ?? "-"}</td>
                                 <td className="txtalc">
                                     {row.age_kbn_label ?? "-"}
-                                </td>
+                                </td> */}
                                 <td>
                                     <OnlyNumberInput
                                         value={row?.cancel_charge ?? 0}

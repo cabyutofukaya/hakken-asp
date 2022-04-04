@@ -22,7 +22,9 @@ const ReserveBreakdownPricePreviewArea = ({
     amountTotal,
     partnerManagers
 }) => {
-    const { documentZeiKbns } = useContext(ConstContext);
+    const { documentZeiKbns, purchaseNormal, purchaseCancel } = useContext(
+        ConstContext
+    );
 
     const zeiKbns = showSetting.includes("消費税_非課税/不課税")
         ? documentZeiKbns
@@ -37,12 +39,14 @@ const ReserveBreakdownPricePreviewArea = ({
                     (zeiKbn, k) => {
                         reservePrices[managerId][reserveNumber][zeiKbn].map(
                             (row, l) => {
-                                // キャンセル予約の場合はcancel_chargeの金額を計算
-                                if (reserveCancelInfo?.[reserveNumber]) {
+                                // キャンセル仕入行の場合はcancel_chargeの金額を計算
+                                if (row?.purchase_type == purchaseCancel) {
                                     grossSum += parseInt(
                                         row.cancel_charge || 0
                                     );
-                                } else {
+                                } else if (
+                                    row?.purchase_type == purchaseNormal
+                                ) {
                                     grossSum += parseInt(row.gross || 0);
                                 }
                             }
@@ -71,16 +75,27 @@ const ReserveBreakdownPricePreviewArea = ({
                             gross_ex: 0,
                             quantity: 1,
                             zei_kbn: zeiKbn,
-                            gross: 0,
-                            cancel_charge: 0
+                            gross: 0
                         };
                         reservePrices[managerId][reserveNumber][zeiKbn].map(
                             (row, l) => {
-                                t["gross_ex"] += parseInt(row.gross_ex || 0);
-                                t["gross"] += parseInt(row.gross || 0);
-                                t["cancel_charge"] += parseInt(
-                                    row.cancel_charge || 0
-                                );
+                                if (row?.purchase_type == purchaseCancel) {
+                                    // キャセル行
+                                    t["gross_ex"] += parseInt(
+                                        row.cancel_charge || 0
+                                    );
+                                    t["gross"] += parseInt(
+                                        row.cancel_charge || 0
+                                    );
+                                } else if (
+                                    row?.purchase_type == purchaseNormal
+                                ) {
+                                    // 通常仕入行
+                                    t["gross_ex"] += parseInt(
+                                        row.gross_ex || 0
+                                    );
+                                    t["gross"] += parseInt(row.gross || 0);
+                                }
                             }
                         );
                         temp[reserveNumber].push(t);
@@ -147,16 +162,8 @@ const ReserveBreakdownPricePreviewArea = ({
                                                     "単価・金額"
                                                 ) && (
                                                     <td>
-                                                        {/**キャンセルの場合はキャンセルチャージ料金を出力 */}
                                                         ￥
-                                                        {reserveCancelInfo?.[
-                                                            reserveNumber
-                                                        ] &&
-                                                            row.cancel_charge.toLocaleString()}
-                                                        {!reserveCancelInfo?.[
-                                                            reserveNumber
-                                                        ] &&
-                                                            row.gross_ex.toLocaleString()}
+                                                        {row.gross_ex.toLocaleString()}
                                                     </td>
                                                 )}
                                                 <td>
@@ -166,33 +173,17 @@ const ReserveBreakdownPricePreviewArea = ({
                                                     "消費税"
                                                 ) && (
                                                     <td>
-                                                        {/**キャンセル予約の場合は消費税表示ナシ */}
-                                                        {reserveCancelInfo?.[
-                                                            reserveNumber
-                                                        ] && "-"}
-                                                        {!reserveCancelInfo?.[
-                                                            reserveNumber
-                                                        ] &&
-                                                            (zeiKbns?.[
-                                                                row.zei_kbn
-                                                            ] ??
-                                                                "-")}
+                                                        {zeiKbns?.[
+                                                            row.zei_kbn
+                                                        ] ?? "-"}
                                                     </td>
                                                 )}
                                                 {showSetting.includes(
                                                     "単価・金額"
                                                 ) && (
                                                     <td>
-                                                        {/**キャンセル予約の場合はキャンセルチャージの合計がgross */}
                                                         ￥
-                                                        {reserveCancelInfo?.[
-                                                            reserveNumber
-                                                        ] &&
-                                                            row.cancel_charge.toLocaleString()}
-                                                        {!reserveCancelInfo?.[
-                                                            reserveNumber
-                                                        ] &&
-                                                            row.gross.toLocaleString()}
+                                                        {row.gross.toLocaleString()}
                                                     </td>
                                                 )}
                                             </tr>

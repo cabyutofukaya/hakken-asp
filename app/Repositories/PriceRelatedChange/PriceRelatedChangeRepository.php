@@ -25,4 +25,16 @@ class PriceRelatedChangeRepository implements PriceRelatedChangeRepositoryInterf
             $values
         );
     }
+
+    /**
+     * 値を取得
+     */
+    public function findWhereValue(array $where, string $value)
+    {
+        $query = $this->priceRelatedChange;
+        foreach ($where as $k => $v) {
+            $query = $query->where($k, $v);
+        }
+        return $query->value($value);
+    }
 }
