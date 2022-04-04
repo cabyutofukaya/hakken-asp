@@ -451,8 +451,6 @@ class ReserveItineraryService
 
                                             $saleableIds[] = $price->id;
                                         }
-                                        // print_r($accountPayableDetailInsertRows);
-                                        // print_r($accountPayableDetailUpdateRows);
 
                                         // account_payable_detailsをバルクインサートとバルクアップデート
                                         $accountPayableDetailInsertRows && $this->accountPayableDetailService->insert($accountPayableDetailInsertRows);
@@ -505,9 +503,6 @@ class ReserveItineraryService
                                             }
                                         }
 
-                                        // print_r($insertRows);
-                                        // print_r($updateRows);
-                                            
                                         // reserve_participant_airplane_pricesレコードをバルクインサートとバルクアップデート
                                         $insertRows && $this->reserveParticipantAirplanePriceService->insert($insertRows);
                                         $updateRows && $this->reserveParticipantAirplanePriceService->updateBulk($updateRows, 'id');
@@ -534,8 +529,6 @@ class ReserveItineraryService
     
                                             $saleableIds[] = $price->id;
                                         }
-                                        // print_r($accountPayableDetailInsertRows);
-                                        // print_r($accountPayableDetailUpdateRows);
 
                                         // account_payable_detailsをバルクインサートとバルクアップデート
                                         $accountPayableDetailInsertRows && $this->accountPayableDetailService->insert($accountPayableDetailInsertRows);
@@ -587,8 +580,7 @@ class ReserveItineraryService
                                                 $insertRows[] = $tmp;
                                             }
                                         }
-                                        // print_r($insertRows);
-                                        // print_r($updateRows);
+
                                         // reserve_participant_hotel_pricesレコードをバルクインサートとバルクアップデート
                                         $insertRows && $this->reserveParticipantHotelPriceService->insert($insertRows);
                                         $updateRows && $this->reserveParticipantHotelPriceService->updateBulk($updateRows, 'id');
@@ -615,11 +607,7 @@ class ReserveItineraryService
 
                                             $saleableIds[] = $price->id;
                                         }
-
-                                        // print_r($saleableIds);
-                                        // print_r($accountPayableDetailInsertRows);
-                                        // print_r($accountPayableDetailUpdateRows);
-
+                                        
                                         // account_payable_detailsをバルクインサートとバルクアップデート
                                         $accountPayableDetailInsertRows && $this->accountPayableDetailService->insert($accountPayableDetailInsertRows);
                                         $accountPayableDetailUpdateRows && $this->accountPayableDetailService->updateBulk($accountPayableDetailUpdateRows, 'id');
