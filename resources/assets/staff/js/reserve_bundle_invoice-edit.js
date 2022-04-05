@@ -1,4 +1,4 @@
-import React, { useState, useContext, useMemo } from "react";
+import React, { useState, useContext, useMemo, useEffect } from "react";
 import ConstApp from "./components/ConstApp";
 import { ConstContext } from "./components/ConstApp";
 import { render } from "react-dom";
@@ -26,6 +26,9 @@ import PartnerManagerCheckSettingArea from "./components/BusinessForm/PartnerMan
 import InvoiceInfoPreviewArea from "./components/BusinessForm/InvoiceInfoPreviewArea";
 import ReserveBreakdownPricePreviewArea from "./components/BusinessForm/ReserveBreakdownPricePreviewArea";
 import StatusUpdateModal from "./components/BusinessForm/StatusUpdateModal";
+import ErrorMessage from "./components/ErrorMessage";
+
+const PARTNER_MANAGER_CHANGE_ERROR = "PARTNER_MANAGER_CHANGE_ERROR";
 
 const BundleInvoiceArea = ({
     reserveBundleInvoiceId,
@@ -44,6 +47,8 @@ const BundleInvoiceArea = ({
     const [input, setInput] = useState({ ...defaultValue });
 
     const [saveMessage, setSaveMessage] = useState(""); // 保存完了メッセージ
+
+    const [errorObj, setErrorObj] = useState({}); // エラー文言を保持
 
     const [documentSetting, setDocumentSetting] = useState({
         ...documentRequestAllSetting
@@ -114,9 +119,30 @@ const BundleInvoiceArea = ({
         setInput({ ...input });
     };
 
+    // 全ての担当者がチェックされていない場合はエラー文言をセット
+    const checkPartnerManager = partnerManagerIds => {
+        if (!mounted.current) {
+            return;
+        }
+        if (formSelects.partnerManagers.length != partnerManagerIds.length) {
+            setErrorObj({
+                PARTNER_MANAGER_CHANGE_ERROR:
+                    "御社担当欄でチェックされていない担当者がいます。"
+            });
+        } else {
+            setErrorObj({ PARTNER_MANAGER_CHANGE_ERROR: null });
+        }
+    };
+
+    // 担当者が全てチェックされていない場合はエラーを表示(→途中で追加された担当者はそのままではチェックONの対象になっていないので請求対象になっていないことを改めて認識してもらうため)
+    useEffect(() => {
+        checkPartnerManager(input.partner_manager_ids ?? []); // 担当者chekboxの状態をチェック
+    }, []);
+
     // 担当者チェックOn/Off制御
     const handlePartnerManagerChange = e => {
         let partner_manager_ids = input.partner_manager_ids;
+
         if (partner_manager_ids.includes(parseInt(e.target.value, 10))) {
             partner_manager_ids = partner_manager_ids.filter(
                 id => id != e.target.value
@@ -128,6 +154,8 @@ const BundleInvoiceArea = ({
             ];
         }
         setInput({ ...input, partner_manager_ids });
+
+        checkPartnerManager(partner_manager_ids ?? []); // 担当者chekboxの状態をチェック
     };
 
     // 検印欄項目入力制御
@@ -425,6 +453,8 @@ const BundleInvoiceArea = ({
 
             {/**保存完了メッセージ */}
             <SuccessMessage message={saveMessage} />
+
+            <ErrorMessage errorObj={errorObj} />
 
             <div id="inputArea">
                 <ul className="sideList documentSetting">
