@@ -62,7 +62,7 @@ class AgencyBundleDepositService extends DepositBaseService
         if ($checkReserveBundleInvoiceUpdatedAt) {
             $reserveBundleInvoice = $this->reserveBundleInvoiceRepository->find((int)$data['reserve_bundle_invoice_id']);
             if ($reserveBundleInvoice->updated_at != Arr::get($data, 'reserve_bundle_invoice.updated_at')) {
-                throw new ExclusiveLockException("他のユーザーによる編集済みレコードです。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+                throw new ExclusiveLockException("他のユーザーによる編集済みレコードです。編集する前に画面を再読み込みして最新情報を表示してください。");
             }
         }
 

@@ -109,7 +109,7 @@ class UserConsultationController extends Controller
                 return new IndexResource($userConsultation);
             }
         } catch (ExclusiveLockException $e) { // 同時編集エラー
-            abort(409, "他のユーザーによる編集済みレコードです。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+            abort(409, "他のユーザーによる編集済みレコードです。編集する前に画面を再読み込みして最新情報を表示してください。");
         } catch (Exception $e) {
             Log::error($e);
         }

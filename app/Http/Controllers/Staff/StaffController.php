@@ -123,7 +123,7 @@ class StaffController extends AppController
                 return redirect()->route('staff.system.user.index', $agencyAccount)->with('success_message', "ユーザー「{$staff->name}」を更新しました");
             }
         } catch (ExclusiveLockException $e) {
-            return back()->withInput()->with('error_message', "他のユーザーによる編集済みレコードです。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+            return back()->withInput()->with('error_message', "他のユーザーによる編集済みレコードです。編集する前に画面を再読み込みして最新情報を表示してください。");
         }
         abort(409);
     }

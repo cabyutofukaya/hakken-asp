@@ -62,7 +62,7 @@ class AgencyDepositService extends DepositBaseService
         if ($checkReserveInvoiceUpdatedAt) { // 予約レコードの申込者が変更されているケースなどもここでエラーになる
             $reserveInvoice = $this->reserveInvoiceRepository->find((int)$data['reserve_invoice_id']);
             if ($reserveInvoice->updated_at != Arr::get($data, 'reserve_invoice.updated_at')) {
-                throw new ExclusiveLockException("他のユーザーによる編集済みレコードです。もう一度編集する前に、画面を再読み込みして最新情報を表示してください。");
+                throw new ExclusiveLockException("他のユーザーによる編集済みレコードです。編集する前に画面を再読み込みして最新情報を表示してください。");
             }
         }
 

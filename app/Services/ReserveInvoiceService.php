@@ -390,10 +390,6 @@ class ReserveInvoiceService extends ReserveDocumentService implements DocumentAd
 
     /**
      * 新規登録or更新
-     *
-     * 一応、新規登録もできるようにはなっているが、実際は請求書は行程作成時に
-     * 初回データが自動生成されるようになっているので本メソッドから新規作成されることはない
-     *
      */
     public function upsert(int $agencyId, int $reserveId, int $reserveItineraryId, array $input) : ReserveInvoice
     {
