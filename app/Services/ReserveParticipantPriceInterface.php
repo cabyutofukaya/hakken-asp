@@ -18,7 +18,7 @@ interface ReserveParticipantPriceInterface
 
     public function setCancelChargeByIds(int $cancelCharge, int $cancelChargeNet, int $cancelChargeProfit, bool $isCancel, array $ids) : bool;
     
-    public function setIsAliveCancelByParticipantId(int $participantId) : bool;
+    public function setIsAliveCancelByParticipantIdForPurchaseCancel(int $participantId) : bool;
 
     public function setIsAliveCancelByIds(array $ids) : bool;
 
@@ -26,7 +26,7 @@ interface ReserveParticipantPriceInterface
 
     public function setCancelChargeByReserveItineraryId(int $cancelCharge, int $cancelChargeNet, int $cancelChargeProfit, bool $isCancel, int $reserveItineraryId) : array;
 
-    public function setCancelChargeByParticipantId(int $cancelCharge, int $cancelChargeNet, int $cancelChargeProfit, bool $isCancel, int $participantId) : bool;
+    public function setCancelChargeByParticipantId(int $cancelCharge, int $cancelChargeNet, int $cancelChargeProfit, bool $isCancel, int $participantId, bool $getIds = false) : ?array;
 
     public function updateBulk(array $params, string $id) : bool;
 }

@@ -364,9 +364,9 @@ class ParticipantController extends Controller
             $newParticipant = DB::transaction(function () use ($oldParticipant, $reserve, $input) {
                 $newParticipant = $this->participantService->setCancel($oldParticipant->id);
                 
-                $this->reserveParticipantPriceService->setCancelDataByParticipantId($oldParticipant->id, 0, 0, 0, false); // 全ての仕入情報をキャンセルチャージ0円で初期化
+                $this->reserveParticipantPriceService->participantNoCancelCharge($oldParticipant->id); // 当該参加者をキャンセルチャージナシで更新
 
-                $this->reserveParticipantPriceService->setIsAliveCancelByParticipantId($oldParticipant->id); // 全有効仕入行に対し、is_alive_cancelフラグをONにする。
+                $this->reserveParticipantPriceService->setIsAliveCancelByParticipantIdForPurchaseCancel($oldParticipant->id); // 全有効仕入行に対し、is_alive_cancelフラグをONにする。
 
                 if ($reserve->enabled_reserve_itinerary->id) {
                     $this->refreshItineraryTotalAmount($reserve->enabled_reserve_itinerary); // 有効行程の合計金額更新。不要かもしれないが、念の為
@@ -440,11 +440,13 @@ class ParticipantController extends Controller
                 $this->reserveParticipantPriceService->setCancelDataByParticipantId($participant->id, 0, 0, 0, false); // 全ての仕入情報をキャンセルチャージ0円で初期化。valid=0の仕入行もこの処理でリセットされる
 
                 // キャンセルチャージ料金を保存
-                list($optionIds, $airplaneIds, $hotelIds) = $this->setParticipantCancelCharge($input);
+                list($optionIds, $airplaneIds, $hotelIds) = $this->setReserveCancelCharge($input);
 
                 $this->reserveParticipantPriceService->setIsAliveCancelByReserveParticipantPriceIds($optionIds, $airplaneIds, $hotelIds); // 対象参加者商品仕入IDに対し、is_alive_cancelフラグをONに。
 
-                $this->refreshItineraryTotalAmount($reserve->enabled_reserve_itinerary); // 有効行程の合計金額更新
+                if ($reserve->enabled_reserve_itinerary->id) {
+                    $this->refreshItineraryTotalAmount($reserve->enabled_reserve_itinerary); // 有効行程の合計金額更新
+                }
 
                 // キャンセル時に代表者をOFFにする必要もない気がするので一旦無効化
                 // if ($participant->representative) { // 当該参加者が代表者"だった"場合
