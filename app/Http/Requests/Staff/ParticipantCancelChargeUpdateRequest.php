@@ -27,6 +27,7 @@ class ParticipantCancelChargeUpdateRequest extends FormRequest
     public function rules()
     {
         return [
+            'rows' => 'required|array',
             'rows.*.is_cancel' => 'nullable|boolean',
             'rows.*.cancel_charge' => 'nullable|regex:/^[0-9]+$/i', // 整数のみ許可
             'rows.*.cancel_charge_net' => 'nullable|regex:/^[0-9]+$/i', // 整数のみ許可
@@ -38,6 +39,8 @@ class ParticipantCancelChargeUpdateRequest extends FormRequest
     public function messages()
     {
         return [
+            'rows.required' => 'キャンセル料金情報が入力されていません。',
+            'rows.array' => 'キャンセル料金情報の入力形式が不正です。',
             'rows.*.is_cancel.boolean' => '「キャンセル料の有無」の指定が不正です。',
             'rows.*.cancel_charge.regex' => '「キャンセル料金」の入力が正しくありません。',
             'rows.*.cancel_charge_net.regex' => '「仕入先支払料金合計」の入力が正しくありません。',
