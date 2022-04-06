@@ -184,14 +184,13 @@ const ItineraryArea = ({
                 />
             </>
         ); // 旅行日未設定
+    const mounted = useMountedRef(); // マウント・アンマウント制御
 
     const { agencyAccount, purchaseNormal, purchaseCancel } = useContext(
         ConstContext
     );
 
-    const mounted = useMountedRef(); // マウント・アンマウント制御
-
-    const { subjectCategoryTypes, modes } = useContext(
+    const { subjectCategoryTypes, modes, isCanceled } = useContext(
         ReserveItineraryConstContext
     );
 
@@ -239,7 +238,7 @@ const ItineraryArea = ({
     }; // 仕入情報初期値(PURCHASING_MODE_CREATE=新規登録)
 
     const [lists, rowDispatch] = useReducer(listsReducer, defaultValue?.dates); // 日程情報の入力制御
-    console.log(lists);
+
     const [note, setNote] = useState(defaultValue?.note); // 備考入力制御
     // 追加対象行情報。日付、行番号
     const [targetAddRow, setTargetAddRow] = useReducer((state, newState) => ({
@@ -938,7 +937,7 @@ const ItineraryArea = ({
                             <span className="material-icons">event_note </span>
                             {date}
                             {/**スケジュールがない日付でもdatesパラメータがPOSTされるようにhidden値でセット。スケジュールのある日付は.itineraryArea内のブロックの値で上書きPOSTされる */}
-                            <input type="hidden" name={`dates[${date}]`} />
+                            {/* <input type="hidden" name={`dates[${date}]`} /> */}
                         </h2>
                         <div className="itineraryArea">
                             {lists[date] &&
@@ -1085,66 +1084,67 @@ const ItineraryArea = ({
                                     }
                                 })}
 
-                            {/** 最後の要素が「宿泊地・目的地」でなければ追加ボタンを表示*/}
-                            {_.get(_.last(lists[date]), "type") !==
-                                "destination" && (
-                                <ul className="itineraryControl">
-                                    <li>
-                                        <button
-                                            className="blueBtn"
-                                            onClick={e =>
-                                                handleAddRow(
-                                                    e,
-                                                    consts?.itineraryTypes
-                                                        ?.waypoint,
-                                                    date
-                                                )
-                                            }
-                                        >
-                                            <span className="material-icons">
-                                                location_on
-                                            </span>
-                                            スポット・経由地を追加
-                                        </button>
-                                    </li>
-                                    <li>
-                                        <button
-                                            className="blueBtn"
-                                            onClick={e =>
-                                                handleAddRow(
-                                                    e,
-                                                    consts?.itineraryTypes
-                                                        ?.waypoint_image,
-                                                    date
-                                                )
-                                            }
-                                        >
-                                            <span className="material-icons">
-                                                location_on
-                                            </span>
-                                            スポット・経由地(写真付き)を追加
-                                        </button>
-                                    </li>
-                                    <li>
-                                        <button
-                                            className="blueBtn"
-                                            onClick={e =>
-                                                handleAddRow(
-                                                    e,
-                                                    consts?.itineraryTypes
-                                                        ?.destination,
-                                                    date
-                                                )
-                                            }
-                                        >
-                                            <span className="material-icons">
-                                                flag
-                                            </span>
-                                            宿泊地・目的地を追加
-                                        </button>
-                                    </li>
-                                </ul>
-                            )}
+                            {/** 最後の要素が「宿泊地・目的地」でなければ追加ボタンを表示。ただし、キャンセル予約の場合は追加不可*/}
+                            {!isCanceled &&
+                                _.get(_.last(lists[date]), "type") !==
+                                    "destination" && (
+                                    <ul className="itineraryControl">
+                                        <li>
+                                            <button
+                                                className="blueBtn"
+                                                onClick={e =>
+                                                    handleAddRow(
+                                                        e,
+                                                        consts?.itineraryTypes
+                                                            ?.waypoint,
+                                                        date
+                                                    )
+                                                }
+                                            >
+                                                <span className="material-icons">
+                                                    location_on
+                                                </span>
+                                                スポット・経由地を追加
+                                            </button>
+                                        </li>
+                                        <li>
+                                            <button
+                                                className="blueBtn"
+                                                onClick={e =>
+                                                    handleAddRow(
+                                                        e,
+                                                        consts?.itineraryTypes
+                                                            ?.waypoint_image,
+                                                        date
+                                                    )
+                                                }
+                                            >
+                                                <span className="material-icons">
+                                                    location_on
+                                                </span>
+                                                スポット・経由地(写真付き)を追加
+                                            </button>
+                                        </li>
+                                        <li>
+                                            <button
+                                                className="blueBtn"
+                                                onClick={e =>
+                                                    handleAddRow(
+                                                        e,
+                                                        consts?.itineraryTypes
+                                                            ?.destination,
+                                                        date
+                                                    )
+                                                }
+                                            >
+                                                <span className="material-icons">
+                                                    flag
+                                                </span>
+                                                宿泊地・目的地を追加
+                                            </button>
+                                        </li>
+                                    </ul>
+                                )}
                         </div>
                     </React.Fragment>
                 ))}

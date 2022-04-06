@@ -157,13 +157,13 @@ class Participant extends Model
      */
     public function getStateIncNameAttribute($value): ?string
     {
-        if ($this->name) {
+        if ($this->name && $this->user) {
             if ($this->user->trashed()) {
                 return sprintf("%s(削除)", $this->name);
             } else {
                 if ($this->user->status != config('consts.users.STATUS_VALID')) {
                     $statuses = get_const_item('users', 'status');
-                    return sprintf("%s(%s)", $value, Arr::get($statuses, $this->user->status, ""));
+                    return sprintf("%s(%s)", $this->name, Arr::get($statuses, $this->user->status, ""));
                 }
             }
             return $this->name;

@@ -89,9 +89,12 @@ class ParticipantService
      */
     public function createFromUser(Reserve $reserve, int $agencyId, User $user, bool $representative = false) : Participant
     {
+        $userData = data_get($user, 'userable')->toArray();
+        $userData['name'] = $userData['org_name']; // userableのnameカラムは削除or無効状態時にラベル(名前の末尾に「削除」等の文字列)がついてしまうのでオリジナルの名前(org_name)で設定
+
         $participant = $this->participantRepository->create(
             array_merge(
-                collect(Arr::get($user, 'userable'))->only(self::PARTICIPANT_USERABLE_COLUMN)->toArray(), // userableカラム
+                collect($userData)->only(self::PARTICIPANT_USERABLE_COLUMN)->toArray(),
                 collect(Arr::get($user, 'userable.user_ext'))->only(self::PARTICIPANT_USER_EXT_COLUMN)->toArray(), // user_extカラム
                 [
                     'agency_id' => $agencyId,

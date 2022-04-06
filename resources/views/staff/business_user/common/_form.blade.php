@@ -52,7 +52,7 @@ playlist_add_check</span>取引先担当者</h2>
       <div class="selectBox wd40">
         <select name="manager_id">
           @foreach($formSelects['staffs'] as $val => $str)
-            <option value="{{ $val }}" @if(Arr::get($defaultValue, 'manager_id') === $val) selected="selected" @endif>{{ $str }}</option>
+            <option value="{{ $val }}" @if(Arr::get($defaultValue, 'manager_id') == $val) selected="selected" @endif>{{ $str }}</option>
           @endforeach
         </select>
       </div>
@@ -76,7 +76,7 @@ playlist_add_check</span>取引先担当者</h2>
       <div class="selectBox">
         <select name="pay_altogether">
           @foreach($formSelects['pay_altogethers'] as $val => $str)
-            <option value="{{ $val }}" @if(Arr::get($defaultValue, 'pay_altogether', config('consts.business_users.DEFAULT_PAY_ALTOGETHER')) === $val) selected="selected" @endif>{{ $str }}</option>
+            <option value="{{ $val }}" @if(Arr::get($defaultValue, 'pay_altogether', config('consts.business_users.DEFAULT_PAY_ALTOGETHER')) == $val) selected="selected" @endif>{{ $str }}</option>
           @endforeach
         </select>
       </div>

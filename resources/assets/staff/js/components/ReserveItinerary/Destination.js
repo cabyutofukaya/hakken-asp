@@ -4,6 +4,7 @@ import CancelSubtotalRow from "./CancelSubtotalRow";
 import ScheduleInputRows from "./ScheduleInputRows";
 import SubtotalRow from "./SubtotalRow";
 import { existsIsAliveCancelRow } from "../../libs";
+import { ReserveItineraryConstContext } from "../ReserveItineraryConstApp"; // 下層コンポーネントに定数などを渡すコンテキスト
 
 /**
  *
@@ -29,6 +30,8 @@ const Destination = ({
     targetPurchasingDispatch
 }) => {
     const { purchaseCancel } = useContext(ConstContext);
+
+    const { modes, isCanceled } = useContext(ReserveItineraryConstContext);
 
     const inputName = `dates[${date}][${index}]`;
 
@@ -126,15 +129,19 @@ const Destination = ({
                 <div className="subjectList">
                     <h3>
                         仕入科目
-                        <a
-                            href="#"
-                            className="js-modal-open"
-                            data-target="mdSubject"
-                            onClick={handleAddPurchasingModal}
-                        >
-                            <span className="material-icons">add_circle</span>
-                            追加
-                        </a>
+                        {!isCanceled && (
+                            <a
+                                href="#"
+                                className="js-modal-open"
+                                data-target="mdSubject"
+                                onClick={handleAddPurchasingModal}
+                            >
+                                <span className="material-icons">
+                                    add_circle
+                                </span>
+                                追加
+                            </a>
+                        )}
                     </h3>
                     {input?.reserve_purchasing_subjects && (
                         <SubtotalRow

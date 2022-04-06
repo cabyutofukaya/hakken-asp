@@ -6,6 +6,7 @@ import SubtotalRow from "./SubtotalRow";
 import TransportInputRow from "./TransportInputRow";
 import PickupSpot from "./PickupSpot";
 import { existsIsAliveCancelRow } from "../../libs";
+import { ReserveItineraryConstContext } from "../ReserveItineraryConstApp"; // 下層コンポーネントに定数などを渡すコンテキスト
 
 /**
  *
@@ -45,9 +46,10 @@ const WaypointImage = ({
 }) => {
     const { purchaseCancel } = useContext(ConstContext);
 
+    const { modes, isCanceled } = useContext(ReserveItineraryConstContext);
+
     const inputName = `dates[${date}][${index}]`;
-    console.log("waypointimage");
-    console.log(input);
+
     // 仕入追加ボタン押下時処理。編集対象の仕入詳細データを初期化
     const handleAddPurchasingModal = e => {
         e.preventDefault();
@@ -176,15 +178,19 @@ const WaypointImage = ({
                 <div className="subjectList">
                     <h3>
                         仕入科目
-                        <a
-                            href="#"
-                            className="js-modal-open"
-                            data-target="mdSubject"
-                            onClick={handleAddPurchasingModal}
-                        >
-                            <span className="material-icons">add_circle</span>
-                            追加
-                        </a>
+                        {!isCanceled && (
+                            <a
+                                href="#"
+                                className="js-modal-open"
+                                data-target="mdSubject"
+                                onClick={handleAddPurchasingModal}
+                            >
+                                <span className="material-icons">
+                                    add_circle
+                                </span>
+                                追加
+                            </a>
+                        )}
                     </h3>
                     {input?.reserve_purchasing_subjects && (
                         <SubtotalRow
