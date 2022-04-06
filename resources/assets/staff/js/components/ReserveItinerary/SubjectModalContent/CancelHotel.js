@@ -25,7 +25,7 @@ const CancelHotel = ({
 }) => {
     const { subjectCategoryNames } = useContext(ConstContext);
 
-    const { modes } = useContext(ReserveItineraryConstContext);
+    const { modes, isCanceled } = useContext(ReserveItineraryConstContext);
 
     /**
      * 更新ボタン押下
@@ -260,13 +260,18 @@ const CancelHotel = ({
                             閉じる
                         </button>
                     </li>
-                    <li className="wd50 mr00">
-                        {input.mode === modes.purchasing_mode_edit && (
-                            <button className="blueBtn" onClick={handleEditBtn}>
-                                更新する
-                            </button>
-                        )}
-                    </li>
+                    {!isCanceled && (
+                        <li className="wd50 mr00">
+                            {input.mode === modes.purchasing_mode_edit && (
+                                <button
+                                    className="blueBtn"
+                                    onClick={handleEditBtn}
+                                >
+                                    更新する
+                                </button>
+                            )}
+                        </li>
+                    )}
                 </ul>
             </div>
         </>

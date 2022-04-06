@@ -41,7 +41,7 @@ const Waypoint = ({
 }) => {
     const { purchaseCancel } = useContext(ConstContext);
 
-    const { modes } = useContext(ReserveItineraryConstContext);
+    const { modes, isCanceled } = useContext(ReserveItineraryConstContext);
 
     const inputName = `dates[${date}][${index}]`;
 
@@ -161,17 +161,19 @@ const Waypoint = ({
                     <div className="subjectList">
                         <h3>
                             仕入科目
-                            <a
-                                href="#"
-                                className="js-modal-open"
-                                data-target="mdSubject"
-                                onClick={handleAddPurchasingModal}
-                            >
-                                <span className="material-icons">
-                                    add_circle
-                                </span>
-                                追加
-                            </a>
+                            {!isCanceled && (
+                                <a
+                                    href="#"
+                                    className="js-modal-open"
+                                    data-target="mdSubject"
+                                    onClick={handleAddPurchasingModal}
+                                >
+                                    <span className="material-icons">
+                                        add_circle
+                                    </span>
+                                    追加
+                                </a>
+                            )}
                         </h3>
                         {input?.reserve_purchasing_subjects && (
                             <SubtotalRow

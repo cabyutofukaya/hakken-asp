@@ -27,7 +27,7 @@ const Option = ({
     defaultSubjectOptions
 }) => {
     const { subjectCategoryNames } = useContext(ConstContext);
-    const { modes } = useContext(ReserveItineraryConstContext);
+    const { modes, isCanceled } = useContext(ReserveItineraryConstContext);
 
     /**
      * 登録ボタン押下
@@ -254,21 +254,26 @@ const Option = ({
                             閉じる
                         </button>
                     </li>
-                    <li className="wd50 mr00">
-                        {input.mode === modes.purchasing_mode_create && (
-                            <button
-                                className="blueBtn"
-                                onClick={handleRegistBtn}
-                            >
-                                登録する
-                            </button>
-                        )}
-                        {input.mode === modes.purchasing_mode_edit && (
-                            <button className="blueBtn" onClick={handleEditBtn}>
-                                更新する
-                            </button>
-                        )}
-                    </li>
+                    {!isCanceled && (
+                        <li className="wd50 mr00">
+                            {input.mode === modes.purchasing_mode_create && (
+                                <button
+                                    className="blueBtn"
+                                    onClick={handleRegistBtn}
+                                >
+                                    登録する
+                                </button>
+                            )}
+                            {input.mode === modes.purchasing_mode_edit && (
+                                <button
+                                    className="blueBtn"
+                                    onClick={handleEditBtn}
+                                >
+                                    更新する
+                                </button>
+                            )}
+                        </li>
+                    )}
                 </ul>
             </div>
         </>
