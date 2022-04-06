@@ -218,7 +218,7 @@ class ReserveController extends Controller
 
                 $this->reserveService->cancel($reserve, false); // 予約レコードのキャンセルフラグをON
 
-                $this->reserveParticipantPriceService->cancelChargeReset($reserve->enabled_reserve_itinerary->id); // 全ての仕入情報をキャンセルチャージ0円で初期化
+                $this->reserveParticipantPriceService->reserveNoCancelCharge($reserve->enabled_reserve_itinerary->id); // 全ての仕入情報をキャンセルチャージ0円で初期化
 
                 $this->reserveParticipantPriceService->setIsAliveCancelByReserveId($reserve->id, $reserve->enabled_reserve_itinerary->id); // 全valid=true行(かつpurchase_type=PURCHASE_CANCEL)に対し、is_alive_cancelフラグをONにする。
 

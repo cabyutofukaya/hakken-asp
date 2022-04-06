@@ -105,7 +105,7 @@ class ReserveParticipantAirplanePriceService implements ReserveParticipantPriceI
 
     /**
      * 対象IDのキャンセルチャージ料金、キャンセルフラグを保存
-     * 
+     *
      * @param int $cancelCharge キャンセルチャージ金額
      * @param int $cancelChargeNet 仕入先支払料金合計
      * @param int $cancelChargeProfit キャンセルチャージ粗利
@@ -118,7 +118,7 @@ class ReserveParticipantAirplanePriceService implements ReserveParticipantPriceI
 
     /**
      * 対象行程IDのキャンセルチャージ料金、キャンセルフラグを保存
-     * 
+     *
      * @return array 処理対象のレコードIDリスト
      */
     public function setCancelChargeByReserveItineraryId(int $cancelCharge, int $cancelChargeNet, int $cancelChargeProfit, bool $isCancel, int $reserveItineraryId) : array
@@ -127,7 +127,7 @@ class ReserveParticipantAirplanePriceService implements ReserveParticipantPriceI
         $targetRows = $this->reserveParticipantAirplanePriceRepository->getWhere(['reserve_itinerary_id' => $reserveItineraryId, 'purchase_type' => config('consts.const.PURCHASE_NORMAL')], [], ['id']);
 
         $this->reserveParticipantAirplanePriceRepository->updateWhere(
-            ['purchase_type' => config('consts.const.PURCHASE_CANCEL'), 'cancel_charge' => $cancelCharge, 'cancel_charge_net' => $cancelChargeNet, 'cancel_charge_profit' => $cancelChargeProfit, 'is_cancel' => $isCancel], 
+            ['purchase_type' => config('consts.const.PURCHASE_CANCEL'), 'cancel_charge' => $cancelCharge, 'cancel_charge_net' => $cancelChargeNet, 'cancel_charge_profit' => $cancelChargeProfit, 'is_cancel' => $isCancel],
             ['reserve_itinerary_id' => $reserveItineraryId, 'purchase_type' => config('consts.const.PURCHASE_NORMAL')]
         );
 
@@ -136,25 +136,31 @@ class ReserveParticipantAirplanePriceService implements ReserveParticipantPriceI
 
     /**
      * 対象参加者IDのキャンセルチャージ料金、キャンセルフラグを保存
-     * 
+     *
      */
-    public function setCancelChargeByParticipantId(int $cancelCharge, int $cancelChargeNet, int $cancelChargeProfit, bool $isCancel, int $participantId) : bool
+    public function setCancelChargeByParticipantId(int $cancelCharge, int $cancelChargeNet, int $cancelChargeProfit, bool $isCancel, int $participantId, bool $getIds = false) : ?array
     {
+        $res = null;
+
+        if ($getIds) {
+            $res = $this->reserveParticipantAirplanePriceRepository->getWhere(['participant_id' => $participantId], [], ['id'])->pluck("id")->toArray();
+        }
+
         $this->reserveParticipantAirplanePriceRepository->updateWhere(
-            ['purchase_type' => config('consts.const.PURCHASE_CANCEL'), 'cancel_charge' => $cancelCharge, 'cancel_charge_net' => $cancelChargeNet, 'cancel_charge_profit' => $cancelChargeProfit, 'is_cancel' => $isCancel], 
+            ['purchase_type' => config('consts.const.PURCHASE_CANCEL'), 'cancel_charge' => $cancelCharge, 'cancel_charge_net' => $cancelChargeNet, 'cancel_charge_profit' => $cancelChargeProfit, 'is_cancel' => $isCancel],
             ['participant_id' => $participantId]
         );
 
-        return true;
+        return $res;
     }
 
     /**
      * キャンセル済みの有効仕入(valid=true)行に対し、キャンセル設定フラグ(is_alive_cancel)をオンに。is_alive_cancel=trueの行は行程編集ページの「キャンセルした仕入」一覧にリストアップされる
      */
-    public function setIsAliveCancelByParticipantId(int $participantId) : bool
+    public function setIsAliveCancelByParticipantIdForPurchaseCancel(int $participantId) : bool
     {
         return $this->reserveParticipantAirplanePriceRepository->updateWhere(
-            ['is_alive_cancel' => true], 
+            ['is_alive_cancel' => true],
             ['participant_id' => $participantId, 'purchase_type' => config('consts.const.PURCHASE_CANCEL'), 'valid' => true]
         );
     }
@@ -170,7 +176,7 @@ class ReserveParticipantAirplanePriceService implements ReserveParticipantPriceI
     public function setIsAliveCancelByReserveId(int $reserveId, int $reserveItineraryId) : bool
     {
         return $this->reserveParticipantAirplanePriceRepository->updateWhere(
-            ['is_alive_cancel' => true], 
+            ['is_alive_cancel' => true],
             ['reserve_id' => $reserveId, 'reserve_itinerary_id' => $reserveItineraryId, 'purchase_type' => config('consts.const.PURCHASE_CANCEL'), 'valid' => true]
         );
     }
@@ -192,5 +198,4 @@ class ReserveParticipantAirplanePriceService implements ReserveParticipantPriceI
     {
         return $this->reserveParticipantAirplanePriceRepository->insert($params);
     }
-
 }

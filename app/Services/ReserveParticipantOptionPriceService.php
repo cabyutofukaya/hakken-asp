@@ -135,20 +135,26 @@ class ReserveParticipantOptionPriceService implements ReserveParticipantPriceInt
      * 対象参加者IDのキャンセルチャージ料金、キャンセルフラグを保存
      *
      */
-    public function setCancelChargeByParticipantId(int $cancelCharge, int $cancelChargeNet, int $cancelChargeProfit, bool $isCancel, int $participantId) : bool
+    public function setCancelChargeByParticipantId(int $cancelCharge, int $cancelChargeNet, int $cancelChargeProfit, bool $isCancel, int $participantId, bool $getIds = false) : ?array
     {
+        $res = null;
+
+        if ($getIds) {
+            $res = $this->reserveParticipantOptionPriceRepository->getWhere(['participant_id' => $participantId], [], ['id'])->pluck("id")->toArray();
+        }
+
         $this->reserveParticipantOptionPriceRepository->updateWhere(
             ['purchase_type' => config('consts.const.PURCHASE_CANCEL'), 'cancel_charge' => $cancelCharge, 'cancel_charge_net' => $cancelChargeNet, 'cancel_charge_profit' => $cancelChargeProfit, 'is_cancel' => $isCancel],
             ['participant_id' => $participantId]
         );
 
-        return true;
+        return $res;
     }
 
     /**
      * キャンセル済みの有効仕入(valid=true)行に対し、キャンセル設定フラグ(is_alive_cancel)をオンに。is_alive_cancel=trueの行は行程編集ページの「キャンセルした仕入」一覧にリストアップされる
      */
-    public function setIsAliveCancelByParticipantId(int $participantId) : bool
+    public function setIsAliveCancelByParticipantIdForPurchaseCancel(int $participantId) : bool
     {
         return $this->reserveParticipantOptionPriceRepository->updateWhere(
             ['is_alive_cancel' => true],

@@ -49,18 +49,19 @@ class ReserveParticipantPriceService
     }
 
     /**
-     * 当該参加者に紐づく有効仕入(valid=true)行に対し、キャンセル設定フラグ(is_alive_cancel)をオンに。is_alive_cancel=trueの行は行程編集ページの「キャンセルした仕入」一覧にリストアップされる。ノーチャージキャンセル用
+     * 当該参加者に紐づくvalid=true行に対し、キャンセル設定フラグ(is_alive_cancel)をオンに。is_alive_cancel=trueの行は行程編集ページの「キャンセルした仕入」一覧にリストアップされる。
+     * キャンセル仕入行用。ノーチャージキャンセル用
      */
-    public function setIsAliveCancelByParticipantId(int $participantId) : bool
+    public function setIsAliveCancelByParticipantIdForPurchaseCancel(int $participantId) : bool
     {
         // オプション科目
-        $this->reserveParticipantOptionPriceService->setIsAliveCancelByParticipantId($participantId);
+        $this->reserveParticipantOptionPriceService->setIsAliveCancelByParticipantIdForPurchaseCancel($participantId);
 
         // 航空券科目
-        $this->reserveParticipantAirplanePriceService->setIsAliveCancelByParticipantId($participantId);
+        $this->reserveParticipantAirplanePriceService->setIsAliveCancelByParticipantIdForPurchaseCancel($participantId);
 
         // ホテル科目
-        $this->reserveParticipantHotelPriceService->setIsAliveCancelByParticipantId($participantId);
+        $this->reserveParticipantHotelPriceService->setIsAliveCancelByParticipantIdForPurchaseCancel($participantId);
 
         return true;
     }
@@ -116,7 +117,7 @@ class ReserveParticipantPriceService
      *
      * @param ?int $reserveItineraryId 行程ID(有効な行程が設定されていない場合nullが渡される可能性あり)
      */
-    public function cancelChargeReset(?int $reserveItineraryId) : bool
+    public function reserveNoCancelCharge(?int $reserveItineraryId) : bool
     {
         if (!$reserveItineraryId) {
             return true;
@@ -148,6 +149,53 @@ class ReserveParticipantPriceService
         }
 
         $hotelIds = $this->reserveParticipantHotelPriceService->setCancelChargeByReserveItineraryId(0, 0, 0, false, $reserveItineraryId); // ホテル科目
+
+        if ($hotelIds) {
+            foreach ($hotelIds as $id) {
+                // 当該科目に紐づくの支払い情報レコードの仕入額をリセット
+                $accountPayableDetailId = $this->accountPayableDetailService->setCancelChargeBySaleableId(0, 'App\Models\ReserveParticipantHotelPrice', $id, true);
+
+                // ステータスと支払い残高計算
+                event(new ChangePaymentAmountEvent($accountPayableDetailId));
+            }
+        }
+        
+        return true;
+    }
+
+    /**
+     * 当該参加者をキャンセルチャージナシで更新
+     */
+    public function participantNoCancelCharge(int $participantId) : bool
+    {
+        // オプション科目
+        $optionIds = $this->reserveParticipantOptionPriceService->setCancelChargeByParticipantId(0, 0, 0, false, $participantId, true);
+
+        if ($optionIds) {
+            foreach ($optionIds as $id) {
+                // 当該科目に紐づくの支払い情報レコードの仕入額をリセット
+                $accountPayableDetailId = $this->accountPayableDetailService->setCancelChargeBySaleableId(0, 'App\Models\ReserveParticipantOptionPrice', $id, true);
+        
+                // ステータスと支払い残高計算
+                event(new ChangePaymentAmountEvent($accountPayableDetailId));
+            }
+        }
+
+        // 航空券科目
+        $airplaneIds = $this->reserveParticipantAirplanePriceService->setCancelChargeByParticipantId(0, 0, 0, false, $participantId, true);
+
+        if ($airplaneIds) {
+            foreach ($airplaneIds as $id) {
+                // 当該科目に紐づくの支払い情報レコードの仕入額をリセット
+                $accountPayableDetailId = $this->accountPayableDetailService->setCancelChargeBySaleableId(0, 'App\Models\ReserveParticipantAirplanePrice', $id, true);
+
+                // ステータスと支払い残高計算
+                event(new ChangePaymentAmountEvent($accountPayableDetailId));
+            }
+        }
+
+        // ホテル科目
+        $hotelIds = $this->reserveParticipantHotelPriceService->setCancelChargeByParticipantId(0, 0, 0, false, $participantId, true);
 
         if ($hotelIds) {
             foreach ($hotelIds as $id) {
@@ -230,7 +278,6 @@ class ReserveParticipantPriceService
 
         // 集計した仕入情報に明細行をセット
         return $this->setDetailsToPurchaseFormData($purchaseFormData, [Arr::get($participant, 'participant_id') => $participant], $options, $airplanes, $hotels);
-
     }
 
     /**
