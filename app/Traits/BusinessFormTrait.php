@@ -153,7 +153,7 @@ trait BusinessFormTrait
             $documentAddress['honorific'] = config('consts.documents.HONORIFIC_DEFAULT');
             // 会社情報
             $businessUser = $applicantable->business_user;
-            $documentAddress['company_name'] = $businessUser->name;
+            $documentAddress['company_name'] = $businessUser->org_name; // 「削除」等のラベルは付けないオリジナルの名称で取得
             $documentAddress['zip_code'] = $businessUser->zip_code;
             $documentAddress['prefecture'] = $businessUser->prefecture->name;
             $documentAddress['address1'] = $businessUser->address1;
@@ -161,7 +161,7 @@ trait BusinessFormTrait
         } elseif ($applicantable->applicant_type === config('consts.reserves.PARTICIPANT_TYPE_PERSON')) {
             $user = $applicantable;
 
-            $documentAddress['name'] = $user->userable->name;
+            $documentAddress['name'] = $user->userable->org_name; // 「削除」等のラベルは付けないオリジナルの名称で取得
             $documentAddress['zip_code'] = $user->userable->zip_code;
             $documentAddress['prefecture'] = $user->userable->prefecture->name;
             $documentAddress['address1'] = $user->userable->address1;
