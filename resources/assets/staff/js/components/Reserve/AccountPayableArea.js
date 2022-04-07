@@ -30,7 +30,9 @@ const AccountPayableArea = ({
     applicationStepList,
     estimateNumber,
     reserveNumber,
-    currentItineraryNumber
+    currentItineraryNumber,
+    participantDeleteRequestId,
+    participantCancelRequestId
 }) => {
     const { agencyAccount } = useContext(ConstContext);
 
@@ -86,7 +88,12 @@ const AccountPayableArea = ({
                 fetch();
             }
         }
-    }, [isShow, currentItineraryNumber]);
+    }, [
+        isShow,
+        currentItineraryNumber,
+        participantDeleteRequestId,
+        participantCancelRequestId
+    ]); // 表示状態、行程番号、参加者削除時、参加者取り消し時にリスト更新
 
     return (
         <>

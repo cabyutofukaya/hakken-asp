@@ -423,14 +423,6 @@ const ParticipantArea = ({
             });
         if (mounted.current && response?.data?.data) {
             setUpdatedAt(response.data.data.reserve.updated_at); // 予約レコード更新日時更新
-            if (response.data.data.reserve?.reserve_itinerary_exists == 1) {
-                $("#successMessage .closeIcon")
-                    .parent()
-                    .slideDown();
-                setSuccessMessage(
-                    "参加者を取り消しました。料金情報を更新するため行程の更新を行ってください"
-                ); // メッセージエリアを一旦slideDown(表示状態)してからメッセージをセット
-            }
             fetch(); // リスト再取得。TODO 再取得は負荷が高いので更新した行のみ変更するような処理を検討する → 代表者を取り消した時に代表者フラグをoffにする処理が必要なので、やはり一覧取得したほうがよいかも
         }
     };
@@ -486,15 +478,7 @@ const ParticipantArea = ({
             });
         if (mounted.current && response?.data?.data) {
             setUpdatedAt(response.data.data.reserve?.updated_at); // 予約レコード更新日時更新
-            if (response.data.data.reserve?.reserve_itinerary_exists == 1) {
-                $("#successMessage .closeIcon")
-                    .parent()
-                    .slideDown();
-                setSuccessMessage(
-                    "参加者を削除しました。料金情報を更新するため行程の更新を行ってください"
-                ); // メッセージエリアを一旦slideDown(表示状態)してからメッセージをセット
-                // ページネーションがないので削除後は特にリストの再取得は必要ないと思われるので、listsから不要行のカットで良いと思われる
-            }
+            // ページネーションがないので削除後は特にリストの再取得は必要ないと思われるので、listsから不要行のカットで良いと思われる
             setLists([...lists.filter(row => row.id !== deleteId)]);
         }
     };

@@ -92,6 +92,8 @@ const ReserveDetail = ({
                 estimateNumber={estimateNumber}
                 reserveNumber={reserveNumber}
                 currentItineraryNumber={currentItineraryNumber}
+                participantDeleteRequestId={participantDeleteRequestId}
+                participantCancelRequestId={participantCancelRequestId}
                 hasOriginalDocumentQuoteTemplate={
                     consts?.hasOriginalDocumentQuoteTemplate
                 }
@@ -109,6 +111,8 @@ const ReserveDetail = ({
                     estimateNumber={estimateNumber}
                     reserveNumber={reserveNumber}
                     currentItineraryNumber={currentItineraryNumber}
+                    participantDeleteRequestId={participantDeleteRequestId}
+                    participantCancelRequestId={participantCancelRequestId}
                 />
             )}
         </div>

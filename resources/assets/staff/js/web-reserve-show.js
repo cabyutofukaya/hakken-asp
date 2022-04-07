@@ -53,7 +53,9 @@ const ReserveShowArea = ({
         defaultValue?.[consts.common.tabCodes?.tab_basic_info]?.updatedAt
     ); // 予約情報更新日時
 
-    const [successMessage, setSuccessMessage] = useState(""); // 成功メッセージ
+    const [successMessage, setSuccessMessage] = useState(
+        flashMessage?.success_message ?? ""
+    ); // 成功メッセージ。ページ遷移時のフラッシュメッセージがあれば初期状態でセット
     const [baseErrorMessage, setBaseErrorMessage] = useState(""); // 基本情報用エラーメッセージ
     const [itineraryErrorMessage, setItineraryErrorMessage] = useState(""); // 行程用エラーメッセージ
     const [documentErrorMessage, setDocumentErrorMessage] = useState(""); // 帳票用エラーメッセージ
@@ -205,17 +207,6 @@ const ReserveShowArea = ({
 
             {/**APIがらみのサクセスメッセージ */}
             <SuccessMessage message={successMessage} />
-
-            {/**ページ遷移時のフラッシュメッセージ */}
-            {flashMessage?.success_message && (
-                <div id="successMessage">
-                    <p>
-                        <span className="material-icons">check_circle</span>
-                        {flashMessage.success_message}
-                    </p>
-                    <span className="material-icons closeIcon">cancel</span>
-                </div>
-            )}
 
             <InvalidMessage webReserveExt={reserve?.web_reserve_ext} />
 

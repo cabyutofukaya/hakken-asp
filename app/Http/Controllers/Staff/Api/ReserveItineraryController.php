@@ -97,7 +97,7 @@ class ReserveItineraryController extends Controller
                 $reserve->id,
                 [
                     'agency',
-                    'reserve',
+                    'reserve.latest_all_participant',
                     'reserve_travel_dates.reserve_schedules',
                     'reserve_participant_hotel_prices'
                 ]

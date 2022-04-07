@@ -12,8 +12,10 @@ class ReserveParticipantAirplanePrice extends Model implements ParticipantPriceI
 {
     use ModelLogTrait,SoftDeletes,ParticipantPriceKbnTrait,SoftCascadeTrait;
 
+    // ↓PriceRelatedChangeEventを使って判定するようにしたので、ひとまず無効に
+    //
     // 行程管理テーブルupdated_at更新
-    protected $touches = ['reserve_itinerary']; // 参加者の状態(取り消し、削除)が変わった時にも本レコードが更新される。行程ページを開きっぱなしの間に、別のPCから参加情報が更新されたときに行程情報が合わなくならならないようにするための対策
+    // protected $touches = ['reserve_itinerary']; // 参加者の状態(取り消し、削除)が変わった時にも本レコードが更新される。行程ページを開きっぱなしの間に、別のPCから参加情報が更新されたときに行程情報が合わなくならならないようにするための対策
 
     // ReservePurchasingSubjectAirplaneのbootメソッド内にて出金登録がある本モデルは消さないように制御しているので、softCascadeで削除されるレコードは出金登録がないものに限定される
     protected $softCascade = ['account_payable_detail'];

@@ -157,12 +157,12 @@ const ItineraryArea = ({
             const rows = response.data.data;
             setLists([...rows]);
 
-            // 行程更新日時が料金関連更新日時よりも新しいかチェック(料金情報が最新かどうかの判定)
+            // 行程更新日時が当該予約参加者情報の最新更新日よりも新しいかチェック
             let errNumbers = [];
             rows.forEach((row, index) => {
                 if (
-                    row.reserve.price_related_change &&
-                    new Date(row.reserve.price_related_change) >
+                    row.reserve.participant.updated_at &&
+                    new Date(row.reserve.participant.updated_at) >
                         new Date(row.updated_at)
                 ) {
                     errNumbers.push(row.control_number);
