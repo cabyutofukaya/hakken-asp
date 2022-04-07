@@ -189,7 +189,7 @@ class ParticipantController extends Controller
     
                 event(new ReserveChangeHeadcountEvent($reserve)); // 参加者人数変更イベント
                 
-                event(new PriceRelatedChangeEvent($reserve->id, date('Y-m-d H:i:s', strtotime("now +1 seconds")))); // 料金変更に関わるイベント。参加者情報を更新すると関連する行程レコードもtouchで日時が更新されてしまうので、他のレコードよりも確実に新しい日時で更新されるように1秒後の時間をセット
+                event(new PriceRelatedChangeEvent($reserve->id, date('Y-m-d H:i:s'))); // 料金変更に関わるイベント
 
                 return $participant;
             });

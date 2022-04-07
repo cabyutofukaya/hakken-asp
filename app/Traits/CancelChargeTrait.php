@@ -231,10 +231,12 @@ trait CancelChargeTrait
 
                 $params[] = $tmp;
             }
+
             $this->accountPayableDetailService->setAmountBilledBulk('App\Models\ReserveParticipantOptionPrice', $params, 'saleable_id'); // バルクアップデート
 
             // 仕入先支払レコードのステータスと支払い残高計算
             $ids = collect($options)->pluck("id")->all();
+
             foreach ($this->accountPayableDetailService->getIdsBySaleableIds('App\Models\ReserveParticipantOptionPrice', $ids) as $accountPayableDetailId) {
                 event(new ChangePaymentAmountEvent($accountPayableDetailId));
             }
@@ -244,17 +246,19 @@ trait CancelChargeTrait
 
             // 仕入先支払レコードの金額情報を更新
             $params = [];
-            foreach ($options as $r) {
+            foreach ($airplanes as $r) {
                 $tmp = [];
                 $tmp['saleable_id'] = Arr::get($r, "id");
                 $tmp['amount_billed'] = Arr::get($r, "cancel_charge_net", 0); // 支払い金額にキャンセルチャージ
 
                 $params[] = $tmp;
             }
+
             $this->accountPayableDetailService->setAmountBilledBulk('App\Models\ReserveParticipantAirplanePrice', $params, 'saleable_id'); // バルクアップデート
 
             // 仕入先支払レコードのステータスと支払い残高計算
-            $ids = collect($options)->pluck("id")->all();
+            $ids = collect($airplanes)->pluck("id")->all();
+
             foreach ($this->accountPayableDetailService->getIdsBySaleableIds('App\Models\ReserveParticipantAirplanePrice', $ids) as $accountPayableDetailId) {
                 event(new ChangePaymentAmountEvent($accountPayableDetailId));
             }
@@ -264,17 +268,19 @@ trait CancelChargeTrait
 
             // 仕入先支払レコードの金額情報を更新
             $params = [];
-            foreach ($options as $r) {
+            foreach ($hotels as $r) {
                 $tmp = [];
                 $tmp['saleable_id'] = Arr::get($r, "id");
                 $tmp['amount_billed'] = Arr::get($r, "cancel_charge_net", 0); // 支払い金額にキャンセルチャージ
 
                 $params[] = $tmp;
             }
+
             $this->accountPayableDetailService->setAmountBilledBulk('App\Models\ReserveParticipantHotelPrice', $params, 'saleable_id'); // バルクアップデート
 
             // 仕入先支払レコードのステータスと支払い残高計算
-            $ids = collect($options)->pluck("id")->all();
+            $ids = collect($hotels)->pluck("id")->all();
+
             foreach ($this->accountPayableDetailService->getIdsBySaleableIds('App\Models\ReserveParticipantHotelPrice', $ids) as $accountPayableDetailId) {
                 event(new ChangePaymentAmountEvent($accountPayableDetailId));
             }
