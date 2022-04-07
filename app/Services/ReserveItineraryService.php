@@ -200,65 +200,6 @@ class ReserveItineraryService
         }
     }
 
-    // /**
-    //  * 買い掛け金詳細upsert処理
-    //  *
-    //  * 無効フラグがONのときは金額情報を0円に初期化。出金登録を消してしまうとキャンセルチャージ処理の際に商品数が合わなくなってしまう
-    //  *
-    //  * @param int $agencyId 会社ID
-    //  * @param int $reserveId 予約ID
-    //  * @param int $reserveItineraryId 行程ID
-    //  * @param int $reserveTravelDateId 旅行日ID
-    //  * @param int $reserveScheduleId スケジュールID
-    //  * @param bool $valid 科目の有効・無効フラグ
-    //  * @param bool $isCancel 科目のキャンセルフラグ
-    //  * @param string $useDate 利用日
-    //  * @param string $paymentDate 支払日
-    //  */
-    // private function accountPayableDetailCommon(int $agencyId, int $reserveId, int $reserveItineraryId, int $reserveTravelDateId, int $reserveScheduleId, bool $valid, bool $isCancel, int $accountPayableId, ParticipantPriceInterface $participantPrice, Supplier $supplier, ?string $itemCode, ?string $itemName, string $useDate, ?string $paymentDate) : ?AccountPayableDetail
-    // {
-    //     // 検索条件
-    //     $attributes = [
-    //         'reserve_schedule_id' => $reserveScheduleId,
-    //         'saleable_type' => get_class($participantPrice),
-    //         'saleable_id' => $participantPrice->id,
-    //     ];
-
-    //     $amountBilled = 0;
-    //     if ($participantPrice->purchase_type == config('consts.const.PURCHASE_NORMAL')) {
-    //         $amountBilled = !$valid ? 0 : ($participantPrice->net ?? 0); // 数字なのでnullの場合は0で初期化
-    //     } elseif ($participantPrice->purchase_type == config('consts.const.PURCHASE_CANCEL')) {
-    //         $amountBilled = !$isCancel ? 0 : ($participantPrice->cancel_charge_net ?? 0); // 数字なのでnullの場合は0で初期化
-    //     }
-
-    //     // $amountPayment = !$valid ? 0 : ($participantPrice->cost ?? 0); // 数字なのでnullの場合は0で初期化
-        
-    //     /////////// 更新or登録が必要な場合は以下の処理
-
-    //     $accountPayableDetail = $this->accountPayableDetailService->updateOrCreate(
-    //         $attributes,
-    //         [
-    //             'account_payable_id' => $accountPayableId,
-    //             'agency_id' => $agencyId,
-    //             'reserve_id' => $reserveId,
-    //             'reserve_itinerary_id' => $reserveItineraryId,
-    //             'reserve_travel_date_id' => $reserveTravelDateId,
-    //             'supplier_id' => $supplier->id,
-    //             'supplier_name' => $supplier->name,
-    //             'item_code' => $itemCode,
-    //             'item_name' => $itemName,
-    //             'amount_billed' => $amountBilled,
-    //             // 'amount_payment' => $amountPayment,
-    //             'use_date' => $useDate,
-    //             'payment_date' => $paymentDate,
-    //         ]
-    //     );
-
-    //     event(new ChangePaymentAmountEvent($accountPayableDetail->id));
-    
-    //     return $accountPayableDetail;
-    // }
-
     /**
      * 登録、編集の共通処理
      *

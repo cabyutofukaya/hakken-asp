@@ -256,7 +256,7 @@ const CancelAirplane = ({
                         />
                     ))}
                 </ul>
-                <ul className="sideList">
+                <ul className="sideList mt40 central">
                     <li className="wd50">
                         <button
                             className="grayBtn"

@@ -213,7 +213,6 @@ class ReserveController extends Controller
             }
 
             $result = \DB::transaction(function () use ($reserve) {
-
                 $this->participantService->setCancelByReserveId($reserve->id); // 当該予約の参加者を全てキャンセル
 
                 $this->reserveService->cancel($reserve, false); // 予約レコードのキャンセルフラグをON
@@ -256,7 +255,6 @@ class ReserveController extends Controller
             }
         } catch (ExclusiveLockException $e) { // 同時編集エラー
             abort(409, "他のユーザーによる編集済みレコードです。編集する前に画面を再読み込みして最新情報を表示してください。");
-
         } catch (Exception $e) {
             Log::error($e);
         }
@@ -285,8 +283,7 @@ class ReserveController extends Controller
                 throw new ExclusiveLockException;
             }
 
-            DB::transaction(function () use ($input, $reserve) {
-
+            $result = DB::transaction(function () use ($input, $reserve) {
                 $this->participantService->setCancelByReserveId($reserve->id); // 当該予約の参加者を全てキャンセル
 
                 $this->reserveService->cancel($reserve, true);
@@ -315,13 +312,18 @@ class ReserveController extends Controller
                     // ステータス更新イベント
                     event(new ReserveUpdateStatusEvent($this->reserveService->find($reserve->id)));
                 }
+
+                event(new PriceRelatedChangeEvent($reserve->id, date('Y-m-d H:i:s', strtotime("now +1 seconds")))); // 料金変更に関わるイベント。参加者情報を更新すると関連する行程レコードもtouchで日時が更新されてしまうので、他のレコードよりも確実に新しい日時で更新されるように1秒後の時間をセット
+
+                return true;
             });
 
-            if ($request->input("set_message")) {
-                $request->session()->flash('success_message', "{$reserve->control_number}」のキャンセル処理が完了しました。"); // set_messageは処理成功のフラッシュメッセージのセットを要求するパラメータ
+            if ($result) {
+                if ($request->input("set_message")) {
+                    $request->session()->flash('success_message', "{$reserve->control_number}」のキャンセル処理が完了しました。"); // set_messageは処理成功のフラッシュメッセージのセットを要求するパラメータ
+                }
+                return ['result' => 'ok'];
             }
-            return ['result' => 'ok'];
-
         } catch (ExclusiveLockException $e) { // 同時編集エラー
             abort(409, "他のユーザーによる編集済みレコードです。編集する前に画面を再読み込みして最新情報を表示してください。");
         } catch (Exception $e) {
