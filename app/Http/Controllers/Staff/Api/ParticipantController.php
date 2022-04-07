@@ -481,59 +481,6 @@ class ParticipantController extends Controller
         abort(500);
     }
 
-    // /**
-    //  * 取消
-    //  *
-    //  * @param string $applicationStep 申込段階（見積or予約）。本パラメータは処理には特に使っていない
-    //  * @param string $reception 受付種別(WEB or ASP)
-    //  * @param string $controlNumber 管理番号（見積番号or予約番号）。処理には特に使っていない
-    //  * @param string $id 参加者ID
-    //  */
-    // public function setCancel(ParticipantCancelRequest $request, string $agencyAccount, string $reception, string $applicationStep, string $controlNumber, int $id)
-    // {
-    //     $oldParticipant = $this->participantService->find($id);
-    //     if (!$oldParticipant) {
-    //         abort(404, "データが見つかりません。編集する前に画面を再読み込みして最新情報を表示してください。");
-    //     }
-
-    //     // 認可チェック
-    //     $response = Gate::inspect('cancel', [$oldParticipant]);
-    //     if (!$response->allowed()) {
-    //         abort(403, $response->message());
-    //     }
-
-    //     try {
-    //         $newParticipant = DB::transaction(function () use ($oldParticipant, $reception) {
-    //             $newParticipant = $this->participantService->setCancel($oldParticipant->id);
-    
-    //             // 受付種別で分ける
-    //             if ($reception === config('consts.const.RECEPTION_TYPE_ASP')) { // ASP受付
-    //                 $reserve = $this->reserveEstimateService->find($oldParticipant->reserve_id);
-    //             } elseif ($reception === config('consts.const.RECEPTION_TYPE_WEB')) { // WEB受付
-    //                 $reserve = $this->webReserveEstimateService->find($oldParticipant->reserve_id);
-    //             } else {
-    //                 abort(500);
-    //             }
-
-    //             if ($oldParticipant->representative) { // 当該参加者が代表者"だった"場合
-    //                 event(new ReserveChangeRepresentativeEvent($reserve)); // 代表者更新イベント
-    //             }
-    
-    //             event(new ReserveChangeHeadcountEvent($reserve)); // 参加者人数変更イベント
-
-    //             event(new PriceRelatedChangeEvent($reserve->id, date('Y-m-d H:i:s', strtotime("now +1 seconds")))); // 料金変更に関わるイベント。参加者情報を更新すると関連する行程レコードもtouchで日時が更新されてしまうので、他のレコードよりも確実に新しい日時で更新されるように1秒後の時間をセット
-
-    //             return $newParticipant;
-    //         });
-    //         if ($newParticipant) {
-    //             return new UpdateResource($newParticipant, 200);
-    //         }
-    //     } catch (Exception $e) {
-    //         Log::error($e);
-    //     }
-    //     abort(500);
-    // }
-
     /**
      * 参加者削除
      *
