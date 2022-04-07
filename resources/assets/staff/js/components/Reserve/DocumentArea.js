@@ -91,6 +91,8 @@ const DocumentArea = ({
     estimateNumber,
     reserveNumber,
     currentItineraryNumber,
+    participantDeleteRequestId,
+    participantCancelRequestId,
     hasOriginalDocumentQuoteTemplate,
     constsCommon,
     permission,
@@ -173,7 +175,12 @@ const DocumentArea = ({
                 fetch();
             }
         }
-    }, [isShow, currentItineraryNumber]);
+    }, [
+        isShow,
+        currentItineraryNumber,
+        participantDeleteRequestId,
+        participantCancelRequestId
+    ]); // 表示状態、行程番号、参加者削除時、参加者取り消し時にリスト更新
 
     // 削除ボタン
     const handleModalDelete = (e, confirmNumber) => {

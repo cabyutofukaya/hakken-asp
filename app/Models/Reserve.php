@@ -183,6 +183,15 @@ class Reserve extends Model
         return $this->belongsToMany('App\Models\Participant')->where('cancel', false)->orderBy('id', 'asc');
     }
 
+    /**
+     * 最後に情報更新された参加者
+     * 削除済みも含む
+     */
+    public function latest_all_participant()
+    {
+        return $this->hasOne('App\Models\Participant')->orderBy('updated_at', 'desc')->withTrashed();
+    }
+
     // 代表者
     public function representatives()
     {

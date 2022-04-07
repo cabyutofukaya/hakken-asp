@@ -92,6 +92,9 @@ class IndexResource extends JsonResource
             "created_at" => $this->created_at->format('Y/m/d'),
             "reserve" => [
                 "price_related_change" => $this->reserve->price_related_change ? $this->reserve->price_related_change->change_at->format('Y-m-d H:i:s') : null,
+                "participant" => [
+                    'updated_at' => $this->reserve->latest_all_participant ? $this->reserve->latest_all_participant->updated_at->format('Y-m-d H:i:s') : null,
+                ], // 参加者の最終更新日時
             ]
         ];
     }
