@@ -11,7 +11,8 @@ import SubjectModal from "./SubjectModal";
 const MAIN_ROW_ACTIONS = {
     CANCEL_CHECK: "MAIN_CANCEL_CHECK",
     INPUT_CHANGE: "MAIN_INPUT_CHANGE",
-    SET_SUBJECT_INFO: "SET_SUBJECT_INFO"
+    SET_SUBJECT_INFO: "SET_SUBJECT_INFO",
+    INPUT_FOCUS: "INPUT_FOCUS"
 };
 // 明細行に関するアクション
 const DETAIL_ROW_ACTIONS = {
@@ -130,6 +131,10 @@ const CancelChargeArea = ({ defaultValue, consts, errors }) => {
                 }
                 copyState[key] = row;
                 return { ...copyState };
+            case MAIN_ROW_ACTIONS.INPUT_FOCUS: // 金額入力フィールドfocus → キャンセル有無をON
+                row["is_cancel"] = 1;
+                copyState[key] = row;
+                return { ...copyState };
             case MAIN_ROW_ACTIONS.INPUT_CHANGE: // 金額入力制御
                 const name = action?.payload?.name;
                 const value = parseInt(action?.payload?.value, 10) || 0; // Nan判定の場合は0に
@@ -183,6 +188,16 @@ const CancelChargeArea = ({ defaultValue, consts, errors }) => {
     const handleCancelCheck = key => {
         dispatch({
             type: MAIN_ROW_ACTIONS.CANCEL_CHECK,
+            payload: {
+                key
+            }
+        });
+    };
+
+    // 入力フィールドFOCUS
+    const handleInputFocus = key => {
+        dispatch({
+            type: MAIN_ROW_ACTIONS.INPUT_FOCUS,
             payload: {
                 key
             }
@@ -499,6 +514,11 @@ const CancelChargeArea = ({ defaultValue, consts, errors }) => {
                                                                 e.target.value
                                                             )
                                                         }
+                                                        handleFocus={e =>
+                                                            handleInputFocus(
+                                                                key
+                                                            )
+                                                        }
                                                         className={
                                                             _.indexOf(
                                                                 cancelChargeErrors,
@@ -529,6 +549,11 @@ const CancelChargeArea = ({ defaultValue, consts, errors }) => {
                                                                 key,
                                                                 "cancel_charge_net",
                                                                 e.target.value
+                                                            )
+                                                        }
+                                                        handleFocus={e =>
+                                                            handleInputFocus(
+                                                                key
                                                             )
                                                         }
                                                         className={
