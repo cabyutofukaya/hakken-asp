@@ -250,6 +250,7 @@ const AgencyCreate = ({ consts, errors, defaultValue, formSelects }) => {
                                 defaultValue={defaultValue.zip_code ?? ""}
                                 onChange={e => setZipCode(e.target.value)}
                                 maxLength={7}
+                                placeholder="例）1000000"
                             />
                             <button
                                 className="orangeBtn wd40"
