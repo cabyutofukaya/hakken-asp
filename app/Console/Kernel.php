@@ -29,7 +29,7 @@ class Kernel extends ConsoleKernel
 
         // 旅行会社の契約更新処理。毎日深夜0:00。
         // TODO runInBackgroundとonOneServer、withoutOverlappingを併用しても重複稼働しないか調査
-        $schedule->command('agency:contract renewal')->daily()->runInBackground()->onOneServer()->withoutOverlapping();
+        // $schedule->command('agency:contract renewal')->daily()->runInBackground()->onOneServer()->withoutOverlapping();
     }
 
     /**
