@@ -266,6 +266,9 @@ const AgencyCreate = ({ consts, errors, defaultValue, formSelects }) => {
                                 <select
                                     name="prefecture_code"
                                     value={prefectureCode ?? ""}
+                                    onChange={e =>
+                                        setPrefectureCode(e.target.value)
+                                    }
                                 >
                                     {formSelects?.prefectureCodes &&
                                         Object.keys(formSelects.prefectureCodes)
