@@ -105,6 +105,7 @@ class RouteServiceProvider extends ServiceProvider
      */
     protected function mapApiRoutes()
     {
+        // hakken表ページから利用する認証不要のAPI
         Route::prefix('{version}')
             ->middleware('api')
             ->namespace($this->namespace)

@@ -18,6 +18,7 @@ return [
   ],
   'web_consults' => [
     'budget_kbn' => [
+      'budget_kbn_no_amount' => '費用未定',
       'budget_kbn_total' => '総額',
       'budget_kbn_person' => '一人当たり',
     ],  

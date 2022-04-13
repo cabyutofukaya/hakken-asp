@@ -71,7 +71,7 @@ class EditFormComposer
             'subjectCategories' => $this->subjectCategoryService->all()->pluck('name', 'code')->toArray(),
             'zeiKbns' => get_const_item('subject_categories', 'zei_kbn'),
             // 'cities' => ['' => 'すべて'] + $this->cityService->getNameSelectByAgencyAccount($agencyAccount),
-            'suppliers' => ['' => 'すべて'] + $this->supplierService->getNameSelectByAgencyAccount($agencyAccount),
+            'suppliers' => ['' => '-'] + $this->supplierService->getNameSelectByAgencyAccount($agencyAccount),
             'userCustomItems' => $userCustomItems,
         ];
 
