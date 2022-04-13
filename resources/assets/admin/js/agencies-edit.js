@@ -336,7 +336,7 @@ const AgencyEdit = ({ errors, defaultValue, formSelects, consts }) => {
                                 defaultValue={defaultValue.zip_code ?? ""}
                                 onChange={e => setZipCode(e.target.value)}
                                 maxLength={7}
-                                placeholder="例）1000000"
+                                placeholder="ハイフン無し7桁で登録"
                             />
                             <button
                                 className="orangeBtn wd40"

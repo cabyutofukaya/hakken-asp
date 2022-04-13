@@ -7,7 +7,7 @@ Route::pattern('applicationStep', 'normal|reserve');
 Route::pattern('reception', 'web|asp');
 
 
-Route::domain(env('STAFF_DOMAIN', 'api.hakken-tour.com'))->namespace('Staff\Api')->name('staff.api.')->prefix('api/{agencyAccount}')->group(function () {
+Route::domain(env('STAFF_DOMAIN', 'asp.hakken-tour.com'))->namespace('Staff\Api')->name('staff.api.')->prefix('api/{agencyAccount}')->group(function () {
     // 要認証API
     Route::middleware('api_auth:staff', 'check.company')->group(function () {
 

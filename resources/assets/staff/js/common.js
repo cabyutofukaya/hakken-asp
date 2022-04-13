@@ -133,7 +133,7 @@ $(".doubleBan").on("click", function() {
 
 $(".current").on("click", function() {
     if ($(this).hasClass("active")) {
-        // $(this).removeClass("active"); 閉じるアクション不要かも、ということで一旦コメント
+        $(this).removeClass("active");
     } else {
         $(this).addClass("active");
     }

@@ -85,7 +85,7 @@ const AddressInputArea = ({ defaultValue, formSelects }) => {
                         onChange={handleChange}
                         className="wd60"
                         maxLength="7"
-                        placeholder="例）1000000"
+                        placeholder="ハイフン無し7桁で登録"
                     />
                     <button
                         className="orangeBtn wd40"
