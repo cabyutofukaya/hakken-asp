@@ -29,7 +29,7 @@
       </li>
       @can('update', $user)
         <li class="wd50">
-          <button class="blueBtn doubleBan">
+          <button class="blueBtn doubleBan" id="submit">
             <span class="material-icons">save</span> この内容で更新する
           </button>
         </li>
@@ -39,15 +39,6 @@
   </form>
 </main>
 
-<link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/airbnb.css">
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script> 
-<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ja.js"></script> 
-<script>
-    flatpickr.localize(flatpickr.l10ns.ja);
-    flatpickr('.calendar input', {
-        allowInput: true,
-		dateFormat: "Y/m/d"
-    });
-</script>
+@include('staff.user.common._js')
 <script src="{{ mix('/staff/js/user-edit.js') }}"></script>
 @endsection
