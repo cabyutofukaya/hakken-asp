@@ -80,6 +80,18 @@ class UserRepository implements UserRepositoryInterface
     }
 
     /**
+     * userable_idリストを条件にID一覧を取得
+     */
+    public function getIdInfoByUserableId(int $agencyId, string $userableType, array $userableIds) : array
+    {
+        return $this->user->select(['id','userable_type','userable_id'])
+            ->where('agency_id', $agencyId)
+            ->where('userable_type', $userableType)
+            ->whereIn('userable_id', $userableIds)
+            ->get()->toArray();
+    }
+
+    /**
      * 申込者検索（全ステータスを検索）
      */
     public function applicantSearch(int $agencyId, ?string $name, ?string $userNumber, array $with = [], array $select = [], ?int $limit = null, bool $getDeleted = false) : Collection
@@ -107,6 +119,15 @@ class UserRepository implements UserRepositoryInterface
             $query = $query->where('user_number', 'like', "%$userNumber%");
         }
         return !is_null($limit) ? $query->take($limit)->get() : $query->get();
+    }
+
+    /**
+     * バルクインサート
+     */
+    public function insert(array $rows) : bool
+    {
+        $this->user->insert($rows);
+        return true;
     }
 
     /**

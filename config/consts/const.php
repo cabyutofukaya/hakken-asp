@@ -14,6 +14,9 @@ return [
   // 帳票追加数最大。無制限に追加できてしまうと合計計算の負荷が心配なので一応制限
   'NUMBER_LEDGER_ALLOWED_MAX' => 10,
 
+  // 参加者上限。無制限に追加できてしまうと困るので一応制限しておく
+  'PARTICIPANT_MAX_NUM' => 800,
+
   // Web相談の応札上限
   'WEB_CONSULT_MAX_UNDERTAKE' => 5,
 

@@ -249,6 +249,14 @@ class UserService
     }
 
     /**
+     * userable_idを検索条件にIDリストを取得
+     */
+    public function getIdInfoByUserableId(int $agencyId, string $userableType, array $userableIds) : array
+    {
+        return $this->userRepository->getIdInfoByUserableId($agencyId, $userableType, $userableIds);
+    }
+
+    /**
      * 更新
      *
      * @param int $id ユーザーID
@@ -344,6 +352,15 @@ class UserService
 
         
         return $this->find($user->id);
+    }
+
+    /**
+     * バルクインサート
+     */
+    public function insert(array $rows) : bool
+    {
+        $this->userRepository->insert($rows);
+        return true;
     }
 
     public function updateField(int $userId, array $params) : bool

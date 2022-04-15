@@ -37,6 +37,25 @@ class ParticipantRepository implements ParticipantRepositoryInterface
     }
 
     /**
+     * バルクインサート
+     */
+    public function insert(array $rows) : bool
+    {
+        $this->participant->insert($rows);
+        return true;
+    }
+
+    /**
+     * 予約IDとユーザーIDリストを条件にID一覧を取得
+     */
+    public function getIdsByReserveIdAndUserIds(int $reserveId, array $userIds) : array
+    {
+        return $this->participant->select(['id'])
+            ->where('reserve_id', $reserveId)->whereIn('user_id', $userIds)
+            ->pluck('id')->toArray();
+    }
+
+    /**
      * ページネーションで取得
      *
      * @param int $limit 取得件数
