@@ -56,6 +56,7 @@ const ReserveDetail = ({
                 sexList={consts?.sexList}
                 sexes={formSelects.sexes}
                 ageKbns={formSelects.ageKbns}
+                ageKbnVals={formSelects.ageKbnVals}
                 birthdayYears={formSelects.birthdayYears}
                 birthdayMonths={formSelects.birthdayMonths}
                 birthdayDays={formSelects.birthdayDays}

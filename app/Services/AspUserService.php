@@ -19,4 +19,31 @@ class AspUserService
     {
         return $this->aspUserRepository->create($data);
     }
+
+    /**
+     * バルクインサート
+     */
+    public function insert(array $rows) : bool
+    {
+        $this->aspUserRepository->insert($rows);
+        return true;
+    }
+
+    /**
+     * バルクアップデート
+     *
+     * @param array $params
+     */
+    public function updateBulk(array $params, string $id = "id") : bool
+    {
+        return $this->aspUserRepository->updateBulk($params, $id);
+    }
+
+    /**
+     * 検索してID一覧を取得
+     */
+    public function getWhereIds(array $where) : array
+    {
+        return $this->aspUserRepository->getWhereIds($where);
+    }
 }

@@ -474,6 +474,30 @@ class Reserve extends Model
         return !is_null($this->cancel_at);
     }
 
+    // 参加者数（取消者含む）
+    public function getParticipantCountAttribute($value) : int
+    {
+        return $this->belongsToMany('App\Models\Participant')->count();
+    }
+
+    // 参加者数（大人区分、取消者含む）
+    public function getAdParticipantCountAttribute($value) : int
+    {
+        return $this->belongsToMany('App\Models\Participant')->where('age_kbn', config('consts.users.AGE_KBN_AD'))->count();
+    }
+
+    // 参加者数（子供区分、取消者含む）
+    public function getChParticipantCountAttribute($value) : int
+    {
+        return $this->belongsToMany('App\Models\Participant')->where('age_kbn', config('consts.users.AGE_KBN_CH'))->count();
+    }
+
+    // 参加者数（幼児区分、取消者含む）
+    public function getInfParticipantCountAttribute($value) : int
+    {
+        return $this->belongsToMany('App\Models\Participant')->where('age_kbn', config('consts.users.AGE_KBN_INF'))->count();
+    }
+
     /**
      * 催行済みの場合はtrue
      *

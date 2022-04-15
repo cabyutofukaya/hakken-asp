@@ -246,6 +246,10 @@ class RepositoryServiceProvider extends ServiceProvider
             \App\Repositories\AspUser\AspUserRepository::class
         );
         $this->app->bind(
+            \App\Repositories\AspUserExt\AspUserExtRepositoryInterface::class,
+            \App\Repositories\AspUserExt\AspUserExtRepository::class
+        );
+        $this->app->bind(
             \App\Repositories\UserVisa\UserVisaRepositoryInterface::class,
             \App\Repositories\UserVisa\UserVisaRepository::class
         );

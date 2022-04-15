@@ -7,6 +7,7 @@ import ReactLoading from "react-loading";
 import classNames from "classnames";
 import ParticipantCancelChargeModal from "./ParticipantCancelChargeModal";
 import { RESERVE } from "../../constants";
+import ParticipantCreateModal from "./ParticipantCreateModal";
 
 // 一覧取得API URL
 const getListApiUrl = (
@@ -146,6 +147,7 @@ const ParticipantArea = ({
     defaultValue,
     sexes,
     ageKbns,
+    ageKbnVals,
     birthdayYears,
     birthdayMonths,
     birthdayDays,
@@ -192,7 +194,9 @@ const ParticipantArea = ({
 
     const [lists, setLists] = useState([]);
 
-    const [input, setInput] = useState({}); // 入力値
+    const [editInput, setEditInput] = useState({}); // 編集モーダル入力値
+    const [createInput, setCreateInput] = useState({}); // 作成モーダル入力値
+
     const [editMode, setEditMode] = useState(null); // モーダル表示時の登録or編集を判定
 
     const [representative, setRepresentative] = useState(null); // 代表
@@ -200,6 +204,7 @@ const ParticipantArea = ({
     const [deleteId, setDeletelId] = useState(null); // 削除対象の参加者ID
 
     const [isLoading, setIsLoading] = useState(false); // リスト取得中
+    const [isCreating, setIsCreating] = useState(false); // 作成処理中
     const [isEditing, setIsEditing] = useState(false); // 編集処理中
     const [isCanceling, setIsCanceling] = useState(false); // 取消処理中
     const [isDeleting, setIsDeleting] = useState(false); // 削除処理中
@@ -261,9 +266,14 @@ const ParticipantArea = ({
         }
     };
 
-    // 登録・編集におけるinput制御
-    const handleChange = e => {
-        setInput({ ...input, [e.target.name]: e.target.value });
+    // 作成におけるinput制御
+    const handleCreateChange = e => {
+        setCreateInput({ ...createInput, [e.target.name]: e.target.value });
+    };
+
+    // 編集におけるinput制御
+    const handleEditChange = e => {
+        setEditInput({ ...editInput, [e.target.name]: e.target.value });
     };
 
     // 取り消しモーダルを表示
@@ -303,7 +313,17 @@ const ParticipantArea = ({
     const handleModalAdd = e => {
         e.preventDefault();
         setEditMode("create");
-        setInput({ ...defaultValue }); // 初期値をセット
+        setCreateInput({
+            ad_number: _.filter(lists, item => {
+                return item.age_kbn == ageKbnVals.age_kbn_ad;
+            }).length,
+            ch_number: _.filter(lists, item => {
+                return item.age_kbn == ageKbnVals.age_kbn_ch;
+            }).length,
+            inf_number: _.filter(lists, item => {
+                return item.age_kbn == ageKbnVals.age_kbn_inf;
+            }).length
+        }); // 初期値をセット
     };
 
     // 編集モーダル
@@ -314,14 +334,100 @@ const ParticipantArea = ({
         // 選択行データからユーザー情報を取得
         const row = lists.find(row => row.id === id);
 
-        setInput({
+        setEditInput({
             ...defaultValue, // radioボタン等のデフォルト値
             ...row
         });
     };
 
-    // 登録・編集処理
-    const handleSubmit = async e => {
+    // 登録処理
+    const handleCreateSubmit = async e => {
+        e.preventDefault();
+
+        if (!mounted.current) return;
+        if (isCreating) return;
+
+        // 人数が変わっていない場合は処理ナシ
+        let changed = false;
+        for (const row of [
+            { column: "ad_number", kbn: ageKbnVals.age_kbn_ad },
+            { column: "ch_number", kbn: ageKbnVals.age_kbn_ch },
+            { column: "inf_number", kbn: ageKbnVals.age_kbn_inf }
+        ]) {
+            const inputNum = createInput?.[row.column] ?? 0;
+            const rowNum = _.filter(lists, item => {
+                return item.age_kbn == row.kbn;
+            }).length;
+            if (inputNum != rowNum) {
+                changed = true;
+                break;
+            }
+        }
+        if (!changed) {
+            $(".js-modal-close").trigger("click"); // モーダルclose
+            return;
+        }
+
+        // 現在の人数と比較して人数が減っていたらエラー
+        let err = [];
+        [
+            { column: "ad_number", kbn: ageKbnVals.age_kbn_ad, label: "大人" },
+            { column: "ch_number", kbn: ageKbnVals.age_kbn_ch, label: "子供" },
+            { column: "inf_number", kbn: ageKbnVals.age_kbn_inf, label: "幼児" }
+        ].map(row => {
+            const inputNum = createInput?.[row.column] ?? 0;
+            const rowNum = _.filter(lists, item => {
+                return item.age_kbn == row.kbn;
+            }).length;
+            if (inputNum < rowNum) {
+                err.push(
+                    `${row.label}人数を減らす場合は参加者リストから削除してください。`
+                );
+            }
+        });
+        if (err.length) {
+            alert(err.join("\n"));
+            return;
+        }
+
+        setIsCreating(true); // 多重処理制御
+
+        let response = null;
+        // 新規登録
+        response = await axios
+            .post(storeApiUrl, {
+                ...createInput
+            })
+            .finally(() => {
+                $(".js-modal-close").trigger("click"); // モーダルclose
+                setTimeout(function() {
+                    if (mounted.current) {
+                        setIsCreating(false);
+                    }
+                }, 3000);
+            });
+
+        if (mounted.current && response?.data?.data) {
+            setUpdatedAt(response.data.reserve.updated_at); // 予約レコード更新日時更新
+            let message = "";
+            if (response.data.reserve?.reserve_itinerary_exists == 1) {
+                // 行程情報がある場合は書類設定の見直しと行程の更新を促す
+                message =
+                    "参加者を追加しました。料金情報を更新するため行程を更新し、帳票の当該ユーザーのチェックを有効にしてください。";
+            } else {
+                message = "参加者を追加しました。";
+            }
+            $("#successMessage .closeIcon")
+                .parent()
+                .slideDown();
+            setSuccessMessage(message); // メッセージエリアを一旦slideDown(表示状態)してからメッセージをセット
+
+            fetch();
+        }
+    };
+
+    // 編集処理
+    const handleEditSubmit = async e => {
         e.preventDefault();
 
         if (!mounted.current) return;
@@ -329,62 +435,62 @@ const ParticipantArea = ({
         setIsEditing(true); // 多重処理制御
 
         let response = null;
-        if (editMode === "create") {
-            // 新規登録
-            response = await axios
-                .post(storeApiUrl, {
-                    ...input
-                })
-                .finally(() => {
-                    $(".js-modal-close").trigger("click"); // モーダルclose
-                    setTimeout(function() {
-                        if (mounted.current) {
-                            setIsEditing(false);
-                        }
-                    }, 3000);
-                });
-        } else if (editMode === "edit") {
-            // 編集
-            response = await axios
-                .post(
-                    getUpdateApiUrl(
-                        reception,
-                        applicationStep,
-                        applicationStepList,
-                        agencyAccount,
-                        estimateNumber,
-                        reserveNumber,
-                        input?.id
-                    ),
-                    {
-                        ...input,
-                        _method: "put"
+        // if (editMode === "create") {
+        //     // 新規登録
+        //     response = await axios
+        //         .post(storeApiUrl, {
+        //             ...editInput
+        //         })
+        //         .finally(() => {
+        //             $(".js-modal-close").trigger("click"); // モーダルclose
+        //             setTimeout(function() {
+        //                 if (mounted.current) {
+        //                     setIsEditing(false);
+        //                 }
+        //             }, 3000);
+        //         });
+        // } else if (editMode === "edit") {
+        // 編集
+        response = await axios
+            .post(
+                getUpdateApiUrl(
+                    reception,
+                    applicationStep,
+                    applicationStepList,
+                    agencyAccount,
+                    estimateNumber,
+                    reserveNumber,
+                    editInput?.id
+                ),
+                {
+                    ...editInput,
+                    _method: "put"
+                }
+            )
+            .finally(() => {
+                $(".js-modal-close").trigger("click"); // モーダルclose
+                setTimeout(function() {
+                    if (mounted.current) {
+                        setIsEditing(false);
                     }
-                )
-                .finally(() => {
-                    $(".js-modal-close").trigger("click"); // モーダルclose
-                    setTimeout(function() {
-                        if (mounted.current) {
-                            setIsEditing(false);
-                        }
-                    }, 3000);
-                });
-        }
+                }, 3000);
+            });
+        // }
 
         if (mounted.current && response?.data?.data) {
             setUpdatedAt(response.data.data.reserve.updated_at); // 予約レコード更新日時更新
-            if (
-                editMode === "create" &&
-                response.data.data.reserve?.reserve_itinerary_exists == 1
-            ) {
-                // 新規登録で行程情報がある場合は書類設定の見直しと行程の更新を促す
-                $("#successMessage .closeIcon")
-                    .parent()
-                    .slideDown();
-                setSuccessMessage(
-                    "参加者を追加しました。料金情報を更新するため行程を更新し、帳票の当該ユーザーのチェックを有効にしてください。"
-                ); // メッセージエリアを一旦slideDown(表示状態)してからメッセージをセット
-            }
+            // if (
+            //     editMode === "create" &&
+            //     response.data.data.reserve?.reserve_itinerary_exists == 1
+            // ) {
+            //     // 新規登録で行程情報がある場合は書類設定の見直しと行程の更新を促す
+            //     $("#successMessage .closeIcon")
+            //         .parent()
+            //         .slideDown();
+            //     setSuccessMessage(
+            //         "参加者を追加しました。料金情報を更新するため行程を更新し、帳票の当該ユーザーのチェックを有効にしてください。"
+            //     ); // メッセージエリアを一旦slideDown(表示状態)してからメッセージをセット
+            // }
             fetch();
         }
     };
@@ -623,7 +729,7 @@ const ParticipantArea = ({
                 {permission?.reserve_create && permission?.participant_create && (
                     <a
                         className="js-modal-open"
-                        data-target="mdAddUser"
+                        data-target="mdAddPerson"
                         onClick={handleModalAdd}
                     >
                         <span className="material-icons">add_circle</span>追加
@@ -718,10 +824,19 @@ const ParticipantArea = ({
                 </div>
             </div>
 
+            <ParticipantCreateModal
+                id="mdAddPerson"
+                input={createInput}
+                handleChange={handleCreateChange}
+                handleSubmit={handleCreateSubmit}
+                isCreating={isCreating}
+                permission={permission}
+            />
+
             <ParticipantEditModal
-                input={input}
-                handleChange={handleChange}
-                handleSubmit={handleSubmit}
+                input={editInput}
+                handleChange={handleEditChange}
+                handleSubmit={handleEditSubmit}
                 sexes={sexes}
                 ageKbns={ageKbns}
                 birthdayYears={birthdayYears}

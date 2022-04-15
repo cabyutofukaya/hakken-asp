@@ -49,7 +49,7 @@ class MailTemplateController extends Controller
             abort(403, $response->message());
         }
         
-        if($this->mailTemplateService->delete($mailTemplate->id, true)){ // 論理削除
+        if ($this->mailTemplateService->delete($mailTemplate->id, true)) { // 論理削除
             return response('', 200);
         }
         abort(500);

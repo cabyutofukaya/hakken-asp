@@ -26,9 +26,13 @@ interface UserRepositoryInterface
 
     public function getWhere(array $where, array $with=[], array $select=[], $limit=null) : Collection;
 
+    public function getIdInfoByUserableId(int $agencyId, string $userableType, array $userableIds) : array;
+
     public function create(array $data) : User;
 
     public function update(int $id, array $data): User;
+
+    public function insert(array $rows) : bool;
 
     public function updateField(int $userId, array $params) : bool;
 

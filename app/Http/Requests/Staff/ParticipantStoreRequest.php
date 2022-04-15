@@ -45,52 +45,13 @@ class ParticipantStoreRequest extends FormRequest
         return [
             'control_number' => 'required',
             'application_step' => 'required',
-            'name' => 'nullable|max:32',
-            'name_kana' => 'nullable|max:32',
-            'name_roman' => 'nullable|max:100',
-            'sex' => ['nullable',Rule::in(array_values(config("consts.users.SEX_LIST")))],
-            'birthday_y' => ['nullable',
-                function ($attribute, $value, $fail) {
-                    if (!in_array($value, array_keys($this->userService->getBirthDayYearSelect()))) {
-                        return $fail("生年月日(年)の指定が不正です。");
-                    }
+            'ad_number' => 'required|numeric|min:0',
+            'ch_number' => 'required|numeric|min:0',
+            'inf_number' => ["required","numeric","min:0",function ($attribute, $value, $fail) {
+                if (($this->ad_number + $this->ch_number + $this->inf_number) > config('consts.const.PARTICIPANT_MAX_NUM')) {
+                    $fail("参加者人数が多すぎます(".config('consts.const.PARTICIPANT_MAX_NUM')."名以下で設定してください)");
                 }
-            ],
-            'birthday_m' => ['nullable',
-                function ($attribute, $value, $fail) {
-                    if (!in_array($value, array_keys($this->userService->getBirthDayMonthSelect()))) {
-                        return $fail("生年月日(月)の指定が不正です。");
-                    }
-                }
-            ],
-            'birthday_d' => ['nullable',
-                function ($attribute, $value, $fail) {
-                    if (!in_array($value, array_keys($this->userService->getBirthDayDaySelect()))) {
-                        return $fail("生年月日(日)の指定が不正です。");
-                    }
-                }
-            ],
-            'age' => 'nullable',
-            'age_kbn' => ['nullable',Rule::in(array_values(config("consts.users.AGE_KBN_LIST")))],
-            'mobile_phone' => 'nullable|max:100',
-            'note' => 'nullable|max:1000',
-            'passport_number' => 'nullable|max:100',
-            'passport_issue_date' => 'nullable|date',
-            'passport_expiration_date' => 'nullable|date',
-            'passport_issue_country_code' => ['nullable',
-                function ($attribute, $value, $fail) {
-                    if (!in_array($value, array_keys($this->countryService->getCodeNameList()))) {
-                        return $fail("旅券発行国の指定が不正です。");
-                    }
-                }
-            ],
-            'citizenship_code' => ['nullable',
-                function ($attribute, $value, $fail) {
-                    if (!in_array($value, array_keys($this->countryService->getCodeNameList()))) {
-                        return $fail("国籍の指定が不正です。");
-                    }
-                }
-            ],
+            }],
         ];
     }
     
@@ -99,16 +60,18 @@ class ParticipantStoreRequest extends FormRequest
         return [
             'control_number.required' => '予約/見積番号は必須です。',
             'application_step.required' => '申込状態は必須です。',
-            'name.max' => '氏名が長すぎます(32文字まで)。',
-            'name_kana.max' => '氏名(カナ)が長すぎます(32文字まで)。',
-            'name_roman.max' => '氏名(ローマ字)が長すぎます(100文字まで)。',
-            'sex.in' => '性別の指定が不正です。',
-            'age_kbn.in' => '年齢区分の指定が不正です。',
-            'mobile_phone.max' => '携帯が長すぎます(100文字まで)。',
-            'note.max' => '備考が長すぎます(1000文字まで)。',
-            'passport_number.max' => '旅券番号が長すぎます(100文字まで)。',
-            'passport_issue_date.date' => '旅券発行日の入力形式が正しくありません(YYYY-MM-DD)。',
-            'passport_expiration_date.date' => '旅券有効期限の入力形式が正しくありません(YYYY-MM-DD)。',
+            'ad_number.required' => '大人人数は必須です。',
+            'ad_number.numeric' => '大人人数は半角数字で入力してください。',
+            'ad_number.min' => '大人人数は0以上の数字で入力してください。',
+            'ad_number.max' => '大人人数は1000以下の数字で入力してください。',
+            'ch_number.required' => '子供人数は必須です。',
+            'ch_number.numeric' => '子供人数は半角数字で入力してください。',
+            'ch_number.min' => '子供人数は0以上の数字で入力してください。',
+            'ch_number.max' => '子供人数は1000以下の数字で入力してください。',
+            'inf_number.required' => '幼児人数は必須です。',
+            'inf_number.numeric' => '幼児人数は半角数字で入力してください。',
+            'inf_number.min' => '幼児人数は0以上の数字で入力してください。',
+            'inf_number.max' => '幼児人数は1000以下の数字で入力してください。',
         ];
     }
 }

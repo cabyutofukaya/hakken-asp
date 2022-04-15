@@ -105,9 +105,9 @@ class ParticipantController extends Controller
         if ($reception === config('consts.const.RECEPTION_TYPE_ASP')) { // ASP受付
             // 見積or予約で処理を分ける
             if ($applicationStep == config("consts.reserves.APPLICATION_STEP_DRAFT")) { // 見積
-                $reserve = $this->estimateService->findByEstimateNumber($controlNumber, $agencyAccount, [], ['id']);
+                $reserve = $this->estimateService->findByEstimateNumber($controlNumber, $agencyAccount, [], ['id','updated_at']);
             } elseif ($applicationStep == config("consts.reserves.APPLICATION_STEP_RESERVE")) { // 予約
-                $reserve = $this->reserveService->findByControlNumber($controlNumber, $agencyAccount, [], ['id']);
+                $reserve = $this->reserveService->findByControlNumber($controlNumber, $agencyAccount, [], ['id','updated_at']);
             } else {
                 abort(404);
             }
@@ -116,7 +116,12 @@ class ParticipantController extends Controller
                 abort(404, "データが見つかりません。編集する前に画面を再読み込みして最新情報を表示してください。");
             }
     
-            return IndexResource::collection($this->reserveEstimateService->getParticipants($reserve->id));
+            return IndexResource::collection($this->reserveEstimateService->getParticipants($reserve->id))
+                ->additional([
+                    'reserve' => [
+                        'updated_at' => $reserve->updated_at->format('Y-m-d H:i:s')
+                    ]
+                ]);
         } elseif ($reception === config('consts.const.RECEPTION_TYPE_WEB')) { // WEB受付
             // 見積or予約で処理を分ける
             if ($applicationStep == config("consts.reserves.APPLICATION_STEP_DRAFT")) { // 見積
@@ -131,7 +136,12 @@ class ParticipantController extends Controller
                 abort(404, "データが見つかりません。編集する前に画面を再読み込みして最新情報を表示してください。");
             }
     
-            return IndexResource::collection($this->webReserveEstimateService->getParticipants($reserve->id));
+            return IndexResource::collection($this->webReserveEstimateService->getParticipants($reserve->id))
+                ->additional([
+                    'reserve' => [
+                        'updated_at' => $reserve->updated_at->format('Y-m-d H:i:s')
+                    ]
+                ]);
         } else {
             abort(404);
         }
@@ -181,21 +191,80 @@ class ParticipantController extends Controller
 
         try {
             $input = $request->all();
-            $input['agency_id'] = auth('staff')->user()->agency_id; // 会社IDをセット
-            $input['reserve_id'] = $reserve->id; // reserve IDをセット
 
-            $participant = DB::transaction(function () use ($reserve, $input) {
-                $participant = $this->participantService->create($reserve, $input);
-    
+            $result = DB::transaction(function () use ($reserve, $input) {
+                $agencyId = auth('staff')->user()->agency_id;
+
+                // 料金区分ごとにバルクインサート
+                foreach ([
+                        'ad_number' => config('consts.users.AGE_KBN_AD'),
+                        'ch_number' => config('consts.users.AGE_KBN_CH'),
+                        'inf_number' => config('consts.users.AGE_KBN_INF'),
+                    ] as $numberField => $ageKbn) {
+                    if (($number = Arr::get($input, $numberField))) {
+                        // postで送られてくる人数は総計なので、現在の人数を引いて新規作成人数を求める
+                        if ($ageKbn == config('consts.users.AGE_KBN_AD')) { // 大人
+                            $num = $number - $reserve->ad_participant_count;
+                        } elseif ($ageKbn == config('consts.users.AGE_KBN_CH')) { // 子供
+                            $num = $number - $reserve->ch_participant_count;
+                        } elseif ($ageKbn == config('consts.users.AGE_KBN_INF')) { // 幼児
+                            $num = $number - $reserve->inf_participant_count;
+                        } else {
+                            continue;
+                        }
+                        $this->participantService->bulkCreate($agencyId, $reserve, $num, $ageKbn, config('consts.users.STATUS_VALID')); // ステータスは「有効」で初期化
+                    }
+                }
+
                 event(new ReserveChangeHeadcountEvent($reserve)); // 参加者人数変更イベント
                 
                 event(new PriceRelatedChangeEvent($reserve->id, date('Y-m-d H:i:s'))); // 料金変更に関わるイベント
 
-                return $participant;
+                return true;
             });
-            if ($participant) {
-                return new StoreResource($participant, 201);
+            if ($result) {
+                // 受付種別で分ける
+                if ($reception === config('consts.const.RECEPTION_TYPE_ASP')) { // ASP受付
+
+                    // 最新の予約情報を取得
+                    $reserve = $this->reserveService->find($reserve->id);
+
+                    return IndexResource::collection($this->reserveEstimateService->getParticipants($reserve->id))->additional([
+                        'reserve' => [
+                            'reserve_itinerary_exists' => $reserve->reserve_itinerary_exists ? 1 : 0, // 当該予約に紐づく行程情報があるか否か。参加者を追加した際に行程の更新が必要か否かのメッセージを出す際に使用
+                            'updated_at' => $reserve->updated_at->format('Y-m-d H:i:s')
+                        ]
+                    ]);
+                } elseif ($reception === config('consts.const.RECEPTION_TYPE_WEB')) { // WEB受付
+
+                    // 最新の予約情報を取得
+                    $reserve = $this->webReserveEstimateService>find($reserve->id);
+
+                    return IndexResource::collection($this->webReserveEstimateService->getParticipants($reserve->id))->additional([
+                        'reserve' => [
+                            'reserve_itinerary_exists' => $reserve->reserve_itinerary_exists ? 1 : 0, // 当該予約に紐づく行程情報があるか否か。参加者を追加した際に行程の更新が必要か否かのメッセージを出す際に使用
+                            'updated_at' => $reserve->updated_at->format('Y-m-d H:i:s')
+                        ]
+                    ]);
+                }
             }
+
+            // $input = $request->all();
+            // $input['agency_id'] = auth('staff')->user()->agency_id; // 会社IDをセット
+            // $input['reserve_id'] = $reserve->id; // reserve IDをセット
+
+            // $participant = DB::transaction(function () use ($reserve, $input) {
+            //     $participant = $this->participantService->create($reserve, $input);
+    
+            //     event(new ReserveChangeHeadcountEvent($reserve)); // 参加者人数変更イベント
+                
+            //     event(new PriceRelatedChangeEvent($reserve->id, date('Y-m-d H:i:s'))); // 料金変更に関わるイベント
+
+            //     return $participant;
+            // });
+            // if ($participant) {
+            //     return new StoreResource($participant, 201);
+            // }
         } catch (Exception $e) {
             Log::error($e);
         }
@@ -398,7 +467,7 @@ class ParticipantController extends Controller
 
     /**
      * キャンセルチャージ処理
-     * 
+     *
      * @param string $id 参加者ID
      */
     public function cancelChargeUpdate(ParticipantCancelChargeUpdateRequest $request, string $agencyAccount, string $reception, int $id)
@@ -472,7 +541,6 @@ class ParticipantController extends Controller
                 $request->session()->flash('success_message', "「{$participant->name}」様のキャンセル処理が完了しました。"); // set_messageは処理成功のフラッシュメッセージのセットを要求するパラメータ
             }
             return ['result' => 'ok'];
-
         } catch (ExclusiveLockException $e) { // 同時編集エラー
             abort(409, "他のユーザーによる編集済みレコードです。編集する前に画面を再読み込みして最新情報を表示してください。");
         } catch (Exception $e) {

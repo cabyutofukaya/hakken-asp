@@ -12,6 +12,7 @@
         "askedio/laravel-soft-cascade": "^6",
         "barryvdh/laravel-snappy": "^0.4.8",
         "diglactic/laravel-breadcrumbs": "^6.1",
+        "doctrine/dbal": "2.*",
         "dyrynda/laravel-cascade-soft-deletes": "2.0.0",
         "fideloper/proxy": "^4.4",
         "genealabs/laravel-caffeine": "~1.0.0",

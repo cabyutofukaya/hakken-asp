@@ -6,9 +6,12 @@ use App\Exceptions\ExclusiveLockException;
 use App\Models\Participant;
 use App\Models\Reserve;
 use App\Models\User;
+use App\Models\ParticipantReserve;
 use App\Repositories\Agency\AgencyRepository;
 use App\Repositories\Participant\ParticipantRepository;
 use App\Repositories\Reserve\ReserveRepository;
+use App\Services\AspUserService;
+use App\Services\AspUserExtService;
 use App\Services\ParticipantSequenceService;
 use App\Services\ReserveParticipantAirplanePriceService;
 use App\Services\ReserveParticipantHotelPriceService;
@@ -52,6 +55,8 @@ class ParticipantService
         ParticipantRepository $participantRepository,
         AgencyRepository $agencyRepository,
         UserService $userService,
+        AspUserService $aspUserService,
+        AspUserExtService $aspUserExtService,
         ReserveRepository $reserveRepository,
         ReserveParticipantAirplanePriceService $reserveParticipantAirplanePriceService,
         ReserveParticipantHotelPriceService $reserveParticipantHotelPriceService,
@@ -60,6 +65,8 @@ class ParticipantService
         $this->agencyRepository = $agencyRepository;
         $this->participantRepository = $participantRepository;
         $this->userService = $userService;
+        $this->aspUserService = $aspUserService;
+        $this->aspUserExtService = $aspUserExtService;
         $this->reserveRepository = $reserveRepository;
         $this->reserveParticipantAirplanePriceService = $reserveParticipantAirplanePriceService;
         $this->reserveParticipantHotelPriceService = $reserveParticipantHotelPriceService;
@@ -114,7 +121,7 @@ class ParticipantService
 
     /**
      * 参加者作成
-     * 
+     *
      * userデータを作成 → 参加者情報を作成 → 参加者情報を予約情報に紐付け
      *
      * @param int $reserveId 予約ID
@@ -140,6 +147,139 @@ class ParticipantService
     }
 
     /**
+     * 参加者バルクインサート。顧客番号の作成はナシ
+     *
+     * @param int $agencyId 会社ID
+     * @param Reserve $reserve 予約情報
+     * @param int $number 作成人数
+     * @param string $ageKbn 年齢区分
+     * @param int $status ステータス
+     * @return bool
+     */
+    public function bulkCreate(int $agencyId, Reserve $reserve, int $number, string $ageKbn, int $status) : bool
+    {
+        /**
+         * asp_usersをバルクインサート
+         * ↓
+         * 作成したasp_userに対してuser_extリレーションを作成(新規登録したasp_usersのidはダミーで登録した参加者名から検索)
+         * ↓
+         * 作成したasp_userに対してuserリレーションを作成
+         * ↓
+         * 作成したusersを元にparticipantsレコードを作成
+         * ↓
+         * reservesの多対多リレーションの中間テーブルを作成
+         */
+
+        $tmpUniqidName = uniqid(rand()); // バルクインサートした際に作成レコードの目印としてnameカラムにユニーク値をセットしておく
+
+        $createdAt = date('Y-m-d H:i:s');
+        
+        // asp_userをバルクインサート
+        $aspUsers = [];
+        for ($i = 0; $i< $number; $i++) {
+            $tmp = [];
+            $tmp['agency_id'] = $agencyId;
+            $tmp['name'] = $tmpUniqidName;
+            $tmp['created_at'] = $createdAt;
+            $tmp['updated_at'] = $createdAt;
+            
+            $aspUsers[] = $tmp;
+        }
+        $this->aspUserService->insert($aspUsers);
+
+        // バルクインサートしたasp_users ID一覧を取得
+        $aspUserIds = $this->aspUserService->getWhereIds(['agency_id' => $agencyId, 'name' => $tmpUniqidName]);
+
+        // ダミーでセットした名前を書き換え
+        $nameTable = []; // 「id => asp_user_id, name => 参加者名」形式の配列
+
+        $participanCount = $reserve->participant_count; // 当該予約の参加者数(参加者名のナンバリング表示に使用)
+        foreach ($aspUserIds as $i => $aspUserId) {
+            $participanCount++;
+            $tmp = [];
+            $tmp['id'] = $aspUserId;
+            $tmp['name'] = "参加者-{$participanCount}";
+
+            $nameTable[] = $tmp;
+        }
+        // 名前をバルクアップデート
+        $this->aspUserService->updateBulk($nameTable, "id");
+
+        // user_extリレーションを作成
+        $userExts = [];
+        foreach ($aspUserIds as $aspUserId) {
+            $tmp = [];
+            $tmp['agency_id'] = $agencyId;
+            $tmp['asp_user_id'] = $aspUserId;
+            $tmp['created_at'] = $createdAt;
+            $tmp['updated_at'] = $createdAt;
+
+            $userExts[] = $tmp;
+        }
+        $this->aspUserExtService->insert($userExts);
+
+        // usersレコードを作成
+        $users = [];
+        foreach ($aspUserIds as $aspUserId) {
+            $tmp = [];
+            $tmp['agency_id'] = $agencyId;
+            $tmp['userable_type'] = 'App\Models\AspUser';
+            $tmp['userable_id'] = $aspUserId;
+            $tmp['status'] = $status;
+            $tmp['created_at'] = $createdAt;
+            $tmp['updated_at'] = $createdAt;
+
+            $users[] = $tmp;
+        }
+        $this->userService->insert($users);
+        // バルクインサートしたusers ID、userable_id一覧を取得
+        $userIdInfos = $this->userService->getIdInfoByUserableId($agencyId, 'App\Models\AspUser', $aspUserIds);
+
+
+        $nameArr = collect($nameTable)->pluck('name', 'id')->toArray(); // 「asp_user_id=>名前」形式の配列に変換
+        // participantsレコードを作成
+        $participants = [];
+        foreach ($userIdInfos as $userIdInfo) {
+            $tmp = [];
+            $tmp['agency_id'] = $agencyId;
+            $tmp['reserve_id'] = $reserve->id;
+            $tmp['user_id'] = $userIdInfo['id'];
+            $tmp['name'] = Arr::get($nameArr, $userIdInfo['userable_id']);
+            $tmp['age_kbn'] = $ageKbn;
+            $tmp['cancel'] = false; //　キャンセルパラメータはfalseで初期化
+            $tmp['created_at'] = $createdAt;
+            $tmp['updated_at'] = $createdAt;
+
+            $participants[] = $tmp;
+        }
+        $this->insert($participants);
+        // バルクインサートしたparticipants ID一覧を取得
+        $participantIds = $this->getIdsByReserveIdAndUserIds($reserve->id, collect($userIdInfos)->pluck('id')->toArray());
+
+        // 多対多の中間テーブルを作成
+        $participantReserves = [];
+        foreach ($participantIds as $participantId) {
+            $tmp = [];
+            $tmp['reserve_id'] = $reserve->id;
+            $tmp['participant_id'] = $participantId;
+
+            $participantReserves[] = $tmp;
+        }
+        ParticipantReserve::insert($participantReserves);
+
+        return true;
+    }
+
+    /**
+     * バルクインサート
+     */
+    public function insert(array $rows) : bool
+    {
+        $this->participantRepository->insert($rows);
+        return true;
+    }
+
+    /**
      * 更新
      *
      */
@@ -162,6 +302,14 @@ class ParticipantService
         return $this->participantRepository->paginateByReserveId($reserveId, $params, $limit, $with, $select);
     }
     
+    /**
+     * 予約IDとユーザーIDリストを条件にID一覧を取得
+     */
+    public function getIdsByReserveIdAndUserIds(int $reserveId, array $userIds) : array
+    {
+        return $this->participantRepository->getIdsByReserveIdAndUserIds($reserveId, $userIds);
+    }
+
     /**
      * 代表者を設定
      *
@@ -206,11 +354,6 @@ class ParticipantService
      */
     public function setCancel(int $id) : ?Participant
     {
-        // // 仕入関連レコードの有効フラグをOffに
-        // $this->reserveParticipantOptionPriceService->updateValidForParticipant($id, false); // オプション科目
-        // $this->reserveParticipantAirplanePriceService->updateValidForParticipant($id, false); // 航空券科目
-        // $this->reserveParticipantHotelPriceService->updateValidForParticipant($id, false); // ホテル科目
-
         $this->participantRepository->updateField($id, $this->getCancelParam());
 
         return $this->participantRepository->find($id);

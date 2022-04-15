@@ -21,21 +21,12 @@
 
     <ul id="formControl">
       <li class="wd50"><button class="grayBtn" onClick="event.preventDefault();history.back()"><span class="material-icons">arrow_back_ios</span>登録せずに戻る</button></li>
-    <li class="wd50"><button class="blueBtn doubleBan"><span class="material-icons">save</span> この内容で登録する</button></li>
+    <li class="wd50"><button class="blueBtn doubleBan" id="submit"><span class="material-icons">save</span> この内容で登録する</button></li>
     </ul>
 
   </form>
 </main>
 
-<link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/airbnb.css">
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script> 
-<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ja.js"></script> 
-<script>
-    flatpickr.localize(flatpickr.l10ns.ja);
-    flatpickr('.calendar input', {
-        allowInput: true,
-		dateFormat: "Y/m/d"
-    });
-</script>
+@include('staff.user.common._js')
 <script src="{{ mix('/staff/js/user-create.js') }}"></script>
 @endsection

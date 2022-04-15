@@ -210,6 +210,7 @@ class ShowFormComposer
                 'birthdayMonths' => ['' => '月'] + $this->userService->getBirthDayMonthSelect(), // 誕生日月（「MM => MM月」形式の配列）
                 'birthdayDays' => ['' => '日'] + $this->userService->getBirthDayDaySelect(), // 誕生日日（「DD => DD月」形式の配列）
                 'countries' => ['' => '-'] + $this->countryService->getCodeNameList(), // 国名リスト
+                'ageKbnVals' => config('consts.users.AGE_KBN_LIST'),
             ],
             // 相談
             config('consts.reserves.TAB_CONSULTATION') =>
