@@ -33,7 +33,7 @@ class CheckAgencyAccount
         }
         if ($staff->agency->status != config('consts.agencies.STATUS_MAIN_REGISTRATION')) { // 会社のステータスをチェック
             Auth::guard('staff')->logout();
-            abort(403);
+            abort(403, "ERROR。会社アカウントが停止されています");
         };
         if ($staff->status != config('consts.staffs.STATUS_VALID')) { // スタッフのステータスをチェック
             Auth::guard('staff')->logout();
