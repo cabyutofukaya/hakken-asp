@@ -112,6 +112,6 @@ class EditFormComposer
         // reactに渡す各種定数
         $jsVars = $this->getJsVars($agency->account);
 
-        $view->with(compact('webProfile', 'agency', 'defaultValue', 'formSelects', 'consts', 'jsVars'));
+        $view->with(compact('webProfile', 'agency', 'defaultValue', 'formSelects', 'consts', 'jsVars', 'my'));
     }
 }

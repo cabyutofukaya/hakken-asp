@@ -33,11 +33,11 @@
 							@endif
 						</div>
 						<h3><span>
-							{{ $webProfile->agency->company_name }} {{-- 会社名はDBに保存されている値から取得 --}}
+							{{ $staff->agency->company_name }} {{-- 会社名はDBに保存されている値から取得 --}}
 						</span>
 							{{ Arr::get($input, "name") }}
 						<span>
-							[{{ $webProfile->agency->prefecture->name }}] {{-- 都道府県はDBに保存されている値から取得 --}}
+							[{{ $staff->agency->prefecture->name }}] {{-- 都道府県はDBに保存されている値から取得 --}}
 						</span>
 					</h3>
 				</div>
@@ -65,7 +65,7 @@
 		<div class="samplePlan">
 			<h2>いちおしの旅行プラン</h2>
 			<ul class="halfColumn">
-				@foreach($webProfile->staff->enabled_web_modelcourses as $webModelcourse)
+				@foreach($staff->enabled_web_modelcourses as $webModelcourse)
 				<li>
 					<span>
 						<div class="coursePh">
@@ -104,13 +104,13 @@
 		
 		<div id="companyFoot">
 			<div class="compLogo">
-				@if(data_get($webProfile, 'agency.web_company.logo_image'))
-					<img src="{{ $consts['imageBaseUrl'] . $webProfile->agency->web_company->logo_image }}" alt="{{ $webProfile->agency->company_name }}">
+				@if(data_get($staff, 'agency.web_company.logo_image'))
+					<img src="{{ $consts['imageBaseUrl'] . $staff->agency->web_company->logo_image }}" alt="{{ $staff->agency->company_name }}">
 				@endif
 			<a href="#">会社概要</a></div>
 			<div>
-				<h4>{{ $webProfile->agency->company_name }}</h4>
-				<p>〒{{ $webProfile->agency->zip_code_hyphen }} {{ $webProfile->agency->address_label }}</p></div>
+				<h4>{{ $staff->agency->company_name }}</h4>
+				<p>〒{{ $staff->agency->zip_code_hyphen }} {{ $staff->agency->address_label }}</p></div>
 			</div>
 	</main>
 </div>
