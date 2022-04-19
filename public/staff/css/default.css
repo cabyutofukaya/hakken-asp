@@ -887,7 +887,7 @@ input[type="file"] + label {
 .css-2b097c-container .css-yk16xz-control,
 .css-2b097c-container .css-1pahdxg-control {
     width: 100%;
-    padding: 0px 40px 0px 12px;
+    padding: 0px 0px 0px 12px;
     height: 58px;
     background: #ebebeb;
     border: solid 2px #ebebeb;
@@ -897,23 +897,6 @@ input[type="file"] + label {
     appearance: none;
     font-size: 16px;
     border-radius: 5px;
-}
-.css-2b097c-container .css-yk16xz-control:after {
-    font-family: "Material Icons";
-    content: "expand_more";
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 34px;
-    height: 24px;
-    pointer-events: none;
-    border-left: solid 1px #9fa1a3;
-    position: absolute;
-    right: 5px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #9fa1a3;
-    font-size: 24px;
 }
 
 .css-2b097c-container .css-1hb7zxy-IndicatorsContainer {
