@@ -386,9 +386,9 @@ Route::domain(env('STAFF_DOMAIN', 'asp.hakken-tour.com'))->namespace('Staff')->n
             Route::post('company', 'CompanyController@upsert')->name('company.update'); // 会社情報更新処理
 
             /** プロフィール管理 */
-            Route::get('profile', 'ProfileController@edit')->name('profile.edit');
-            // プロフィール編集
-            Route::post('profile', 'ProfileController@upsert')->name('profile.update'); //プロフィール更新処理
+            Route::get('profile', 'ProfileController@edit')->name('profile.edit'); // プロフィール編集
+            Route::post('profile', 'ProfileController@upsert')->name('profile.update'); // プロフィール更新処理
+            Route::post('profile/{hashId}/preview', 'ProfileController@preview')->name('profile.preview'); // プロフィールプレビュー
 
             // モデルコース管理
             Route::prefix('modelcourse')->name('modelcourse.')->group(function () {
@@ -398,10 +398,12 @@ Route::domain(env('STAFF_DOMAIN', 'asp.hakken-tour.com'))->namespace('Staff')->n
                 Route::get('/{courseNo}', 'ModelcourseController@show')->name('show'); // 詳細
                 Route::get('/{courseNo}/edit', 'ModelcourseController@edit')->name('edit'); // 編集
                 Route::put('/{courseNo}', 'ModelcourseController@update')->name('update'); // 更新処理
+                Route::get('/{courseNo}/preview', 'ModelcourseController@preview')->name('preview'); // プレビュー機能
             });
+
         });
 
         // ↓以下は、動作テストのための暫定プログラム
-        Route::get('chat/{consultation}', 'ChatController@index')->name('chat.index');
+        // Route::get('chat/{consultation}', 'ChatController@index')->name('chat.index');
     });
 });

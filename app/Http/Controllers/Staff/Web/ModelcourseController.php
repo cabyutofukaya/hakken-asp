@@ -54,6 +54,14 @@ class ModelcourseController extends AppController
     }
 
     /**
+     * プレビュー
+     */
+    public function preview(string $agencyAccount, string $courseNo)
+    {
+        //
+    }
+
+    /**
      * 作成ページ
      */
     public function create(string $agencyAccount)

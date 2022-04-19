@@ -27,6 +27,14 @@ class PurposeRepository implements PurposeRepositoryInterface
     }
 
     /**
+     * 当該IDリストに対応した名称一覧を取得
+     */
+    public function getNamesByIds(array $ids): array
+    {
+        return $this->purpose->whereIn('id', $ids)->pluck('name')->all();
+    }
+
+    /**
      * ページネーション で取得
      *
      * @var $limit

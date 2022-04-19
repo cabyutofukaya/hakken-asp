@@ -13,5 +13,5 @@ return [
   // 旅行日区分
   'DEPARTURE_KBN_UNDECIDED' => 0, // 未定
   'DEPARTURE_KBN_DATE' => 1, // 日付
-  'DEPARTURE_KBN_SEASON' => 2, // 時期
+  // 'DEPARTURE_KBN_SEASON' => 2, // 時期
 ];

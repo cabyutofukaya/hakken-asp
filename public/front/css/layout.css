@@ -1,0 +1,490 @@
+@charset "utf-8";
+/*
+	Description: initial setting
+	Version: 1.0
+	Author: idealgrow
+*/
+/*
+===== CONTENTS ===========================================
+
+	1: BASE LAYOUT
+
+==========================================================
+*/
+#logo {
+    height: 100px;
+    padding: 20px 0 10px 0;
+}
+#logo img {
+    margin: 0 auto;
+    height: 100%;
+    width: auto;
+}
+.topCatch01 {
+    padding: 10px 0;
+    text-align: center;
+    font-family: futura-pt-bold, sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    font-size: 14px;
+}
+.topCatch02 {
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 0 10px;
+}
+.topCatch02 br {
+    display: none;
+}
+nav ul {
+    display: flex;
+    padding: 0 20px;
+    margin-top: 10px;
+}
+nav ul li {
+    width: 50%;
+    text-align: center;
+}
+nav ul li a {
+    display: block;
+    background: #f8b62d;
+    text-decoration: none;
+    padding: 5px 0;
+    border-radius: 30px 0 0 30px;
+    font-size: 16px;
+    position: relative;
+}
+#top nav ul li a {
+    background: #f8b62d;
+}
+nav ul li:last-of-type a {
+    border-radius: 0 30px 30px 0;
+}
+nav ul li:last-of-type a:before {
+    content: "";
+    background: url("../img/shared/ico_open.svg") center top 1px no-repeat;
+    background-size: 100% auto;
+    display: inline-block;
+    vertical-align: text-top;
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
+}
+nav ul.login li:last-of-type a:before {
+    background: url("../img/shared/ico_lock.svg") center top 1px no-repeat;
+    background-size: 100% auto;
+}
+nav ul li:last-of-type a:after {
+    content: "";
+    width: 1px;
+    height: 50%;
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #000;
+}
+main {
+    position: relative;
+    z-index: 10;
+    padding: 20px;
+}
+footer {
+    background: #000;
+}
+footer #footerIn ul {
+    padding: 20px 20px 0 20px;
+}
+footer #footerIn ul li {
+    margin: 0 0 5px 0;
+    font-size: 14px;
+}
+footer #footerIn ul li a {
+    color: #fff !important;
+    text-decoration: none;
+}
+footer #footerIn ul li a:before {
+    content: "";
+    background: #fff;
+    height: 2px;
+    width: 10px;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 10px;
+}
+footer #footerIn #copy {
+    text-align: center;
+    padding: 10px 0;
+    border-top: solid 1px #555;
+    margin-top: 20px;
+    color: #999;
+}
+.modal {
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 100;
+    display: none;
+}
+.mdTit {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 25px;
+    position: relative;
+    padding-left: 50px;
+    line-height: 1.2;
+}
+.mdTit.consult:before {
+    content: "";
+    background: url("../img/shared/ico_chat.svg") center center no-repeat;
+    width: 36px;
+    height: 36px;
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+}
+.mdTit.consult span {
+    display: block;
+    font-size: 18px;
+}
+.modal__bg {
+    background: rgba(0, 0, 0, 0.7);
+    height: 100%;
+    position: absolute;
+    width: 100%;
+}
+.modal__content {
+    border-radius: 10px;
+    background: #fff;
+    left: 50%;
+    padding: 20px;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 85%;
+    max-width: 600px;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: 0px 3px 10px 0px rgba(0, 0, 0, 0.2);
+}
+.modal .searchConf span.confLabel {
+    display: block;
+    font-size: 14px;
+    position: relative;
+    padding-left: 10px;
+}
+.modal .searchConf span.confLabel:before {
+    content: "";
+    background: #d5d5d5;
+    width: 4px;
+    height: 60%;
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+}
+.modal .searchConf li {
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: dashed 1px #b9b4ad;
+}
+.modal .searchConf li p {
+    font-weight: bold;
+}
+.modal .searchConf li:last-of-type {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+.modal .searchConf li .parsonList {
+    display: flex;
+}
+.modal .searchConf li .parsonList li {
+    width: 30%;
+    margin-right: 5%;
+    position: relative;
+    font-weight: bold;
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+.modal .searchConf li .parsonList li span {
+    font-size: 18px;
+    margin: 0 3px;
+}
+.modal .searchConf li .parsonList li:after {
+    content: "";
+    background: #000;
+    width: 1px;
+    height: 60%;
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+}
+.modal .searchConf li .parsonList li:last-of-type {
+    margin-right: 0;
+    padding-right: 0;
+}
+.modal .searchConf li .parsonList li:last-of-type:after {
+    display: none;
+}
+.modal .searchConf li .intList {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 8px;
+}
+.modal .searchConf li .intList li {
+    border: solid 1px #000;
+    border-radius: 100px;
+    padding: 0 10px;
+    margin: 0 8px 8px 0;
+    font-weight: bold;
+}
+.modal .consultCont li:not(:first-of-type) {
+    margin-top: 20px;
+}
+.modal .searchConf .baseRadio {
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+.modal .searchConf .baseRadio li {
+    border-bottom: none;
+    margin: 0 !important;
+}
+.modal .searchConf .baseRadio li div {
+    width: 100%;
+    margin-top: 10px;
+}
+.modal .searchConf .dayTime {
+    display: flex;
+    flex-wrap: wrap;
+}
+.modal .searchConf .dayTime li:first-of-type {
+    width: 100%;
+    border-bottom: none;
+    padding: 0;
+}
+.modal .searchConf .dayTime li {
+    width: 50%;
+    padding-right: 20px;
+    position: relative;
+}
+.modal .searchConf .dayTime li:nth-of-type(2):before {
+    content: ":";
+    position: absolute;
+    right: 5%;
+    top: 40%;
+    transform: translateY(-50%);
+    font-size: 24px;
+}
+.modal .searchConf .dayTime li:nth-of-type(3):before {
+    content: "~";
+    position: absolute;
+    right: 5%;
+    top: 40%;
+    transform: translateY(-50%);
+    font-size: 24px;
+}
+@media screen and (min-width: 1159px) {
+    #wrapper {
+        display: flex;
+        max-width: 1280px;
+        margin: 0 auto;
+    }
+    .topCatch01 {
+        padding: 40px 0;
+        font-size: 16px;
+    }
+    .topCatch02 {
+        font-size: 24px;
+        margin-bottom: 0;
+        padding: 0;
+    }
+    .topCatch01,
+    .topCatch02 br {
+        display: block;
+    }
+    header {
+        position: relative;
+        min-height: calc(100vh - 70px);
+        width: 370px;
+        margin-right: 40px;
+        padding: 40px 40px 0 0;
+    }
+    #top header {
+        min-height: calc(100vh - 130px);
+    }
+    nav ul {
+        padding: 0;
+        margin-top: 25px;
+    }
+    nav ul li a:hover {
+        color: #000;
+        background: #ffd377 !important;
+    }
+    main {
+        width: calc(100% - 410px);
+        padding: 40px 40px 0 0;
+        position: relative;
+    }
+    #logo {
+        height: 124px;
+        padding: 0;
+    }
+    footer {
+        width: 100%;
+        background: none;
+        display: flex;
+        align-items: center;
+    }
+    footer #footerIn {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        max-width: 1280px;
+        margin: 0 auto;
+    }
+    footer #footerIn ul {
+        padding: 20px 40px 20px 0;
+        display: flex;
+        width: 72%;
+        height: 70px;
+    }
+    footer #footerIn ul li {
+        margin: 0 15px 0 0;
+        font-size: 15px;
+    }
+    footer #footerIn ul li a {
+        color: #000 !important;
+    }
+    footer #footerIn ul li a:before {
+        display: none;
+    }
+    footer #footerIn ul li a:hover {
+        text-decoration: underline;
+    }
+    footer #footerIn #copy {
+        width: 27%;
+        text-align: right;
+        padding: 20px 0 20px 40px;
+        border-top: none;
+        margin-top: 0;
+        color: #000;
+        height: 70px;
+    }
+    .mdTit {
+        font-size: 22px;
+        text-align: center;
+        margin-left: -30px;
+    }
+    .mdTit.consult:before {
+        width: 30px;
+        height: 30px;
+        position: static;
+        transform: none;
+        display: inline-block;
+        margin-right: 10px;
+        vertical-align: middle;
+    }
+    .mdTit.consult span {
+        display: inline-block;
+        font-size: 22px;
+    }
+    .modal__content {
+        padding: 30px;
+    }
+    .modal .searchConf {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    .modal .searchConf span.confLabel {
+        font-size: 16px;
+        padding-left: 15px;
+    }
+    .modal .searchConf > li:first-of-type {
+        width: 40%;
+        margin-right: 2%;
+    }
+    .modal .searchConf > li:nth-of-type(2) {
+        width: 28%;
+        margin-right: 2%;
+    }
+    .modal .searchConf > li:nth-of-type(3) {
+        width: 28%;
+    }
+    .modal .searchConf > li:nth-of-type(4) {
+        width: 58%;
+        margin-right: 2%;
+    }
+    .modal .searchConf > li:nth-of-type(5) {
+        width: 40%;
+    }
+    .modal .searchConf > li:nth-of-type(6) {
+        width: 32%;
+        margin-right: 2%;
+    }
+    .modal .searchConf > li:nth-of-type(7) {
+        width: 66%;
+    }
+    .modal .searchConf > li:nth-of-type(8),
+    .modal .searchConf > li:nth-of-type(9),
+    .modal .searchConf > li:nth-of-type(10) {
+        width: 100%;
+    }
+    .modal .searchConf li ul {
+        margin-left: 10px;
+    }
+    .modal .searchConf li {
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+    }
+    .modal .searchConf li p {
+        font-size: 18px;
+        padding-left: 10px;
+    }
+    .modal .searchConf li .intList li {
+        font-size: 16px;
+    }
+    .modal .searchConf li .parsonList {
+        display: flex;
+    }
+    .modal .consultCont {
+        display: flex;
+        justify-content: center;
+    }
+    .modal .consultCont li.sendBtn {
+        width: 240px;
+        margin: 0 8px;
+    }
+    .modal .consultCont li input {
+        width: 100%;
+        padding: 15px 40px 15px 20px;
+    }
+    .modal .consultCont li:not(:first-of-type) {
+        margin-top: 0;
+    }
+    .modal .searchConf .baseRadio li {
+        display: flex;
+        align-items: center;
+    }
+    .modal .searchConf .baseRadio li div {
+        width: 300px;
+        margin-top: 0;
+        margin-left: 20px;
+    }
+    .modal .searchConf .dayTime {
+        margin: 0;
+    }
+    .modal .searchConf .dayTime li {
+        border-bottom: none;
+    }
+    .modal .searchConf .dayTime li:first-of-type {
+        width: 40%;
+    }
+    .modal .searchConf .dayTime li {
+        width: 20%;
+    }
+}
