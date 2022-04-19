@@ -7,15 +7,17 @@ use App\Http\Controllers\Staff\AppController;
 use App\Http\Requests\Staff\WebProfileUpsertRequest;
 use App\Models\WebProfile;
 use App\Services\WebProfileService;
+use App\Services\StaffService;
 use Hashids;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 
 class ProfileController extends AppController
 {
-    public function __construct(WebProfileService $webProfileService)
+    public function __construct(StaffService $staffService, WebProfileService $webProfileService)
     {
         $this->webProfileService = $webProfileService;
+        $this->staffService = $staffService;
     }
 
     /**
@@ -44,17 +46,17 @@ class ProfileController extends AppController
     {
         $id = Hashids::decode($hashId)[0] ?? 0;
 
-        $webProfile = $this->webProfileService->findByStaffId($id);
+        $staff = $this->staffService->find($id);
 
         // 認可チェック
-        $response = \Gate::inspect('view', $webProfile);
+        $response = \Gate::inspect('viewAny', [$staff]);
         if (!$response->allowed()) {
             abort(403);
         }
 
         $input = request()->all(); // 入力データ
 
-        return view("staff.web.profile.preview", compact("webProfile", "input"));
+        return view("staff.web.profile.preview", compact("staff", "input"));
     }
 
     /**
