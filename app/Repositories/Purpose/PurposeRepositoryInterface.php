@@ -16,6 +16,8 @@ interface PurposeRepositoryInterface
 
     public function find(int $id);
 
+    public function getNamesByIds(array $ids): array;
+
     public function all() : Collection;
 
     public function create(array $data);

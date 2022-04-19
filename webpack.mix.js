@@ -31,11 +31,8 @@ mix.react("resources/js/app.js", "public/js")
     .js("resources/assets/admin/js/sortable.js", "public/admin/js")
     .js("resources/assets/admin/js/common.js", "public/admin/js") // jqueryなどの共通スクリプト
     //user
-    .js("resources/assets/user/js/online-index.js", "public/user/js")
-    .js("resources/assets/user/js/chat-index.js", "public/user/js")
     .sass("resources/assets/admin/sass/app.scss", "public/admin/css")
     //staff
-    // .js("resources/assets/staff/js/chat-index.js", "public/staff/js")
     // .sass("resources/assets/staff/sass/app.scss", "public/staff/css")
     .js("resources/assets/staff/js/common.js", "public/staff/js") // jqueryなどの共通スクリプト
     .js("resources/assets/staff/js/news.js", "public/staff/js")

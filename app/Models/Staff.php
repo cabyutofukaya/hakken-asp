@@ -104,6 +104,13 @@ class Staff extends Authenticatable implements AppUser
         return $this->morphMany('App\Models\WebMessage', 'senderable');
     }
 
+    // モデルコース(表示のみ)
+    public function enabled_web_modelcourses()
+    {
+        return $this->hasMany('App\Models\WebModelcourse', 'author_id')
+            ->where('show', true) // 表示フラグOn
+            ->orderBy('created_at', 'DESC'); // 最新順で表示
+    }
 
     ///////////////// カスタム項目ここから ///////////////////
 

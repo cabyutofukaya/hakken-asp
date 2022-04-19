@@ -101,7 +101,5 @@
     "/staff/js/web_modelcourse-create-edit.js": "/staff/js/web_modelcourse-create-edit.js",
     "/staff/js/web_modelcourse-index.js": "/staff/js/web_modelcourse-index.js",
     "/staff/js/web_modelcourse-show.js": "/staff/js/web_modelcourse-show.js",
-    "/staff/js/web_profile-create-edit.js": "/staff/js/web_profile-create-edit.js",
-    "/user/js/chat-index.js": "/user/js/chat-index.js",
-    "/user/js/online-index.js": "/user/js/online-index.js"
+    "/staff/js/web_profile-create-edit.js": "/staff/js/web_profile-create-edit.js"
 }

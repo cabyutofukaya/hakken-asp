@@ -236,6 +236,8 @@ class ComposerServiceProvider extends ServiceProvider
 
         View::composer('staff.web.company.edit', VCStaff\Web\Company\EditFormComposer::class); // 会社情報
         View::composer('staff.web.profile.edit', VCStaff\Web\Profile\EditFormComposer::class); // プロフィール情報
+        View::composer('staff.web.profile.preview', VCStaff\Web\Profile\PreviewFormComposer::class); // プロフィールプレビュー
+
         // モデルコース
         View::composer('staff.web.modelcourse.index', VCStaff\Web\Modelcourse\IndexFormComposer::class); // index
         View::composer('staff.web.modelcourse.show', VCStaff\Web\Modelcourse\ShowFormComposer::class); // show

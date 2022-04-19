@@ -19,9 +19,10 @@ if (! function_exists('get_webprofile_previewurl')) {
     /**
      * WebプロフィールのプレビューURLを取得
      */
-    function get_webprofile_previewurl(string $staffHashId) : string
+    function get_webprofile_previewurl(string $agencyAccount, string $staffHashId) : string
     {
-        return sprintf("%s/meister/%s", env('HAKKEN_APP_URL'), $staffHashId);
+        // return sprintf("%s/meister/%s", env('HAKKEN_APP_URL'), $staffHashId);
+        return route("staff.front.profile.preview", [$agencyAccount, $staffHashId]);
     }
 }
 
@@ -31,7 +32,8 @@ if (! function_exists('get_modelcourse_previewurl')) {
      */
     function get_modelcourse_previewurl(string $agencyAccount, string $courseNo) : string
     {
-        return sprintf("%s/company/%s/modelcourse/%s", env('HAKKEN_APP_URL'), $agencyAccount, $courseNo);
+        // return sprintf("%s/company/%s/modelcourse/%s", env('HAKKEN_APP_URL'), $agencyAccount, $courseNo);
+        return route("staff.front.modelcourse.preview", [$agencyAccount, $courseNo]);
     }
 }
 

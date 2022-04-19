@@ -19,4 +19,12 @@ class PurposeService
     {
         return $this->purposeRepository->all()->pluck('name', 'id')->toArray();
     }
+
+    /**
+     * 当該IDリストに対応した名称一覧を取得
+     */
+    public function getNamesByIds(array $ids): array
+    {
+        return $this->purposeRepository->getNamesByIds($ids);
+    }
 }

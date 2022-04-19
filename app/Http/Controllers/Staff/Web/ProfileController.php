@@ -7,6 +7,7 @@ use App\Http\Controllers\Staff\AppController;
 use App\Http\Requests\Staff\WebProfileUpsertRequest;
 use App\Models\WebProfile;
 use App\Services\WebProfileService;
+use Hashids;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 
@@ -31,6 +32,29 @@ class ProfileController extends AppController
         $webProfile = $this->webProfileService->findByStaffId(auth('staff')->user()->id);
 
         return view("staff.web.profile.edit", compact("webProfile"));
+    }
+
+    /**
+     * プロフィールプレビュー
+     * Hakkenサイトでの表示状態を確認
+     *
+     * @param string $hashId ハッシュID
+     */
+    public function preview(string $agencyAccount, string $hashId)
+    {
+        $id = Hashids::decode($hashId)[0] ?? 0;
+
+        $webProfile = $this->webProfileService->findByStaffId($id);
+
+        // 認可チェック
+        $response = \Gate::inspect('view', $webProfile);
+        if (!$response->allowed()) {
+            abort(403);
+        }
+
+        $input = request()->all(); // 入力データ
+
+        return view("staff.web.profile.preview", compact("webProfile", "input"));
     }
 
     /**

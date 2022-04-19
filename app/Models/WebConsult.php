@@ -54,8 +54,8 @@ class WebConsult extends Model
 
             $date = new Carbon($this->departure_date);
             return $date->format('Y年n月j日') . "(". $weekday[$date->dayOfWeek] .")";
-        } elseif ($this->departure_kbn == config('consts.web_consults.DEPARTURE_KBN_SEASON')) { // 時期
-            return $this->departure_season;
+        // } elseif ($this->departure_kbn == config('consts.web_consults.DEPARTURE_KBN_SEASON')) { // 時期
+        //     return $this->departure_season;
         } elseif ($this->departure_kbn == config('consts.web_consults.DEPARTURE_KBN_UNDECIDED')) { //　未定
             return '時期未定';
         } else { // 該当なし

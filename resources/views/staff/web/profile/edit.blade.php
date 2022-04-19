@@ -12,7 +12,12 @@
     </ol>
     @if(env('MIX_OPEN_MODE') === 'grand-open') {{-- プレビューはブランドオープン時に有効に --}}
       <div class="deleteControl wd15">
-        <button class="blueBtn" onclick="window.open().location.href='{{ get_webprofile_previewurl(\Hashids::encode($webProfile->staff->id)) }}'">プレビュー</button>
+
+        <form method="post" action="{{ route('staff.front.profile.preview', [$agencyAccount, \Hashids::encode($webProfile->staff->id)]) }}" target="_blank" id="previewForm">
+          <button id="preview" class="blueBtn">プレビュー</button>
+        </form>
+        
+        {{-- <button class="blueBtn" onclick="window.open().location.href='{{ get_webprofile_previewurl($agencyAccount, \Hashids::encode($webProfile->staff->id)) }}'">プレビュー</button> --}}
       </div>
     @endif
   </div>
@@ -25,7 +30,7 @@
   @include('staff.common.decline_message')
   @include('staff.common.error_message')
 
-  <form method="post" action="{{ route('staff.front.profile.update', [$agencyAccount]) }}">
+  <form method="post" action="{{ route('staff.front.profile.update', [$agencyAccount]) }}" id="updateForm">
     @csrf
     <div id="inputArea"
     consts='@json($consts)'
@@ -40,5 +45,32 @@
   </form>
 </main>
 
+<script type="text/javascript">
+  $(()=>{
+    $("#preview").on("click", function(e){
+      e.preventDefault();
+  
+      // 入力されたデータを取得
+      const $updateForm = $('#updateForm'); 
+      const query = $updateForm.serialize();
+      const param = $updateForm.serializeArray();
+  
+      // プレビュー用の送信formの中身を一旦空に
+      $("#previewForm").find("input").remove();
+      
+      // 入力データを隠しフィールドにセット
+      for(let row of param){
+        $("#previewForm").append($('<input />', {
+          type: 'hidden',
+          name: row.name,
+          value: row.value,
+          }));
+      }
+  
+      // プレビューページへ遷移
+      $("#previewForm").submit();
+    });
+  });
+</script>
 <script src="{{ mix('/staff/js/web_profile-create-edit.js') }}"></script>
 @endsection
