@@ -241,6 +241,7 @@ class ComposerServiceProvider extends ServiceProvider
         // モデルコース
         View::composer('staff.web.modelcourse.index', VCStaff\Web\Modelcourse\IndexFormComposer::class); // index
         View::composer('staff.web.modelcourse.show', VCStaff\Web\Modelcourse\ShowFormComposer::class); // show
+        View::composer('staff.web.modelcourse.preview', VCStaff\Web\Modelcourse\PreviewFormComposer::class); // プレビュー
         // 作成、編集ページ共通
         View::composers([
             VCStaff\Web\Modelcourse\EditFormComposer::class => [
