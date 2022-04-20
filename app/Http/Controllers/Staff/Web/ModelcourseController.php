@@ -58,7 +58,19 @@ class ModelcourseController extends AppController
      */
     public function preview(string $agencyAccount, string $courseNo)
     {
-        //
+        $webModelcourse = $this->webModelcourseService->findByCourseNo($courseNo, auth('staff')->user()->agency_id);
+
+        if (!$webModelcourse) {
+            abort(404);
+        }
+
+        // 認可チェック
+        $response = \Gate::inspect('viewAny', $webModelcourse);
+        if (!$response->allowed()) {
+            abort(403);
+        }
+
+        return view("staff.web.modelcourse.preview", compact('webModelcourse', 'courseNo'));
     }
 
     /**

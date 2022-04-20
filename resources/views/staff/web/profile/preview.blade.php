@@ -2,19 +2,7 @@
 
 @section('content')
 <div id="wrapper">
-	<header>
-    <div id="logo">
-			<a href="javascript:void(0)"><img src="{{ asset('front/img/shared/logo.svg') }}" alt="オンライン旅相談 HAKKEN"></a>
-		</div>
-    <nav>
-      <ul>
-      <li><a href="javascript:void(0)">新規会員登録</a></li>
-      <li><a href="javascript:void(0)">ログイン</a></li>
-    </ul>
-    </nav>
-    <p class="topCatch01">ONLINE TRAVEL CONSULTATION</p>
-    <p class="topCatch02">日本中の旅行マイスターに<br>オンラインで相談！</p>
-  </header>
+	@include('staff.web.common.preview_header')
   <main>
 	<div class="searchHead">
 		<div class="backList"><a href="javascript:void(0)">旅行マイスター 一覧へ</a></div></div>
@@ -114,16 +102,5 @@
 			</div>
 	</main>
 </div>
-<footer>
-  <div id="footerIn">
-    <ul>
-      <li><a href="javascript:void(0)">会社案内</a></li>
-      <li><a href="javascript:void(0)">プライバシーポリシー</a></li>
-      <li><a href="javascript:void(0)">インターネット旅行取引の詳細</a></li>
-      <li><a href="javascript:void(0)">利用規約</a></li>
-      <li><a href="javascript:void(0)">お問い合わせ</a></li>
-    </ul>
-    <p id="copy">© {{ date('Y') }} Cab Station Co., Ltd.</p>
-  </div>
-</footer>
+@include('staff.web.common.preview_footer')
 @endsection

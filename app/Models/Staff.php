@@ -112,6 +112,14 @@ class Staff extends Authenticatable implements AppUser
             ->orderBy('created_at', 'DESC'); // 最新順で表示
     }
 
+    /**
+     * プロフィール
+     */
+    public function web_profile()
+    {
+        return $this->hasOne('App\Models\WebProfile', 'staff_id')->withDefault();
+    }
+
     ///////////////// カスタム項目ここから ///////////////////
 
     /**
