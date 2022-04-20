@@ -7,6 +7,7 @@ import TagArea from "./components/TagArea";
 import AreaInput from "./components/AreaInput";
 import PhotoArea from "./components/PhotoArea";
 import OnlyNumberInput from "./components/OnlyNumberInput";
+import SmallDangerModal from "./components/SmallDangerModal";
 
 const IMAGE_MAX_SIZE = 2097152; // 画像アップロードサイズ(2MB)
 
@@ -336,6 +337,12 @@ const InputArea = ({ defaultValue, formSelects, consts }) => {
                     </li>
                 </ul>
             </div>
+            <SmallDangerModal
+                id="mdDeleteTag"
+                title="このタグを削除しますか？"
+                handleAction={handleTagDelete}
+                isActioning={false}
+            />
         </>
     );
 };
