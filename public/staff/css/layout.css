@@ -1873,6 +1873,7 @@ hr.sepBorder {
 }
 .modalPriceList {
     overflow-x: auto;
+    max-height: 600px;
 }
 .modalPriceList .baseTable {
     border-collapse: collapse;
