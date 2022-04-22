@@ -683,7 +683,7 @@ class ParticipantController extends Controller
                 abort(403, $response->message());
             }
 
-            // 念の為、取得件数を50件に制限
+            // 念の為、取得件数を100件に制限
             return
             BusinessCustomerResource::collection(
                 $this->businessUserManagerService->applicantSearch(
@@ -692,7 +692,7 @@ class ParticipantController extends Controller
                     $request->user_number,
                     ['business_user.kbns'],
                     [],
-                    50,
+                    100,
                     $request->get_deleted === 'true'
                 )
             );
