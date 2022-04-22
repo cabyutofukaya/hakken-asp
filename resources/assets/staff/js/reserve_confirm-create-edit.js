@@ -1150,7 +1150,7 @@ const ReserveConfirmArea = ({
                                     <h3>予約情報</h3>
                                 </li>
                                 <li>
-                                    <span className="inputLabel">案件名</span>
+                                    <span className="inputLabel">旅行名</span>
                                     <input
                                         type="text"
                                         name="name"

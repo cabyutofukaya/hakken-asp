@@ -29,10 +29,10 @@
 						</span>
 					</h3>
 				</div>
-				{{-- <ul class="valuation">
-					<li>相談件数<span>--</span>件</li>
-					<li><a href="#voice">評価<span>--</span>pt</a></li>
-				</ul> --}}
+				<ul class="valuation">
+					<li>相談件数<span>x</span>件</li>
+					<li><a href="#voice">評価<span>x</span>pt</a></li>
+				</ul>
 			</div>
 
 			@if($purposes)
@@ -53,41 +53,45 @@
 		<div class="samplePlan">
 			<h2>いちおしの旅行プラン</h2>
 			<ul class="halfColumn">
-				@foreach($staff->enabled_web_modelcourses as $webModelcourse)
-				<li>
-					<span>
-						<div class="coursePh">
-							@if(data_get($webModelcourse, 'web_modelcourse_photo.file_name'))
-								<img src="{{ $consts['imageBaseUrl'] . $webModelcourse->web_modelcourse_photo->file_name }}" alt="{{ $webModelcourse->name }}">
-							@endif
-						</div>
-						<ul class="courseTit">
-							<li>
-								<h3>{{ $webModelcourse->name }}</h3>
-							</li>
-							<li class="day">
-								{{ Arr::get($consts['stays'], $webModelcourse->stays ) }}
-							</li>
-						</ul>
-					</span>
-					@if($webModelcourse->description)
-					<p class="courseTxt">{!! nl2br(e(mb_strimwidth($webModelcourse->description, 0, 285, "..."))) !!}</p>
-					@endif
-				</li>
-				@endforeach
+				@if($staff->enabled_web_modelcourses->isNotEmpty())
+					@foreach($staff->enabled_web_modelcourses as $webModelcourse)
+					<li>
+						<span>
+							<div class="coursePh">
+								@if(data_get($webModelcourse, 'web_modelcourse_photo.file_name'))
+									<img src="{{ $consts['imageBaseUrl'] . $webModelcourse->web_modelcourse_photo->file_name }}" alt="{{ $webModelcourse->name }}">
+								@endif
+							</div>
+							<ul class="courseTit">
+								<li>
+									<h3>{{ $webModelcourse->name }}</h3>
+								</li>
+								<li class="day">
+									{{ Arr::get($consts['stays'], $webModelcourse->stays ) }}
+								</li>
+							</ul>
+						</span>
+						@if($webModelcourse->description)
+						<p class="courseTxt">{!! nl2br(e(mb_strimwidth($webModelcourse->description, 0, 285, "..."))) !!}</p>
+						@endif
+					</li>
+					@endforeach
+				@else
+					<li>プランの登録はまだありません。</li>
+				@endif
 			</ul>
 		</div>
 
-			{{-- <div id="voice">
+			<div id="voice">
 				<ul class="valuationList">
-					<li>相談件数<span>113</span>件</li>
-					<li>評価<span>3.4</span>pt</li>
+					<li>相談件数<span>x</span>件</li>
+					<li>評価<span>x</span>pt</li>
 				</ul>
 				<div class="voiceBox">
-					<p>テキストが入ります。テキストが入ります。テキストが入ります。テキストが入ります。テキストが入ります。テキストが入ります。テキストが入ります。テキストが入ります。テキストが入ります。テキストが入ります。テキストが入ります。</p>
-					<p>2022.01.24 〇〇〇様</p>
+					<p>ユーザーからの評価テキストが入ります。</p>
+					<p>20xx.xx.xx 〇〇〇様</p>
 				</div>
-			</div> --}}
+			</div>
 		</div>
 		
 		<div id="companyFoot">

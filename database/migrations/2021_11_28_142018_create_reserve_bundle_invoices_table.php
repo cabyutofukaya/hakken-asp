@@ -27,7 +27,7 @@ class CreateReserveBundleInvoicesTable extends Migration
             $table->unsignedBigInteger('document_common_id')->nullable()->comment("共通設定ID");
             $table->string('billing_address_name')->nullable()->comment('請求先名');
             $table->text('document_address')->nullable()->comment('宛名情報');
-            $table->string('name')->nullable()->comment('案件名');
+            $table->string('name')->nullable()->comment('旅行名');
             $table->date('cutoff_date')->nullable()->comment('請求締日'); // 帰着日の月末
             $table->unsignedBigInteger('last_manager_id')->nullable()->comment("担当者(最終更新値)");
             $table->text("last_note")->nullable()->comment("備考(最終更新値)");

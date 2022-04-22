@@ -192,7 +192,7 @@ const DepartedList = ({ searchParam }) => {
                                 className="sort"
                                 onClick={e => handleSortClick("name")}
                             >
-                                <span>案件名</span>
+                                <span>旅行名</span>
                             </th>
                             <th
                                 className="sort"

@@ -108,7 +108,7 @@ class EditFormComposer
         $issueDate = $reserveBundleInvoice->issue_date ?? date('Y/m/d');
         // 支払い期限
         $paymentDeadline = $reserveBundleInvoice->payment_deadline;
-        // 案件名
+        // 旅行名
         $name = $reserveBundleInvoice->name;
         // 期間開始
         $periodFrom = $reserveBundleInvoice->period_from;
@@ -141,7 +141,7 @@ class EditFormComposer
             'user_bundle_invoice_number' => $bundleInvoiceNumber, // 見積番号
             'issue_date' => $issueDate, // 発行日
             'payment_deadline' => $paymentDeadline, // 支払い期限
-            'name' => $name, // 案件名
+            'name' => $name, // 旅行名
             'period_from' => $periodFrom, // 期間開始
             'period_to' => $periodTo, // 期間終了
             'manager' => $manager, // 担当

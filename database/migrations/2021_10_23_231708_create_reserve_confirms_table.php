@@ -25,7 +25,7 @@ class CreateReserveConfirmsTable extends Migration
             $table->unsignedBigInteger('document_common_id')->nullable()->comment("共通設定ID");
             // ポリモーフィックリレーション
             $table->text('document_address')->nullable()->comment('宛名情報');
-            $table->string('name')->nullable()->comment('案件名');
+            $table->string('name')->nullable()->comment('旅行名');
             $table->date('departure_date')->nullable()->comment('出発日');
             $table->date('return_date')->nullable()->comment('帰着日');
             $table->string('manager', 64)->nullable()->comment('担当者');

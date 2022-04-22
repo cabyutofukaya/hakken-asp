@@ -28,7 +28,7 @@ class CreateReservesTable extends Migration
             $table->string('applicant_searchable_type')->nullable()->comment('顧客種別(検索用)'); // Web受付の場合、相談段階では本カラムはnullになるためnullも許可
             $table->unsignedBigInteger('applicant_searchable_id')->nullable()->comment('申込者ID(検索用)');
 
-            $table->string('name')->nullable()->comment('案件名');
+            $table->string('name')->nullable()->comment('旅行名');
             $table->date('departure_date')->nullable()->comment('出発日');
             $table->date('return_date')->nullable()->comment('帰着日');
             $table->uuid('departure_id')->nullable()->comment('国・地域（出発地）');

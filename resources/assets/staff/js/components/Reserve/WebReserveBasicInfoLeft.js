@@ -51,7 +51,7 @@ const WebReserveBasicInfoLeft = ({
                     </td>
                 </tr>
                 <tr>
-                    <th>案件名</th>
+                    <th>旅行名</th>
                     <td>{data?.name ?? "-"}</td>
                 </tr>
                 <tr>
