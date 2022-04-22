@@ -97,6 +97,13 @@ const ManagerInputArea = ({ defaultValue, formSelects }) => {
                             </tr>
                         </thead>
                         <tbody>
+                            {rows.length === 0 && (
+                                <tr>
+                                    <td colSpan={8}>
+                                        担当者を追加してください
+                                    </td>
+                                </tr>
+                            )}
                             {rows &&
                                 rows.map((row, index) => (
                                     <tr key={index}>

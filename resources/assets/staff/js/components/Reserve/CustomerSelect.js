@@ -329,7 +329,21 @@ const CustomerSelect = ({
                                     </td>
                                 </tr>
                             )}
-                            {isLoaded && !rows.length && (
+                            {!rows.length && !isLoading && !isLoaded && (
+                                <tr>
+                                    <td
+                                        colSpan={
+                                            customerType ===
+                                            customerKbns.business
+                                                ? 9
+                                                : 11
+                                        }
+                                    >
+                                        顧客を選択してください
+                                    </td>
+                                </tr>
+                            )}
+                            {!rows.length && isLoaded && (
                                 <tr>
                                     <td
                                         colSpan={
