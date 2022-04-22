@@ -276,9 +276,9 @@ const ModelcourseList = ({ myId }) => {
                             >
                                 <span>更新日</span>
                             </th>
-                            <th className="txtalc">
+                            {/* <th className="txtalc">
                                 <span>プレビュー</span>
-                            </th>
+                            </th> */}
                             <th className="txtalc">
                                 <span>複製</span>
                             </th>
@@ -353,7 +353,7 @@ const ModelcourseList = ({ myId }) => {
                                             "YYYY/MM/DD"
                                         )}
                                     </td>
-                                    <td className="txtalc">
+                                    {/* <td className="txtalc">
                                         {row?.preview_url ? (
                                             <span className="material-icons">
                                                 <a
@@ -366,7 +366,7 @@ const ModelcourseList = ({ myId }) => {
                                         ) : (
                                             "-"
                                         )}
-                                    </td>
+                                    </td> */}
                                     <td className="txtalc">
                                         <span
                                             className={classNames(

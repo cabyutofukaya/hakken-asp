@@ -12,7 +12,6 @@
     </ol>
     @if(env('MIX_OPEN_MODE') === 'grand-open') {{-- プレビューはブランドオープン時に有効に --}}
       <div class="deleteControl wd15">
-
         <form method="post" action="{{ route('staff.front.profile.preview', [$agencyAccount, \Hashids::encode($my->id)]) }}" target="_blank" id="previewForm">
           <button id="preview" class="blueBtn">プレビュー</button>
         </form>
