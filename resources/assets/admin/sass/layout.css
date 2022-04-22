@@ -279,6 +279,10 @@ header #logout:before {
     color: #2b2d2e;
     display: block;
 }
+.inputLabel.req:after {
+    content: "※";
+    color: #ff0000;
+}
 .rtBtn {
     position: absolute;
     right: 0;

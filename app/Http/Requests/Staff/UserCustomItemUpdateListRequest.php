@@ -26,7 +26,7 @@ class UserCustomItemUpdateListRequest extends FormRequest
     {
         return [
             'display_position' => 'nullable',
-            'name' => 'nullable',
+            'name' => 'required',
             'list' => 'nullable|array',
         ];
     }
@@ -34,6 +34,7 @@ class UserCustomItemUpdateListRequest extends FormRequest
     public function messages()
     {
         return [
-    ];
+            'name.required' => 'リスト項目名は必須です。',
+        ];
     }
 }

@@ -17,7 +17,7 @@
 
     <div id="inputArea">
       <ul class="baseList">		
-        <li class="wd40"><span class="inputLabel">国・地域コード</span>
+        <li class="wd40"><span class="inputLabel req">国・地域コード</span>
           <input type="text" name="code" value="{{ $defaultValue['code'] ?? null }}">
         </li>
         <li class="wd40">

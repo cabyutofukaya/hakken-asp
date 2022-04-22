@@ -37,7 +37,7 @@ class UserCustomItemStoreListRequest extends FormRequest
         return [
         'user_custom_category_id.required' => 'カテゴリは必須です。',
         'user_custom_category_id.exists' => 'カテゴリの指定が不正です。',
-        'name.required' => '項目名は必須です。',
+        'name.required' => 'リスト項目名は必須です。',
     ];
     }
 }

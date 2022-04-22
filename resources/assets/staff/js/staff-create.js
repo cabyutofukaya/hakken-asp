@@ -98,7 +98,7 @@ const InputArea = ({
                 <>
                     <ul className="sideList half">
                         <li>
-                            <span className="inputLabel">アカウントID</span>
+                            <span className="inputLabel req">アカウントID</span>
                             <div className="buttonSet">
                                 <div className={accountCheckClass}>
                                     <input
@@ -121,7 +121,7 @@ const InputArea = ({
                     </ul>
                     <ul className="sideList">
                         <li className="wd40">
-                            <span className="inputLabel">ユーザー名</span>
+                            <span className="inputLabel req">ユーザー名</span>
                             <input
                                 type="text"
                                 name="name"
@@ -156,7 +156,7 @@ const InputArea = ({
                     </ul>
                     <ul className="baseList">
                         <li className="wd40">
-                            <span className="inputLabel">パスワード</span>
+                            <span className="inputLabel req">パスワード</span>
                             <input
                                 type="text"
                                 name="password"
@@ -166,7 +166,9 @@ const InputArea = ({
                             />
                         </li>
                         <li className="wd40">
-                            <span className="inputLabel">パスワード再確認</span>
+                            <span className="inputLabel req">
+                                パスワード再確認
+                            </span>
                             <input
                                 type="text"
                                 name="password_confirmation"
@@ -178,7 +180,9 @@ const InputArea = ({
                     <hr className="sepBorder" />
                     <ul className="baseList">
                         <li className="wd40">
-                            <span className="inputLabel">メールアドレス</span>
+                            <span className="inputLabel req">
+                                メールアドレス
+                            </span>
                             <input
                                 type="email"
                                 name="email"

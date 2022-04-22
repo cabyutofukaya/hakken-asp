@@ -1,6 +1,6 @@
 <div id="inputArea">
   <ul class="baseList">		
-    <li class="wd40"><span class="inputLabel">仕入れ先コード</span>
+    <li class="wd40"><span class="inputLabel req">仕入れ先コード</span>
       <input 
         type="text" 
         name="code" 

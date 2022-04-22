@@ -37,7 +37,7 @@
         </li>
       </ul>
       <ul class="sideList">		
-        <li class="wd60"><span class="inputLabel">項目名</span>
+        <li class="wd60"><span class="inputLabel req">項目名</span>
           <input 
             type="text" 
             name="name" 

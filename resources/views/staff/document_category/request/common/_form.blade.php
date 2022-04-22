@@ -1,11 +1,11 @@
 <div id="inputArea" class="pt10">
   <h2 class="mb30 documentSubTit"><span class="material-icons">drive_file_rename_outline</span>テンプレート名・説明</h2>
     <ul class="baseList">
-    <li class="wd40"><span class="inputLabel">テンプレート名</span><input type="text" name="name" value="{{ $defaultValue['name'] ?? '' }}"></li>
+    <li class="wd40"><span class="inputLabel req">テンプレート名</span><input type="text" name="name" value="{{ $defaultValue['name'] ?? '' }}"></li>
     <li class="wd100"><span class="inputLabel">説明</span><input type="text" name="description" value="{{ $defaultValue['description'] ?? '' }}"></li></ul>
   <h2 class="mb30 documentSubTit pt00"><span class="material-icons">subject</span>出力項目設定</h2>
     <ul class="baseList">
-      <li class="wd40"><span class="inputLabel">表題</span>
+      <li class="wd40"><span class="inputLabel req">表題</span>
         <input type="text" name="title" value="{{ $defaultValue['title'] ?? '' }}">
       </li>
       <li class="wd40">

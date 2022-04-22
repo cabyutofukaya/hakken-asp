@@ -13,7 +13,7 @@
       </div>
     </li>
     <li class="wd40">
-      <span class="inputLabel">表題</span><input type="text" name="title" value="{{ $defaultValue['title'] ?? '' }}">
+      <span class="inputLabel req">表題</span><input type="text" name="title" value="{{ $defaultValue['title'] ?? '' }}">
     </li>
     <li class="wd100"><span class="inputLabel">但し書き</span>
       <textarea rows="5" placeholder="但

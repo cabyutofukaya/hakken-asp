@@ -91,7 +91,7 @@ const BasicInfoInputArea = ({
             </ul>
             <ul className="sideList half">
                 <li>
-                    <span className="inputLabel">出発日</span>
+                    <span className="inputLabel req">出発日</span>
                     <div className="calendar">
                         <Flatpickr
                             theme="airbnb"
@@ -126,7 +126,7 @@ const BasicInfoInputArea = ({
                     </div>
                 </li>
                 <li>
-                    <span className="inputLabel">帰着日</span>
+                    <span className="inputLabel req">帰着日</span>
                     <div className="calendar">
                         <Flatpickr
                             theme="airbnb"
