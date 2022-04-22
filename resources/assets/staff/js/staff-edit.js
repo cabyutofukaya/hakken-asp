@@ -62,7 +62,7 @@ const InputArea = ({
                     </ul>
                     <ul className="sideList">
                         <li className="wd40">
-                            <span className="inputLabel">ユーザー名</span>
+                            <span className="inputLabel req">ユーザー名</span>
                             <input
                                 type="text"
                                 name="name"
@@ -126,7 +126,9 @@ const InputArea = ({
                     <hr className="sepBorder" />
                     <ul className="baseList">
                         <li className="wd40">
-                            <span className="inputLabel">メールアドレス</span>
+                            <span className="inputLabel req">
+                                メールアドレス
+                            </span>
                             <input
                                 type="email"
                                 name="email"

@@ -1,5 +1,5 @@
 <ul class="sideList half">
-  <li><span class="inputLabel">権限名称</span>
+  <li><span class="inputLabel req">権限名称</span>
     <input type="text" name="name" value="{{ old('name', isset($agencyRole) ? $agencyRole->name : null) }}" />
   </li>
   <li><span class="inputLabel">説明</span>

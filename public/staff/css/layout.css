@@ -506,6 +506,10 @@ header #loginUser p:after {
     color: #88d361;
     font-weight: bold;
 }
+.inputLabel.req:after {
+    content: "※";
+    color: #ff0000;
+}
 .rtBtn {
     position: absolute;
     right: 0;

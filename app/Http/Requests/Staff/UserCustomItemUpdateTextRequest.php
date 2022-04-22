@@ -25,7 +25,7 @@ class UserCustomItemUpdateTextRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'nullable',
+            'name' => 'required',
             'display_position' => 'nullable',
             'input_type' => ['required',Rule::in(array_values(config("consts.user_custom_items.INPUT_TYPE_TEXT_LIST")))],
         ];
@@ -34,6 +34,7 @@ class UserCustomItemUpdateTextRequest extends FormRequest
     public function messages()
     {
         return [
+            'name.required' => '項目名は必須です。',
             'input_type.required' => '入力形式は必須です。',
             'input_type.in' => '入力形式の値が不正です。',
         ];

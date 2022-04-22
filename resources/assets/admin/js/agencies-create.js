@@ -116,7 +116,7 @@ const AgencyCreate = ({ consts, errors, defaultValue, formSelects }) => {
             <div id="inputArea">
                 <ul className="sideList">
                     <li className="wd30">
-                        <span className="inputLabel">登録年月日</span>
+                        <span className="inputLabel req">登録年月日</span>
                         <div className="calendar">
                             <Flatpickr
                                 theme="airbnb"
@@ -143,7 +143,7 @@ const AgencyCreate = ({ consts, errors, defaultValue, formSelects }) => {
                         </div>
                     </li>
                     <li className="wd40">
-                        <span className="inputLabel">アカウントID</span>
+                        <span className="inputLabel req">アカウントID</span>
                         <div className="buttonSet">
                             <div
                                 className={classNames("wd60 check", {
@@ -167,7 +167,7 @@ const AgencyCreate = ({ consts, errors, defaultValue, formSelects }) => {
                         </div>
                     </li>
                     <li className="wd30">
-                        <span className="inputLabel">
+                        <span className="inputLabel req">
                             パスワード(管理ユーザー)
                         </span>
                         <input
@@ -180,7 +180,7 @@ const AgencyCreate = ({ consts, errors, defaultValue, formSelects }) => {
                 </ul>
                 <ul className="sideList half">
                     <li>
-                        <span className="inputLabel">社名</span>
+                        <span className="inputLabel req">社名</span>
                         <input
                             type="text"
                             name="company_name"
@@ -188,7 +188,7 @@ const AgencyCreate = ({ consts, errors, defaultValue, formSelects }) => {
                         />
                     </li>
                     <li>
-                        <span className="inputLabel">社名(カナ)</span>
+                        <span className="inputLabel req">社名(カナ)</span>
                         <input
                             type="text"
                             name="company_kana"
@@ -219,7 +219,7 @@ const AgencyCreate = ({ consts, errors, defaultValue, formSelects }) => {
                         />
                     </li>
                     <li>
-                        <span className="inputLabel">担当者名</span>
+                        <span className="inputLabel req">担当者名</span>
                         <input
                             type="text"
                             name="person_in_charge_name"
@@ -242,7 +242,7 @@ const AgencyCreate = ({ consts, errors, defaultValue, formSelects }) => {
                 <hr className="sepBorder" />
                 <ul className="baseList">
                     <li className="wd60">
-                        <span className="inputLabel">郵便番号</span>
+                        <span className="inputLabel req">郵便番号</span>
                         <div className="buttonSet">
                             <input
                                 type="text"
@@ -261,7 +261,7 @@ const AgencyCreate = ({ consts, errors, defaultValue, formSelects }) => {
                         </div>
                     </li>
                     <li>
-                        <span className="inputLabel">住所</span>
+                        <span className="inputLabel req">住所</span>
                         <div className="selectSet">
                             <div className="selectBox wd20">
                                 <select
@@ -321,7 +321,7 @@ const AgencyCreate = ({ consts, errors, defaultValue, formSelects }) => {
                         />
                     </li>
                     <li>
-                        <span className="inputLabel">メールアドレス</span>
+                        <span className="inputLabel req">メールアドレス</span>
                         <input
                             type="email"
                             name="email"

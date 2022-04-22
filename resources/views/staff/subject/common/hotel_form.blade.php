@@ -10,7 +10,7 @@
       ])
   </li>{{-- カスタム項目。区分 --}}
   <li class="wd40 mr00">
-    <span class="inputLabel">商品コード</span>
+    <span class="inputLabel req">商品コード</span>
     <input 
       type="text" 
       name="code" 
@@ -21,11 +21,11 @@
 </ul>
 <ul class="baseList">
   <li class="wd100">
-    <span class="inputLabel">商品名</span>
+    <span class="inputLabel req">商品名</span>
     <input type="text" name="name" value="{{ Arr::get($defaultValue, "name", "") }}">
   </li>
   <li class="wd100">
-    <span class="inputLabel">ホテル名</span>
+    <span class="inputLabel req">ホテル名</span>
     <input type="text" name="hotel_name" value="{{ Arr::get($defaultValue, "hotel_name", "") }}">
   </li>
   <li class="wd100">

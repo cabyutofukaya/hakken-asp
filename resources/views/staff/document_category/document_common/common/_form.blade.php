@@ -2,7 +2,7 @@
   <h2 class="mb30 documentSubTit"><span class="material-icons">drive_file_rename_outline</span>テンプレート名・説明</h2>
   <ul class="baseList">
     <li class="wd40">
-      <span class="inputLabel">テンプレート名</span><input type="text" name="name" value="{{ $defaultValue['name'] ?? '' }}" maxlength="50">
+      <span class="inputLabel req">テンプレート名</span><input type="text" name="name" value="{{ $defaultValue['name'] ?? '' }}" maxlength="50">
     </li>
     <li class="wd100">
       <span class="inputLabel">説明</span><input type="text" name="description" value="{{ $defaultValue['description'] ?? '' }}" maxlength="100">

@@ -1,6 +1,6 @@
 <ul class="sideList">
   <li class="wd30">
-    <span class="inputLabel">商品コード</span>
+    <span class="inputLabel req">商品コード</span>
     <input 
       type="text" 
       name="code" 
@@ -9,7 +9,7 @@
       >
   </li>
   <li class="wd70 mr00">
-    <span class="inputLabel">商品名</span>
+    <span class="inputLabel req">商品名</span>
     <input type="text" name="name" value="{{ Arr::get($defaultValue, "name", "") }}">
   </li>
 </ul>

@@ -67,7 +67,7 @@ const InputArea = ({
             </ul>
             <ul className="sideList">
                 <li className="wd60">
-                    <span className="inputLabel">リスト項目名</span>
+                    <span className="inputLabel req">リスト項目名</span>
                     <input type="text" name="name" />
                 </li>
                 {displayPositions && (
