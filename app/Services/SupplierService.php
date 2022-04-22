@@ -139,4 +139,17 @@ class SupplierService
             ];
         })->pluck('name', 'id')->toArray();
     }
+
+    /**
+     * 仕入先コード初期値
+     * SRxxx（SR+連番形式）
+     * 
+     * @param int $agencyId 会社ID
+     * @return string
+     */
+    public function createDefaultCode(int $agencyId) : string
+    {
+        $count = $this->supplierRepository->getCount($agencyId, true); // 削除済みも含めてカウント
+        return sprintf("SR%04d", $count + 1);
+    }
 }

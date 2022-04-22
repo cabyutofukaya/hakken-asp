@@ -34,7 +34,7 @@ class SupplierRepository implements SupplierRepositoryInterface
     /**
      * 当該会社の仕入先情報を全取得
      */
-    public function allByAgencyId(string $agencyId, array $with, array $select, string $order='id', string $direction='asc',bool $getDeleted=false) : Collection
+    public function allByAgencyId(string $agencyId, array $with, array $select, string $order='id', string $direction='asc', bool $getDeleted=false) : Collection
     {
         $query = $this->supplier;
         $query = $getDeleted ? $query->withTrashed() : $query;
@@ -99,7 +99,7 @@ class SupplierRepository implements SupplierRepositoryInterface
 
     /**
      * 削除
-     * 
+     *
      * @param int $id ID
      * @param boolean $isSoftDelete 論理削除の場合はtrue
      * @return boolean
@@ -130,11 +130,24 @@ class SupplierRepository implements SupplierRepositoryInterface
 
     /**
      * 管理コードを取得
-     * 
+     *
      * @param int $id ID
      */
     public function getCodeById(int $id) : ?string
     {
         return $this->supplier->where('id', $id)->value('code');
+    }
+
+    /**
+     * 当該会社の仕入先登録数を取得
+     *
+     * @param bool $getDeleted 論理削除も含める場合はtrue
+     */
+    public function getCount(int $agencyId, bool $getDeleted=false) : int
+    {
+        $query = $this->supplier;
+        $query = $getDeleted ? $query->withTrashed() : $query;
+
+        return $query->where('agency_id', $agencyId)->count();
     }
 }

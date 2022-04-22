@@ -31,14 +31,18 @@ class CreateFormComposer
 
     public function compose(View $view)
     {
-        $agencyAccount = request()->agencyAccount;
+        $my = auth("staff")->user();
+        $agencyId = $my->agency_id;
+        $agencyAccount = $my->agency->account;
 
         // 「仕入れ先マスタ」のカスタムカテゴリコードを取得
         $customCategoryCode
         = config('consts.user_custom_categories.CUSTOM_CATEGORY_SUPPLIER');
 
-
         $defaultValue = session()->getOldInput();
+        if (!session()->getOldInput()) { // POST前の場合はデフォルトコードをセット
+            $defaultValue['code'] = $this->supplierService->createDefaultCode($agencyId);
+        }
 
         // カスタム項目を取得しつつ、カスタム項目のinput初期値をセット
         $userCustomItems = $this->getUserCustomItemsAndSetCustomFieldDefaultCreateInput(
