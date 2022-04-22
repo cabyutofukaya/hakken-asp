@@ -9,12 +9,17 @@
       <li><span>モデルコース {{ $courseNo }}</span></li>
     </ol>
     @if(env('MIX_OPEN_MODE') === 'grand-open') {{-- プレビューはブランドオープン時に有効に --}}
-      <ul class="estimateControl" id="controlArea"
+      {{-- <ul class="estimateControl" id="controlArea"
         jsVars='@json($jsVars)' 
         modelcourseId='{{ $id }}'
         previewUrl='{{ $formSelects['previewUrl'] }}'
         >
-      </ul>
+      </ul> --}}
+      <div class="deleteControl wd15" id="controlArea"
+        jsVars='@json($jsVars)' 
+        modelcourseId='{{ $id }}'
+        previewUrl='{{ $formSelects['previewUrl'] }}'
+      >
     @endif
   </div>
   <div class="userList show">

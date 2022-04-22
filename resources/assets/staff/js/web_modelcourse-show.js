@@ -47,20 +47,19 @@ const ControlArea = ({ id, previewUrl }) => {
 
     return (
         <>
-            <li>
+            {/**プレビューはひとまずナシ */}
+            {/* <li>
                 <button className="blueBtn" onClick={handleClickPreview}>
                     プレビュー
                 </button>
-            </li>
-            <li>
-                <button
-                    className="redBtn js-modal-open"
-                    data-target="mdDeleteCourse"
-                    disabled={isDeleting}
-                >
-                    削除
-                </button>
-            </li>
+            </li> */}
+            <button
+                className="redBtn js-modal-open"
+                data-target="mdDeleteCourse"
+                disabled={isDeleting}
+            >
+                削除
+            </button>
             {/** 削除モーダル*/}
             <SmallDangerModal
                 id="mdDeleteCourse"

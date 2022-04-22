@@ -30,8 +30,8 @@
 					</h3>
 				</div>
 				<ul class="valuation">
-					<li>相談件数<span>x</span>件</li>
-					<li><a href="#voice">評価<span>x</span>pt</a></li>
+					<li>相談件数<span>--</span>件</li>
+					<li><a href="#voice">評価<span>--</span>pt</a></li>
 				</ul>
 			</div>
 
@@ -84,12 +84,12 @@
 
 			<div id="voice">
 				<ul class="valuationList">
-					<li>相談件数<span>x</span>件</li>
-					<li>評価<span>x</span>pt</li>
+					<li>相談件数<span>--</span>件</li>
+					<li>評価<span>--</span>pt</li>
 				</ul>
 				<div class="voiceBox">
 					<p>ユーザーからの評価テキストが入ります。</p>
-					<p>20xx.xx.xx 〇〇〇様</p>
+					<p>{{ date('Y.m.d') }} 〇〇〇様</p>
 				</div>
 			</div>
 		</div>
