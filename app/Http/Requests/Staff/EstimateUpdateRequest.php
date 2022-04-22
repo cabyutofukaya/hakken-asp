@@ -61,7 +61,7 @@ class EstimateUpdateRequest extends FormRequest
             'estimate_number.required' => '見積番号は必須です。',
             'participant_type.required' => '顧客種別は必須です。',
             'applicant_user_number.required' => '顧客が選択されていません。',
-            'name.max' => '案件名が長すぎます(100文字まで)。',
+            'name.max' => '旅行名が長すぎます(100文字まで)。',
             'departure_date.required' => '出発日を入力してください。',
             'departure_date.date' => '出発日の入力形式が不正です(YYYY-MM-DD)。',
             'return_date.required' => '帰着日を入力してください。',

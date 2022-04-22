@@ -1,7 +1,7 @@
 <div class="baseInfo mb40">
   <table class="baseTable">
     <tr>
-      <th>案件名</th>
+      <th>旅行名</th>
       <td>{{ $reserve->name ?? '-' }}</td>
       <th>代表者</th>
       <td>{{ $reserve->representatives[0]->name ?? '-' }}({{ $reserve->representatives[0]->name_kana ?? '-' }})</td>

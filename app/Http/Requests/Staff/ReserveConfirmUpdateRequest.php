@@ -64,7 +64,7 @@ class ReserveConfirmUpdateRequest extends FormRequest
             'issue_date.date' => '発行日の形式が不正です。',
             'document_quote_id.required' => 'テンプレートの選択は必須です。',
             'document_address.array' => '宛名(顧客情報)の形式値が不正です。',
-            'name.max' => '案件名が長すぎます(100文字まで)。',
+            'name.max' => '旅行名が長すぎます(100文字まで)。',
             'departure_date.required' => '出発日は必須です。',
             'departure_date.date' => '出発日の形式が不正です。',
             'return_date.required' => '帰着日は必須です。',

@@ -92,7 +92,7 @@ const WebBasicInfoInputArea = ({
             <hr className="sepBorder" />
             <ul className="sideList">
                 <li className="wd70">
-                    <span className="inputLabel">案件名</span>
+                    <span className="inputLabel">旅行名</span>
                     <input
                         type="text"
                         name="name"

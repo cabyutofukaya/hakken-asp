@@ -115,7 +115,7 @@ class EditFormComposer
             $issueDate = $reserveInvoice->issue_date ?? date('Y/m/d');
             // 支払い期限
             $paymentDeadline = $reserveInvoice->payment_deadline;
-            // 案件名
+            // 旅行名
             $name = $reserveInvoice->name;
             // 出発日
             $departureDate = $reserveInvoice->departure_date;
@@ -175,7 +175,7 @@ class EditFormComposer
             $issueDate = date('Y/m/d');
             // 支払い期限
             $paymentDeadline = '';
-            // 案件名
+            // 旅行名
             $name = $reserve->name;
             // 出発日
             $departureDate = $reserve->departure_date;
@@ -211,7 +211,7 @@ class EditFormComposer
             'invoice_number' => $systemInvoiceNumber,
             'issue_date' => $issueDate, // 発行日
             'payment_deadline' => $paymentDeadline, // 支払い期限
-            'name' => $name, // 案件名
+            'name' => $name, // 旅行名
             'departure_date' => $departureDate, // 出発日
             'return_date' => $returnDate, // 帰着日
             'manager' => $manager, // 担当

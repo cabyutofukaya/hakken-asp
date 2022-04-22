@@ -85,7 +85,7 @@ class EditFormComposer
             $controlNumber = $reserveConfirm->control_number;
             // 発行日
             $issueDate = $reserveConfirm->issue_date ?? date('Y/m/d');
-            // 案件名
+            // 旅行名
             $name = $reserveConfirm->name;
             // 出発日
             $departureDate = $reserveConfirm->departure_date;
@@ -157,7 +157,7 @@ class EditFormComposer
             $confirmNumber = null;
             // 発行日
             $issueDate = date('Y/m/d');
-            // 案件名
+            // 旅行名
             $name = $reserveItinerary->reserve->name;
             // 出発日
             $departureDate = $reserveItinerary->reserve->departure_date;
@@ -190,7 +190,7 @@ class EditFormComposer
             'control_number' => $controlNumber,
             // 発行日
             'issue_date' => $issueDate,
-            // 案件名
+            // 旅行名
             'name' => $name,
             // 出発日
             'departure_date' => $departureDate,

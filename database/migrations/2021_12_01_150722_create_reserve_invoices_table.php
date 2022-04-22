@@ -28,7 +28,7 @@ class CreateReserveInvoicesTable extends Migration
             $table->string('applicant_name')->nullable()->comment('申込者名');
             $table->string('billing_address_name')->nullable()->comment('請求先名');
             $table->text('document_address')->nullable()->comment('宛名情報');
-            $table->string('name')->nullable()->comment('案件名');
+            $table->string('name')->nullable()->comment('旅行名');
             $table->date('departure_date')->comment('出発日');
             $table->date('return_date')->comment('帰着日');
             $table->unsignedBigInteger('last_manager_id')->nullable()->comment("担当者(最終更新値)");

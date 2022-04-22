@@ -82,7 +82,7 @@ class ReserveBundleInvoiceUpdateRequest extends FormRequest
             'payment_deadline.date' => '支払期限の形式が不正です。',
             'document_request_all_id.required' => 'テンプレートの選択は必須です。',
             'document_address.array' => '宛名(顧客情報)の形式値が不正です。',
-            'name.max' => '案件名が長すぎます(100文字まで)。',
+            'name.max' => '旅行名が長すぎます(100文字まで)。',
             'period_from.required' => '期間(開始)は必須です。',
             'period_from.date' => '期間(開始)の形式が不正です。',
             'period_to.required' => '期間(終了)は必須です。',
