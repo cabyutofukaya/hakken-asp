@@ -25,4 +25,6 @@ interface SupplierRepositoryInterface
     public function getWhere(array $where, array $select = []) : Collection;
 
     public function getCodeById(int $id) : ?string;
+
+    public function getCount(int $agencyId, bool $getDeleted=false) : int;
 }
