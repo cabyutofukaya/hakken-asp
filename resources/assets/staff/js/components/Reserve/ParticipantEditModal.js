@@ -40,7 +40,9 @@ const ParticipantEditModal = ({
                     </p>
                     <ul className="baseList mb40">
                         <li>
-                            <span className="inputLabel">氏名</span>
+                            <span className="inputLabel">
+                                氏名 ※姓名の間は半角スペース
+                            </span>
                             <input
                                 type="text"
                                 value={input?.name ?? ""}
@@ -53,6 +55,7 @@ const ParticipantEditModal = ({
                                         }
                                     })
                                 }
+                                placeholder="例）山田 太郎"
                             />
                         </li>
                         <li>
@@ -69,6 +72,7 @@ const ParticipantEditModal = ({
                                         }
                                     })
                                 }
+                                placeholder="例）ヤマダ タロウ"
                             />
                         </li>
                         <li>
@@ -85,6 +89,7 @@ const ParticipantEditModal = ({
                                         }
                                     })
                                 }
+                                placeholder="例）YAMADA TAROU"
                             />
                         </li>
                         <li>
