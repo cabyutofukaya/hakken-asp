@@ -7,7 +7,7 @@
     </ul>
   @endif
   <ul class="sideList">
-    <li class="wd40"><span class="inputLabel">氏名</span>
+    <li class="wd40"><span class="inputLabel">氏名 ※姓名の間は半角スペース</span>
       <input type="text" name="userable[name]" value="{{ $defaultValue['userable']['name'] ?? null }}" placeholder="例）山田 太郎" maxlength="18">
     </li>
     <li class="wd40"><span class="inputLabel">氏名(カナ)</span>
