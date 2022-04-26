@@ -4,6 +4,7 @@ import ConstApp from "./components/ConstApp";
 import { render } from "react-dom";
 import BasicInfoInputArea from "./components/Reserve/BasicInfoInputArea";
 import CustomFieldInputArea from "./components/Reserve/CustomFieldInputArea";
+import { useMountedRef } from "../../hooks/useMountedRef";
 
 const EstimateEditArea = ({
     applicationStep,
@@ -14,7 +15,14 @@ const EstimateEditArea = ({
     customCategoryCode,
     customFields
 }) => {
+    const mounted = useMountedRef(); // マウント・アンマウント制御
+
+    const csrfToken = document.head.querySelector('meta[name="csrf-token"]')
+        .content;
+
     const [input, setInput] = useState(defaultValue);
+
+    const [isSubmitting, setIsSubmitting] = useState(false); // フォーム送信中か否か
 
     // 入力値変更
     const handleChange = e => {
@@ -31,44 +39,108 @@ const EstimateEditArea = ({
         setInput({ ...input, [name]: value });
     };
 
+    // 送信制御
+    const handleSubmit = async e => {
+        e.preventDefault();
+
+        if (
+            defaultValue?.departure_date &&
+            defaultValue?.return_date &&
+            $("[name=departure_date]").val() &&
+            $("[name=return_date]").val()
+        ) {
+            // 出発日が後ろ倒し or 帰着日が前倒しの場合は警告を出す
+            if (
+                defaultValue.departure_date <
+                    $("[name=departure_date]").val() ||
+                defaultValue.return_date > $("[name=return_date]").val()
+            ) {
+                if (
+                    confirm(
+                        "旅行日が変更されています。行程を作成している場合、旅行日から外れた日程は削除されます。よろしいですか?"
+                    )
+                ) {
+                    setIsSubmitting(true);
+                    document.reserveForm.submit();
+                    return;
+                } else {
+                    setIsSubmitting(false);
+                    return;
+                }
+            }
+        }
+        setIsSubmitting(true);
+        document.reserveForm.submit();
+    };
+
+    // 戻る
+    const handleBack = e => {
+        e.preventDefault();
+        location.href = consts.estimateDetailUrl;
+    };
+
     return (
         <>
-            <BasicInfoInputArea
-                applicationStep={applicationStep}
-                input={input}
-                setInput={setInput}
-                participantTypes={formSelects.participantTypes}
-                customerKbns={consts.customerKbns}
-                countries={formSelects.countries}
-                sexes={formSelects.sexes}
-                ageKbns={formSelects.ageKbns}
-                birthdayYears={formSelects.birthdayYears}
-                birthdayMonths={formSelects.birthdayMonths}
-                birthdayDays={formSelects.birthdayDays}
-                prefectures={formSelects.prefectures}
-                defaultAreas={formSelects.defaultAreas}
-                customFields={customFields}
-                customFieldPositions={consts.customFieldPositions}
-                customFieldCodes={consts.customFieldCodes}
-                customCategoryCode={customCategoryCode}
-                handleChange={handleChange}
-                handleAreaChange={handleAreaChange}
-                clearApplicantUserNumber={clearApplicantUserNumber}
-                userAddModalDefaultValue={userAddModalDefaultValue}
-            />
-
-            <h2 className="subTit">
-                <span className="material-icons"> playlist_add_check </span>
-                見積管理情報(カスタムフィールド)
-            </h2>
-            <CustomFieldInputArea
-                input={input}
-                handleChange={handleChange}
-                customFields={customFields}
-                customFieldPositions={consts.customFieldPositions}
-                staffs={formSelects?.staffs}
-                customCategoryCode={customCategoryCode}
-            />
+            <form
+                name="reserveForm"
+                action={consts.estimateUpdateUrl}
+                method="post"
+                onSubmit={handleSubmit}
+            >
+                <input type="hidden" name="_token" value={csrfToken} />
+                <input type="hidden" name="_method" value="PUT" />
+                <BasicInfoInputArea
+                    applicationStep={applicationStep}
+                    input={input}
+                    setInput={setInput}
+                    participantTypes={formSelects.participantTypes}
+                    customerKbns={consts.customerKbns}
+                    countries={formSelects.countries}
+                    sexes={formSelects.sexes}
+                    ageKbns={formSelects.ageKbns}
+                    birthdayYears={formSelects.birthdayYears}
+                    birthdayMonths={formSelects.birthdayMonths}
+                    birthdayDays={formSelects.birthdayDays}
+                    prefectures={formSelects.prefectures}
+                    defaultAreas={formSelects.defaultAreas}
+                    customFields={customFields}
+                    customFieldPositions={consts.customFieldPositions}
+                    customFieldCodes={consts.customFieldCodes}
+                    customCategoryCode={customCategoryCode}
+                    handleChange={handleChange}
+                    handleAreaChange={handleAreaChange}
+                    clearApplicantUserNumber={clearApplicantUserNumber}
+                    userAddModalDefaultValue={userAddModalDefaultValue}
+                />
+                <h2 className="subTit">
+                    <span className="material-icons"> playlist_add_check </span>
+                    見積管理情報(カスタムフィールド)
+                </h2>
+                <CustomFieldInputArea
+                    input={input}
+                    handleChange={handleChange}
+                    customFields={customFields}
+                    customFieldPositions={consts.customFieldPositions}
+                    staffs={formSelects?.staffs}
+                    customCategoryCode={customCategoryCode}
+                />
+                <ul id="formControl">
+                    <li className="wd50">
+                        <button className="grayBtn" onClick={handleBack}>
+                            <span className="material-icons">
+                                arrow_back_ios
+                            </span>
+                            更新せずに戻る
+                        </button>
+                    </li>
+                    <li className="wd50">
+                        <button className="blueBtn" disabled={isSubmitting}>
+                            <span className="material-icons">save</span>{" "}
+                            この内容で更新する
+                        </button>
+                    </li>
+                </ul>
+            </form>
         </>
     );
 };

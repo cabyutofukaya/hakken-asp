@@ -45,7 +45,7 @@ Route::domain(env('STAFF_DOMAIN', 'asp.hakken-tour.com'))->namespace('Staff\Api'
         Route::delete('estimate/{estimateNumber}', 'EstimateController@destroy'); // 削除
         Route::put('asp/estimate/{estimateNumber}/determine', 'EstimateController@determine')->name('asp.estimate.determine'); // 見積確定
         Route::put('estimate/{estimateNumber}/status', 'EstimateController@statusUpdate'); // ステータスを更新
-        
+
         // 催行済み
         Route::get('departed/list', 'DepartedController@index'); // 一覧
         Route::delete('departed/{hashId}', 'DepartedController@destroy'); // 削除
@@ -136,6 +136,8 @@ Route::domain(env('STAFF_DOMAIN', 'asp.hakken-tour.com'))->namespace('Staff\Api'
         Route::put('estimate/{reception}/participant/{id}/no-cancel-charge/cancel', 'ParticipantController@noCancelChargeCancel'); // ノンチャージキャンセル
 
         Route::post('estimate/{reception}/participant/{id}/cancel_charge', 'ParticipantController@cancelChargeUpdate')->name('participant_cancel_charge.update'); // キャンセルチャージ処理
+
+        Route::post('estimate/{reception}/{applicationStep}/{controlNumber}/check-schedule-change', 'ReserveController@checkScheduleChange')->name('reserve.check_schedule_change'); // 日程変更チェック
 
 
         Route::delete('/estimate/{reception}/{applicationStep}/{controlNumber}/participant/{id}', 'ParticipantController@destroy'); // 削除

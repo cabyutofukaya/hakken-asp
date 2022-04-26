@@ -125,6 +125,14 @@ class EditFormComposer
             'ageKbns' => ['' => '-'] + get_const_item('users', 'age_kbn'), // 年齢区分
         ];
 
+        // 日程変更チェックURL
+        $checkScheduleChangeUrl = null;
+        if ($applicationStep === config('consts.reserves.APPLICATION_STEP_RESERVE')) {
+            $checkScheduleChangeUrl = route('staff.api.reserve.check_schedule_change', [$agencyAccount, config('consts.const.RECEPTION_TYPE_WEB'), $applicationStep, $reserve->control_number]);
+        } elseif ($applicationStep === config('consts.reserves.APPLICATION_STEP_DRAFT')) {
+            $checkScheduleChangeUrl = route('staff.api.reserve.check_schedule_change', [$agencyAccount, config('consts.const.RECEPTION_TYPE_WEB'), $applicationStep, $reserve->estimate_number]);
+        }
+
         $consts = [
             // 個人・法人種別
             'customerKbns' => [
@@ -141,8 +149,10 @@ class EditFormComposer
                 'travel_type' => config('consts.user_custom_items.CODE_APPLICATION_TRAVEL_TYPE')
             ],
             'reserveUpdateUrl' => $applicationStep === config('consts.reserves.APPLICATION_STEP_RESERVE') ? route('staff.web.estimates.reserve.update', [$agencyAccount, $reserve->control_number]) : null,
+            'estimateUpdateUrl' => $applicationStep === config('consts.reserves.APPLICATION_STEP_DRAFT') ? route('staff.web.estimates.normal.update', [$agencyAccount, $reserve->estimate_number]) : null,
             'reserveDetailUrl' => $applicationStep === config('consts.reserves.APPLICATION_STEP_RESERVE') ? route('staff.web.estimates.reserve.show', [$agencyAccount, $reserve->control_number]) : null,
             'estimateDetailUrl' => $applicationStep === config('consts.reserves.APPLICATION_STEP_DRAFT') ? route('staff.web.estimates.normal.show', [$agencyAccount, $reserve->estimate_number]) : null,
+            'checkScheduleChangeUrl' => $checkScheduleChangeUrl,
         ];
 
         // カスタム項目。表示位置毎に値をセット
