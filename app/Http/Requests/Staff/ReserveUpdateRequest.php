@@ -7,6 +7,7 @@ use App\Rules\CheckTravelPeriod;
 use App\Rules\ExistApplicantCustomer;
 use App\Rules\ExistArea;
 use App\Rules\ExistStaff;
+use App\Rules\CheckScheduleChange;
 use App\Services\AgencyWithdrawalService;
 use App\Services\BusinessUserManagerService;
 use App\Services\ReserveEstimateService;
@@ -99,31 +100,32 @@ class ReserveUpdateRequest extends FormRequest
             }],
             'name' => 'nullable|max:100',
             'departure_date' => 'required|date',
-            'return_date' => ['required','date','after_or_equal:departure_date',function ($attribute, $value, $fail) use ($reserve) { // 旅行日が既存の日程よりも短くなった場合(出発日が延びた or 帰着日の前倒し)、無くなった日付の中で出金登録がある場合はエラー
-                if ($reserve->departure_date < $this->departure_date || $reserve->return_date > $this->return_date) {
+            'return_date' => ['required','date','after_or_equal:departure_date',new CheckScheduleChange($this->departure_date, $reserve, $this->agencyWithdrawalService)],
+            // 'return_date' => ['required','date','after_or_equal:departure_date',function ($attribute, $value, $fail) use ($reserve) { // 旅行日が既存の日程よりも短くなった場合(出発日が延びた or 帰着日の前倒し)、無くなった日付の中で出金登録がある場合はエラー
+            //     if ($reserve->departure_date < $this->departure_date || $reserve->return_date > $this->return_date) {
 
-                    // 日付比較のためPOSTデータから一時的なReserveモデルを作成
-                    $rsv = new Reserve([
-                        'departure_date' => $this->departure_date,
-                        'return_date' => $this->return_date
-                    ]);
+            //         // 日付比較のためPOSTデータから一時的なReserveモデルを作成
+            //         $rsv = new Reserve([
+            //             'departure_date' => $this->departure_date,
+            //             'return_date' => $this->return_date
+            //         ]);
 
-                    $oldTravelDates = $this->getTravelDates($reserve, 'Y/m/d'); // 既存の旅行日一覧
-                    $newTravelDates = $this->getTravelDates($rsv, 'Y/m/d'); // POSTされた旅行日一覧
-                    if ($deletedDays = array_diff($oldTravelDates, $newTravelDates)) { // 削除日あり
+            //         $oldTravelDates = $this->getTravelDates($reserve, 'Y/m/d'); // 既存の旅行日一覧
+            //         $newTravelDates = $this->getTravelDates($rsv, 'Y/m/d'); // POSTされた旅行日一覧
+            //         if ($deletedDays = array_diff($oldTravelDates, $newTravelDates)) { // 削除日あり
 
-                        // 当該予約IDに紐づく出金レコードの日付一覧を取得（結果リストから「日付を抽出」→「重複を弾く」）
-                        $withDrawalDateArr = $this->agencyWithdrawalService->getByReserveId($reserve->id, ['reserve_travel_date:id,travel_date'], ['id','reserve_travel_date_id'])
-                        ->pluck('reserve_travel_date.travel_date')->unique()->all();
+            //             // 当該予約IDに紐づく出金レコードの日付一覧を取得（結果リストから「日付を抽出」→「重複を弾く」）
+            //             $withDrawalDateArr = $this->agencyWithdrawalService->getByReserveId($reserve->id, ['reserve_travel_date:id,travel_date'], ['id','reserve_travel_date_id'])
+            //             ->pluck('reserve_travel_date.travel_date')->unique()->all();
 
-                        $errDateArr = array_intersect($deletedDays, $withDrawalDateArr);
-                        if ($errDateArr) { // 削除した日付に出金日あり
-                            sort($errDateArr);
-                            $fail("変更した旅行日の中に出金済み仕入情報があるため更新できません(" . implode(",", $errDateArr) . ")。支払管理より当該商品の出金履歴を削除してからご変更ください。");
-                        }
-                    }
-                }
-            }],
+            //             $errDateArr = array_intersect($deletedDays, $withDrawalDateArr);
+            //             if ($errDateArr) { // 削除した日付に出金日あり
+            //                 sort($errDateArr);
+            //                 $fail("変更した旅行日の中に出金済み仕入情報があるため更新できません(" . implode(",", $errDateArr) . ")。支払管理より当該商品の出金履歴を削除してから変更してください。");
+            //             }
+            //         }
+            //     }
+            // }],
             'departure_id' => ['nullable',new ExistArea($agencyId)],
             'departure_place' => 'nullable|max:100',
             'destination_id' => ['nullable',new ExistArea($agencyId)],

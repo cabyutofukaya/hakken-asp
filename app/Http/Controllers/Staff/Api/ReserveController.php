@@ -11,6 +11,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Staff\ReserveStatusUpdateRequest;
 use App\Http\Requests\Staff\ReserveNoCancelChargeCancelRequest;
 use App\Http\Requests\Staff\ReserveCancelChargeUpdateRequest;
+use App\Http\Requests\Staff\CheckReserveScheduleChangeRequest;
 use App\Http\Resources\Staff\Reserve\IndexResource;
 use App\Http\Resources\Staff\Reserve\ShowResource;
 use App\Http\Resources\Staff\Reserve\StatusResource;
@@ -331,6 +332,17 @@ class ReserveController extends Controller
         }
         abort(500);
     }
+
+    /**
+     * 予約編集時の日程変更チェック
+     * 
+     * @param stirng $reception 受付種別
+     */
+    public function checkScheduleChange(CheckReserveScheduleChangeRequest $request, string $agencyAccount, string $reception, string $controlNumber)
+    {
+        return ['result' => 'ok'];
+    }
+
 
     /**
      * 一件削除

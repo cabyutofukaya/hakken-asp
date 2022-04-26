@@ -16,10 +16,6 @@
     <span class="material-icons"> subject </span>基本情報
   </h2>
 
-  <form method="post" action="{{ route('staff.asp.estimates.normal.update', [$agencyAccount, $reserve->estimate_number]) }}">
-    @csrf
-    @method('PUT')
-    
     <div id="estimateEditArea"
       applicationStep='{{ $applicationStep }}'
       defaultValue='@json($defaultValue)'
@@ -30,17 +26,6 @@
       customCategoryCode='{{ $customCategoryCode }}'
       jsVars='@json($jsVars)'
     ></div>
-
-    <ul id="formControl">
-      <li class="wd50">
-        <button class="grayBtn" onClick="event.preventDefault();location.href='{{ $consts['estimateDetailUrl'] }}'"><span class="material-icons">arrow_back_ios</span>更新せずに戻る</button>
-      </li>
-      <li class="wd50">
-        <button class="blueBtn doubleBan"><span class="material-icons">save</span> この内容で更新する</button>
-      </li>
-    </ul>
-
-  </form>
 
 </main>
 <script src="{{ mix('/staff/js/estimate-edit.js') }}"></script>

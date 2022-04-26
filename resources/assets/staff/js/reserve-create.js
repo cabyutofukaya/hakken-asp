@@ -43,13 +43,10 @@ const ReserveInputArea = ({
             if (!checkReturnDate(input.return_date)) {
                 // 帰着日が本日よりも前の日付の場合は警告
                 if (
-                    confirm(
+                    !confirm(
                         "帰着日が過去の日付で登録すると催行済に移動します。\nよろしいですか?"
                     )
                 ) {
-                    setIsSubmitting(true);
-                    document.reserveForm.submit();
-                } else {
                     setIsSubmitting(false);
                     return;
                 }

@@ -5,6 +5,7 @@ import { render } from "react-dom";
 import WebBasicInfoInputArea from "./components/Reserve/WebBasicInfoInputArea";
 import CustomFieldInputArea from "./components/Reserve/CustomFieldInputArea";
 import { checkReturnDate } from "./libs";
+import { useMountedRef } from "../../hooks/useMountedRef";
 
 const ReserveEditArea = ({
     isCanceled,
@@ -16,6 +17,8 @@ const ReserveEditArea = ({
     customCategoryCode,
     customFields
 }) => {
+    const mounted = useMountedRef(); // マウント・アンマウント制御
+
     const csrfToken = document.head.querySelector('meta[name="csrf-token"]')
         .content;
 
@@ -34,22 +37,55 @@ const ReserveEditArea = ({
     };
 
     // 送信制御
-    const handleSubmit = e => {
+    const handleSubmit = async e => {
         e.preventDefault();
         if (input?.return_date) {
             if (!isCanceled && !checkReturnDate(input.return_date)) {
                 // 帰着日が本日よりも前の日付の場合は警告（キャンセル予約の場合は催行済みに移動しないのでチェック不要）
                 if (
-                    confirm(
+                    !confirm(
                         "帰着日が過去の日付で登録すると催行済に移動します。\nよろしいですか?"
                     )
                 ) {
-                    setIsSubmitting(true);
-                    document.reserveForm.submit();
-                } else {
                     setIsSubmitting(false);
                     return;
                 }
+            }
+        }
+
+        if (
+            defaultValue?.departure_date &&
+            defaultValue?.return_date &&
+            $("[name=departure_date]").val() &&
+            $("[name=return_date]").val()
+        ) {
+            // 出発日が後ろ倒し or 帰着日が前倒しの場合は出金状態等によりエラーを出す
+            if (
+                defaultValue.departure_date <
+                    $("[name=departure_date]").val() ||
+                defaultValue.return_date > $("[name=return_date]").val()
+            ) {
+                const response = await axios.post(
+                    consts.checkScheduleChangeUrl,
+                    {
+                        departure_date: $("[name=departure_date]").val(),
+                        return_date: $("[name=return_date]").val()
+                    }
+                );
+                if (mounted.current && response?.data?.result == "ok") {
+                    // 出金登録がなければ、日程が変わっている旨エラーを出す。
+                    if (
+                        confirm(
+                            "旅行日が変更されています。行程を作成している場合、旅行日から外れた日程は削除されます。よろしいですか?"
+                        )
+                    ) {
+                        setIsSubmitting(true);
+                        document.reserveForm.submit();
+                        return;
+                    }
+                }
+                setIsSubmitting(false);
+                return;
             }
         }
         setIsSubmitting(true);
