@@ -16,9 +16,10 @@
               <span class="inputLabel">タイトル</span>
               <input type="text" name="message_log" value="{{ $searchParam['message_log'] }}">
             </li>
-            <li class="wd25 mr00"><span class="inputLabel">種別</span>
+            <li class="wd25 mr00"><span class="inputLabel">ステータス</span>
               <div class="selectBox">
                 <select name="reserve_status">
+                  <option value=""@if("" == Arr::get($searchParam, 'reserve_status', '')) selected @endif>すべて</option>
                   @foreach($formSelects['statuses'] as $status)
                     <option value="{{ $status }}" @if($status == Arr::get($searchParam, 'reserve_status', '')) selected @endif>{{ $status }}</option>
                   @endforeach
@@ -53,7 +54,25 @@
                     <input type="text" name="received_at_to" value="{{ $searchParam['received_at_to'] }}">
                   </div>
                 </li>
+              </ul>
             </li>
+          </ul>
+          <ul class="sideList half">
+            <li><span class="inputLabel">出発日</span>
+              <ul class="periodList">
+                <li>
+                  <div class="calendar">
+                    <input type="text" name="departure_date_from" value="{{ $searchParam['departure_date_from'] }}">
+                  </div>
+                </li>
+                <li>
+                  <div class="calendar">
+                    <input type="text" name="departure_date_to" value="{{ $searchParam['departure_date_to'] }}">
+                  </div>
+                </li>
+              </ul>
+            </li>
+            <li></li>
           </ul>
         </div>
         <div id="controlList">

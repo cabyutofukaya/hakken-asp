@@ -41,7 +41,7 @@ class MessageFormComposer
         $agencyAccount = request()->agencyAccount;
         
         $searchParam = [];// 検索パラメータ
-        foreach (['record_number', 'message_log', 'reserve_status', 'application_date_from', 'application_date_to', 'received_at_from', 'received_at_to', 'search_option_open'] as $p) { 
+        foreach (['record_number', 'message_log', 'reserve_status', 'application_date_from', 'application_date_to', 'received_at_from', 'received_at_to', 'departure_date_from', 'departure_date_to'] as $p) { 
             $searchParam[$p] = Request::get($p);
         }
 
@@ -54,7 +54,7 @@ class MessageFormComposer
         // 見積ステータス
         $estimateStatusItem = $this->userCustomItemService->findByCodeForAgency(auth('staff')->user()->agency_id, config('consts.user_custom_items.CODE_APPLICATION_ESTIMATE_STATUS'), ['list'], true);
         // 両ステータスを結合して重複削除
-        $statuses = array_unique(array_merge([''=>'すべて'],$reserveStatusItem->list, $estimateStatusItem->list));
+        $statuses = array_unique(array_merge($reserveStatusItem->list, $estimateStatusItem->list));
 
         // 検索フォーム用
         $formSelects = [

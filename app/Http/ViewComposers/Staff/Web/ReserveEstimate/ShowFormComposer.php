@@ -153,7 +153,7 @@ class ShowFormComposer
         }
 
         // カスタム項目に表示するカスタム項目を左列と右列の2つに分ける
-        $row = collect($customValues)->where('display_position', config('consts.user_custom_items.POSITION_APPLICATION_CUSTOM_FIELD'))->whereNotIn('code',[config('consts.user_custom_items.CODE_APPLICATION_RESERVE_STATUS'), config('consts.user_custom_items.CODE_APPLICATION_ESTIMATE_STATUS')])->toArray(); // ステータス(予約ステータス/見積ステータス)は別に設置するので、このリストからは除去
+        $row = collect($customValues)->where('display_position', config('consts.user_custom_items.POSITION_APPLICATION_CUSTOM_FIELD'))->whereNotIn('code', [config('consts.user_custom_items.CODE_APPLICATION_RESERVE_STATUS'), config('consts.user_custom_items.CODE_APPLICATION_ESTIMATE_STATUS')])->toArray(); // ステータス(予約ステータス/見積ステータス)は別に設置するので、このリストからは除去
         $customLr = array_chunk($row, ceil(count($row)/2));
 
         // カスタム項目値。タブ、表示位置毎に値をセット
@@ -284,7 +284,7 @@ class ShowFormComposer
                 'reserveEditUrl' => $applicationStep === config('consts.reserves.APPLICATION_STEP_RESERVE') ? route('staff.web.estimates.reserve.edit', [$agencyAccount,$reserve->control_number]) : null,
                 // 編集URL(予約前)
                 'estimateEditUrl' => $applicationStep === config('consts.reserves.APPLICATION_STEP_DRAFT') ? route('staff.web.estimates.normal.edit', [$agencyAccount,$reserve->estimate_number]) : null,
-                'determineUrl' => route('staff.api.web.estimate.determine', [$agencyAccount, $reserve->estimate_number]), // 見積決定URL
+                'determineUrl' => $applicationStep === config('consts.reserves.APPLICATION_STEP_DRAFT') ? route('staff.api.web.estimate.determine', [$agencyAccount, $reserve->estimate_number]) : null, // 見積決定URL
                 'reserveIndexUrl' => $reserveIndexUrl, // 予約一覧URL
                 'departedIndexUrl' => $departedIndexUrl, // 催行済み一覧URL
             ],

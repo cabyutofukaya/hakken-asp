@@ -59,6 +59,14 @@ class WebMessageHistoryRepository implements WebMessageHistoryRepositoryInterfac
                 $query = $query->where('last_received_at', '>=', "{$val} 00:00:00");
             } elseif ($key==='received_at_to') { // 最終受信日
                 $query = $query->where('last_received_at', '<=', "{$val} 23:59:59");
+            } elseif ($key==='departure_date_from') { // 出発日
+                $query = $query->whereHas('reserve', function ($q) use ($val) {
+                    $q->where('departure_date', '>=', $val);
+                });
+            } elseif ($key==='departure_date_to') { // 出発日
+                $query = $query->whereHas('reserve', function ($q) use ($val) {
+                    $q->where('departure_date', '<=', $val);
+                });
             } else {
                 $query = $query->where($key, 'like', "%$val%");
             }
