@@ -41,7 +41,7 @@
           type="text" 
           name="name" 
           value="{{ old('name', $userCustomItem->name) }}"
-          @if($userCustomItem->unedit_item)disabled @endif
+          @if($userCustomItem->unedit_item)readonly="readonly" style="background:#2d2b2e;color:#fff"@endif
           >
       </li>
 
