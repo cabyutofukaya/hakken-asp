@@ -30,6 +30,7 @@ use App\Services\ReserveParticipantOptionPriceService;
 use App\Services\ReserveParticipantAirplanePriceService;
 use App\Services\ReserveParticipantHotelPriceService;
 use App\Services\AccountPayableDetailService;
+use App\Services\AccountPayableReserveService;
 use App\Traits\CancelChargeTrait;
 use DB;
 use Exception;
@@ -42,7 +43,7 @@ class ReserveController extends Controller
 {
     use CancelChargeTrait;
     
-    public function __construct(UserService $userService, BusinessUserManagerService $businessUserManagerService, VAreaService $vAreaService, ReserveService $reserveService, ReserveCustomValueService $reserveCustomValueService, UserCustomItemService $userCustomItemService, ReserveParticipantPriceService $reserveParticipantPriceService, ReserveItineraryService $reserveItineraryService, ParticipantService $participantService, ReserveParticipantOptionPriceService $reserveParticipantOptionPriceService, ReserveParticipantAirplanePriceService $reserveParticipantAirplanePriceService, ReserveParticipantHotelPriceService $reserveParticipantHotelPriceService, AccountPayableDetailService $accountPayableDetailService)
+    public function __construct(UserService $userService, BusinessUserManagerService $businessUserManagerService, VAreaService $vAreaService, ReserveService $reserveService, ReserveCustomValueService $reserveCustomValueService, UserCustomItemService $userCustomItemService, ReserveParticipantPriceService $reserveParticipantPriceService, ReserveItineraryService $reserveItineraryService, ParticipantService $participantService, ReserveParticipantOptionPriceService $reserveParticipantOptionPriceService, ReserveParticipantAirplanePriceService $reserveParticipantAirplanePriceService, ReserveParticipantHotelPriceService $reserveParticipantHotelPriceService, AccountPayableDetailService $accountPayableDetailService, AccountPayableReserveService $accountPayableReserveService)
     {
         $this->reserveService = $reserveService;
         $this->userService = $userService;
@@ -58,6 +59,7 @@ class ReserveController extends Controller
         $this->reserveParticipantAirplanePriceService = $reserveParticipantAirplanePriceService;
         $this->reserveParticipantHotelPriceService = $reserveParticipantHotelPriceService;
         $this->accountPayableDetailService = $accountPayableDetailService;
+        $this->accountPayableReserveService = $accountPayableReserveService;
     }
 
     // 一件取得
@@ -218,7 +220,7 @@ class ReserveController extends Controller
 
                 $this->reserveService->cancel($reserve, false); // 予約レコードのキャンセルフラグをON
 
-                $this->reserveParticipantPriceService->reserveNoCancelCharge($reserve->enabled_reserve_itinerary->id); // 全ての仕入情報をキャンセルチャージ0円で初期化
+                $this->reserveParticipantPriceService->reserveNoCancelCharge($reserve, $reserve->enabled_reserve_itinerary->id); // 全ての仕入情報をキャンセルチャージ0円で初期化
 
                 $this->reserveParticipantPriceService->setIsAliveCancelByReserveId($reserve->id, $reserve->enabled_reserve_itinerary->id); // 全valid=true行(かつpurchase_type=PURCHASE_CANCEL)に対し、is_alive_cancelフラグをONにする。
 
@@ -290,7 +292,7 @@ class ReserveController extends Controller
                 $this->reserveService->cancel($reserve, true);
 
                 // キャンセルチャージ料金を保存
-                $this->setReserveCancelCharge($input);
+                $this->setReserveCancelCharge($input, $reserve);
 
                 $this->reserveParticipantPriceService->setIsAliveCancelByReserveId($reserve->id, $reserve->enabled_reserve_itinerary->id); // 全valid=true行(かつpurchase_type=PURCHASE_CANCEL)に対し、is_alive_cancelフラグをONにする。
 

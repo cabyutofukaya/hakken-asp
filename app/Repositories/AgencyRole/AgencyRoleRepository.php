@@ -107,7 +107,7 @@ class AgencyRoleRepository implements AgencyRoleRepositoryInterface
                         'user_member_cards|user_mileages|user_visas|users' => array_values(config("consts.agency_roles.ACTIONS_LIST")),
                         'business_users|business_user_managers' => array_values(config("consts.agency_roles.ACTIONS_LIST")),
                         'participants|reserve_confirms|reserve_invoices|reserve_receipts|reserve_itineraries|reserves|web_online_schedules|web_reserve_exts' => array_values(config("consts.agency_roles.ACTIONS_LIST")),
-                        'account_payable_details|account_payables|agency_bundle_deposits|agency_deposits|agency_withdrawals|reserve_bundle_invoices|reserve_bundle_receipts|reserve_invoices|reserve_receipts|v_reserve_invoices' => array_values(config("consts.agency_roles.ACTIONS_LIST")),
+                        'account_payable_details|account_payable_reserves|account_payables|agency_bundle_deposits|agency_deposits|agency_withdrawals|reserve_bundle_invoices|reserve_bundle_receipts|reserve_invoices|reserve_receipts|v_reserve_invoices' => array_values(config("consts.agency_roles.ACTIONS_LIST")),
                         'agency_consultations|web_messages|web_message_histories' => array_values(config("consts.agency_roles.ACTIONS_LIST")),
                         'directions|v_directions|areas|v_areas|cities|subject_options|subject_airplanes|subject_hotels|suppliers' => array_values(config("consts.agency_roles.ACTIONS_LIST")),
                         'agency_roles|document_categories|document_commons|document_quotes|document_receipts|document_request_alls|document_requests|mail_templates|staffs|user_custom_items' => array_values(config("consts.agency_roles.ACTIONS_LIST")),
@@ -126,7 +126,7 @@ class AgencyRoleRepository implements AgencyRoleRepositoryInterface
                             config("consts.agency_roles.DELETE"), // 許可しない権限を配列要素に渡す
                         ])),
                         'participants|reserve_confirms|reserve_invoices|reserve_receipts|reserve_itineraries|reserves|web_online_schedules|web_reserve_exts' => array_values(array_diff(array_values(config("consts.agency_roles.ACTIONS_LIST")), [])), // 許可しない権限を配列要素に渡す 
-                        'account_payable_details|account_payables|agency_bundle_deposits|agency_deposits|agency_withdrawals|reserve_bundle_invoices|reserve_bundle_receipts|reserve_invoices|reserve_receipts|v_reserve_invoices' => array_values(array_diff(array_values(config("consts.agency_roles.ACTIONS_LIST")), [
+                        'account_payable_details|account_payable_reserves|account_payables|agency_bundle_deposits|agency_deposits|agency_withdrawals|reserve_bundle_invoices|reserve_bundle_receipts|reserve_invoices|reserve_receipts|v_reserve_invoices' => array_values(array_diff(array_values(config("consts.agency_roles.ACTIONS_LIST")), [
                             config("consts.agency_roles.READ"),
                             config("consts.agency_roles.CREATE"),
                             config("consts.agency_roles.UPDATE"),
@@ -155,7 +155,7 @@ class AgencyRoleRepository implements AgencyRoleRepositoryInterface
                         'user_member_cards|user_mileages|user_visas|users' => array_values(array_diff(array_values(config("consts.agency_roles.ACTIONS_LIST")), [])), // 許可しない権限を配列要素に渡す
                         'business_users|business_user_managers' => array_values(array_diff(array_values(config("consts.agency_roles.ACTIONS_LIST")), [])), // 許可しない権限を配列要素に渡す
                         'participants|reserve_confirms|reserve_invoices|reserve_receipts|reserve_itineraries|reserves|web_online_schedules|web_reserve_exts' => array_values(array_diff(array_values(config("consts.agency_roles.ACTIONS_LIST")), [])), // 許可しない権限を配列要素に渡す
-                        'account_payable_details|account_payables|agency_bundle_deposits|agency_deposits|agency_withdrawals|reserve_bundle_invoices|reserve_bundle_receipts|reserve_invoices|reserve_receipts|v_reserve_invoices' => array_values(array_diff(array_values(config("consts.agency_roles.ACTIONS_LIST")), [])), // 許可しない権限を配列要素に渡す
+                        'account_payable_details|account_payable_reserves|account_payables|agency_bundle_deposits|agency_deposits|agency_withdrawals|reserve_bundle_invoices|reserve_bundle_receipts|reserve_invoices|reserve_receipts|v_reserve_invoices' => array_values(array_diff(array_values(config("consts.agency_roles.ACTIONS_LIST")), [])), // 許可しない権限を配列要素に渡す
                         'agency_consultations|web_messages|web_message_histories' => array_values(array_diff(array_values(config("consts.agency_roles.ACTIONS_LIST")), [
                             config("consts.agency_roles.CREATE"),
                             config("consts.agency_roles.UPDATE"),
@@ -185,7 +185,7 @@ class AgencyRoleRepository implements AgencyRoleRepositoryInterface
                         'user_member_cards|user_mileages|user_visas|users' => array_values(array_diff(array_values(config("consts.agency_roles.ACTIONS_LIST")), [])), // 許可しない権限を配列要素に渡す
                         'business_users|business_user_managers' => array_values(array_diff(array_values(config("consts.agency_roles.ACTIONS_LIST")), [])), // 許可しない権限を配列要素に渡す 
                         'participants|reserve_confirms|reserve_invoices|reserve_receipts|reserve_itineraries|reserves|web_online_schedules|web_reserve_exts' => array_values(array_diff(array_values(config("consts.agency_roles.ACTIONS_LIST")), [])), // 許可しない権限を配列要素に渡す
-                        'account_payable_details|account_payables|agency_bundle_deposits|agency_deposits|agency_withdrawals|reserve_bundle_invoices|reserve_bundle_receipts|reserve_invoices|reserve_receipts|v_reserve_invoices' => array_values(array_diff(array_values(config("consts.agency_roles.ACTIONS_LIST")), [
+                        'account_payable_details|account_payable_reserves|account_payables|agency_bundle_deposits|agency_deposits|agency_withdrawals|reserve_bundle_invoices|reserve_bundle_receipts|reserve_invoices|reserve_receipts|v_reserve_invoices' => array_values(array_diff(array_values(config("consts.agency_roles.ACTIONS_LIST")), [
                             config("consts.agency_roles.DELETE"), // 許可しない権限を配列要素に渡す
                         ])),
                         'agency_consultations|web_messages|web_message_histories' => array_values(array_diff(array_values(config("consts.agency_roles.ACTIONS_LIST")), [])), // 許可しない権限を配列要素に渡す

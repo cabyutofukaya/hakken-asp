@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Staff\Api;
 
 use App\Models\AgencyWithdrawal;
 use App\Events\ChangePaymentAmountEvent;
+use App\Events\ChangePaymentReserveAmountEvent;
 use App\Events\PriceRelatedChangeEvent;
 use App\Exceptions\ExclusiveLockException;
 use App\Http\Controllers\Controller;
@@ -57,6 +58,9 @@ class AgencyWithdrawalController extends Controller
                 // ステータスと支払い残高計算
                 event(new ChangePaymentAmountEvent($agencyWithdrawal->account_payable_detail->id));
 
+                // 当該予約の支払いステータスと未払金額計算
+                event(new ChangePaymentReserveAmountEvent($agencyWithdrawal->reserve_id));
+
                 event(new PriceRelatedChangeEvent($agencyWithdrawal->reserve_id, date('Y-m-d H:i:s'))); // 料金変更に関わるイベントが起きた際に日時を記録
 
                 return $agencyWithdrawal;
@@ -104,7 +108,10 @@ class AgencyWithdrawalController extends Controller
                 $this->agencyWithdrawalService->delete($agencyWithdrawal->id, true); // 論理削除
     
                 event(new ChangePaymentAmountEvent($agencyWithdrawal->account_payable_detail_id));
-    
+
+                // 当該予約の支払いステータスと未払金額計算
+                event(new ChangePaymentReserveAmountEvent($agencyWithdrawal->reserve_id));
+
                 event(new PriceRelatedChangeEvent($agencyWithdrawal->reserve_id, date('Y-m-d H:i:s'))); // 料金変更に関わるイベントが起きた際に日時を記録
     
                 return true;

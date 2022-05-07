@@ -414,9 +414,9 @@ const ReserveConfirmArea = ({
             }); // 更新日時等を更新
 
             // メッセージエリアをslideDown(表示状態)にした後でメッセージをセット
-            $("#successMessage .closeIcon")
-                .parent()
-                .slideDown();
+            // $("#successMessage .closeIcon")
+            //     .parent()
+            //     .slideDown();
             setSaveMessage("請求書データを保存しました");
         }
     };
@@ -668,7 +668,7 @@ const ReserveConfirmArea = ({
             </div>
 
             {/**保存完了メッセージ */}
-            <SuccessMessage message={saveMessage} />
+            <SuccessMessage message={saveMessage} setMessage={setSaveMessage} />
 
             <div id="inputArea">
                 <ul className="sideList documentSetting">

@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { ConstContext } from "../ConstApp";
 import { useMountedRef } from "../../../../hooks/useMountedRef";
-import { MANAGEMENT_PAYMENT } from "../../actions";
+import { MANAGEMENT_PAYMENT_DETAIL } from "../../actions";
 import classNames from "classnames";
 // flatpickr
 import "flatpickr/dist/themes/airbnb.css";
@@ -59,7 +59,7 @@ const PaymentDateModal = ({
 
             if (mounted.current && response?.data?.data) {
                 dataDispatch({
-                    type: MANAGEMENT_PAYMENT.PAYMENTDATA_CHANGED,
+                    type: MANAGEMENT_PAYMENT_DETAIL.PAYMENTDATA_CHANGED,
                     payload: response.data.data
                 });
             }
@@ -94,7 +94,7 @@ const PaymentDateModal = ({
                                     onChange={(date, dateStr) => {
                                         dataDispatch({
                                             type:
-                                                MANAGEMENT_PAYMENT.CHANGE_PAYMENTDATA_INPUT,
+                                                MANAGEMENT_PAYMENT_DETAIL.CHANGE_PAYMENTDATA_INPUT,
                                             payload: {
                                                 name: "payment_date",
                                                 value: dateStr

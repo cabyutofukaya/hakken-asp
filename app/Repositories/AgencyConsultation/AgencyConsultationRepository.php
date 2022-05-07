@@ -44,6 +44,14 @@ class AgencyConsultationRepository implements AgencyConsultationRepositoryInterf
                     $q->where('control_number', 'like', "%$val%")
                         ->orWhere('estimate_number', 'like', "%$val%");
                 });
+            } elseif ($key === 'departure_date_from') { //出発日from
+                $query = $query->whereHas('reserve', function ($q) use ($val) {
+                    $q->where('departure_date', '>=', $val);
+                });
+            } elseif ($key === 'departure_date_to') { //出発日to
+                $query = $query->whereHas('reserve', function ($q) use ($val) {
+                    $q->where('departure_date', '<=', $val);
+                });
             } elseif ($key === 'deadline_from') { //期限from
                 $query = $query->where('deadline', '>=', $val);
             } elseif ($key === 'deadline_to') { //期限to

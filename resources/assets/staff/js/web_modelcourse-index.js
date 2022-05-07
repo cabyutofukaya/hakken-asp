@@ -223,7 +223,10 @@ const ModelcourseList = ({ myId }) => {
 
     return (
         <>
-            <SuccessMessage message={successMessage} />
+            <SuccessMessage
+                message={successMessage}
+                setMessage={setSuccessMessage}
+            />
             <DeclineMessage message={declineMessage} />
             <div className="tableCont managemnetTable">
                 <table>

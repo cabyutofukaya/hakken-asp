@@ -8,7 +8,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 interface AccountPayableDetailRepositoryInterface
 {
-  public function find(int $id, array $with = [], array $select = [], bool $isLock = false): AccountPayableDetail;
+  public function find(int $id, array $with = [], array $select = [], bool $isLock = false): ?AccountPayableDetail;
 
   public function getWhere(array $where, array $with=[], array $select=[]) : Collection;
   

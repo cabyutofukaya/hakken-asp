@@ -41,6 +41,7 @@ class Reserve extends Model
         'web_message_histories', // 当該予約を消したらメッセージ履歴も削除する
         // 'reserve_itineraries',
         // 'account_payables', // 不要?
+        'account_payable_reserves', // 支払管理一覧(予約毎)
         'account_payable_details', // 支払管理一覧
         // 'reserve_invoices', // 請求管理一覧。請求データを消すと一括請求の入金処理の計算が合わなくなりエラーになるので一旦削除無くし
     ];
@@ -71,6 +72,7 @@ class Reserve extends Model
         'latest_number_issue_at',
         'web_online_schedule',
         'application_type',
+        'note',
     ];
 
     /**
@@ -249,6 +251,12 @@ class Reserve extends Model
     public function web_message_histories()
     {
         return $this->hasMany('App\Models\WebMessageHistory');
+    }
+
+    // 買い掛け金一覧(予約毎)
+    public function account_payable_reserves()
+    {
+        return $this->hasMany('App\Models\AccountPayableReserve');
     }
 
     // 買い掛け金詳細

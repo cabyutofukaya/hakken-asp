@@ -39,6 +39,18 @@ class AgencyWithdrawalService
     }
 
     /**
+     * 当該予約の出金額合計を取得
+     * 行ロックで取得
+     *
+     * @param int $reserveId 予約ID
+     * @return int
+     */
+    public function getSumAmountByReserveId(int $reserveId, bool $isLock=false) : int
+    {
+        return $this->agencyWithdrawalRepository->getSumAmountByReserveId($reserveId, $isLock);
+    }
+
+    /**
      * 当該支払い明細の出金額合計を取得
      * 行ロックで取得
      *

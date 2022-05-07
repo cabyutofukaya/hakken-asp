@@ -30,9 +30,9 @@ class AccountPayableDetail extends Model
         'last_note',
         'payment_date',
         'use_date',
-        // 'amount_payment',
         'unpaid_balance',
         'amount_billed',
+        'status',
     ];
 
     /**

@@ -4,6 +4,7 @@ import ConstApp from "./components/ConstApp";
 import { render } from "react-dom";
 import BasicInfoInputArea from "./components/Reserve/BasicInfoInputArea";
 import CustomFieldInputArea from "./components/Reserve/CustomFieldInputArea";
+import SuccessMessage from "./components/SuccessMessage";
 
 const EstimateInputArea = ({
     defaultValue,
@@ -11,9 +12,14 @@ const EstimateInputArea = ({
     formSelects,
     consts,
     customCategoryCode,
-    customFields
+    customFields,
+    flashMessage
 }) => {
     const [input, setInput] = useState(defaultValue);
+
+    const [successMessage, setSuccessMessage] = useState(
+        flashMessage?.success_message ?? ""
+    ); // 成功メッセージ。ページ遷移時のフラッシュメッセージがあれば初期状態でセット
 
     // 入力値変更
     const handleChange = e => {
@@ -32,6 +38,12 @@ const EstimateInputArea = ({
 
     return (
         <>
+            {/** API絡みのサクセスメッセージ */}
+            <SuccessMessage
+                message={successMessage}
+                setMessage={setSuccessMessage}
+            />
+
             <BasicInfoInputArea
                 input={input}
                 setInput={setInput}
@@ -53,6 +65,7 @@ const EstimateInputArea = ({
                 handleAreaChange={handleAreaChange}
                 clearApplicantUserNumber={clearApplicantUserNumber}
                 userAddModalDefaultValue={userAddModalDefaultValue}
+                setSuccessMessage={setSuccessMessage}
             />
 
             <h2 className="subTit">
@@ -90,6 +103,8 @@ if (Element) {
     const parsedConsts = consts && JSON.parse(consts);
     const customFields = Element.getAttribute("customFields");
     const parsedCustomFields = customFields && JSON.parse(customFields);
+    const flashMessage = Element.getAttribute("flashMessage");
+    const parsedFlashMessage = flashMessage && JSON.parse(flashMessage);
 
     render(
         <ConstApp jsVars={parsedJsVars}>
@@ -100,6 +115,7 @@ if (Element) {
                 consts={parsedConsts}
                 customFields={parsedCustomFields}
                 customCategoryCode={customCategoryCode}
+                flashMessage={parsedFlashMessage}
             />
         </ConstApp>,
         document.getElementById("estimateInputArea")

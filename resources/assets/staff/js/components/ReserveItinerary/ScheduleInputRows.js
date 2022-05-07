@@ -1,36 +1,15 @@
 import React from "react";
+import TimeInput from "../TimeInput";
 
 const ScheduleInputRows = ({ index, date, input, inputName, handleChange }) => {
     return (
         <>
-            {/**日付はPOSTで渡すname属性値になるが、name属性のバリデーションはできないので同じ値を隠しフィールドにセットして、その値を検証する(travel_date) */}
-            {/* <input
-                type="hidden"
-                name={`${inputName}[id]`}
-                value={input?.id ?? ""}
-            />
-            <input
-                type="hidden"
-                name={`${inputName}[type]`}
-                value={input?.type ?? ""}
-            />
-            <input
-                type="hidden"
-                name={`${inputName}[seq]]`}
-                value={index ?? ""}
-            />
-            <input
-                type="hidden"
-                name={`${inputName}[travel_date]]`}
-                value={date ?? ""}
-            /> */}
             <li>
                 <span className="inputLabel">到着時間</span>
-                <input
-                    type="text"
-                    value={input?.arrival_time ?? ""}
+                <TimeInput
                     name={`${inputName}[arrival_time]`}
-                    onChange={e =>
+                    value={input?.arrival_time ?? ""}
+                    handleChange={e =>
                         handleChange(
                             {
                                 target: {
@@ -42,14 +21,9 @@ const ScheduleInputRows = ({ index, date, input, inputName, handleChange }) => {
                             index
                         )
                     }
+                    placeholder={index !== 0 ? "例）10:00" : ""}
                     disabled={index === 0}
                 />
-                {/* <input
-                    type="hidden"
-                    name={`${inputName}[arrival_time]`}
-                    value={index !== 0 ? input?.arrival_time ?? "" : ""}
-                /> */}
-                {/** indexが0だった場合は空フィールドがpostされるようにhiddenで上書き */}
             </li>
             <li>
                 <span className="inputLabel">滞在時間</span>
@@ -71,20 +45,13 @@ const ScheduleInputRows = ({ index, date, input, inputName, handleChange }) => {
                     }
                     disabled={index === 0}
                 />
-                {/* <input
-                    type="hidden"
-                    name={`${inputName}[staying_time]`}
-                    value={index !== 0 ? input?.staying_time ?? "" : ""}
-                /> */}
-                {/** indexが0だった場合は空フィールドがpostされるようにhiddenで上書き */}
             </li>
             <li>
                 <span className="inputLabel">出発時間</span>
-                <input
-                    type="text"
-                    value={input?.departure_time ?? ""}
+                <TimeInput
                     name={`${inputName}[departure_time]`}
-                    onChange={e =>
+                    value={input?.departure_time ?? ""}
+                    handleChange={e =>
                         handleChange(
                             {
                                 target: {

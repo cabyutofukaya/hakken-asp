@@ -33,7 +33,7 @@ class CreateAccountPayableDetailsTable extends Migration
             $table->boolean('official')->default(false)->comment('正式版フラグ');
             $table->unsignedBigInteger('last_manager_id')->nullable()->comment("担当者(最終更新値)");
             $table->text("last_note")->nullable()->comment("備考(最終更新値)");
-            $table->tinyInteger('status')->default(0)->comment('ステータス'); // 支払いナシ,未払,支払済み
+            $table->tinyInteger('status')->default(config('consts.account_payable_details.STATUS_UNPAID'))->comment('ステータス'); // 支払いナシ,未払,支払済み
             $table->softDeletes();
             $table->timestamps();
             

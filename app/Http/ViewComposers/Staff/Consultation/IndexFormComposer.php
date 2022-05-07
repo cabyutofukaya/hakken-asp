@@ -61,7 +61,7 @@ class IndexFormComposer
         );
 
         $searchParam = [];// 検索パラメータ
-        foreach (array_merge(['reserve_estimate_number', 'title', 'deadline_from', 'deadline_to', 'reception_date_from', 'reception_date_to', 'kind', 'search_option_open'], $userCustomItemDatas->pluck('key')->all()) as $p) { // 基本パラメータ + カスタム項目パラメータ
+        foreach (array_merge(['reserve_estimate_number', 'title', 'deadline_from', 'deadline_to', 'reception_date_from', 'reception_date_to', 'kind', 'departure_date_from', 'departure_date_to', 'search_option_open'], $userCustomItemDatas->pluck('key')->all()) as $p) { // 基本パラメータ + カスタム項目パラメータ
             $searchParam[$p] = Request::get($p);
         }
 

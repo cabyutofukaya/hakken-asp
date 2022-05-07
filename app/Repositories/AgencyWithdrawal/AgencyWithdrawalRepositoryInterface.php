@@ -12,6 +12,8 @@ interface AgencyWithdrawalRepositoryInterface
   
   public function create(array $data): AgencyWithdrawal;
 
+  public function getSumAmountByReserveId(int $reserveId, bool $isLock=false) : int;
+  
   public function getSumAmountByAccountPayableDetailId(int $accountPayableDetailId, bool $isLock=false) : int;
 
   public function getWhere(array $where, array $with=[], array $select=[]) : Collection;

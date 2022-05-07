@@ -2,7 +2,7 @@ import React, { useMemo, useState, useContext } from "react";
 import { ConstContext } from "../ConstApp";
 import { useMountedRef } from "../../../../hooks/useMountedRef";
 import OnlyNumberInput from "../OnlyNumberInput";
-import { MANAGEMENT_PAYMENT } from "../../actions";
+import { MANAGEMENT_PAYMENT_DETAIL } from "../../actions";
 import _ from "lodash";
 import CustomField from "../CustomField";
 import SmallDangerModal from "../SmallDangerModal";
@@ -53,7 +53,7 @@ const PaymentModal = ({
     // 「未払金額を反映」ボタン
     const handleUnpaidReflect = e => {
         dataDispatch({
-            type: MANAGEMENT_PAYMENT.CHANGE_WITHDRAWAL_INPUT,
+            type: MANAGEMENT_PAYMENT_DETAIL.CHANGE_WITHDRAWAL_INPUT,
             payload: {
                 name: "amount",
                 value: unpaidAmount ?? 0
@@ -96,7 +96,7 @@ const PaymentModal = ({
 
         if (mounted.current && response?.data?.data) {
             dataDispatch({
-                type: MANAGEMENT_PAYMENT.WITHDRAWAL_DELETED,
+                type: MANAGEMENT_PAYMENT_DETAIL.WITHDRAWAL_DELETED,
                 payload: response.data.data
             });
         }
@@ -140,7 +140,7 @@ const PaymentModal = ({
 
             if (mounted.current && response?.data?.data) {
                 dataDispatch({
-                    type: MANAGEMENT_PAYMENT.WITHDRAWAL_REGISTED,
+                    type: MANAGEMENT_PAYMENT_DETAIL.WITHDRAWAL_REGISTED,
                     payload: response.data.data
                 });
             }
@@ -311,7 +311,7 @@ const PaymentModal = ({
                                 handleChange={e => {
                                     dataDispatch({
                                         type:
-                                            MANAGEMENT_PAYMENT.CHANGE_WITHDRAWAL_INPUT,
+                                            MANAGEMENT_PAYMENT_DETAIL.CHANGE_WITHDRAWAL_INPUT,
                                         payload: {
                                             name: e.target.name,
                                             value: e.target.value
@@ -339,7 +339,7 @@ const PaymentModal = ({
                                 onChange={(date, dateStr) => {
                                     dataDispatch({
                                         type:
-                                            MANAGEMENT_PAYMENT.CHANGE_WITHDRAWAL_INPUT,
+                                            MANAGEMENT_PAYMENT_DETAIL.CHANGE_WITHDRAWAL_INPUT,
                                         payload: {
                                             name: "withdrawal_date",
                                             value: dateStr
@@ -376,7 +376,7 @@ const PaymentModal = ({
                                 onChange={(date, dateStr) => {
                                     dataDispatch({
                                         type:
-                                            MANAGEMENT_PAYMENT.CHANGE_WITHDRAWAL_INPUT,
+                                            MANAGEMENT_PAYMENT_DETAIL.CHANGE_WITHDRAWAL_INPUT,
                                         payload: {
                                             name: "record_date",
                                             value: dateStr
@@ -427,7 +427,7 @@ const PaymentModal = ({
                             handleChange={e =>
                                 dataDispatch({
                                     type:
-                                        MANAGEMENT_PAYMENT.CHANGE_WITHDRAWAL_INPUT,
+                                        MANAGEMENT_PAYMENT_DETAIL.CHANGE_WITHDRAWAL_INPUT,
                                     payload: {
                                         name: row?.key,
                                         value: e.target.value
@@ -445,7 +445,7 @@ const PaymentModal = ({
                                 onChange={e => {
                                     dataDispatch({
                                         type:
-                                            MANAGEMENT_PAYMENT.CHANGE_WITHDRAWAL_INPUT,
+                                            MANAGEMENT_PAYMENT_DETAIL.CHANGE_WITHDRAWAL_INPUT,
                                         payload: {
                                             name: e.target.name,
                                             value: e.target.value
@@ -483,7 +483,7 @@ const PaymentModal = ({
                             handleChange={e =>
                                 dataDispatch({
                                     type:
-                                        MANAGEMENT_PAYMENT.CHANGE_WITHDRAWAL_INPUT,
+                                        MANAGEMENT_PAYMENT_DETAIL.CHANGE_WITHDRAWAL_INPUT,
                                     payload: {
                                         name: row?.key,
                                         value: e.target.value
@@ -501,7 +501,7 @@ const PaymentModal = ({
                             onChange={e => {
                                 dataDispatch({
                                     type:
-                                        MANAGEMENT_PAYMENT.CHANGE_WITHDRAWAL_INPUT,
+                                        MANAGEMENT_PAYMENT_DETAIL.CHANGE_WITHDRAWAL_INPUT,
                                     payload: {
                                         name: e.target.name,
                                         value: e.target.value

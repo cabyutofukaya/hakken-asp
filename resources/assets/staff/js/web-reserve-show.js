@@ -206,7 +206,10 @@ const ReserveShowArea = ({
             />
 
             {/**APIがらみのサクセスメッセージ */}
-            <SuccessMessage message={successMessage} />
+            <SuccessMessage
+                message={successMessage}
+                setMessage={setSuccessMessage}
+            />
 
             <InvalidMessage webReserveExt={reserve?.web_reserve_ext} />
 

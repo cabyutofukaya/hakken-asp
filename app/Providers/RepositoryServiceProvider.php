@@ -138,6 +138,10 @@ class RepositoryServiceProvider extends ServiceProvider
             \App\Repositories\AccountPayable\AccountPayableRepository::class
         );
         $this->app->bind(
+            \App\Repositories\AccountPayableReserve\AccountPayableReserveRepositoryInterface::class,
+            \App\Repositories\AccountPayableReserve\AccountPayableReserveRepository::class
+        );
+        $this->app->bind(
             \App\Repositories\AccountPayableDetail\AccountPayableDetailRepositoryInterface::class,
             \App\Repositories\AccountPayableDetail\AccountPayableDetailRepository::class
         );

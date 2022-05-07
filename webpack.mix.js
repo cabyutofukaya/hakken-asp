@@ -164,6 +164,10 @@ mix.react("resources/js/app.js", "public/js")
         "public/staff/js"
     )
     .js(
+        "resources/assets/staff/js/management_payment-reserve.js",
+        "public/staff/js"
+    )
+    .js(
         "resources/assets/staff/js/management_payment-index.js",
         "public/staff/js"
     )

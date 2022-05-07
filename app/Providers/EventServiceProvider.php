@@ -18,6 +18,11 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
+        // 支払金額変更イベント(予約毎)
+        'App\Events\ChangePaymentReserveAmountEvent' => [
+            'App\Listeners\ChangePaymentReserveAmountEventLister',
+        ],
+        // 支払金額変更イベント(詳細)
         'App\Events\ChangePaymentAmountEvent' => [
             'App\Listeners\ChangePaymentAmountEventLister',
         ],
