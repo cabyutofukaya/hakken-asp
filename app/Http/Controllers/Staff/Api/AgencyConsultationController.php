@@ -118,8 +118,8 @@ class AgencyConsultationController extends Controller
         // 一応検索に使用するパラメータだけに絞る
         $params = [];
         foreach (request()->all() as $key => $val) {
-            if (in_array($key, ['record_number', 'message_log', 'reserve_status', 'application_date_from', 'application_date_to', 'received_at_from', 'received_at_to'])) {
-                if (in_array($key, ['application_date_from','application_date_to','received_at_from','received_at_to'], true)) { // カレンダーパラメータは日付を（YYYY/MM/DD → YYYY-MM-DD）に整形
+            if (in_array($key, ['record_number', 'message_log', 'reserve_status', 'application_date_from', 'application_date_to', 'received_at_from', 'received_at_to', 'departure_date_from', 'departure_date_to'])) {
+                if (in_array($key, ['application_date_from','application_date_to','received_at_from','received_at_to','departure_date_from','departure_date_to'], true)) { // カレンダーパラメータは日付を（YYYY/MM/DD → YYYY-MM-DD）に整形
                     $params[$key] = !is_empty($val) ? date('Y-m-d', strtotime($val)) : null;
                 } else {
                     $params[$key] = $val;
