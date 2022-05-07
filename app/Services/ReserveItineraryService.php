@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Events\ChangePaymentAmountEvent;
+use App\Events\ChangePaymentReserveAmountEvent;
 use App\Exceptions\ExclusiveLockException;
 use App\Models\AccountPayable;
 use App\Models\AccountPayableDetail;
@@ -31,6 +32,7 @@ use App\Services\SupplierService;
 use App\Services\ReserveParticipantOptionPriceService;
 use App\Services\ReserveParticipantAirplanePriceService;
 use App\Services\ReserveParticipantHotelPriceService;
+use App\Services\AccountPayableReserveService;
 use App\Traits\UserCustomItemTrait;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
@@ -60,7 +62,8 @@ class ReserveItineraryService
         ReserveRepository $reserveRepository,
         ReserveParticipantOptionPriceService $reserveParticipantOptionPriceService,
         ReserveParticipantAirplanePriceService $reserveParticipantAirplanePriceService,
-        ReserveParticipantHotelPriceService $reserveParticipantHotelPriceService
+        ReserveParticipantHotelPriceService $reserveParticipantHotelPriceService,
+        AccountPayableReserveService $accountPayableReserveService
     ) {
         $this->accountPayableDetailService = $accountPayableDetailService;
         $this->accountPayableService = $accountPayableService;
@@ -83,6 +86,7 @@ class ReserveItineraryService
         $this->reserveParticipantOptionPriceService = $reserveParticipantOptionPriceService;
         $this->reserveParticipantAirplanePriceService = $reserveParticipantAirplanePriceService;
         $this->reserveParticipantHotelPriceService = $reserveParticipantHotelPriceService;
+        $this->accountPayableReserveService = $accountPayableReserveService;
     }
 
     /**
@@ -173,6 +177,8 @@ class ReserveItineraryService
 
         $result = $this->accountPayableDetailService->findWhere($attributes, [], ['id']);
 
+        $date = date('Y-m-d H:i:s');
+
         //SQLに渡すパラメータ
         $tmp = array_merge(
             $attributes,
@@ -189,6 +195,7 @@ class ReserveItineraryService
                 'amount_billed' => $amountBilled,
                 'use_date' => $useDate,
                 'payment_date' => $paymentDate,
+                'updated_at' => $date,
             ]
         );
 
@@ -196,6 +203,9 @@ class ReserveItineraryService
             $tmp['id'] = $result->id;
             $updateRows[] = $tmp;
         } else { // 新規
+            $tmp['created_at'] = $date; 
+            $tmp['unpaid_balance'] = $amountBilled; // 未払金額は請求金額(NET)で初期化
+            $tmp['status'] = config('consts.account_payable_details.STATUS_UNPAID'); // ステータスは未払いで初期化
             $insertRows[] = $tmp;
         }
     }
@@ -605,6 +615,36 @@ class ReserveItineraryService
                 // 編集対象にならなかったスケジュールレコードを削除
                 $this->reserveScheduleService->deleteOtherIdsForTravelDate($reserveTravelDate->id, $editScheduleIds, true); // 論理削除
             }
+
+
+            /**
+             * 当該予約の支払管理レコード処理
+             */
+            $sumNet = $reserveItinerary->reserve->enabled_reserve_itinerary ? $reserveItinerary->reserve->enabled_reserve_itinerary->sum_net : 0; // 仕入先への総支払額
+
+            // 支払管理(予約毎)レコードを新規登録or更新
+            if (($accountPayableReserve = $this->accountPayableReserveService->findByReserveId($reserveItinerary->reserve->id))) { // 当該予約の支払管理レコードが既に存在する場合はamount_billedが変更されていたら更新。ステータスと未払金額はChangePaymentReserveAmountEventで更新するので支払額のみ書き換え
+                if ($accountPayableReserve->amount_billed !== $sumNet) {
+                    $this->accountPayableReserveService->update($accountPayableReserve->id, [
+                        'amount_billed' => $sumNet,
+                    ]);
+                }
+            } else { // 新規作成
+                
+                $this->accountPayableReserveService->create(
+                    [
+                        'reserve_id' => $reserveItinerary->reserve->id,
+                        'agency_id' => $agencyId,
+                        'amount_billed' => $sumNet,
+                        // 新規登録時はステータス=未払、未払金額=支払額で初期化
+                        'status' => config('consts.account_payable_reserves.STATUS_UNPAID'),
+                        'unpaid_balance' => $sumNet,
+                    ]
+                );
+            }
+
+            // 当該予約の支払いステータスと未払金額計算
+            event(new ChangePaymentReserveAmountEvent($reserveItinerary->reserve->id));
         }
         // 編集対象にならなかった日付レコードを削除
         $this->reserveTravelDateService->deleteOtherIdsForReserveItinerary($reserveItinerary->id, $editTravelDateIds, true); // 論理削除

@@ -38,7 +38,9 @@
 										</h4>
 										<p>{!! nl2br(e($schedule->explanation)) !!}</p>
 									@else
-										<h4>{{ $schedule->place }}</h4>
+										<h4>{{ $schedule->place }}
+											@if(!$loop->first && $schedule->staying_time)<span>{{ $schedule->staying_time }}滞在</span>@endif{{-- 先頭スケジュールの場合は滞在表記ナシ --}}
+										</h4>
 										<p>{!! nl2br(e($schedule->explanation)) !!}</p>
 									@endif
 								</div>

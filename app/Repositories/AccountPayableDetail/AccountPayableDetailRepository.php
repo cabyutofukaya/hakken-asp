@@ -23,12 +23,12 @@ class AccountPayableDetailRepository implements AccountPayableDetailRepositoryIn
      * @param int $id
      * @param int $isLock 行ロックして取得する場合はtrue
      */
-    public function find(int $id, array $with = [], array $select = [], bool $isLock = false): AccountPayableDetail
+    public function find(int $id, array $with = [], array $select = [], bool $isLock = false): ?AccountPayableDetail
     {
         $query = $this->accountPayableDetail;
         $query = $with ? $query->with($with) : $query;
         $query = $select ? $query->select($select) : $query;
-        return $isLock ? $query->lockForUpdate()->findOrFail($id) : $query->findOrFail($id);
+        return $isLock ? $query->lockForUpdate()->find($id) : $query->find($id);
     }
 
     /**

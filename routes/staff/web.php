@@ -158,6 +158,7 @@ Route::domain(env('STAFF_DOMAIN', 'asp.hakken-tour.com'))->namespace('Staff')->n
 
             // 支払管理
             Route::prefix('payment')->name('payment.')->group(function () {
+                Route::get('reserve', 'ManagementPaymentController@reserve')->name('reserve'); // 予約毎一覧
                 Route::get('index', 'ManagementPaymentController@index')->name('index'); // 一覧
             });
         });

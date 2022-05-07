@@ -3,25 +3,30 @@
 namespace App\Services;
 
 use App\Events\ChangePaymentAmountEvent;
+use App\Events\ChangePaymentReserveAmountEvent;
 use App\Models\Participant;
+use App\Models\Reserve;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use App\Services\ReserveParticipantOptionPriceService;
 use App\Services\ReserveParticipantAirplanePriceService;
 use App\Services\ReserveParticipantHotelPriceService;
 use App\Services\AccountPayableDetailService;
+use App\Services\AccountPayableReserveService;
+
 
 /**
  * "ReserveParticipantXXXXPriceService系"サービスclass(ReserveParticipantOptionPriceService/ReserveParticipantAirplanePriceService/ReserveParticipantHotelPriceService)全てに対して作業する処理を提供するclass
  */
 class ReserveParticipantPriceService
 {
-    public function __construct(ReserveParticipantOptionPriceService $reserveParticipantOptionPriceService, ReserveParticipantAirplanePriceService $reserveParticipantAirplanePriceService, ReserveParticipantHotelPriceService $reserveParticipantHotelPriceService, AccountPayableDetailService $accountPayableDetailService)
+    public function __construct(ReserveParticipantOptionPriceService $reserveParticipantOptionPriceService, ReserveParticipantAirplanePriceService $reserveParticipantAirplanePriceService, ReserveParticipantHotelPriceService $reserveParticipantHotelPriceService, AccountPayableDetailService $accountPayableDetailService, AccountPayableReserveService $accountPayableReserveService)
     {
         $this->reserveParticipantOptionPriceService = $reserveParticipantOptionPriceService;
         $this->reserveParticipantAirplanePriceService = $reserveParticipantAirplanePriceService;
         $this->reserveParticipantHotelPriceService = $reserveParticipantHotelPriceService;
         $this->accountPayableDetailService = $accountPayableDetailService;
+        $this->accountPayableReserveService = $accountPayableReserveService;
     }
 
     /**
@@ -117,7 +122,7 @@ class ReserveParticipantPriceService
      *
      * @param ?int $reserveItineraryId 行程ID(有効な行程が設定されていない場合nullが渡される可能性あり)
      */
-    public function reserveNoCancelCharge(?int $reserveItineraryId) : bool
+    public function reserveNoCancelCharge(Reserve $reserve, ?int $reserveItineraryId) : bool
     {
         if (!$reserveItineraryId) {
             return true;
@@ -159,14 +164,25 @@ class ReserveParticipantPriceService
                 event(new ChangePaymentAmountEvent($accountPayableDetailId));
             }
         }
-        
+
+
+        /**
+         * 支払管理レコード更新処理
+         */
+        // account_payable_reservesのamount_billedを最新状態に更新
+        $this->accountPayableReserveService->refreshAmountBilledByReserveId($reserve);
+
+        // 当該予約の支払いステータスと未払金額計算
+        event(new ChangePaymentReserveAmountEvent($reserve->id));
+
+
         return true;
     }
 
     /**
      * 当該参加者をキャンセルチャージナシで更新
      */
-    public function participantNoCancelCharge(int $participantId) : bool
+    public function participantNoCancelCharge(Reserve $reserve, int $participantId) : bool
     {
         // オプション科目
         $optionIds = $this->reserveParticipantOptionPriceService->setCancelChargeByParticipantId(0, 0, 0, false, $participantId, true);
@@ -206,7 +222,17 @@ class ReserveParticipantPriceService
                 event(new ChangePaymentAmountEvent($accountPayableDetailId));
             }
         }
-        
+
+
+        /**
+         * 支払管理レコード更新処理
+         */
+        // account_payable_reservesのamount_billedを最新状態に更新
+        $this->accountPayableReserveService->refreshAmountBilledByReserveId($reserve);
+
+        // 当該予約の支払いステータスと未払金額計算
+        event(new ChangePaymentReserveAmountEvent($reserve->id));
+
         return true;
     }
 

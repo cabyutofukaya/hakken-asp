@@ -13,7 +13,6 @@ use Illuminate\Queue\SerializesModels;
 
 /**
  * 旅行代金の合計金額が変更されたときに呼ばれるイベント
- * （有効な行程が変更されたとき）
  */
 class ReserveChangeSumGrossEvent
 {

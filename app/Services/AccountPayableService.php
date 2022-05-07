@@ -49,17 +49,6 @@ class AccountPayableService
     {
         return $this->accountPayableRepository->deleteDoseNotHaveDetails($reserveId, $isSoftDelete);
     }
-    
-
-    // /**
-    //  * 当該行程管理IDに紐づく買掛金レコードで詳細レコードを持たないものを削除
-    //  *
-    //  * @param bool $isSoftDelete 論理削除の場合はTrue
-    //  */
-    // public function deleteNoDetailByReserveItineraryId(int $reserveItineraryId, bool $isSoftDelete = true) : bool
-    // {
-    //     return $this->accountPayableRepository->deleteNoDetailByReserveItineraryId($reserveItineraryId, $isSoftDelete);
-    // }
 
     /**
      * 支払日を算出

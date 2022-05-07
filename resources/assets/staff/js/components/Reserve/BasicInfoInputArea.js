@@ -27,7 +27,8 @@ const BasicInfoInputArea = ({
     handleChange,
     handleAreaChange,
     clearApplicantUserNumber,
-    userAddModalDefaultValue
+    userAddModalDefaultValue,
+    setSuccessMessage
 }) => {
     return (
         <div id="inputArea">
@@ -56,6 +57,7 @@ const BasicInfoInputArea = ({
                 }}
                 clearUserNumber={clearApplicantUserNumber}
                 userAddModalDefaultValue={userAddModalDefaultValue}
+                setSuccessMessage={setSuccessMessage}
             />
 
             <hr className="sepBorder" />

@@ -137,7 +137,10 @@ const EstimateShowArea = ({
             />
 
             {/**APIがらみのサクセスメッセージ */}
-            <SuccessMessage message={successMessage} />
+            <SuccessMessage
+                message={successMessage}
+                setMessage={setSuccessMessage}
+            />
 
             <div id="tabNavi" className="estimateNav">
                 <ul>

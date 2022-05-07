@@ -55,6 +55,7 @@
     "/staff/js/management_invoice-breakdown.js": "/staff/js/management_invoice-breakdown.js",
     "/staff/js/management_invoice-index.js": "/staff/js/management_invoice-index.js",
     "/staff/js/management_payment-index.js": "/staff/js/management_payment-index.js",
+    "/staff/js/management_payment-reserve.js": "/staff/js/management_payment-reserve.js",
     "/staff/js/news.js": "/staff/js/news.js",
     "/staff/js/participant_cancel_charge-create.js": "/staff/js/participant_cancel_charge-create.js",
     "/staff/js/reserve-create.js": "/staff/js/reserve-create.js",

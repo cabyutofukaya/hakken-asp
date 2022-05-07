@@ -41,7 +41,7 @@ class IndexResource extends JsonResource
             'item_name' => $this->item_name,
             'manager_id' => $this->last_manager_id, // 担当者(最終更新値)
             'note' => $this->last_note, // 備考(最終更新値)
-            'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
+            'updated_at' => optional($this->updated_at)->format('Y-m-d H:i:s'),
             // リレーション
             'reserve' => [
                 'control_number' => $this->reserve ? $this->reserve->control_number : null,

@@ -5,6 +5,7 @@ import { render } from "react-dom";
 import BasicInfoInputArea from "./components/Reserve/BasicInfoInputArea";
 import CustomFieldInputArea from "./components/Reserve/CustomFieldInputArea";
 import { checkReturnDate } from "./libs";
+import SuccessMessage from "./components/SuccessMessage";
 
 const ReserveInputArea = ({
     defaultValue,
@@ -12,12 +13,17 @@ const ReserveInputArea = ({
     formSelects,
     consts,
     customCategoryCode,
-    customFields
+    customFields,
+    flashMessage
 }) => {
     const csrfToken = document.head.querySelector('meta[name="csrf-token"]')
         .content;
 
     const [input, setInput] = useState(defaultValue);
+
+    const [successMessage, setSuccessMessage] = useState(
+        flashMessage?.success_message ?? ""
+    ); // 成功メッセージ。ページ遷移時のフラッシュメッセージがあれば初期状態でセット
 
     const [isSubmitting, setIsSubmitting] = useState(false); // フォーム送信中か否か
 
@@ -64,6 +70,12 @@ const ReserveInputArea = ({
 
     return (
         <>
+            {/** API絡みのサクセスメッセージ */}
+            <SuccessMessage
+                message={successMessage}
+                setMessage={setSuccessMessage}
+            />
+
             <form
                 name="reserveForm"
                 action={consts.reserveStoreUrl}
@@ -92,6 +104,7 @@ const ReserveInputArea = ({
                     handleAreaChange={handleAreaChange}
                     clearApplicantUserNumber={clearApplicantUserNumber}
                     userAddModalDefaultValue={userAddModalDefaultValue}
+                    setSuccessMessage={setSuccessMessage}
                 />
 
                 <h2 className="subTit">
@@ -146,6 +159,8 @@ if (Element) {
     const parsedConsts = consts && JSON.parse(consts);
     const customFields = Element.getAttribute("customFields");
     const parsedCustomFields = customFields && JSON.parse(customFields);
+    const flashMessage = Element.getAttribute("flashMessage");
+    const parsedFlashMessage = flashMessage && JSON.parse(flashMessage);
 
     render(
         <ConstApp jsVars={parsedJsVars}>
@@ -156,6 +171,7 @@ if (Element) {
                 consts={parsedConsts}
                 customFields={parsedCustomFields}
                 customCategoryCode={customCategoryCode}
+                flashMessage={parsedFlashMessage}
             />
         </ConstApp>,
         document.getElementById("reserveInputArea")

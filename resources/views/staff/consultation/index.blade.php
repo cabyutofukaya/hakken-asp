@@ -49,6 +49,22 @@
               <li><div class="calendar"><input type="text" name="deadline_to" value="{{ $searchParam['deadline_to'] }}" autocomplete="off"></div></li></ul>
           </li>
         </ul>
+        <ul class="sideList half">
+          <li><span class="inputLabel">出発日</span>
+            <ul class="periodList">
+              <li>
+                <div class="calendar">
+                  <input type="text" name="departure_date_from" value="{{ $searchParam['departure_date_from'] }}" autocomplete="off">
+                </div>
+              </li>
+              <li>
+                <div class="calendar">
+                  <input type="text" name="departure_date_to" value="{{ $searchParam['departure_date_to'] }}" autocomplete="off">
+                </div>
+              </li>
+            </ul>
+          </li>
+        </ul>
         @include('staff.common.search_option', [
           'items' => $formSelects['userCustomItemDatas'],
           'searchParam' => $searchParam,

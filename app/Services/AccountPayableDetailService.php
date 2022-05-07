@@ -7,11 +7,12 @@ use App\Models\AccountPayableDetail;
 use App\Models\Supplier;
 use App\Repositories\AccountPayableDetail\AccountPayableDetailRepository;
 use App\Repositories\Agency\AgencyRepository;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 
-class AccountPayableDetailService
+class AccountPayableDetailService implements AccountPayableInterface
 {
     public function __construct(AgencyRepository $agencyRepository, AccountPayableDetailRepository $accountPayableDetailRepository)
     {
@@ -82,7 +83,7 @@ class AccountPayableDetailService
     /**
      * 未払い金額とステータスを更新
      */
-    public function updateStatusAndUnpaidBalance($id, int $unpaidBalance, $status)
+    public function updateStatusAndUnpaidBalance($id, int $unpaidBalance, $status) : Model
     {
         return $this->accountPayableDetailRepository->updateField($id, ['unpaid_balance' => $unpaidBalance, 'status' => $status]);
     }

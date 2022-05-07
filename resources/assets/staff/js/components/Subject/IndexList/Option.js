@@ -146,7 +146,10 @@ const Option = forwardRef(
 
         return (
             <>
-                <SuccessMessage message={successMessage} />
+                <SuccessMessage
+                    message={successMessage}
+                    setMessage={setSuccessMessage}
+                />
                 <DeclineMessage message={declineMessage} />
 
                 <div className="tableWrap dragTable">

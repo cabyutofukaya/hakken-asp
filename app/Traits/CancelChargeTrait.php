@@ -3,6 +3,7 @@
 namespace App\Traits;
 
 use App\Events\ChangePaymentAmountEvent;
+use App\Events\ChangePaymentReserveAmountEvent;
 use App\Models\Reserve;
 use App\Models\ReserveItinerary;
 use App\Models\Participant;
@@ -39,12 +40,13 @@ trait CancelChargeTrait
     }
 
     /**
-     * キャンセルチャージ料金を保存(予約用)
+     * キャンセルチャージ料金を保存
+     * 予約キャンセル、参加者キャンセルに使用
      *
      * TODO
      * 本メソッド、処理が重すぎるようなら非同期で実行することも検討
      */
-    public function setReserveCancelCharge(array $input)
+    public function setReserveCancelCharge(array $input, Reserve $reserve)
     {
         /**バルクアップデート用のキャンセル料金料パラメータ */
         $options = []; // オプション科目
@@ -185,6 +187,16 @@ trait CancelChargeTrait
             }
         }
 
+
+        /**
+         * 支払管理レコード更新処理
+         */
+        // account_payable_reservesのamount_billedを最新状態に更新
+        $this->accountPayableReserveService->refreshAmountBilledByReserveId($reserve);
+
+        // 当該予約の支払いステータスと未払金額計算
+        event(new ChangePaymentReserveAmountEvent($reserve->id));
+
         return [
             $optionIds,
             $airplaneIds,
@@ -192,83 +204,6 @@ trait CancelChargeTrait
         ];
 
     }
-
-    // /**
-    //  * キャンセルチャージ料金を保存(予約用)
-    //  *
-    //  * TODO
-    //  * 本メソッド、処理が重すぎるようなら非同期で実行することも検討
-    //  */
-    // public function setReserveCancelCharge(array $input)
-    // {
-    //     // キャンセルチャージ料金を保存
-    //     foreach ($input['rows'] as $key => $row) { // $keyは [科目名]_(仕入ID_...)という形式
-    //         $info = explode(config('consts.const.CANCEL_CHARGE_DATA_DELIMITER'), $key);
-    
-    //         $subject = $info[0]; // $infoの1番目の配列は科目名
-    //         $ids = array_slice($info, 1); // idリスト
-
-    //         $isCancel = Arr::get($row, 'is_cancel') == 1; // キャンセル料金有無のチェックボックス
-
-    //         $cancelCharge = 0;
-    //         $cancelChargeNet = 0;
-    //         $cancelChargeProfit = 0;
-
-    //         if ($isCancel) {
-    //             try {
-    //                 $cancelCharge = ($row['cancel_charge'] ?? 0) / $row['quantity']; // 数量で割って1商品あたりの「キャンセルチャージ」を求める
-    //                 $cancelChargeNet = ($row['cancel_charge_net'] ?? 0) / $row['quantity']; // 数量で割って1商品あたりの「仕入先支払料金合計」を求める
-    //                 $cancelChargeProfit = $cancelCharge - $cancelChargeNet;
-    //             } catch (\Exception $e) {
-    //                 \Log::debug($e);
-    //             }
-    //         }
-
-    //         if ($subject == config('consts.subject_categories.SUBJECT_CATEGORY_OPTION')) { // オプション科目
-    //             $this->reserveParticipantOptionPriceService->setCancelChargeByIds($cancelCharge, $cancelChargeNet, $cancelChargeProfit, $isCancel, $ids); // ユーザー側
-
-    //             // 仕入先支払い情報を更新
-    //             foreach ($ids as $id) {
-    //                 $this->accountPayableDetailService->setCancelChargeBySaleableId($cancelChargeNet, 'App\Models\ReserveParticipantOptionPrice', $id, false);
-
-    //                 $accountPayableDetail = $this->accountPayableDetailService->findWhere(['saleable_type' => 'App\Models\ReserveParticipantOptionPrice', 'saleable_id' => $id], [], ['id']);
-
-    //                 // ステータスと支払い残高計算
-    //                 if ($accountPayableDetail) {
-    //                     event(new ChangePaymentAmountEvent($accountPayableDetail->id));
-    //                 }
-    //             }
-    //         } elseif ($subject == config('consts.subject_categories.SUBJECT_CATEGORY_AIRPLANE')) { // 航空券科目
-    //             $this->reserveParticipantAirplanePriceService->setCancelChargeByIds($cancelCharge, $cancelChargeNet, $cancelChargeProfit, $isCancel, $ids); // ユーザー側
-
-    //             // 仕入先支払い情報を更新
-    //             foreach ($ids as $id) {
-    //                 $this->accountPayableDetailService->setCancelChargeBySaleableId($cancelChargeNet, 'App\Models\ReserveParticipantAirplanePrice', $id, false);
-
-    //                 $accountPayableDetail = $this->accountPayableDetailService->findWhere(['saleable_type' => 'App\Models\ReserveParticipantAirplanePrice', 'saleable_id' => $id], [], ['id']);
-
-    //                 // ステータスと支払い残高計算
-    //                 if ($accountPayableDetail) {
-    //                     event(new ChangePaymentAmountEvent($accountPayableDetail->id));
-    //                 }
-    //             }
-    //         } elseif ($subject == config('consts.subject_categories.SUBJECT_CATEGORY_HOTEL')) { // ホテル科目
-    //             $this->reserveParticipantHotelPriceService->setCancelChargeByIds($cancelCharge, $cancelChargeNet, $cancelChargeProfit, $isCancel, $ids); // ユーザー側
-
-    //             // 仕入先支払い情報を更新
-    //             foreach ($ids as $id) {
-    //                 $this->accountPayableDetailService->setCancelChargeBySaleableId($cancelChargeNet, 'App\Models\ReserveParticipantHotelPrice', $id, false);
-
-    //                 $accountPayableDetail = $this->accountPayableDetailService->findWhere(['saleable_type' => 'App\Models\ReserveParticipantHotelPrice', 'saleable_id' => $id], [], ['id']);
-
-    //                 // ステータスと支払い残高計算
-    //                 if ($accountPayableDetail) {
-    //                     event(new ChangePaymentAmountEvent($accountPayableDetail->id));
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
 
     /**
      * 有効行程の合計金額更新

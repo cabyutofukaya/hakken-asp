@@ -33,7 +33,8 @@ const CustomerSelect = ({
     handleChange,
     handleCustomerTypeChange,
     clearUserNumber,
-    userAddModalDefaultValue
+    userAddModalDefaultValue,
+    setSuccessMessage
 }) => {
     const { agencyAccount } = useContext(ConstContext);
 
@@ -74,6 +75,7 @@ const CustomerSelect = ({
         e.preventDefault();
         setInput(userAddModalDefaultValue); // デフォルト値で初期化
     }, []);
+
     // 登録処理
     const handleSubmit = async e => {
         e.preventDefault();
@@ -97,7 +99,8 @@ const CustomerSelect = ({
                 }, 3000);
             });
 
-        if (esponse?.data?.data) {
+        if (response?.data?.data) {
+            setSuccessMessage("新規顧客(個人)を登録しました。");
             if (searchUserName || searchUserNumber) {
                 fetch(); //登録完了後、検索フィールドが空でなければ検索リストを更新
             }

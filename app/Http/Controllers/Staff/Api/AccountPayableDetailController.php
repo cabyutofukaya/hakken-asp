@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Staff\Api;
 
 use App\Models\AgencyWithdrawal;
 use App\Events\ChangePaymentAmountEvent;
+use App\Events\ChangePaymentReserveAmountEvent;
 use App\Events\PriceRelatedChangeEvent;
 use App\Exceptions\ExclusiveLockException;
 use App\Exceptions\NotFoundException;
@@ -160,7 +161,10 @@ class AccountPayableDetailController extends Controller
                         
                     // ステータスと支払い残高計算
                     event(new ChangePaymentAmountEvent($agencyWithdrawal->account_payable_detail->id));
-                        
+
+                    // 当該予約の支払いステータスと未払金額計算
+                    event(new ChangePaymentReserveAmountEvent($agencyWithdrawal->account_payable_detail->reserve_id));
+
                     $changeAtArr[$agencyWithdrawal->reserve_id] = date('Y-m-d H:i:s'); // PriceRelatedChangeEventに保存する予約IDごとの最新日時を記録
 
                     return $agencyWithdrawal;

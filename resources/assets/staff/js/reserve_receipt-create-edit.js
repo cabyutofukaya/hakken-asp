@@ -207,9 +207,9 @@ const ReserveReceiptArea = ({
             }); // 更新日時をセットする
 
             // メッセージエリアをslideDown(表示状態)にした後でメッセージをセット
-            $("#successMessage .closeIcon")
-                .parent()
-                .slideDown();
+            // $("#successMessage .closeIcon")
+            //     .parent()
+            //     .slideDown();
             setSaveMessage("請求書データを保存しました");
 
             // ↓ページ遷移すると慌ただしのでひとまず遷移ナシに
@@ -436,7 +436,7 @@ const ReserveReceiptArea = ({
             </div>
 
             {/**保存完了メッセージ */}
-            <SuccessMessage message={saveMessage} />
+            <SuccessMessage message={saveMessage} setMessage={setSaveMessage} />
 
             <div id="inputArea">
                 <ul className="sideList documentSetting">

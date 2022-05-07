@@ -11,7 +11,7 @@ import classNames from "classnames";
 import _ from "lodash";
 import moment from "moment";
 import PaymentDateModal from "./components/ManagementPayment/PaymentDateModal";
-import { MANAGEMENT_PAYMENT } from "./actions"; //action名
+import { MANAGEMENT_PAYMENT_DETAIL } from "./actions"; //action名
 import PaymentBatchModal from "./components/ManagementPayment/PaymentBatchModal";
 import { RESERVE } from "./constants";
 
@@ -30,8 +30,8 @@ const PaymentList = ({
     // ページャー関連変数
     const [page, setPage] = useState(1);
     const [lastPage, setLastPage] = useState(0);
-    const [sort, setSort] = useState("id");
-    const [direction, setDirection] = useState("asc");
+    const [sort, setSort] = useState("reserve.control_number");
+    const [direction, setDirection] = useState("desc");
     const [total, setTotal] = useState(0);
     const perPage = 10; // 1ページ表示件数
 
@@ -45,7 +45,7 @@ const PaymentList = ({
 
     const [sortParam, setSortParam] = useState({
         id: "desc",
-        "reserve.control_number": "asc",
+        "reserve.control_number": "desc",
         supplier_name: "asc",
         item_code: "asc",
         item_name: "asc",
@@ -54,7 +54,8 @@ const PaymentList = ({
         payment_date: "asc",
         use_date: "asc",
         amount_billed: "asc",
-        unpaid_balance: "asc"
+        unpaid_balance: "asc",
+        status: "asc"
     });
 
     // 出金登録モーダル関連処理
@@ -80,8 +81,8 @@ const PaymentList = ({
         const copyState = _.cloneDeep(state);
 
         if (
-            action.type === MANAGEMENT_PAYMENT.SET_PAYMENT_LISTS ||
-            action.type === MANAGEMENT_PAYMENT.PAYMENT_BATCED
+            action.type === MANAGEMENT_PAYMENT_DETAIL.SET_PAYMENT_LISTS ||
+            action.type === MANAGEMENT_PAYMENT_DETAIL.PAYMENT_BATCED
         ) {
             // 支払一覧データをセット。リスト取得時・一括支払い完了後処理
             return {
@@ -92,7 +93,7 @@ const PaymentList = ({
                 withdrawalBatchData: {},
                 paymentDateData: {}
             };
-        } else if (action.type === MANAGEMENT_PAYMENT.INIT_WITHDRAWAL) {
+        } else if (action.type === MANAGEMENT_PAYMENT_DETAIL.INIT_WITHDRAWAL) {
             // 未払金額押下時。対象レコードを初期化
 
             const paymentData = copyState["paymentLists"].find(
@@ -111,7 +112,9 @@ const PaymentList = ({
                     supplier_id_log: paymentData.supplier_id
                 }
             };
-        } else if (action.type === MANAGEMENT_PAYMENT.INIT_WITHDRAWALBATCH) {
+        } else if (
+            action.type === MANAGEMENT_PAYMENT_DETAIL.INIT_WITHDRAWALBATCH
+        ) {
             // 一括出金ボタン押下時。入力フィールドを初期化
 
             // const paymentData = copyState["paymentLists"].find(
@@ -126,7 +129,7 @@ const PaymentList = ({
                     ...withdrawalBatchInitial
                 }
             };
-        } else if (action.type === MANAGEMENT_PAYMENT.INIT_PAYMENTDATE) {
+        } else if (action.type === MANAGEMENT_PAYMENT_DETAIL.INIT_PAYMENTDATE) {
             // 支払日押下時
 
             const paymentData = copyState["paymentLists"].find(
@@ -139,26 +142,31 @@ const PaymentList = ({
                 },
                 paymentDateData: { payment_date: paymentData.payment_date }
             };
-        } else if (action.type === MANAGEMENT_PAYMENT.CHANGE_WITHDRAWAL_INPUT) {
+        } else if (
+            action.type === MANAGEMENT_PAYMENT_DETAIL.CHANGE_WITHDRAWAL_INPUT
+        ) {
             // 出金モーダル入力変更
             const withdrawalData = copyState.withdrawalData;
             withdrawalData[action.payload.name] = action.payload.value;
             return { ...copyState };
         } else if (
-            action.type === MANAGEMENT_PAYMENT.CHANGE_WITHDRAWALBATCH_INPUT
+            action.type ===
+            MANAGEMENT_PAYMENT_DETAIL.CHANGE_WITHDRAWALBATCH_INPUT
         ) {
             // 一括出金モーダル入力変更
             const withdrawalBatchData = copyState.withdrawalBatchData;
             withdrawalBatchData[action.payload.name] = action.payload.value;
             return { ...copyState };
         } else if (
-            action.type === MANAGEMENT_PAYMENT.CHANGE_PAYMENTDATA_INPUT
+            action.type === MANAGEMENT_PAYMENT_DETAIL.CHANGE_PAYMENTDATA_INPUT
         ) {
             // 支払日モーダル入力変更
             const paymentDateData = copyState.paymentDateData;
             paymentDateData[action.payload.name] = action.payload.value;
             return { ...copyState };
-        } else if (action.type === MANAGEMENT_PAYMENT.CHANGE_DONE_CHECK) {
+        } else if (
+            action.type === MANAGEMENT_PAYMENT_DETAIL.CHANGE_DONE_CHECK
+        ) {
             const doneLists = copyState.doneLists;
             if (_.indexOf(doneLists, action.payload) !== -1) {
                 // check済なので値除去
@@ -169,8 +177,8 @@ const PaymentList = ({
             }
             return { ...copyState };
         } else if (
-            action.type === MANAGEMENT_PAYMENT.WITHDRAWAL_REGISTED ||
-            action.type === MANAGEMENT_PAYMENT.PAYMENTDATA_CHANGED
+            action.type === MANAGEMENT_PAYMENT_DETAIL.WITHDRAWAL_REGISTED ||
+            action.type === MANAGEMENT_PAYMENT_DETAIL.PAYMENTDATA_CHANGED
         ) {
             // 出金登録処理 or 支払日変更完了時処理
             const index = _.findIndex(copyState.paymentLists, function(o) {
@@ -189,7 +197,9 @@ const PaymentList = ({
             } else {
                 return { ...copyState };
             }
-        } else if (action.type === MANAGEMENT_PAYMENT.WITHDRAWAL_DELETED) {
+        } else if (
+            action.type === MANAGEMENT_PAYMENT_DETAIL.WITHDRAWAL_DELETED
+        ) {
             const accountPayableDetailId = action.payload.id; // 削除された出金データが属する支払詳細レコードID
             const paymentIndex = _.findIndex(copyState.paymentLists, function(
                 o
@@ -244,7 +254,7 @@ const PaymentList = ({
             });
         if (mounted.current && response?.data?.data) {
             dataDispatch({
-                type: MANAGEMENT_PAYMENT.SET_PAYMENT_LISTS,
+                type: MANAGEMENT_PAYMENT_DETAIL.SET_PAYMENT_LISTS,
                 payload: response.data.data
             });
             // ページャー関連
@@ -276,7 +286,7 @@ const PaymentList = ({
     //未払金をクリックしたときの挙動
     const handleUnpaidClick = id => {
         dataDispatch({
-            type: MANAGEMENT_PAYMENT.INIT_WITHDRAWAL,
+            type: MANAGEMENT_PAYMENT_DETAIL.INIT_WITHDRAWAL,
             payload: id
         });
     };
@@ -284,14 +294,14 @@ const PaymentList = ({
     // 未払い金額の一括処理ボタンクリック時
     const handlePaymentBatchClick = e => {
         dataDispatch({
-            type: MANAGEMENT_PAYMENT.INIT_WITHDRAWALBATCH
+            type: MANAGEMENT_PAYMENT_DETAIL.INIT_WITHDRAWALBATCH
         });
     };
 
     // 支払日をクリックした時の挙動
     const handlePaymentDateClick = id => {
         dataDispatch({
-            type: MANAGEMENT_PAYMENT.INIT_PAYMENTDATE,
+            type: MANAGEMENT_PAYMENT_DETAIL.INIT_PAYMENTDATE,
             payload: id
         });
     };
@@ -314,7 +324,10 @@ const PaymentList = ({
                                 >
                                     <span>予約番号</span>
                                 </th>
-                                <th className="txtalc">
+                                <th
+                                    className="sort txtalc"
+                                    onClick={e => handleSortClick("status")}
+                                >
                                     <span>ステータス</span>
                                 </th>
                                 <th
@@ -410,7 +423,8 @@ const PaymentList = ({
                                         className={classNames({
                                             done:
                                                 row?.status ==
-                                                    consts.statusPaid ||
+                                                    consts.statusVals
+                                                        .status_paid ||
                                                 row.saleable.valid == 0
                                         })}
                                     >
@@ -433,7 +447,7 @@ const PaymentList = ({
                                                         onChange={e =>
                                                             dataDispatch({
                                                                 type:
-                                                                    MANAGEMENT_PAYMENT.CHANGE_DONE_CHECK,
+                                                                    MANAGEMENT_PAYMENT_DETAIL.CHANGE_DONE_CHECK,
                                                                 payload: row.id
                                                             })
                                                         }

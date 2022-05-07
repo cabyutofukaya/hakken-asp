@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { ConstContext } from "../ConstApp";
 import { useMountedRef } from "../../../../hooks/useMountedRef";
-import { MANAGEMENT_PAYMENT } from "../../actions";
+import { MANAGEMENT_PAYMENT_DETAIL } from "../../actions";
 import CustomField from "../CustomField";
 import classNames from "classnames";
 // flatpickr
@@ -87,7 +87,7 @@ const PaymentBatchModal = ({
 
             if (mounted.current && response?.data?.data) {
                 dataDispatch({
-                    type: MANAGEMENT_PAYMENT.PAYMENT_BATCED,
+                    type: MANAGEMENT_PAYMENT_DETAIL.PAYMENT_BATCED,
                     payload: response.data.data
                 });
             }
@@ -125,7 +125,7 @@ const PaymentBatchModal = ({
                                 onChange={(date, dateStr) => {
                                     dataDispatch({
                                         type:
-                                            MANAGEMENT_PAYMENT.CHANGE_WITHDRAWALBATCH_INPUT,
+                                            MANAGEMENT_PAYMENT_DETAIL.CHANGE_WITHDRAWALBATCH_INPUT,
                                         payload: {
                                             name: "withdrawal_date",
                                             value: dateStr
@@ -162,7 +162,7 @@ const PaymentBatchModal = ({
                                 onChange={(date, dateStr) => {
                                     dataDispatch({
                                         type:
-                                            MANAGEMENT_PAYMENT.CHANGE_WITHDRAWALBATCH_INPUT,
+                                            MANAGEMENT_PAYMENT_DETAIL.CHANGE_WITHDRAWALBATCH_INPUT,
                                         payload: {
                                             name: "record_date",
                                             value: dateStr
@@ -213,7 +213,7 @@ const PaymentBatchModal = ({
                             handleChange={e =>
                                 dataDispatch({
                                     type:
-                                        MANAGEMENT_PAYMENT.CHANGE_WITHDRAWALBATCH_INPUT,
+                                        MANAGEMENT_PAYMENT_DETAIL.CHANGE_WITHDRAWALBATCH_INPUT,
                                     payload: {
                                         name: row?.key,
                                         value: e.target.value
@@ -231,7 +231,7 @@ const PaymentBatchModal = ({
                                 onChange={e => {
                                     dataDispatch({
                                         type:
-                                            MANAGEMENT_PAYMENT.CHANGE_WITHDRAWALBATCH_INPUT,
+                                            MANAGEMENT_PAYMENT_DETAIL.CHANGE_WITHDRAWALBATCH_INPUT,
                                         payload: {
                                             name: e.target.name,
                                             value: e.target.value
@@ -269,7 +269,7 @@ const PaymentBatchModal = ({
                             handleChange={e =>
                                 dataDispatch({
                                     type:
-                                        MANAGEMENT_PAYMENT.CHANGE_WITHDRAWALBATCH_INPUT,
+                                        MANAGEMENT_PAYMENT_DETAIL.CHANGE_WITHDRAWALBATCH_INPUT,
                                     payload: {
                                         name: row?.key,
                                         value: e.target.value
@@ -287,7 +287,7 @@ const PaymentBatchModal = ({
                             onChange={e => {
                                 dataDispatch({
                                     type:
-                                        MANAGEMENT_PAYMENT.CHANGE_WITHDRAWALBATCH_INPUT,
+                                        MANAGEMENT_PAYMENT_DETAIL.CHANGE_WITHDRAWALBATCH_INPUT,
                                     payload: {
                                         name: e.target.name,
                                         value: e.target.value

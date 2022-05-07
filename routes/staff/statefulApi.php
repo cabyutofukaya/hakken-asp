@@ -84,7 +84,9 @@ Route::domain(env('STAFF_DOMAIN', 'asp.hakken-tour.com'))->namespace('Staff\Api'
         // 支払管理
         Route::get('{reception}/{applicationStep}/{controlNumber}/itinerary/{itineraryNumber}/payable/list', 'AccountPayableController@index'); // 仕入先毎一覧（予約・見積詳細の「仕入れ先買掛金」枠）
 
-        Route::get('management/payment/list', 'AccountPayableDetailController@index'); 
+        Route::get('management/payment/reserve/list', 'AccountPayableReserveController@index'); 
+        Route::get('management/payment/list', 'AccountPayableDetailController@index'); // 詳細リスト
+
         Route::post('management/withdrawal/account_payable_detail/{accountPayableDetailId}', 'AgencyWithdrawalController@store')->where('accountPayableDetailId', '[0-9]+'); // 出金登録
         Route::delete('management/withdrawal/{agencyWithdrawalId}', 'AgencyWithdrawalController@destroy'); // 出金登録削除
         Route::put('management/account_payable_detail/{accountPayableDetailId}', 'AccountPayableDetailController@update')->where('accountPayableDetailId', '[0-9]+'); // 支払情報編集

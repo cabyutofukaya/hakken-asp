@@ -23,6 +23,7 @@
       consts='@json($consts)'
       customFields='@json($customFields)'
       customCategoryCode='{{ $customCategoryCode }}'
+      flashMessage='@json($flashMessage)'
       jsVars='@json($jsVars)'
     ></div>
   

@@ -193,9 +193,13 @@ class CreateFormComposer
             config('consts.user_custom_items.POSITION_APPLICATION_CUSTOM_FIELD') => $userCustomItems->where('display_position', config('consts.user_custom_items.POSITION_APPLICATION_CUSTOM_FIELD')), // カスタムフィールド
         ];
 
+        $flashMessage = [
+            'success_message' => session('success_message'),
+        ];
+
         // reactに渡す各種定数
         $jsVars = $this->getJsVars($agencyAccount);
 
-        $view->with(compact('defaultValue', 'formSelects', 'consts', 'customCategoryCode', 'customFields', 'userAddModalDefaultValue', 'jsVars'));
+        $view->with(compact('defaultValue', 'formSelects', 'consts', 'customCategoryCode', 'customFields', 'userAddModalDefaultValue', 'jsVars', 'flashMessage'));
     }
 }

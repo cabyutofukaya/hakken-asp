@@ -65,6 +65,17 @@ const AddUserModal = ({
         }
     };
 
+    //「登録する」ボタン押下
+    const handleAddUser = e => {
+        e.preventDefault();
+        if (!input?.userable?.user_ext?.age_kbn) {
+            if (!confirm("「年齢区分」が設定されていません。よろしいですか?")) {
+                return;
+            }
+        }
+        handleSubmit(e);
+    };
+
     return (
         <div
             id={id}
@@ -532,7 +543,7 @@ const AddUserModal = ({
                         <button
                             className="blueBtn"
                             disabled={isEditing}
-                            onClick={handleSubmit}
+                            onClick={handleAddUser}
                         >
                             登録する
                         </button>

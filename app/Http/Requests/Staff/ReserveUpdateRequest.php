@@ -130,7 +130,7 @@ class ReserveUpdateRequest extends FormRequest
             'departure_place' => 'nullable|max:100',
             'destination_id' => ['nullable',new ExistArea($agencyId)],
             'destination_place' => 'nullable|max:100',
-            'note' => 'nullable|max:100',
+            'note' => 'nullable|max:3000',
             'manager_id' => ['nullable', new ExistStaff($agencyId)],
             'updated_at' => 'nullable',
         ];

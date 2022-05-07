@@ -39,6 +39,7 @@ use App\Services\ReserveParticipantHotelPriceService;
 use App\Services\ReserveParticipantPriceService;
 use App\Services\ReserveItineraryService;
 use App\Services\AccountPayableDetailService;
+use App\Services\AccountPayableReserveService;
 use App\Traits\ReserveTrait;
 use DB;
 use Exception;
@@ -66,7 +67,8 @@ class ParticipantController extends Controller
         ReserveParticipantHotelPriceService $reserveParticipantHotelPriceService,
         ReserveParticipantPriceService $reserveParticipantPriceService,
         ReserveItineraryService $reserveItineraryService,
-        AccountPayableDetailService $accountPayableDetailService
+        AccountPayableDetailService $accountPayableDetailService, 
+        AccountPayableReserveService $accountPayableReserveService
     ) {
         $this->businessUserManagerService = $businessUserManagerService;
         $this->estimateService = $estimateService;
@@ -84,6 +86,7 @@ class ParticipantController extends Controller
         // traitで使用
         $this->reserveItineraryService = $reserveItineraryService;
         $this->accountPayableDetailService = $accountPayableDetailService;
+        $this->accountPayableReserveService = $accountPayableReserveService;
     }
 
     /**
@@ -125,9 +128,9 @@ class ParticipantController extends Controller
         } elseif ($reception === config('consts.const.RECEPTION_TYPE_WEB')) { // WEB受付
             // 見積or予約で処理を分ける
             if ($applicationStep == config("consts.reserves.APPLICATION_STEP_DRAFT")) { // 見積
-                $reserve = $this->webEstimateService->findByEstimateNumber($controlNumber, $agencyAccount, [], ['id']);
+                $reserve = $this->webEstimateService->findByEstimateNumber($controlNumber, $agencyAccount, [], ['id','updated_at']);
             } elseif ($applicationStep == config("consts.reserves.APPLICATION_STEP_RESERVE")) { // 予約
-                $reserve = $this->webReserveService->findByControlNumber($controlNumber, $agencyAccount, [], ['id']);
+                $reserve = $this->webReserveService->findByControlNumber($controlNumber, $agencyAccount, [], ['id','updated_at']);
             } else {
                 abort(404);
             }
@@ -135,11 +138,11 @@ class ParticipantController extends Controller
             if (!$reserve) {
                 abort(404, "データが見つかりません。編集する前に画面を再読み込みして最新情報を表示してください。");
             }
-    
+
             return IndexResource::collection($this->webReserveEstimateService->getParticipants($reserve->id))
                 ->additional([
                     'reserve' => [
-                        'updated_at' => $reserve->updated_at->format('Y-m-d H:i:s')
+                        'updated_at' => optional($reserve->updated_at)->format('Y-m-d H:i:s')
                     ]
                 ]);
         } else {
@@ -238,7 +241,7 @@ class ParticipantController extends Controller
                 } elseif ($reception === config('consts.const.RECEPTION_TYPE_WEB')) { // WEB受付
 
                     // 最新の予約情報を取得
-                    $reserve = $this->webReserveEstimateService>find($reserve->id);
+                    $reserve = $this->webReserveEstimateService->find($reserve->id);
 
                     return IndexResource::collection($this->webReserveEstimateService->getParticipants($reserve->id))->additional([
                         'reserve' => [
@@ -433,7 +436,7 @@ class ParticipantController extends Controller
             $newParticipant = DB::transaction(function () use ($oldParticipant, $reserve, $input) {
                 $newParticipant = $this->participantService->setCancel($oldParticipant->id);
                 
-                $this->reserveParticipantPriceService->participantNoCancelCharge($oldParticipant->id); // 当該参加者をキャンセルチャージナシで更新
+                $this->reserveParticipantPriceService->participantNoCancelCharge($reserve, $oldParticipant->id); // 当該参加者をキャンセルチャージナシで更新
 
                 $this->reserveParticipantPriceService->setIsAliveCancelByParticipantIdForPurchaseCancel($oldParticipant->id); // 全有効仕入行に対し、is_alive_cancelフラグをONにする。
 
@@ -509,7 +512,7 @@ class ParticipantController extends Controller
                 $this->reserveParticipantPriceService->setCancelDataByParticipantId($participant->id, 0, 0, 0, false); // 全ての仕入情報をキャンセルチャージ0円で初期化。valid=0の仕入行もこの処理でリセットされる
 
                 // キャンセルチャージ料金を保存
-                list($optionIds, $airplaneIds, $hotelIds) = $this->setReserveCancelCharge($input);
+                list($optionIds, $airplaneIds, $hotelIds) = $this->setReserveCancelCharge($input, $reserve);
 
                 $this->reserveParticipantPriceService->setIsAliveCancelByReserveParticipantPriceIds($optionIds, $airplaneIds, $hotelIds); // 対象参加者商品仕入IDに対し、is_alive_cancelフラグをONに。
 

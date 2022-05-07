@@ -37,7 +37,7 @@ class ReserveStoretRequest extends FormRequest
             'departure_place' => 'nullable|max:100',
             'destination_id' => ['nullable',new ExistArea(auth('staff')->user()->agency->id)],
             'destination_place' => 'nullable|max:100',
-            'note' => 'nullable|max:100',
+            'note' => 'nullable|max:3000',
             'manager_id' => ['nullable', new ExistStaff(auth('staff')->user()->agency->id)],
         ];
     }

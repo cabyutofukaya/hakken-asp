@@ -46,8 +46,14 @@ class AgencyConsultationController extends Controller
         // 一応検索に使用するパラメータだけに絞る
         $params = [];
         foreach (request()->all() as $key => $val) {
-            if (in_array($key, ['reserve_estimate_number','title','deadline_from','deadline_to','reception_date_from','reception_date_to','kind']) || strpos($key, config('consts.user_custom_items.USER_CUSTOM_ITEM_PREFIX')) === 0) { // カスタム項目はプレフィックスを元に抽出
+            if (in_array($key, ['reserve_estimate_number','title','deadline_from','deadline_to','reception_date_from','reception_date_to','kind','departure_date_from','departure_date_to']) || strpos($key, config('consts.user_custom_items.USER_CUSTOM_ITEM_PREFIX')) === 0) { // カスタム項目はプレフィックスを元に抽出
                 $params[$key] = $val;
+
+                if (in_array($key, ['reception_date_from','reception_date_to','deadline_from','deadline_to','departure_date_from','departure_date_to'], true)) { // カレンダーパラメータは日付を（YYYY/MM/DD → YYYY-MM-DD）に整形
+                    $params[$key] = !is_empty($val) ? date('Y-m-d', strtotime($val)) : null;
+                } else {
+                    $params[$key] = $val;
+                }
             }
         }
 
