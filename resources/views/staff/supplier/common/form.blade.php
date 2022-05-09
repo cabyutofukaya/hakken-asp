@@ -4,6 +4,7 @@
       <input 
         type="text" 
         name="code" 
+        class="codeInput"
         value="{{ $defaultValue['code'] ?? null }}"
         @if($editMode === 'edit') disabled @endif
         >

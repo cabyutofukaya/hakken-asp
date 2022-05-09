@@ -31,7 +31,7 @@ class AgencyDepositCustomValueRepository implements AgencyDepositCustomValueRepo
     public function updateField(int $agencyDepositCustomValueId, array $params) : Model
     {
         $this->agencyDepositCustomValue->where('id', $agencyDepositCustomValueId)->update($params);
-        return $this->agencyDepositCustomValue->findOrFail($agencyDepositCustomValueId);;
+        return $this->agencyDepositCustomValue->findOrFail($agencyDepositCustomValueId);
 
         // $agencyDepositCustomValue = $this->agencyDepositCustomValue->findOrFail($agencyDepositCustomValueId);
         // foreach ($params as $k => $v) {

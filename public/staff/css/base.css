@@ -298,6 +298,9 @@
     object-fit: cover;
     object-position: center center;
 }
+.documentPrint .dispPh img {
+    height: auto;
+}
 .dispPh h4 {
     position: relative;
     font-weight: bold;

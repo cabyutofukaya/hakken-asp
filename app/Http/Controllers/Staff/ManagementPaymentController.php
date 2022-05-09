@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Staff;
 
-use App\Models\AccountPayableDetail;
 use App\Http\Controllers\Controller;
+use App\Models\AccountPayableDetail;
+use App\Models\AccountPayableItem;
+use App\Models\AccountPayableReserve;
 use Illuminate\Http\Request;
 
 class ManagementPaymentController extends AppController
@@ -14,7 +16,7 @@ class ManagementPaymentController extends AppController
     public function reserve()
     {
         // 認可チェック
-        $response = \Gate::inspect('viewAny', [new AccountPayableDetail]);
+        $response = \Gate::inspect('viewAny', [new AccountPayableReserve]);
         if (!$response->allowed()) {
             abort(403);
         }
@@ -22,7 +24,22 @@ class ManagementPaymentController extends AppController
         return view('staff.management_payment.reserve');
     }
 
-    // 一覧
+    /**
+     * 仕入先＆商品毎詳細
+     */
+    public function item()
+    {
+        // 認可チェック
+        $response = \Gate::inspect('viewAny', [new AccountPayableItem]);
+        if (!$response->allowed()) {
+            abort(403);
+        }
+
+        return view('staff.management_payment.item');
+        // return view('staff.management_payment.item2');
+    }
+    
+    // 商品詳細
     public function index()
     {
         // 認可チェック

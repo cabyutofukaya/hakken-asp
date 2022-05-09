@@ -15,6 +15,7 @@
       type="text" 
       name="code" 
       value="{{ Arr::get($defaultValue, "code", "") }}"
+      class="codeInput"
       @if($editMode === 'edit') disabled @endif
       >
   </li>
