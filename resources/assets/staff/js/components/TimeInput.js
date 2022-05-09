@@ -1,7 +1,8 @@
 import React, { useCallback } from "react";
 
 /**
- * 数字のみ入力可のinput
+ * 数字とコロンのみ入力可のinput
+ * 時刻入力フィールド用
  *
  * @returns
  */
@@ -21,7 +22,7 @@ const TimeInput = ({
             return String.fromCharCode(s.charCodeAt(0) - 0xfee0);
         }); // 全角数字→半角変換
 
-        // 負数の入力OK
+        // 数字とコロンが入力OK
         if (e.target.value === "" || /[0-9:]+$/.test(e.target.value)) {
             handleChange(e);
         }

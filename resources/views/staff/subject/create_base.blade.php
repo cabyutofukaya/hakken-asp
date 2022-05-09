@@ -56,5 +56,6 @@
 		dateFormat: "Y/m/d"
     });
 </script>
+@include('staff.common._codeinput_js')
 <script src="{{ mix('/staff/js/subject-create.js') }}"></script>
 @endsection

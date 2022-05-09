@@ -190,12 +190,7 @@ const PaymentList = ({ searchParam, formSelects, consts }) => {
                                         <td>
                                             {!row.reserve?.is_deleted && (
                                                 <>
-                                                    <a
-                                                        href={
-                                                            row.reserve_url ??
-                                                            ""
-                                                        }
-                                                    >
+                                                    <a href={row.link_url}>
                                                         {row.reserve
                                                             ?.control_number ??
                                                             "-"}

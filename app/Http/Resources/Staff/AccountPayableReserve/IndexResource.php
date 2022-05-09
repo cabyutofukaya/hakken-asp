@@ -26,6 +26,7 @@ class IndexResource extends JsonResource
 
         return [
             'id' => $this->id,
+            'link_url' => route('staff.management.payment.item', ['agencyAccount' => $request->agencyAccount, 'reserve_number' => optional($this->reserve)->control_number]), // 仕入先＆商品毎詳細ページURL
             'reserve_url' => $reserveUrl,
             'amount_billed' => $this->amount_billed,
             'unpaid_balance' => $this->unpaid_balance,
