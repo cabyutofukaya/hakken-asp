@@ -17,13 +17,14 @@ class AccountPayableItem extends Model
     use ModelLogTrait,SoftDeletes,Sortable;
 
     public $sortable = [
-        // 'id',
-        // 'reserve.control_number',
-        // 'reserve.departure_date',
-        // 'amount_billed',
-        // 'unpaid_balance',
-        // 'reserve_manager',
-        // 'reserve.note',
+        'item_code',
+        'item_name',
+        'status',
+        'supplier_name',
+        'amount_billed',
+        'unpaid_balance',
+        'last_manager.name',
+        'last_note',
     ];
 
     /**
@@ -32,10 +33,19 @@ class AccountPayableItem extends Model
      * @var array
      */
     protected $fillable = [
+        'payable_number',
+        'reserve_itinerary_id',
+        'supplier_id',
+        'supplier_name',
+        'item_id',
+        'item_code',
+        'item_name',
+        'subject',
         'agency_id',
         'reserve_id',
         'amount_billed',
         'unpaid_balance',
+        'payment_date',
         'last_manager_id',
         'last_note',
         'status',
@@ -82,6 +92,24 @@ class AccountPayableItem extends Model
     public function reserve()
     {
         return $this->belongsTo('App\Models\Reserve')->withTrashed()->withDefault();
+    }
+
+    // 仕入先
+    public function supplier()
+    {
+        return $this->belongsTo('App\Models\Supplier')->withDefault();
+    }
+
+    // 出金管理
+    public function agency_withdrawal_item_histories()
+    {
+        return $this->hasMany('App\Models\AgencyWithdrawalItemHistory');
+    }
+
+    // (最後の)担当者
+    public function last_manager()
+    {
+        return $this->belongsTo('App\Models\Staff')->withDefault();
     }
     
     //////////////////// ローカルスコープ ここから /////////////////////////

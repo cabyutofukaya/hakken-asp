@@ -60,6 +60,91 @@ class AccountPayableReserveRepository implements AccountPayableReserveRepository
         return $this->accountPayableReserve->find($id);
     }
 
+    /**
+     * 当該予約IDのNet・未払金額を更新
+     *
+     * @param int $reserveId 予約ID
+     * @param int $reserveItineraryId (有効)行程ID
+     */
+    public function refreshAmountByReserveId(int $reserveId, ?int $reserveItineraryId) : bool
+    {
+        if (!$reserveItineraryId) { // 行程IDがない場合は0円で初期化
+
+            $agencyId = \App\Models\Reserve::where('id', $reserveId)->value('agency_id');
+
+            $this->accountPayableReserve->updateOrCreate(
+                ['reserve_id' => $reserveId],
+                [
+                    'agency_id' => $agencyId,
+                    'amount_billed' => 0,
+                    'unpaid_balance' => 0,
+                    'status' => config("consts.account_payable_reserves.STATUS_NONE"),
+                    'updated_at' => date('Y-m-d H:i:s'),
+                    'created_at' => date('Y-m-d H:i:s'),
+                ],
+            );
+        } else {
+
+            // ステータス値
+            $statusUnpaid = config("consts.account_payable_reserves.STATUS_UNPAID");
+            $statusOverpaid = config("consts.account_payable_reserves.STATUS_OVERPAID");
+            $statusPaid = config("consts.account_payable_reserves.STATUS_PAID");
+            $statusNone = config("consts.account_payable_reserves.STATUS_NONE");
+
+            $AND_RESERVE_ITINERARY_ID = $reserveItineraryId ? " AND reserve_itinerary_id = {$reserveItineraryId}" : "";
+
+            // 当該予約レコードが存在していれば(金額カラムを)更新、なければレコードを登録。削除済み行(deleted_at)は集計には含めない
+            // statusのcase文はPaymentTrait@getPaymentStatusと同じロジック
+            $sql = "
+            INSERT INTO account_payable_reserves(
+                reserve_id,
+                agency_id,
+                amount_billed,
+                unpaid_balance,
+                status,
+                updated_at,
+                created_at
+            )
+            SELECT
+                reserve_id,
+                agency_id,
+                amount_billed,
+                unpaid_balance,
+                status,
+                NOW(),
+                NOW()
+            FROM
+                (
+                    SELECT
+                        reserve_id,
+                        agency_id,
+                        sum(CASE WHEN deleted_at IS NULL THEN amount_billed ELSE 0 END) AS amount_billed,
+                        sum(CASE WHEN deleted_at IS NULL THEN unpaid_balance ELSE 0 END) AS unpaid_balance,
+                        CASE
+                            WHEN sum(CASE WHEN deleted_at IS NULL THEN unpaid_balance ELSE 0 END) > 0 THEN {$statusUnpaid}
+                            WHEN sum(CASE WHEN deleted_at IS NULL THEN unpaid_balance ELSE 0 END) < 0 THEN {$statusOverpaid}
+                            WHEN sum(CASE WHEN deleted_at IS NULL THEN unpaid_balance ELSE 0 END) = 0 AND sum(CASE WHEN deleted_at IS NULL THEN amount_billed ELSE 0 END) > 0 THEN {$statusPaid}
+                            ELSE {$statusNone}
+                        END AS status
+                    FROM
+                        account_payable_details
+                    WHERE
+                    reserve_id = {$reserveId} AND reserve_itinerary_id = {$reserveItineraryId} 
+                    GROUP BY
+                        reserve_id
+                ) t
+            ON DUPLICATE KEY UPDATE
+                amount_billed = t.amount_billed,
+                unpaid_balance = t.unpaid_balance,
+                status = t.status,
+                updated_at = NOW()
+            ";
+
+            \DB::statement($sql);
+        }
+        return true;
+    }
+
     ///////////////// 以下は予約済ステータス専用処理。メソッド末尾が Reserved
     
     /**
@@ -86,22 +171,18 @@ class AccountPayableReserveRepository implements AccountPayableReserveRepository
                 $query = $query->whereHas('reserve', function ($q) use ($val) {
                     $q->where('control_number', 'like', "%$val%");
                 });
-
             } elseif ($key=== 'manager_id') { // 自社担当
                 $query = $query->whereHas('reserve', function ($q) use ($val) {
                     $q->where('manager_id', $val);
                 });
-
             } elseif ($key=== 'departure_date_from') { // 出発日(From)
                 $query = $query->whereHas('reserve', function ($q) use ($val) {
                     $q->where('departure_date', '>=', $val);
                 });
-
             } elseif ($key=== 'departure_date_to') { // 出発日(To)
                 $query = $query->whereHas('reserve', function ($q) use ($val) {
                     $q->where('departure_date', '<=', $val);
                 });
-
             } elseif ($key === 'status') { // ステータス
                 $query = $query->where($key, $val);
             } else { // 上記以外

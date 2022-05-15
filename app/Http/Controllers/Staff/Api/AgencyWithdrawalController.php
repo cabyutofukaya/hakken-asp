@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers\Staff\Api;
 
-use App\Models\AgencyWithdrawal;
-use App\Events\ChangePaymentAmountEvent;
+use App\Events\ChangePaymentDetailAmountEvent;
+use App\Events\ChangePaymentItemAmountEvent;
 use App\Events\ChangePaymentReserveAmountEvent;
 use App\Events\PriceRelatedChangeEvent;
 use App\Exceptions\ExclusiveLockException;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Staff\AgencyWithdrawalStoreRequest;
 use App\Http\Requests\Staff\AgencyWithdrawalDeleteRequest;
+use App\Http\Requests\Staff\AgencyWithdrawalStoreRequest;
 use App\Http\Resources\Staff\AccountPayableDetail\IndexResource;
+use App\Models\AgencyWithdrawal;
 use App\Services\AccountPayableDetailService;
 use App\Services\AgencyWithdrawalService;
 use Illuminate\Support\Arr;
@@ -52,14 +53,17 @@ class AgencyWithdrawalController extends Controller
         $input['reserve_travel_date_id'] = $accountPayableDetail->reserve_travel_date_id; // 旅行日ID
 
         try {
-            $agencyWithdrawal = \DB::transaction(function () use ($input) {
+            $agencyWithdrawal = \DB::transaction(function () use ($input, $accountPayableDetail) {
                 $agencyWithdrawal = $this->agencyWithdrawalService->create($input); // 同時編集チェック。出金登録リクエストと入れ違いで行程が変更された(仕入先が変更された等)場合などは例外が投げられる
                 
                 // ステータスと支払い残高計算
-                event(new ChangePaymentAmountEvent($agencyWithdrawal->account_payable_detail->id));
+                event(new ChangePaymentDetailAmountEvent($agencyWithdrawal->account_payable_detail->id));
+
+                // 当該行程の仕入先＆商品毎のステータスと未払金額計算。
+                event(new ChangePaymentItemAmountEvent($accountPayableDetail->reserve_itinerary_id));
 
                 // 当該予約の支払いステータスと未払金額計算
-                event(new ChangePaymentReserveAmountEvent($agencyWithdrawal->reserve_id));
+                event(new ChangePaymentReserveAmountEvent($agencyWithdrawal->reserve));
 
                 event(new PriceRelatedChangeEvent($agencyWithdrawal->reserve_id, date('Y-m-d H:i:s'))); // 料金変更に関わるイベントが起きた際に日時を記録
 
@@ -107,10 +111,13 @@ class AgencyWithdrawalController extends Controller
             $result = \DB::transaction(function () use ($agencyWithdrawal) {
                 $this->agencyWithdrawalService->delete($agencyWithdrawal->id, true); // 論理削除
     
-                event(new ChangePaymentAmountEvent($agencyWithdrawal->account_payable_detail_id));
+                event(new ChangePaymentDetailAmountEvent($agencyWithdrawal->account_payable_detail_id));
 
+                // 当該行程の仕入先＆商品毎のステータスと未払金額計算。
+                event(new ChangePaymentItemAmountEvent($agencyWithdrawal->account_payable_detail->reserve_itinerary_id));
+                
                 // 当該予約の支払いステータスと未払金額計算
-                event(new ChangePaymentReserveAmountEvent($agencyWithdrawal->reserve_id));
+                event(new ChangePaymentReserveAmountEvent($agencyWithdrawal->reserve));
 
                 event(new PriceRelatedChangeEvent($agencyWithdrawal->reserve_id, date('Y-m-d H:i:s'))); // 料金変更に関わるイベントが起きた際に日時を記録
     
@@ -118,7 +125,7 @@ class AgencyWithdrawalController extends Controller
             });
     
             if ($result) {
-                $accountPayableDetail = $this->accountPayableDetailService->find($agencyWithdrawal->account_payable_detail_id, ['reserve','supplier', 'agency_withdrawals.v_agency_withdrawal_custom_values'], );
+                $accountPayableDetail = $this->accountPayableDetailService->find($agencyWithdrawal->account_payable_detail_id, ['reserve','supplier', 'agency_withdrawals.v_agency_withdrawal_custom_values']);
     
                 // 当該出金データの親レコードとなる仕入詳細データを返す
                 return new IndexResource($accountPayableDetail, 200);

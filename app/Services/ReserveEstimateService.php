@@ -30,7 +30,7 @@ use App\Traits\ReserveTrait;
 /**
  * 予約・見積の共通処理をまとめたReserveServiceとEstimateService親クラス
  */
-class ReserveEstimateService implements ReserveEstimateInterface
+class ReserveEstimateService extends ReserveBaseService implements ReserveEstimateInterface
 {
     use ConstsTrait, UserCustomItemTrait, ReserveTrait;
     

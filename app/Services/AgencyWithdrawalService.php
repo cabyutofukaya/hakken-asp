@@ -3,16 +3,17 @@
 namespace App\Services;
 
 use App\Exceptions\ExclusiveLockException;
+use App\Models\AccountPayableItem;
 use App\Models\AgencyWithdrawal;
 use App\Repositories\AccountPayableDetail\AccountPayableDetailRepository;
 use App\Repositories\Agency\AgencyRepository;
 use App\Repositories\AgencyWithdrawal\AgencyWithdrawalRepository;
-use Illuminate\Pagination\LengthAwarePaginator;
-use App\Services\AgencyWithdrawalCustomValueService;
 use App\Services\AccountPayableDetailService;
+use App\Services\AgencyWithdrawalCustomValueService;
+use App\Traits\UserCustomItemTrait;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
-use App\Traits\UserCustomItemTrait;
 
 class AgencyWithdrawalService
 {
@@ -90,6 +91,55 @@ class AgencyWithdrawalService
         ]); // account_payable_detailsテーブルの担当者と備考を更新
 
         return $agencyWithdrawal;
+    }
+
+    /**
+     * バルクインサート(支払管理の仕入先＆商品毎ページ用出金登録)
+     * クエリの組み立ては、基本的にAccountPayableDetailRepository@paginateByAgencyIdと同じ
+     *
+     * @param ?string $applicationStep 申し込み段階。全レコード対象の場合はnull
+     * @param bool $exZero 仕入額・未払い額が0円のレコードを取得しない場合はtrue
+     */
+    public function bulkCreateForItem(array $input, AccountPayableItem $accountPayableItem, ?string $applicationStep, bool $exZero = true)
+    {
+        $insertParams = [];
+
+        // 出金割合
+        $rate = get_agency_withdrawal_rate(Arr::get($input, "amount"), $accountPayableItem->unpaid_balance);
+
+        // 出金対象となる商品仕入れコードをselectし、出金レコード作成用の配列を作成
+        $query = $applicationStep === config('consts.reserves.APPLICATION_STEP_RESERVE') ? $this->accountPayableDetailService->getSummarizeItemQuery($accountPayableItem->toArray())->decided()->select(['id', 'unpaid_balance', 'reserve_travel_date_id', 'saleable_type', 'saleable_id'])->with(['saleable:id,participant_id']) : $this->accountPayableDetailService->getSummarizeItemQuery($accountPayableItem->toArray())->select(['id', 'unpaid_balance', 'reserve_travel_date_id', 'saleable_type', 'saleable_id'])->with(['saleable:id,participant_id']); // スコープを設定
+
+        // 入額・未払い額が0円のレコードを取得しない場合はexcludingzero
+        $query = $exZero ? $query->excludingzero() : $query;
+
+        $query->chunk(100, function ($rows) use (&$insertParams, $input, $rate) { // 負荷対策のため念の為、100件ずつ取得
+            foreach ($rows as $row) {
+                $tmp = [];
+                /** 全レコード共通値 */
+                $tmp['agency_id'] = Arr::get($input, "agency_id");
+                $tmp['reserve_id'] = Arr::get($input, "reserve_id");
+                $tmp['withdrawal_date'] = Arr::get($input, "withdrawal_date");
+                $tmp['record_date'] = Arr::get($input, "record_date");
+                $tmp['manager_id'] = Arr::get($input, "manager_id");
+                $tmp['note'] = null; // 備考は一括入力したものをセットする必要はないとお思われる
+                $tmp['supplier_id_log'] = Arr::get($input, "manager_id");
+                /** レコードによって変わる値 */
+                $amount = $row->unpaid_balance * $rate;
+                if (!preg_match('/^[0-9\-]+$/', $amount)) { // 商品仕入額のパーセンテージが割り切れないケース。数字とマイナス記号のみの構成であること(マイナス記号は必要か不明だが、一応許可しておく)
+                    throw new \Exception("未払金額に対する出金額の割合が正しくありません。");
+                }
+                $tmp['amount'] = $amount;
+                $tmp['account_payable_detail_id'] = $row->id;
+                $tmp['reserve_travel_date_id'] = $row->reserve_travel_date_id;
+                $tmp['participant_id'] = $row->saleable->participant_id;
+
+                $insertParams[] = $tmp;
+            }
+        });
+
+        // 出金レコードをバルクインサート
+        return $this->agencyWithdrawalRepository->insert($insertParams);
     }
 
     /**

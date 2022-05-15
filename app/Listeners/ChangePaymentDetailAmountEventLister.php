@@ -3,14 +3,14 @@
 namespace App\Listeners;
 
 use App\Traits\PaymentTrait;
-use App\Events\ChangePaymentAmountEvent;
+use App\Events\ChangePaymentDetailAmountEvent;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use App\Services\AccountPayableDetailService;
 use App\Services\AgencyWithdrawalService;
 
 // 支払管理(詳細)の支払残高、ステータス更新イベント
-class ChangePaymentAmountEventLister
+class ChangePaymentDetailAmountEventLister
 {
     use PaymentTrait;
     
@@ -28,10 +28,10 @@ class ChangePaymentAmountEventLister
     /**
      * Handle the event.
      *
-     * @param  ChangePaymentAmountEvent  $event
+     * @param  ChangePaymentDetailAmountEvent  $event
      * @return void
      */
-    public function handle(ChangePaymentAmountEvent $event)
+    public function handle(ChangePaymentDetailAmountEvent $event)
     {
         // 行ロックで取得
         $accountPayableDetail = $this->accountPayableDetailService->find($event->accountPayableDetailId, [], [], true);
@@ -46,14 +46,6 @@ class ChangePaymentAmountEventLister
 
         // 支払いステータスを取得
         $newStatus = $this->getPaymentStatus($unpaidAmount, $accountPayableDetail->amount_billed, 'account_payable_details');
-
-        // if ($unpaidAmount > 0) { // 支払い残高あり＝未払い
-        //     $newStatus = config('consts.account_payable_details.STATUS_UNPAID');
-        // } elseif ($unpaidAmount < 0) { // 支払い残高がマイナス＝過払い
-        //     $newStatus = config('consts.account_payable_details.STATUS_OVERPAID');
-        // } else { // 支払い残高0
-        //     $newStatus = $accountPayableDetail->amount_billed ? config('consts.account_payable_details.STATUS_PAID') : config('consts.account_payable_details.STATUS_NONE'); // 請求金額がある場合は支払い済み。それ以外はNoneで初期化
-        // }
 
         if ($currentStatus != $newStatus || $currentUnpaidAmount != $unpaidAmount) { // ステータスか未払い金額が変更されていたら更新
             $this->accountPayableDetailService->updateStatusAndUnpaidBalance($accountPayableDetail->id, $unpaidAmount, $newStatus);

@@ -23,7 +23,7 @@ class AirplaneIndexResource extends JsonResource
         });
 
         $base = [
-            // "id" => $this->id,
+            "id" => $this->id, // IDはname_exカラムに保存する値なので必ず設定
             "name" => $this->name,
             "booking_class" => $this->booking_class,
             "code" => $this->code,

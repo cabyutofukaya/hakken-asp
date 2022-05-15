@@ -18,6 +18,8 @@ interface AccountPayableDetailRepositoryInterface
 
   public function whereExists($where) : bool;
 
+  public function getSummarizeItemQuery(int $agencyId, int $reserveId, int $reserveItineraryId, int $supplierId, string $subject, int $itemId);
+
   public function save($data) : AccountPayableDetail;
 
   public function update(int $id, array $data): AccountPayableDetail;

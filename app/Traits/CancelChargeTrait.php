@@ -2,11 +2,12 @@
 
 namespace App\Traits;
 
-use App\Events\ChangePaymentAmountEvent;
+use App\Events\ChangePaymentDetailAmountEvent;
+use App\Events\ChangePaymentItemAmountEvent;
 use App\Events\ChangePaymentReserveAmountEvent;
+use App\Models\Participant;
 use App\Models\Reserve;
 use App\Models\ReserveItinerary;
-use App\Models\Participant;
 use Illuminate\Support\Arr;
 
 /**
@@ -139,7 +140,7 @@ trait CancelChargeTrait
             $ids = collect($options)->pluck("id")->all();
 
             foreach ($this->accountPayableDetailService->getIdsBySaleableIds('App\Models\ReserveParticipantOptionPrice', $ids) as $accountPayableDetailId) {
-                event(new ChangePaymentAmountEvent($accountPayableDetailId));
+                event(new ChangePaymentDetailAmountEvent($accountPayableDetailId));
             }
         }
         if ($airplanes) { // 航空券科目
@@ -161,7 +162,7 @@ trait CancelChargeTrait
             $ids = collect($airplanes)->pluck("id")->all();
 
             foreach ($this->accountPayableDetailService->getIdsBySaleableIds('App\Models\ReserveParticipantAirplanePrice', $ids) as $accountPayableDetailId) {
-                event(new ChangePaymentAmountEvent($accountPayableDetailId));
+                event(new ChangePaymentDetailAmountEvent($accountPayableDetailId));
             }
         }
         if ($hotels) { // ホテル科目
@@ -183,19 +184,15 @@ trait CancelChargeTrait
             $ids = collect($hotels)->pluck("id")->all();
 
             foreach ($this->accountPayableDetailService->getIdsBySaleableIds('App\Models\ReserveParticipantHotelPrice', $ids) as $accountPayableDetailId) {
-                event(new ChangePaymentAmountEvent($accountPayableDetailId));
+                event(new ChangePaymentDetailAmountEvent($accountPayableDetailId));
             }
         }
 
-
-        /**
-         * 支払管理レコード更新処理
-         */
-        // account_payable_reservesのamount_billedを最新状態に更新
-        $this->accountPayableReserveService->refreshAmountBilledByReserveId($reserve);
+        // 当該予約の有効行程の仕入先＆商品毎のステータスと未払金額計算
+        event(new ChangePaymentItemAmountEvent($reserve->enabled_reserve_itinerary->id));
 
         // 当該予約の支払いステータスと未払金額計算
-        event(new ChangePaymentReserveAmountEvent($reserve->id));
+        event(new ChangePaymentReserveAmountEvent($reserve));
 
         return [
             $optionIds,

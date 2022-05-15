@@ -7,17 +7,26 @@ use App\Models\AccountPayableDetail;
 use App\Models\Supplier;
 use App\Repositories\AccountPayableDetail\AccountPayableDetailRepository;
 use App\Repositories\Agency\AgencyRepository;
+use App\Repositories\AgencyWithdrawal\AgencyWithdrawalRepository;
+use App\Traits\PaymentTrait;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 
+
 class AccountPayableDetailService implements AccountPayableInterface
 {
-    public function __construct(AgencyRepository $agencyRepository, AccountPayableDetailRepository $accountPayableDetailRepository)
+    use PaymentTrait;
+
+    // 仕入先＆商品毎にまとめるための条件カラム一覧
+    const SUMMARIZE_ITEM_COLUMNS = ['agency_id', 'reserve_id', 'reserve_itinerary_id', 'supplier_id', 'subject', 'item_id'];
+
+    public function __construct(AgencyRepository $agencyRepository, AccountPayableDetailRepository $accountPayableDetailRepository, AgencyWithdrawalRepository $agencyWithdrawalRepository)
     {
         $this->agencyRepository = $agencyRepository;
         $this->accountPayableDetailRepository = $accountPayableDetailRepository;
+        $this->agencyWithdrawalRepository = $agencyWithdrawalRepository;
     }
 
     /**
@@ -48,6 +57,46 @@ class AccountPayableDetailService implements AccountPayableInterface
         return $this->accountPayableDetailRepository->whereExists($where);
     }
 
+    /**
+     * 仕入先＆商品毎にまとめるための条件クエリを取得
+     * 
+     * @param array $columnVals 対応カラム名と値の配列
+     */
+    public function getSummarizeItemQuery(array $columnVals)
+    {
+        foreach (self::SUMMARIZE_ITEM_COLUMNS as $col) {
+            $$col = $columnVals[$col];
+        }
+
+        return $this->accountPayableDetailRepository->getSummarizeItemQuery($agency_id, $reserve_id, $reserve_itinerary_id, $supplier_id, $subject, $item_id);
+    }
+
+    /**
+     * 商品毎レコードの一括金額＆ステータス更新
+     * 
+     * @param int $amount 出金額
+     * @param int $withdrawalRate 出金額比率
+     * @param array $columnVals 
+     */
+    public function batchRefreshAmountForItem(array $columnVals) : bool
+    {
+        $updateParams = [];
+
+        $this->getSummarizeItemQuery($columnVals)->select(['id','amount_billed','unpaid_balance', 'status'])->chunk(100, function ($rows) use(&$updateParams) { // 念の為100件ずつ取得
+            foreach($rows as $row){
+                $tmp = [];
+                $tmp['id'] = $row->id;
+                $tmp['amount_billed'] = $row->amount_billed;
+                $tmp['unpaid_balance'] = $row->unpaid_balance - $this->agencyWithdrawalRepository->getSumAmountByAccountPayableDetailId($row->id, true); // 出金後の金額を計算
+                $tmp['status'] = $this->getPaymentStatus($tmp['unpaid_balance'], $tmp['amount_billed'], 'account_payable_details'); // ステータス更新
+
+                $updateParams[] = $tmp;
+            }
+        });
+
+        // 対象行の残高、ステータスをバルクアップデート
+        return $this->accountPayableDetailRepository->updateBulk($updateParams, 'id');
+    }
 
     /**
      * 一覧を取得
@@ -105,6 +154,19 @@ class AccountPayableDetailService implements AccountPayableInterface
     public function updateFields(int $id, $params)
     {
         return $this->accountPayableDetailRepository->updateField($id, $params);
+    }
+
+    /**
+     * 支払日を更新
+     */
+    public function updatePaymentDate(int $reserveId, int $supplierId, string $paymentDate)
+    {
+        $this->accountPayableDetailRepository->updateWhere(
+            ['payment_date' => $paymentDate],
+            ['reserve_id' => $reserveId, 'supplier_id' => $supplierId]
+        );
+
+        return true;
     }
 
     /**

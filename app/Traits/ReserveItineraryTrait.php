@@ -2,9 +2,10 @@
 
 namespace App\Traits;
 
-use Illuminate\Support\Arr;
 use App\Models\Participant;
+use App\Models\Reserve;
 use App\Models\ReservePurchasingSubject;
+use Illuminate\Support\Arr;
 
 /**
  * ReserveItineraryのcomposerで使うtrait
@@ -99,4 +100,39 @@ trait ReserveItineraryTrait
             }
         }
     }
+
+    // /**
+    //  * accountPayableReservesレコードの新規作成or更新
+    //  * 当該予約の支払金額が更新される際に呼び出す
+    //  *
+    //  * @param Reserve $reserve 予約情報
+    //  */
+    // public function accountPayableReserveUpdateOrCreate(Reserve $reserve)
+    // {
+    //     $sumNet = 0;
+    //     if ($reserve->enabled_reserve_itinerary->id) { // 有効行程あり
+    //         $sumNet = $reserve->enabled_reserve_itinerary->sum_net; // 仕入先への総支払額
+    //     }
+
+    //     // 支払管理(予約毎)レコードを新規登録or更新
+    //     if (($accountPayableReserve = $this->accountPayableReserveService->findByReserveId($reserve->id))) { // 当該予約の支払管理レコードが既に存在する場合はamount_billedが変更されていたら更新。ステータスと未払金額はChangePaymentReserveAmountEventで更新するので支払額のみ書き換え
+    //         if ($accountPayableReserve->amount_billed !== $sumNet) {
+    //             $this->accountPayableReserveService->update($accountPayableReserve->id, [
+    //                 'amount_billed' => $sumNet,
+    //             ]);
+    //         }
+    //     } else { // 新規作成
+                    
+    //         $this->accountPayableReserveService->create(
+    //             [
+    //                 'reserve_id' => $reserve->id,
+    //                 'agency_id' => $reserve->agency_id,
+    //                 'amount_billed' => $sumNet,
+    //                 // 新規登録時はステータス=未払、未払金額=支払額で初期化
+    //                 'status' => config('consts.account_payable_reserves.STATUS_UNPAID'),
+    //                 'unpaid_balance' => $sumNet,
+    //             ]
+    //         );
+    //     }
+    // }
 }

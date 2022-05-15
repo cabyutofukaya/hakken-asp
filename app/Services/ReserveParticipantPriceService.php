@@ -2,8 +2,9 @@
 
 namespace App\Services;
 
-use App\Events\ChangePaymentAmountEvent;
+use App\Events\ChangePaymentDetailAmountEvent;
 use App\Events\ChangePaymentReserveAmountEvent;
+use App\Events\ChangePaymentItemAmountEvent;
 use App\Models\Participant;
 use App\Models\Reserve;
 use Illuminate\Support\Arr;
@@ -137,7 +138,7 @@ class ReserveParticipantPriceService
                 $accountPayableDetailId = $this->accountPayableDetailService->setCancelChargeBySaleableId(0, 'App\Models\ReserveParticipantOptionPrice', $id, true);
         
                 // ステータスと支払い残高計算
-                event(new ChangePaymentAmountEvent($accountPayableDetailId));
+                event(new ChangePaymentDetailAmountEvent($accountPayableDetailId));
             }
         }
 
@@ -149,7 +150,7 @@ class ReserveParticipantPriceService
                 $accountPayableDetailId = $this->accountPayableDetailService->setCancelChargeBySaleableId(0, 'App\Models\ReserveParticipantAirplanePrice', $id, true);
 
                 // ステータスと支払い残高計算
-                event(new ChangePaymentAmountEvent($accountPayableDetailId));
+                event(new ChangePaymentDetailAmountEvent($accountPayableDetailId));
             }
         }
 
@@ -161,19 +162,15 @@ class ReserveParticipantPriceService
                 $accountPayableDetailId = $this->accountPayableDetailService->setCancelChargeBySaleableId(0, 'App\Models\ReserveParticipantHotelPrice', $id, true);
 
                 // ステータスと支払い残高計算
-                event(new ChangePaymentAmountEvent($accountPayableDetailId));
+                event(new ChangePaymentDetailAmountEvent($accountPayableDetailId));
             }
         }
 
-
-        /**
-         * 支払管理レコード更新処理
-         */
-        // account_payable_reservesのamount_billedを最新状態に更新
-        $this->accountPayableReserveService->refreshAmountBilledByReserveId($reserve);
+        // 当該予約の有効行程の仕入先＆商品毎のステータスと未払金額計算
+        event(new ChangePaymentItemAmountEvent($reserve->enabled_reserve_itinerary->id));
 
         // 当該予約の支払いステータスと未払金額計算
-        event(new ChangePaymentReserveAmountEvent($reserve->id));
+        event(new ChangePaymentReserveAmountEvent($reserve));
 
 
         return true;
@@ -193,7 +190,7 @@ class ReserveParticipantPriceService
                 $accountPayableDetailId = $this->accountPayableDetailService->setCancelChargeBySaleableId(0, 'App\Models\ReserveParticipantOptionPrice', $id, true);
         
                 // ステータスと支払い残高計算
-                event(new ChangePaymentAmountEvent($accountPayableDetailId));
+                event(new ChangePaymentDetailAmountEvent($accountPayableDetailId));
             }
         }
 
@@ -206,7 +203,7 @@ class ReserveParticipantPriceService
                 $accountPayableDetailId = $this->accountPayableDetailService->setCancelChargeBySaleableId(0, 'App\Models\ReserveParticipantAirplanePrice', $id, true);
 
                 // ステータスと支払い残高計算
-                event(new ChangePaymentAmountEvent($accountPayableDetailId));
+                event(new ChangePaymentDetailAmountEvent($accountPayableDetailId));
             }
         }
 
@@ -219,19 +216,15 @@ class ReserveParticipantPriceService
                 $accountPayableDetailId = $this->accountPayableDetailService->setCancelChargeBySaleableId(0, 'App\Models\ReserveParticipantHotelPrice', $id, true);
 
                 // ステータスと支払い残高計算
-                event(new ChangePaymentAmountEvent($accountPayableDetailId));
+                event(new ChangePaymentDetailAmountEvent($accountPayableDetailId));
             }
         }
 
-
-        /**
-         * 支払管理レコード更新処理
-         */
-        // account_payable_reservesのamount_billedを最新状態に更新
-        $this->accountPayableReserveService->refreshAmountBilledByReserveId($reserve);
+        // 当該予約の有効行程の仕入先＆商品毎のステータスと未払金額計算
+        event(new ChangePaymentItemAmountEvent($reserve->enabled_reserve_itinerary->id));
 
         // 当該予約の支払いステータスと未払金額計算
-        event(new ChangePaymentReserveAmountEvent($reserve->id));
+        event(new ChangePaymentReserveAmountEvent($reserve));
 
         return true;
     }

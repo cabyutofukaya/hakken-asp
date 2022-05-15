@@ -30,7 +30,7 @@ use Illuminate\Support\Arr;
  * 
  * Web予約・見積の共通処理をまとめたWebReserveServiceとWebEstimateService親クラス
  */
-class WebReserveEstimateService implements ReserveEstimateInterface
+class WebReserveEstimateService extends ReserveBaseService implements ReserveEstimateInterface
 {
     use ConstsTrait, UserCustomItemTrait, ReserveTrait;
     

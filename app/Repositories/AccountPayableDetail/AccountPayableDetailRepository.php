@@ -103,14 +103,25 @@ class AccountPayableDetailRepository implements AccountPayableDetailRepositoryIn
     }
 
     /**
+     * 仕入先＆商品毎にまとめるための条件クエリを取得
+     */
+    public function getSummarizeItemQuery(int $agencyId, int $reserveId, int $reserveItineraryId, int $supplierId, string $subject, int $itemId)
+    {
+        return $this->accountPayableDetail
+            ->where('agency_id', $agencyId)
+            ->where('reserve_id', $reserveId)
+            ->where('reserve_itinerary_id', $reserveItineraryId)
+            ->where('supplier_id', $supplierId)
+            ->where('subject', $subject)
+            ->where('item_id', $itemId);
+    }
+
+    /**
      * 保存
      */
     public function save($data) : AccountPayableDetail
     {
         return $this->accountPayableDetail->create($data);
-        // $accountPayableDetail =$this->accountPayableDetail;
-        // $accountPayableDetail->fill($data)->save();
-        // return $accountPayableDetail;
     }
 
     public function update(int $id, array $data): AccountPayableDetail
@@ -211,7 +222,11 @@ class AccountPayableDetailRepository implements AccountPayableDetailRepositoryIn
     public function paginateByAgencyId(int $agencyId, array $params, int $limit, ?string $applicationStep, array $with, array $select, bool $exZero = true) : LengthAwarePaginator
     {
         $query = $applicationStep === config('consts.reserves.APPLICATION_STEP_RESERVE') ? $this->accountPayableDetail->decided() : $this->accountPayableDetail; // スコープを設定
-        
+
+        if ($exZero) { // 請求額が0円だと、出金履歴が有っても非表示になるので注意。具合悪いようならこのフラグはなくす
+            $query = $query->excludingzero();
+        }
+
         // $query = $isValid ? $query->isValid() : $query; // valid=trueのスコープ
 
         $query = $with ? $query->with($with) : $query;
@@ -246,12 +261,13 @@ class AccountPayableDetailRepository implements AccountPayableDetailRepositoryIn
             }
         }
 
-        if ($exZero) { // 請求額が0円だと、出金履歴が有っても非表示になるので注意。具合悪いようならこのフラグはなくす
-            $query = $query->where(function ($q) {
-                $q->where('amount_billed', "<>", 0)
-                    ->orWhere('unpaid_balance', "<>", 0);
-            })->where('status', '<>', config('consts.account_payable_details.STATUS_NONE'));
-        }
+        // ↓excludingzeroスコープに変更
+        // if ($exZero) { // 請求額が0円だと、出金履歴が有っても非表示になるので注意。具合悪いようならこのフラグはなくす
+        //     $query = $query->where(function ($q) {
+        //         $q->where('amount_billed', "<>", 0)
+        //             ->orWhere('unpaid_balance', "<>", 0);
+        //     })->where('status', '<>', config('consts.account_payable_details.STATUS_NONE'));
+        // }
 
         return $query->where('account_payable_details.agency_id', $agencyId)->sortable()->paginate($limit); // sortableする際にagency_idがリレーション先のテーブルにも存在するのでエラー回避のために明示的にagency_idを指定する
     }

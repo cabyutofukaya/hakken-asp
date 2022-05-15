@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Staff\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Staff\CustomerSearchRequest;
-use App\Http\Requests\Staff\EstimateDetermineRequest;
 use App\Http\Requests\Staff\EstimateStatusUpdateRequest;
 use App\Http\Resources\Staff\Departed\IndexResource;
 use App\Models\BusinessUserManager;

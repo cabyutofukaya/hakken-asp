@@ -24,8 +24,10 @@ class AccountPayableDetail extends Model
         'id',
         'reserve.control_number',
         'supplier_name',
+        'item_id',
         'item_code',
         'item_name',
+        'subject',
         'last_manager.name',
         'last_note',
         'payment_date',
@@ -56,9 +58,8 @@ class AccountPayableDetail extends Model
         'saleable_type',
         'saleable_id',
         'amount_billed',
-        // 'amount_payment', // ←使っていないかも
         'unpaid_balance',
-        'official', // ←使っていないかも
+        // 'official', // ←使っていないかも
         'last_manager_id',
         'status',
         'last_note',
@@ -83,7 +84,6 @@ class AccountPayableDetail extends Model
      */
     protected $casts = [
         'amount_billed' => 'integer',
-        // 'amount_payment' => 'integer',
         'unpaid_balance' => 'integer',
     ];
 
@@ -154,6 +154,20 @@ class AccountPayableDetail extends Model
         return $query->whereHas('reserve', function ($q) {
             $q->where('application_step', config('consts.reserves.APPLICATION_STEP_RESERVE'));
         });
+    }
+
+    /**
+     * 0円を除く
+     *
+     * @param $query
+     * @return mixed
+     */
+    public function scopeExcludingzero($query)
+    {
+        return $query->where(function ($q) {
+            $q->where('amount_billed', "<>", 0)
+                ->orWhere('unpaid_balance', "<>", 0);
+        })->where('status', '<>', config('consts.account_payable_details.STATUS_NONE'));
     }
 
     // /**

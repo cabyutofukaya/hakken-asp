@@ -34,6 +34,8 @@ class ReserveItinerary extends Model
         'reserve_travel_dates',
         'reserve_confirms',
         'account_payables',
+        'account_payable_items',
+        'account_payable_details',
     ];
 
     public $sortable = [
@@ -134,6 +136,18 @@ class ReserveItinerary extends Model
     public function account_payables()
     {
         return $this->hasMany('App\Models\AccountPayable');
+    }
+
+    // 仕入れ先買掛金(詳細)
+    public function account_payable_details()
+    {
+        return $this->hasMany('App\Models\AccountPayableDetail');
+    }
+
+    // 仕入れ先買掛金(仕入先＆商品毎)
+    public function account_payable_items()
+    {
+        return $this->hasMany('App\Models\AccountPayableItem');
     }
 
     /**

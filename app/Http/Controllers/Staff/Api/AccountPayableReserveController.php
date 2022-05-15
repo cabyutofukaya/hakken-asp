@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Staff\Api;
 
 use App\Models\AgencyWithdrawal;
-use App\Events\ChangePaymentAmountEvent;
+use App\Events\ChangePaymentDetailAmountEvent;
 use App\Events\ChangePaymentReserveAmountEvent;
 use App\Events\PriceRelatedChangeEvent;
 use App\Exceptions\ExclusiveLockException;

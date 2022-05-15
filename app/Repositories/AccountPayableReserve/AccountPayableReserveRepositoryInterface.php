@@ -13,4 +13,6 @@ interface AccountPayableReserveRepositoryInterface
   public function updateOrCreate(array $where, array $params) : AccountPayableReserve;
 
   public function updateField(int $id, array $data): AccountPayableReserve;
+
+  public function refreshAmountByReserveId(int $reserveId, ?int $reserveItineraryId) : bool;
 }

@@ -22,9 +22,17 @@ class EventServiceProvider extends ServiceProvider
         'App\Events\ChangePaymentReserveAmountEvent' => [
             'App\Listeners\ChangePaymentReserveAmountEventLister',
         ],
+        // 支払金額変更イベント(仕入先＆商品毎)
+        'App\Events\ChangePaymentItemAmountEvent' => [
+            'App\Listeners\ChangePaymentItemAmountEventLister',
+        ],
         // 支払金額変更イベント(詳細)
-        'App\Events\ChangePaymentAmountEvent' => [
-            'App\Listeners\ChangePaymentAmountEventLister',
+        'App\Events\ChangePaymentDetailAmountEvent' => [
+            'App\Listeners\ChangePaymentDetailAmountEventLister',
+        ],
+        // 支払金額変更イベント(詳細)。account_payment_itemページによる商品毎一括出金時用
+        'App\Events\ChangePaymentDetailAmountForItemEvent' => [
+            'App\Listeners\ChangePaymentDetailAmountForItemEventLister',
         ],
         // 予約レコードのステータスを更新
         'App\Events\ReserveUpdateStatusEvent' => [

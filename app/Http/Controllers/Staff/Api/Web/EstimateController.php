@@ -114,67 +114,68 @@ class EstimateController extends Controller
         );
     }
 
-    /**
-     * 見積もり確定
-     * （見積状態を予約に変更）
-     *
-     * @param string $agencyAccount 会社アカウント
-     */
-    public function determine(EstimateDetermineRequest $request, $agencyAccount, $estimateNumber)
-    {
-        $estimate = $this->webEstimateService->findByEstimateNumber($estimateNumber, $agencyAccount);
+    // /**
+    //  * Http/Controllers/Staff/Api/EstimateController@determineへ統合
+    //  * 見積もり確定
+    //  * （見積状態を予約に変更）
+    //  *
+    //  * @param string $agencyAccount 会社アカウント
+    //  */
+    // public function determine(EstimateDetermineRequest $request, $agencyAccount, $estimateNumber)
+    // {
+    //     $estimate = $this->webEstimateService->findByEstimateNumber($estimateNumber, $agencyAccount);
 
-        if (!$estimate) {
-            abort(404, "データが見つかりません。編集する前に画面を再読み込みして最新情報を表示してください。");
-        }
+    //     if (!$estimate) {
+    //         abort(404, "データが見つかりません。編集する前に画面を再読み込みして最新情報を表示してください。");
+    //     }
 
-        // 認可チェック
-        $response = Gate::inspect('update', [$estimate]);
-        if (!$response->allowed()) {
-            abort(403, $response->message());
-        }
+    //     // 認可チェック
+    //     $response = Gate::inspect('update', [$estimate]);
+    //     if (!$response->allowed()) {
+    //         abort(403, $response->message());
+    //     }
 
-        // TODO この辺からしっかりみて実装
+    //     // TODO この辺からしっかりみて実装
 
-        $input = $request->only('updated_at');
-        try {
-            $reserve = DB::transaction(function () use ($estimate, $input) {
-                if ($this->webEstimateService->determine(
-                    $estimate,
-                    $input,
-                    $this->userCustomItemService,
-                    $this->reserveCustomValueService,
-                    $this->webReserveEstimateService
-                )) {
-                    // 有効な旅程があれば旅程作成イベントを実行（予約確認書・請求書作成処理）
-                    $reserve = $this->webReserveEstimateService->find($estimate->id);
+    //     $input = $request->only('updated_at');
+    //     try {
+    //         $reserve = DB::transaction(function () use ($estimate, $input) {
+    //             if ($this->webEstimateService->determine(
+    //                 $estimate,
+    //                 $input,
+    //                 $this->userCustomItemService,
+    //                 $this->reserveCustomValueService,
+    //                 $this->webReserveEstimateService
+    //             )) {
+    //                 // 有効な旅程があれば旅程作成イベントを実行（予約確認書・請求書作成処理）
+    //                 $reserve = $this->webReserveEstimateService->find($estimate->id);
 
-                    if ($reserve->enabled_reserve_itinerary->id) {
-                        event(new CreateItineraryEvent($reserve->enabled_reserve_itinerary));
-                    }
+    //                 if ($reserve->enabled_reserve_itinerary->id) {
+    //                     event(new CreateItineraryEvent($reserve->enabled_reserve_itinerary));
+    //                 }
 
-                    // ステータス更新イベント
-                    event(new ReserveUpdateStatusEvent($reserve));
+    //                 // ステータス更新イベント
+    //                 event(new ReserveUpdateStatusEvent($reserve));
                     
-                    return $reserve;
-                }
-            });
+    //                 return $reserve;
+    //             }
+    //         });
 
-            if ($reserve) {
-                if ($request->input("set_message")) {
-                    $request->session()->flash('success_message', "予約確定処理が完了しました「{$reserve->control_number}」。"); // set_messageは処理成功のフラッシュメッセージのセットを要求するパラメータ
-                }
-                return response('', 200);
-            }
+    //         if ($reserve) {
+    //             if ($request->input("set_message")) {
+    //                 $request->session()->flash('success_message', "予約確定処理が完了しました「{$reserve->control_number}」。"); // set_messageは処理成功のフラッシュメッセージのセットを要求するパラメータ
+    //             }
+    //             return response('', 200);
+    //         }
 
-        } catch (ExclusiveLockException $e) { // 同時編集エラー
-            abort(409, "他のユーザーによる編集済みレコードです。編集する前に画面を再読み込みして最新情報を表示してください。");
+    //     } catch (ExclusiveLockException $e) { // 同時編集エラー
+    //         abort(409, "他のユーザーによる編集済みレコードです。編集する前に画面を再読み込みして最新情報を表示してください。");
 
-        } catch (Exception $e) {
-            Log::error($e);
-        }
-        abort(500);
-    }
+    //     } catch (Exception $e) {
+    //         Log::error($e);
+    //     }
+    //     abort(500);
+    // }
 
     /**
      * ステータス更新

@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Staff\Api;
 use App\Models\AgencyDeposit;
 use App\Events\AgencyDepositedEvent;
 use App\Events\AgencyDepositChangedEvent;
-use App\Events\ChangePaymentAmountEvent;
+use App\Events\ChangePaymentDetailAmountEvent;
 use App\Exceptions\ExclusiveLockException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Staff\AgencyDepositStoreRequest;
@@ -133,7 +133,7 @@ class AgencyDepositController extends Controller
             $this->agencyBundleDepositService->deleteByIdentifierId($depositIdentifierId, true);
 
             // TODO 何かしらのイベント処理が必要になるかも
-            // event(new ChangePaymentAmountEvent($agencyWithdrawal->account_payable_detail_id));
+            // event(new ChangePaymentDetailAmountEvent($agencyWithdrawal->account_payable_detail_id));
 
             return true;
         });

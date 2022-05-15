@@ -74,23 +74,35 @@ class AccountPayableReserveService implements AccountPayableInterface
         return $this->accountPayableReserveRepository->updateField($id, ['unpaid_balance' => $unpaidBalance, 'status' => $status]);
     }
 
+    // /**
+    //  * 当該予約IDのamount_billedを最新状態に更新
+    //  *
+    //  * @param Reserve $reserve
+    //  * @return bool
+    //  */
+    // public function refreshAmountBilledByReserveId(Reserve $reserve)
+    // {
+    //     $accountPayableReserve = $this->findByReserveId($reserve->id, [], [], true); // 一応、行ロックで取得
+
+    //     $sumNet = $reserve->enabled_reserve_itinerary ? $reserve->enabled_reserve_itinerary->sum_net : 0; // 仕入先への総支払額
+
+    //     // 当該仕入管理(予約)レコードの「請求金額(NET)」を0円に
+    //     $this->update($accountPayableReserve->id, [
+    //         'amount_billed' => $sumNet,
+    //     ]);
+
+    //     return true;
+    // }
+
     /**
-     * 当該予約IDのamount_billedを最新状態に更新
-     *
-     * @param Reserve $reserve
-     * @return bool
+     * 当該予約IDのNet・未払金額を更新
+     * 
+     * @param int $reserveId 予約ID
+     * @param int $reserveItineraryId (有効)行程ID。有効行程がない場合は0以下の値を渡せばok
      */
-    public function refreshAmountBilledByReserveId(Reserve $reserve)
+    public function refreshAmountByReserveId(int $reserveId, ?int $reserveItineraryId)
     {
-        $accountPayableReserve = $this->findByReserveId($reserve->id, [], [], true); // 一応、行ロックで取得
-
-        $sumNet = $reserve->enabled_reserve_itinerary ? $reserve->enabled_reserve_itinerary->sum_net : 0; // 仕入先への総支払額
-
-        // 当該仕入管理(予約)レコードの「請求金額(NET)」を0円に
-        $this->update($accountPayableReserve->id, [
-            'amount_billed' => $sumNet,
-        ]);
-
-        return true;
+        $this->accountPayableReserveRepository->refreshAmountByReserveId($reserveId, $reserveItineraryId);
     }
+
 }

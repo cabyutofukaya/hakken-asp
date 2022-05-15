@@ -63,6 +63,15 @@ class AgencyWithdrawalRepository implements AgencyWithdrawalRepositoryInterface
     }
 
     /**
+     * バルクインサート
+     */
+    public function insert(array $rows) : bool
+    {
+        $this->agencyWithdrawal->insert($rows);
+        return true;
+    }
+
+    /**
      * 検索して全件取得
      */
     public function getWhere(array $where, array $with=[], array $select=[]) : Collection

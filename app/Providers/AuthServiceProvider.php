@@ -29,6 +29,7 @@ class AuthServiceProvider extends ServiceProvider
         'App\Models\AccountPayableItem' => 'App\Policies\AccountPayableItemPolicy',
         'App\Models\AccountPayableDetail' => 'App\Policies\AccountPayableDetailPolicy',
         'App\Models\AgencyWithdrawal' => 'App\Policies\AgencyWithdrawalPolicy',
+        'App\Models\AgencyWithdrawalItemHistory' => 'App\Policies\AgencyWithdrawalItemHistoryPolicy',
         'App\Models\VReserveInvoice' => 'App\Policies\VReserveInvoicePolicy',
         'App\Models\AgencyDeposit' => 'App\Policies\AgencyDepositPolicy',
         'App\Models\AgencyBundleDeposit' => 'App\Policies\AgencyBundleDepositPolicy',

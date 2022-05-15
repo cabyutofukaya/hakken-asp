@@ -17,7 +17,9 @@ use App\Models\Reserve;
 use App\Models\User;
 use App\Services\BusinessUserManagerService;
 use App\Services\EstimateService;
+use App\Services\WebEstimateService;
 use App\Services\ReserveEstimateService;
+use App\Services\WebReserveEstimateService;
 use App\Services\ReserveInvoiceService;
 use App\Services\ReserveCustomValueService;
 use App\Services\UserCustomItemService;
@@ -32,7 +34,7 @@ use Illuminate\Support\Arr;
 
 class EstimateController extends Controller
 {
-    public function __construct(UserService $userService, BusinessUserManagerService $businessUserManagerService, VAreaService $vAreaService, EstimateService $estimateService, ReserveCustomValueService $reserveCustomValueService, UserCustomItemService $userCustomItemService, ReserveInvoiceService $reserveInvoiceService, ReserveEstimateService $reserveEstimateService)
+    public function __construct(UserService $userService, BusinessUserManagerService $businessUserManagerService, VAreaService $vAreaService, EstimateService $estimateService, ReserveCustomValueService $reserveCustomValueService, UserCustomItemService $userCustomItemService, ReserveInvoiceService $reserveInvoiceService, ReserveEstimateService $reserveEstimateService, WebEstimateService $webEstimateService, WebReserveEstimateService $webReserveEstimateService)
     {
         $this->estimateService = $estimateService;
         $this->userService = $userService;
@@ -42,6 +44,8 @@ class EstimateController extends Controller
         $this->userCustomItemService = $userCustomItemService;
         $this->reserveInvoiceService = $reserveInvoiceService;
         $this->reserveEstimateService = $reserveEstimateService;
+        $this->webEstimateService = $webEstimateService;
+        $this->webReserveEstimateService = $webReserveEstimateService;
     }
 
     // 一件取得
@@ -111,10 +115,18 @@ class EstimateController extends Controller
      * （見積状態を予約に変更）
      *
      * @param string $agencyAccount 会社アカウント
+     * @param stirng $reception 受付種別(ASP/WEB)
      */
-    public function determine(EstimateDetermineRequest $request, $agencyAccount, $estimateNumber)
+    public function determine(EstimateDetermineRequest $request, $agencyAccount, string $reception, $estimateNumber)
     {
-        $estimate = $this->estimateService->findByEstimateNumber($estimateNumber, $agencyAccount);
+        // 受付種別で処理を分ける
+        if ($reception == config('consts.const.RECEPTION_TYPE_ASP')) { // asp受付
+            $estimate = $this->estimateService->findByEstimateNumber($estimateNumber, $agencyAccount);
+        } elseif ($reception == config('consts.const.RECEPTION_TYPE_WEB')) { // web受付
+            $estimate = $this->webEstimateService->findByEstimateNumber($estimateNumber, $agencyAccount);
+        } else {
+            abort(404);
+        }
 
         if (!$estimate) {
             abort(404, "データが見つかりません。編集する前に画面を再読み込みして最新情報を表示してください。");
@@ -128,26 +140,41 @@ class EstimateController extends Controller
 
         $input = $request->only('updated_at');
         try {
-            $reserve = DB::transaction(function () use ($estimate, $input) {
-                if ($this->estimateService->determine(
-                    $estimate,
-                    $input,
-                    $this->userCustomItemService,
-                    $this->reserveCustomValueService,
-                    $this->reserveEstimateService
-                )) {
-                    $reserve = $this->reserveEstimateService->find($estimate->id);
+            $reserve = DB::transaction(function () use ($reception, $estimate, $input) {
 
-                    // 有効な旅程があれば旅程作成イベントを実行（予約確認書・請求書作成処理）
-                    if ($reserve->enabled_reserve_itinerary->id) {
-                        event(new CreateItineraryEvent($reserve->enabled_reserve_itinerary));
+                // 受付種別で処理を分ける
+                if ($reception == config('consts.const.RECEPTION_TYPE_ASP')) { // asp受付
+                    if ($this->estimateService->determine(
+                        $estimate,
+                        $input,
+                        $this->userCustomItemService,
+                        $this->reserveCustomValueService,
+                        $this->reserveEstimateService
+                    )) {
+                        $reserve = $this->reserveEstimateService->find($estimate->id);
                     }
-
-                    // ステータス更新イベント Web受付用なので不要
-                    event(new ReserveUpdateStatusEvent($reserve));
-
-                    return $reserve;
+                } elseif ($reception == config('consts.const.RECEPTION_TYPE_WEB')) { // web受付
+                    if ($this->webEstimateService->determine(
+                        $estimate,
+                        $input,
+                        $this->userCustomItemService,
+                        $this->reserveCustomValueService,
+                        $this->webReserveEstimateService
+                    )) {
+                        // 有効な旅程があれば旅程作成イベントを実行（予約確認書・請求書作成処理）
+                        $reserve = $this->webReserveEstimateService->find($estimate->id);
+                    }
                 }
+
+                // 有効な旅程があれば旅程作成イベントを実行（予約確認書・請求書作成処理）
+                if ($reserve->enabled_reserve_itinerary->id) {
+                    event(new CreateItineraryEvent($reserve->enabled_reserve_itinerary));
+                }
+                    
+                // ステータス更新イベント
+                event(new ReserveUpdateStatusEvent($reserve));
+                    
+                return $reserve;
             });
 
             if ($reserve) {
@@ -158,7 +185,6 @@ class EstimateController extends Controller
             }
         } catch (ExclusiveLockException $e) { // 同時編集エラー
             abort(409, "他のユーザーによる編集済みレコードです。編集する前に画面を再読み込みして最新情報を表示してください。");
-            
         } catch (Exception $e) {
             Log::error($e);
         }
