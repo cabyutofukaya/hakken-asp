@@ -82,7 +82,7 @@
                   </li>
                   @can('viewAny', App\Models\AccountPayableDetail::class)
                      <li class="@if(strpos(\Route::current()->getName(), 'staff.management.payment.') !== false) stay @endif">
-                        <a href="{{ route('staff.management.payment.reserve', $agencyAccount) }}">
+                        <a href="{{ route('staff.management.payment.index', $agencyAccount) }}">
                            <span class="material-icons">upload</span>支払管理
                         </a>
                      </li>
