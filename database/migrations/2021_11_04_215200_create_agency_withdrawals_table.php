@@ -20,7 +20,6 @@ class CreateAgencyWithdrawalsTable extends Migration
             $table->unsignedBigInteger('reserve_travel_date_id')->comment('旅行日ID');
             $table->unsignedBigInteger('account_payable_detail_id')->comment('買い掛け金明細ID');
             $table->integer('amount')->default(0)->comment('出金額');
-            // $table->tinyInteger('withdrawal_method')->nullable()->comment('出金方法');
             $table->date('withdrawal_date')->nullable()->comment('出金日');
             $table->date('record_date')->nullable()->comment('登録日');
             $table->unsignedBigInteger('manager_id')->nullable()->comment('自社担当');

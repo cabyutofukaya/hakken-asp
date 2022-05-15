@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Staff\Api;
 
+use App\Events\ChangePaymentItemAmountEvent;
+use App\Events\ChangePaymentReserveAmountEvent;
 use App\Events\CreateItineraryEvent;
 use App\Events\PriceRelatedChangeEvent;
 use App\Events\ReserveChangeSumGrossEvent;
@@ -17,6 +19,7 @@ use App\Http\Resources\Staff\ReserveItinerary\IndexResource;
 use App\Http\Resources\Staff\ReserveItinerary\StoreResource;
 use App\Http\Resources\Staff\ReserveItinerary\UpdateResource;
 use App\Models\ReserveItinerary;
+use App\Services\AccountPayableReserveService;
 use App\Services\EstimateService;
 use App\Services\PriceRelatedChangeService;
 use App\Services\ReserveItineraryService;
@@ -24,6 +27,7 @@ use App\Services\ReserveService;
 use App\Services\WebEstimateService;
 use App\Services\WebReserveService;
 use App\Traits\PriceRelatedChangeTrait;
+use App\Traits\ReserveItineraryTrait;
 use DB;
 use Exception;
 use Gate;
@@ -37,9 +41,9 @@ use Log;
  */
 class ReserveItineraryController extends Controller
 {
-    use PriceRelatedChangeTrait;
+    use PriceRelatedChangeTrait, ReserveItineraryTrait;
 
-    public function __construct(ReserveService $reserveService, ReserveItineraryService $reserveItineraryService, EstimateService $estimateService, WebReserveService $webReserveService, WebEstimateService $webEstimateService, PriceRelatedChangeService $priceRelatedChangeService)
+    public function __construct(ReserveService $reserveService, ReserveItineraryService $reserveItineraryService, EstimateService $estimateService, WebReserveService $webReserveService, WebEstimateService $webEstimateService, PriceRelatedChangeService $priceRelatedChangeService, AccountPayableReserveService $accountPayableReserveService)
     {
         $this->reserveService = $reserveService;
         $this->estimateService = $estimateService;
@@ -47,6 +51,8 @@ class ReserveItineraryController extends Controller
         $this->webReserveService = $webReserveService;
         $this->webEstimateService = $webEstimateService;
         $this->priceRelatedChangeService = $priceRelatedChangeService; // traitで使用
+        $this->accountPayableReserveService = $accountPayableReserveService; // traitで使用
+
     }
 
     /**
@@ -162,6 +168,12 @@ class ReserveItineraryController extends Controller
 
             event(new ReserveChangeSumGrossEvent($newReserveItinerary)); // 旅行代金変更イベント
 
+            // 当該行程の仕入先＆商品毎のステータスと未払金額計算。
+            event(new ChangePaymentItemAmountEvent($newReserveItinerary->id));
+
+            // 当該予約の支払いステータスと未払金額計算
+            event(new ChangePaymentReserveAmountEvent($newReserveItinerary->reserve));
+
             return $newReserveItinerary;
         });
         if ($newReserveItinerary) {
@@ -225,6 +237,13 @@ class ReserveItineraryController extends Controller
                 event(new CreateItineraryEvent($reserveItinerary)); // 行程作成時イベント
 
                 event(new PriceRelatedChangeEvent($reserve->id, date('Y-m-d H:i:s'))); // 料金変更に関わるイベントが起きた際に日時を記録
+
+                
+                // 当該行程の仕入先＆商品毎のステータスと未払金額計算。
+                event(new ChangePaymentItemAmountEvent($reserveItinerary->id));
+
+                // 当該予約の支払いステータスと未払金額計算
+                event(new ChangePaymentReserveAmountEvent($reserveItinerary->reserve));
 
                 return $reserveItinerary;
             });
@@ -308,6 +327,13 @@ class ReserveItineraryController extends Controller
 
                 event(new PriceRelatedChangeEvent($newReserveItinerary->reserve_id, date('Y-m-d H:i:s'))); // 料金変更に関わるイベントが起きた際に日時を記録
 
+
+                // 当該行程の仕入先＆商品毎のステータスと未払金額計算。
+                event(new ChangePaymentItemAmountEvent($newReserveItinerary->id));
+
+                // 当該予約の支払いステータスと未払金額計算
+                event(new ChangePaymentReserveAmountEvent($newReserveItinerary->reserve));
+
                 return $newReserveItinerary;
             });
 
@@ -322,6 +348,8 @@ class ReserveItineraryController extends Controller
         } catch (ExclusiveLockException $e) { // 同時編集エラー
             abort(409, "他のユーザーによる編集済みレコードです。編集する前に画面を再読み込みして最新情報を表示してください。");
         } catch (Exception $e) {
+            echo $e->getMessage();
+            die();
             \Log::error($e);
         }
         abort(500);
@@ -382,13 +410,19 @@ class ReserveItineraryController extends Controller
         }
 
 
-        $result = DB::transaction(function () use ($reserveItinerary) {
-            $result= $this->reserveItineraryService->delete($reserveItinerary->id, true);//論理削除
+        $result = DB::transaction(function () use ($reserveItinerary, $reserve) {
+            $result= $this->reserveItineraryService->delete($reserveItinerary->id, true); //論理削除
 
             if ($reserveItinerary->enabled) {
                 // 合計金額を0円にするので、予約IDだけセットしたReserveItineraryオブジェクトを渡す
                 event(new ReserveChangeSumGrossEvent(new ReserveItinerary(['reserve_id' => $reserveItinerary->reserve_id]))); // 旅行代金変更イベント
             }
+
+            // 当該行程の仕入先＆商品毎のステータスと未払金額計算。
+            event(new ChangePaymentItemAmountEvent($reserveItinerary->id));
+
+            // 当該予約の支払いステータスと未払金額計算
+            event(new ChangePaymentReserveAmountEvent($reserve));
 
             return $result;
         });

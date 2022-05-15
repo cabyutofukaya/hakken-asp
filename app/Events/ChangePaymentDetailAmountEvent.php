@@ -15,7 +15,7 @@ use Illuminate\Queue\SerializesModels;
  * 請求額と出金額の差が変更されたときに呼ばれるイベント。
  * 出金登録時、出金データ削除時、仕入金額変更時
  */
-class ChangePaymentAmountEvent
+class ChangePaymentDetailAmountEvent
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 

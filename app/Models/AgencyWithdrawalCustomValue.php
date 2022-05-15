@@ -14,8 +14,8 @@ class AgencyWithdrawalCustomValue extends Model
 {
     use ModelLogTrait,SoftDeletes,CustomValueTrait;
 
-    // timestamps連携 TODOこれ必要か検討
-    protected $touches = ['agency_withdrawals'];
+    // // timestamps連携 TODOこれ必要か検討
+    // protected $touches = ['agency_withdrawals'];
 
     /**
      * The attributes that are mass assignable.
@@ -43,8 +43,4 @@ class AgencyWithdrawalCustomValue extends Model
     {
         return $this->belongsTo('App\Models\UserCustomItem')->withDefault();
     }
-
-    ////////////////// アクセサとミューテタ
-
-
 }

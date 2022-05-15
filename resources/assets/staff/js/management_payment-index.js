@@ -6,13 +6,13 @@ import PageNation from "./components/PageNation";
 import DeclineMessage from "./components/DeclineMessage";
 import { useMountedRef } from "../../hooks/useMountedRef";
 import ReactLoading from "react-loading";
-import PaymentModal from "./components/ManagementPayment/PaymentModal";
+import PaymentModal from "./components/ManagementPaymentDetail/PaymentModal";
 import classNames from "classnames";
 import _ from "lodash";
 import moment from "moment";
-import PaymentDateModal from "./components/ManagementPayment/PaymentDateModal";
+import PaymentDateModal from "./components/ManagementPaymentDetail/PaymentDateModal";
 import { MANAGEMENT_PAYMENT_DETAIL } from "./actions"; //action名
-import PaymentBatchModal from "./components/ManagementPayment/PaymentBatchModal";
+import PaymentBatchModal from "./components/ManagementPaymentDetail/PaymentBatchModal";
 import { RESERVE } from "./constants";
 
 const PaymentList = ({
@@ -62,7 +62,6 @@ const PaymentList = ({
     const withdrawalInitial = {
         amount: 0,
         // withdrawal_method: withdrawalModalDefaultValue.withdrawalDefault,
-        // manager_id: withdrawalModalDefaultValue.managerId,
         withdrawal_date: moment().format("YYYY/MM/DD"),
         record_date: moment().format("YYYY/MM/DD")
         // note: ""
@@ -107,7 +106,7 @@ const PaymentList = ({
                 // 入力制御データの担当者と備考は、前回の入力をそのまま初期値として使う形で良いと思う
                 withdrawalData: {
                     ...withdrawalInitial,
-                    manager_id: paymentData.manager_id ?? "",
+                    manager_id: paymentData.manager_id ?? consts?.managerId,
                     note: paymentData.note ?? "",
                     supplier_id_log: paymentData.supplier_id
                 }
@@ -354,14 +353,14 @@ const PaymentList = ({
                                 >
                                     <span>未払金額</span>
                                 </th>
-                                <th
+                                {/* <th
                                     className="sort txtalc"
                                     onClick={e =>
                                         handleSortClick("payment_date")
                                     }
                                 >
                                     <span>支払予定日</span>
-                                </th>
+                                </th> */}
                                 <th
                                     className="sort"
                                     onClick={e => handleSortClick("item_code")}
@@ -532,7 +531,7 @@ const PaymentList = ({
                                                 {row.unpaid_balance.toLocaleString()}
                                             </span>
                                         </td>
-                                        <td className="txtalc">
+                                        {/* <td className="txtalc">
                                             <span
                                                 className={classNames(
                                                     "payPeriod blue",
@@ -549,7 +548,7 @@ const PaymentList = ({
                                             >
                                                 {row?.payment_date ?? "-"}
                                             </span>
-                                        </td>
+                                        </td> */}
                                         <td>{row?.item_code ?? "-"}</td>
                                         <td>{row?.item_name ?? "-"}</td>
                                         <td className="txtalc">
@@ -613,13 +612,13 @@ const PaymentList = ({
                 customCategoryCode={customCategoryCode}
             />
             {/** 支払予定日変更モーダル*/}
-            <PaymentDateModal
+            {/* <PaymentDateModal
                 id="mdEditPayday"
                 data={data}
                 dataDispatch={dataDispatch}
                 isProcessing={isPaymentDateChanging}
                 setIsProcessing={setIsPaymentDateChanging}
-            />
+            /> */}
             {/** 支払い済み一括処理モーダル */}
             <PaymentBatchModal
                 id="mdAllCheck"

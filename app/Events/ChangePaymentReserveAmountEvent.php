@@ -2,6 +2,7 @@
 
 namespace App\Events;
 
+use App\Models\Reserve;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
@@ -11,21 +12,21 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
 // 当該予約の支払いステータスと未払金額計算
-// 支払管理。ChangePaymentAmountEventが呼ばれた後に実行すること
+// 支払管理。ChangePaymentDetailAmountEventが呼ばれた後に実行すること
 class ChangePaymentReserveAmountEvent
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $reserveId;
+    public $reserve;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(int $reserveId)
+    public function __construct(Reserve $reserve)
     {
-        $this->reserveId = $reserveId;
+        $this->reserve = $reserve;
     }
 
     /**

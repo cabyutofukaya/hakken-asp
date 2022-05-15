@@ -5,6 +5,16 @@ use Carbon\Carbon;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Lang;
 
+if (! function_exists('get_agency_withdrawal_rate')) {
+    /**
+     * 一括出金の割合を取得
+     */
+    function get_agency_withdrawal_rate(int $amount, int $unpaidBalance) : float
+    {
+        return $amount / $unpaidBalance;
+    }
+}
+
 if (! function_exists('check_business_form_pdf_item')) {
     /**
      * $valueの配列に任意の値があるか(帳票PDF用)

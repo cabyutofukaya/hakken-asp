@@ -3,307 +3,108 @@
 @section('content')
 <main>
   <div id="pageHead">
-<h1><span class="material-icons">upload</span>予約R22AA13-05005A 支払管理</h1>
-  <div id="searchBox">
-      <div id="inputList">
-        <ul class="sideList">
-          <li class="wd20"><span class="inputLabel">ステータス</span>
-            <div class="selectBox">
-      <select>
-        <option>すべて</option>
-        <option>未払のみ</option></select></div>
-          </li>
-          <li class="wd30"><span class="inputLabel">予約番号</span>
-            <input type="text">
-          </li>
-          <li class="wd25"><span class="inputLabel">仕入先</span>
-            <input type="text">
-          </li>
-          <li class="wd25 mr00"><span class="inputLabel">出金担当</span>
-            <div class="selectBox">
-      <select>
-        <option>すべて</option>
-        <option>豊島 章宏</option>
-        <option>山田 太郎</option></select></div>
-          </li>
-        </ul>
-        <ul class="sideList">
-      <li class="wd25"><span class="inputLabel">商品名</span>
-      <input type="text"></li>
-      <li class="wd25"><span class="inputLabel">商品コード</span><input type="text"></li>
-          <li class="wd50 mr00"><span class="inputLabel">支払予定日</span>
-            <ul class="periodList">
-      <li><div class="calendar"><input type="text"></div></li>
-      <li><div class="calendar"><input type="text"></div></li></ul>
-          </li>
-        </ul>
-    <div class="toggleOption"><p>検索オプション</p></div>
-    <div id="searchOption">
-      <ul class="sideList customSearch">
-      <li><span class="inputLabel">カスタム項目<a href="/system/authority/"><span class="material-icons">settings</span></a></span>
-          <input type="text"></li>
-      <li><span class="inputLabel">カスタム項目<a href="/system/authority/"><span class="material-icons">settings</span></a></span>
-            <input type="text"></li>
-      <li><span class="inputLabel">カスタムリスト項目<a href="/system/authority/"><span class="material-icons">settings</span></a></span>
-            <div class="selectBox">
-              <select>
-                <option value="すべて" selected>すべて</option>
-                <option value="システム管理者">システム管理者</option>
-                <option value="オペレーター">オペレーター</option>
-                <option value="経理">経理</option>
-                <option value="一般">一般</option>
-              </select>
-            </div></li>
-      <li><span class="inputLabel">カスタムリスト項目<a href="/system/authority/"><span class="material-icons">settings</span></a></span>
-            <div class="selectBox">
-              <select>
-                <option value="すべて" selected>すべて</option>
-                <option value="システム管理者">システム管理者</option>
-                <option value="オペレーター">オペレーター</option>
-                <option value="経理">経理</option>
-                <option value="一般">一般</option>
-              </select>
-            </div></li>
-      <li><span class="inputLabel">カスタムリスト項目<a href="/system/authority/"><span class="material-icons">settings</span></a></span>
-            <div class="selectBox">
-              <select>
-                <option value="すべて" selected>すべて</option>
-                <option value="システム管理者">システム管理者</option>
-                <option value="オペレーター">オペレーター</option>
-                <option value="経理">経理</option>
-                <option value="一般">一般</option>
-              </select>
-            </div></li>
-      <li><span class="inputLabel">カスタムリスト項目<a href="/system/authority/"><span class="material-icons">settings</span></a></span>
-            <div class="selectBox">
-              <select>
-                <option value="すべて" selected>すべて</option>
-                <option value="システム管理者">システム管理者</option>
-                <option value="オペレーター">オペレーター</option>
-                <option value="経理">経理</option>
-                <option value="一般">一般</option>
-              </select>
-            </div></li>
-      <li><span class="inputLabel">カスタムリスト項目<a href="/system/authority/"><span class="material-icons">settings</span></a></span>
-            <div class="selectBox">
-              <select>
-                <option value="すべて" selected>すべて</option>
-                <option value="システム管理者">システム管理者</option>
-                <option value="オペレーター">オペレーター</option>
-                <option value="経理">経理</option>
-                <option value="一般">一般</option>
-              </select>
-            </div></li>
-        </ul>		
+    <h1><span class="material-icons">upload</span>
+      @if($reserve)予約{{$reserve->control_number}} @endif
+      支払管理</h1>
+
+      <form method="GET" action="{{ route('staff.management.payment.item', ['agencyAccount' => $agencyAccount, 'reserveHashId' => $reserveHashId]) }}">
+        <div id="searchBox">
+          <div id="inputList">
+            <ul class="sideList">
+              <li class="wd20"><span class="inputLabel">ステータス</span>
+                <div class="selectBox">
+                  <select name="status">
+                    @foreach($formSelects['statuses'] as $val => $label)
+                      <option value="{{ $val }}"@if($val == $searchParam['status']) selected @endif>{{ $label }}</option>
+                    @endforeach
+                  </select>
+                </div>
+              </li>
+              <li class="wd30"><span class="inputLabel">予約番号</span>
+                <input type="text" name="reserve_number" value="{{ $searchParam['reserve_number'] }}">
+              </li>
+              <li class="wd25"><span class="inputLabel">仕入先</span>
+                <input type="text" name="supplier_name" value="{{ $searchParam['supplier_name'] }}">
+              </li>
+              <li class="wd25 mr00"><span class="inputLabel">自社担当</span>
+                <div class="selectBox">
+                  <select name="last_manager_id">
+                    @foreach($formSelects['staffs'] as $id => $name)
+                      <option value="{{ $id }}"@if($id == $searchParam['last_manager_id']) selected @endif>{{ $name }}</option>
+                    @endforeach
+                  </select>
+                </div>
+              </li>
+            </ul>
+            <ul class="sideList">
+              <li class="wd25"><span class="inputLabel">商品名</span>
+                <input type="text" name="item_name" value="{{ $searchParam['item_name'] }}">
+              </li>
+              <li class="wd25">
+                <span class="inputLabel">商品コード</span>
+                <input type="text" name="item_code" value="{{ $searchParam['item_code'] }}">
+              </li>
+              <li class="wd50 mr00"><span class="inputLabel">支払予定日</span>
+                <ul class="periodList">
+                  <li>
+                    <div class="calendar">
+                      <input type="text" name="payment_date_from" value="{{ $searchParam['payment_date_from'] }}">
+                    </div>
+                  </li>
+                  <li>
+                    <div class="calendar">
+                      <input type="text" name="payment_date_to" value="{{ $searchParam['payment_date_to'] }}">
+                    </div>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+            @include('staff.common.search_option', [
+              'items' => $formSelects['userCustomItems'],
+              'searchParam' => $searchParam,
+              'customCategoryCode' => $customCategoryCode,
+            ])
+          </div>
+          <div id="controlList">
+            <ul>
+              <li>
+                <button class="orangeBtn icon-left"><span class="material-icons">search</span>検索</button>
+              </li>
+              <li>
+                <button class="grayBtn slimBtn" type="reset">条件クリア</button>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </form>
     </div>
-      </div>
-      <div id="controlList">
-        <ul>
-          <li>
-            <button class="orangeBtn icon-left"><span class="material-icons">search</span>検索</button>
-          </li>
-          <li>
-            <button class="grayBtn slimBtn">条件クリア</button>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </div>
-  <div class="tableWrap dragTable">
-    <div class="tableCont managemnetTable">
-      <table>
-        <thead>
-          <tr>
-            <th class="sort"><span>商品コード</span></th>
-            <th class="sort"><span>商品名</span></th>
-            <th class="txtalc"><span>ステータス</span></th>
-            <th class="sort"><span>仕入先</span></th>
-            <th class="sort txtalc"><span>仕入額</span></th>
-            <th class="sort txtalc"><span>未払金額</span></th>
-            <th class="sort txtalc"><span>支払予定日</span></th>
-            <th class="txtalc"><span>予約詳細</span></th>
-            <th class="sort"><span>出金担当</span></th>
-            <th class="sort"><span>備考</span></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><a href="/estimates/document/invoice.html">JAL-HAD</a></td>
-            <td>航空券</td>
-            <td class="txtalc"><span class="status red">未払</span></td>
-            <td>株式会社支払先A</td>
-            <td class="txtalc">￥131,200</td>
-            <td class="txtalc"><span class="payPeriod red js-modal-open" data-target="mdPayment">￥131,200</span></td>
-            <td class="txtalc"><span class="payPeriod blue js-modal-open" data-target="mdEditPayday">2021/08/20</span></td>
-            <td class="txtalc"><a href="/estimates/reserve/info.html"><span class="material-icons">event_note</span></a></td>
-<td>豊島 章宏</td>
-            <td>-</td>
-          </tr>
-          <tr>
-            <td><a href="/estimates/document/invoice.html">OPT-001</a></td>
-            <td>お弁当</td>
-            <td class="txtalc"><span class="status red">未払</span></td>
-            <td>株式会社支払先A</td>
-            <td class="txtalc">￥131,200</td>
-            <td class="txtalc"><span class="payPeriod red js-modal-open" data-target="mdPayment">￥131,200</span></td>
-            <td class="txtalc"><span class="payPeriod blue js-modal-open" data-target="mdEditPayday">2021/08/20</span></td>
-            <td class="txtalc"><a href="/estimates/reserve/info.html"><span class="material-icons">event_note</span></a></td>
-<td>豊島 章宏</td>
-            <td>-</td>
-          </tr>
-          <tr>
-            <td><a href="/estimates/document/invoice.html">JR-T002</a></td>
-            <td>新幹線チケット</td>
-            <td class="txtalc"><span class="status red">未払</span></td>
-            <td>株式会社支払先A</td>
-            <td class="txtalc">￥131,200</td>
-            <td class="txtalc"><span class="payPeriod red js-modal-open" data-target="mdPayment">￥131,200</span></td>
-            <td class="txtalc"><span class="payPeriod blue js-modal-open" data-target="mdEditPayday">2021/08/20</span></td>
-            <td class="txtalc"><a href="/estimates/reserve/info.html"><span class="material-icons">event_note</span></a></td>
-<td>豊島 章宏</td>
-            <td>-</td>
-          </tr>
-          <tr>
-            <td><a href="/estimates/document/invoice.html">RENTCAR-001A</a></td>
-            <td>レンタカー</td>
-            <td class="txtalc"><span class="status red">未払</span></td>
-            <td>株式会社支払先B</td>
-            <td class="txtalc">￥131,200</td>
-            <td class="txtalc"><span class="payPeriod red js-modal-open" data-target="mdPayment">￥131,200</span></td>
-            <td class="txtalc"><span class="payPeriod blue js-modal-open" data-target="mdEditPayday">2021/08/20</span></td>
-            <td class="txtalc"><a href="/estimates/reserve/info.html"><span class="material-icons">event_note</span></a></td>
-<td>豊島 章宏</td>
-            <td>-</td>
-          </tr>
-        </tbody>
-      </table>
-    <ol id="pageNation">
-    <li><a href="#"><span class="material-icons">first_page</span></a></li>
-      <li><span class="stay">1</span></li>
-      <li><a href="#">2</a></li>
-    <li><a href="#"><span class="material-icons">last_page</span></a></li>
-    </ol>
-    </div>
-  </div>
+
+  @include('staff.common.success_message')
+  @include('staff.common.decline_message')
+  @include('staff.common.error_message')
+
+  <div id="paymentList" 
+    reserveHashId='{{ $reserveHashId }}'
+    searchParam='@json($searchParam)' 
+    formSelects='@json($formSelects)' 
+    modalFormSelects='@json($modalFormSelects)'
+    consts='@json($consts)' 
+    customFields='@json($customFields)' 
+    customCategoryCode='{{ $customCategoryCode }}'
+    jsVars='@json($jsVars)'
+  ></div>
 </main>
 
-
-
-
-<div id="mdPayment" class="wideModal modal js-modal mgModal">
-  <div class="modal__bg js-modal-close"></div>
-  <div class="modal__content">
-    <p class="mdTit mb20">出金登録</p>
-	  <h3>支払情報</h3>
-    <ul class="sideList half mb30">
-	  <li>
-          <table class="baseTable">
-            <tbody>
-              <tr>
-                <th>予約番号</th>
-                <td>CA2108A001</td>
-              </tr>
-              <tr>
-                <th>支払金額</th>
-                <td>￥131,200</td>
-              </tr>
-              <tr>
-                <th>未払額</th>
-                <td>￥131,200</td>
-              </tr>
-            </tbody>
-          </table></li>
-	  <li>
-          <table class="baseTable">
-            <tbody>
-              <tr>
-                <th>仕入先</th>
-                <td>キャブステーション</td>
-              </tr>
-              <tr>
-                <th>支払予定日</th>
-                <td>2021/07/20</td>
-              </tr>
-              <tr>
-                <th>商品コード</th>
-                <td>JAL-HAD</td>
-              </tr>
-              <tr>
-                <th>商品名</th>
-                <td>航空券</td>
-              </tr>
-            </tbody>
-          </table></li>
-	  </ul>
-	  
-	  <h3>出金履歴</h3>
-	  <div class="modalPriceList history">
-			<table class="baseTable">
-				<thead>
-				<tr>
-					<th>出金日</th>
-					<th>登録日</th>
-					<th>出金額</th>
-					<th class="txtalc">出金方法</th>
-					<th class="txtalc wd10">削除</th>
-				</tr></thead>
-				<tbody>
-				<tr>
-					<td>2021/08/20</td>
-					<td>2021/08/30</td>
-					<td>￥50,000</td>
-					<td class="txtalc">銀行振込</td>
-					
-                <td class="txtalc"><span class="material-icons">delete</span></td></tr>
-				</tbody>
-				</table>
-	  </div>
-	  <h3>出金詳細</h3>
-	  <ul class="baseList mb20">
-	  <li class="wd70"><span class="inputLabel">出金額</span>
-		  <div class="buttonSet">
-			  <input type="text" class="wd60"><button class="blueBtn wd40">未払金額を反映</button></div></li></ul>
-    <ul class="sideList half mb30">
-	  <li><span class="inputLabel">出金日</span>
-		  <div class="calendar"><input type="text"></div></li>
-	  <li><span class="inputLabel">登録日</span>
-		  <div class="calendar"><input type="text"></div></li>
-	  <li><span class="inputLabel">出金方法</span>
-		  <div class="selectBox"><select>
-			  <option>銀行振込</option></select></div></li>
-	  <li><span class="inputLabel">出金担当者</span>
-		  <div class="selectBox"><select>
-			  <option>豊島 章宏</option></select></div></li>
-	  <li class="wd100 mr00"><span class="inputLabel">備考</span>
-		  <textarea cols="3"></textarea></li></ul>
-    <ul class="sideList">
-      <li class="wd50">
-        <button class="grayBtn js-modal-close">閉じる</button>
-      </li>
-      <li class="wd50 mr00">
-        <button class="blueBtn">登録する</button>
-      </li>
-    </ul>
-  </div>
-</div>
-	
-<div id="mdEditPayday" class="modal js-modal mgModal">
-  <div class="modal__bg js-modal-close"></div>
-  <div class="modal__content">
-    <p class="mdTit mb20">支払予定日変更</p>
-
-    <ul class="baseList mb40">
-	  <li><span class="inputLabel">支払予定日</span>
-		  <div class="calendar"><input type="text" value="2021/11/02"></div></li></ul>
-    <ul class="sideList">
-      <li class="wd50">
-        <button class="grayBtn js-modal-close">閉じる</button>
-      </li>
-      <li class="wd50 mr00">
-        <button class="blueBtn">変更する</button>
-      </li>
-    </ul>
-  </div>
-</div>
+<!-- 検索フォーム用のjquery flatpickr -->
+<link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/airbnb.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script> 
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ja.js"></script> 
+<script>
+    flatpickr.localize(flatpickr.l10ns.ja);
+    flatpickr('.calendar input', {
+      allowInput: true,
+      dateFormat: "Y/m/d"
+    });
+</script>
 <script src="{{ mix('/staff/js/management_payment-item.js') }}"></script>
 @endsection

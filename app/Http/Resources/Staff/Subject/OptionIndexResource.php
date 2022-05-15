@@ -23,7 +23,7 @@ class OptionIndexResource extends JsonResource
         });
 
         $base = [
-            // "id" => $this->id,
+            "id" => $this->id, // IDはname_exカラムに保存する値なので必ず設定
             "name" => $this->name,
             "code" => $this->code,
             "ad_gross_ex" => $this->ad_gross_ex,

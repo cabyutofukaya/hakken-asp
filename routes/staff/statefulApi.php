@@ -43,7 +43,9 @@ Route::domain(env('STAFF_DOMAIN', 'asp.hakken-tour.com'))->namespace('Staff\Api'
         Route::get('estimate/list', 'EstimateController@index'); // 一覧
         Route::get('estimate/{estimateNumber}', 'EstimateController@show'); // 詳細
         Route::delete('estimate/{estimateNumber}', 'EstimateController@destroy'); // 削除
-        Route::put('asp/estimate/{estimateNumber}/determine', 'EstimateController@determine')->name('asp.estimate.determine'); // 見積確定
+
+        Route::put('estimate/{reception}/{estimateNumber}/determine', 'EstimateController@determine')->name('estimate.determine'); // 見積確定
+
         Route::put('estimate/{estimateNumber}/status', 'EstimateController@statusUpdate'); // ステータスを更新
 
         // 催行済み
@@ -85,11 +87,18 @@ Route::domain(env('STAFF_DOMAIN', 'asp.hakken-tour.com'))->namespace('Staff\Api'
         Route::get('{reception}/{applicationStep}/{controlNumber}/itinerary/{itineraryNumber}/payable/list', 'AccountPayableController@index'); // 仕入先毎一覧（予約・見積詳細の「仕入れ先買掛金」枠）
 
         Route::get('management/payment/reserve/list', 'AccountPayableReserveController@index'); 
+        Route::get('management/payment/reserve/{hashId}/item/list', 'AccountPayableItemController@index'); 
         Route::get('management/payment/list', 'AccountPayableDetailController@index'); // 詳細リスト
+
+        Route::put('management/account_payable_item/{accountPayableItemId}/payment_date', 'AccountPayableItemController@paymentDateUpdate')->where('accountPayableItemId', '[0-9]+'); // 支払日更新(仕入先＆商品毎)
+
 
         Route::post('management/withdrawal/account_payable_detail/{accountPayableDetailId}', 'AgencyWithdrawalController@store')->where('accountPayableDetailId', '[0-9]+'); // 出金登録
         Route::delete('management/withdrawal/{agencyWithdrawalId}', 'AgencyWithdrawalController@destroy'); // 出金登録削除
-        Route::put('management/account_payable_detail/{accountPayableDetailId}', 'AccountPayableDetailController@update')->where('accountPayableDetailId', '[0-9]+'); // 支払情報編集
+
+        Route::post('management/withdrawal/account_payable_item/{accountPayableItemId}', 'AgencyWithdrawalItemHistoryController@store')->where('accountPayableItemlId', '[0-9]+'); // 出金登録(商品毎)
+
+        Route::put('management/account_payable_detail/{accountPayableDetailId}', 'AccountPayableDetailController@update')->where('accountPayableDetailId', '[0-9]+'); // 支払情報編集(詳細)
         Route::put('management/account_payable_detail/payment_batch', 'AccountPayableDetailController@paymentBatch'); // 支払一括処理
 
         // 請求管理
@@ -265,7 +274,8 @@ Route::domain(env('STAFF_DOMAIN', 'asp.hakken-tour.com'))->namespace('Staff\Api'
             Route::put('estimate/{requestNumber}/reject', 'EstimateController@reject'); // 相談依頼辞退
             Route::put('estimate/{requestNumber}/consent', 'EstimateController@consent'); // 相談承諾
 
-            Route::put('estimate/{estimateNumber}/determine', 'EstimateController@determine')->name('estimate.determine'); // 見積確定
+            // Route::put('estimate/{estimateNumber}/determine', 'EstimateController@determine')->name('estimate.determine'); // 見積確定 → ASP側のAPIに統合
+
             Route::put('estimate/{estimateNumber}/status', 'EstimateController@statusUpdate'); // ステータスを更新
             
             Route::put("webreserveext/{webreserveextId}/online/change_request", "WebOnlineScheduleController@changeRequest"); // オンライン相談変更リクエスト

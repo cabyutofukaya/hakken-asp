@@ -26,8 +26,6 @@ class IndexResource extends JsonResource
             'note' => $this->note,
             'record_date' => $this->record_date,
             'withdrawal_date' => $this->withdrawal_date,
-            // 'created_at' => $this->created_at->format('Y-m-d H:i:s'),
-            // 'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
         ];
 
         // カスタム項目とマージ

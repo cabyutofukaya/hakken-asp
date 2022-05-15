@@ -142,12 +142,24 @@ class RepositoryServiceProvider extends ServiceProvider
             \App\Repositories\AccountPayableReserve\AccountPayableReserveRepository::class
         );
         $this->app->bind(
+            \App\Repositories\AccountPayableItem\AccountPayableItemRepositoryInterface::class,
+            \App\Repositories\AccountPayableItem\AccountPayableItemRepository::class
+        );
+        $this->app->bind(
             \App\Repositories\AccountPayableDetail\AccountPayableDetailRepositoryInterface::class,
             \App\Repositories\AccountPayableDetail\AccountPayableDetailRepository::class
         );
         $this->app->bind(
+            \App\Repositories\AgencyWithdrawalItemHistoryRepository\AgencyWithdrawalItemHistoryRepositoryRepositoryInterface::class,
+            \App\Repositories\AgencyWithdrawalItemHistoryRepository\AgencyWithdrawalItemHistoryRepositoryRepository::class
+        );
+        $this->app->bind(
             \App\Repositories\AgencyWithdrawalRepository\AgencyWithdrawalRepositoryRepositoryInterface::class,
             \App\Repositories\AgencyWithdrawalRepository\AgencyWithdrawalRepositoryRepository::class
+        );
+        $this->app->bind(
+            \App\Repositories\AgencyWithdrawalItemHistoryCustomValueRepository\AgencyWithdrawalItemHistoryCustomValueRepositoryRepositoryInterface::class,
+            \App\Repositories\AgencyWithdrawalItemHistoryCustomValueRepository\AgencyWithdrawalItemHistoryCustomValueRepositoryRepository::class
         );
         $this->app->bind(
             \App\Repositories\AgencyWithdrawalCustomValueRepository\AgencyWithdrawalCustomValueRepositoryRepositoryInterface::class,
@@ -356,6 +368,10 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(
             \App\Repositories\SubjectHotel\SubjectHotelRepositoryInterface::class,
             \App\Repositories\SubjectHotel\SubjectHotelRepository::class
+        );
+        $this->app->bind(
+            \App\Repositories\SupplierPaymentDate\SupplierPaymentDateRepositoryInterface::class,
+            \App\Repositories\SupplierPaymentDate\SupplierPaymentDateRepository::class
         );
         $this->app->bind(
             \App\Repositories\Supplier\SupplierRepositoryInterface::class,
