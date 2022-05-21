@@ -45,12 +45,12 @@ class AgencyWithdrawalItemHistoryStoreRequest extends FormRequest
                 $accountPayableItem = $this->accountPayableItemService->find($this->accountPayableItemId);
 
                 try {
-                    if ($accountPayableItem->unpaid_balance == 0) { // ゼロ除算禁止
+                    if ($accountPayableItem->total_amount_accrued == 0) { // ゼロ除算禁止
                         throw new \Exception("未払額はありません。");
                     }
     
                     // 出金割合(1, 0.5 ... etc)
-                    $rate = get_agency_withdrawal_rate($value, $accountPayableItem->unpaid_balance);
+                    $rate = get_agency_withdrawal_rate($value, $accountPayableItem->total_amount_accrued);
                     
                     if (!preg_match('/^[0-9\-]+$/', $rate * 100)) { // パーセンテージが割り切れないケース。数字とマイナス記号のみの構成であること(マイナス記号は必要か不明だが、一応許可しておく)
                         throw new \Exception("未払金額に対する出金額の割合が正しくありません。");

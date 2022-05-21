@@ -109,7 +109,7 @@ class AgencyWithdrawalService
         $insertParams = []; // agency_withdrawalsテーブルにinsertする値をセット
 
         // 出金割合
-        $rate = get_agency_withdrawal_rate(Arr::get($input, "amount"), $accountPayableItem->unpaid_balance); // 1, 0.5 ...etc
+        $rate = get_agency_withdrawal_rate(Arr::get($input, "amount"), $accountPayableItem->total_amount_accrued); // 1, 0.5 ...etc
 
         // 出金対象となる商品仕入れコードをselectし、出金レコード作成用の配列を作成
         $query = $applicationStep === config('consts.reserves.APPLICATION_STEP_RESERVE') ? $this->accountPayableDetailService->getSummarizeItemQuery($accountPayableItem->toArray())->decided()->select(['id', 'unpaid_balance', 'reserve_travel_date_id', 'saleable_type', 'saleable_id', 'supplier_id'])->with(['saleable:id,participant_id']) : $this->accountPayableDetailService->getSummarizeItemQuery($accountPayableItem->toArray())->select(['id', 'unpaid_balance', 'reserve_travel_date_id', 'saleable_type', 'saleable_id'])->with(['saleable:id,participant_id']); // スコープを設定
