@@ -150,20 +150,20 @@ class RepositoryServiceProvider extends ServiceProvider
             \App\Repositories\AccountPayableDetail\AccountPayableDetailRepository::class
         );
         $this->app->bind(
-            \App\Repositories\AgencyWithdrawalItemHistoryRepository\AgencyWithdrawalItemHistoryRepositoryRepositoryInterface::class,
-            \App\Repositories\AgencyWithdrawalItemHistoryRepository\AgencyWithdrawalItemHistoryRepositoryRepository::class
+            \App\Repositories\AgencyWithdrawalItemHistory\AgencyWithdrawalItemHistoryRepositoryInterface::class,
+            \App\Repositories\AgencyWithdrawalItemHistory\AgencyWithdrawalItemHistoryRepository::class
         );
         $this->app->bind(
-            \App\Repositories\AgencyWithdrawalRepository\AgencyWithdrawalRepositoryRepositoryInterface::class,
-            \App\Repositories\AgencyWithdrawalRepository\AgencyWithdrawalRepositoryRepository::class
+            \App\Repositories\AgencyWithdrawal\AgencyWithdrawalRepositoryRepositoryInterface::class,
+            \App\Repositories\AgencyWithdrawal\AgencyWithdrawalRepositoryRepository::class
         );
         $this->app->bind(
-            \App\Repositories\AgencyWithdrawalItemHistoryCustomValueRepository\AgencyWithdrawalItemHistoryCustomValueRepositoryRepositoryInterface::class,
-            \App\Repositories\AgencyWithdrawalItemHistoryCustomValueRepository\AgencyWithdrawalItemHistoryCustomValueRepositoryRepository::class
+            \App\Repositories\AgencyWithdrawalItemHistoryCustomValue\AgencyWithdrawalItemHistoryCustomValueRepositoryRepositoryInterface::class,
+            \App\Repositories\AgencyWithdrawalItemHistoryCustomValue\AgencyWithdrawalItemHistoryCustomValueRepositoryRepository::class
         );
         $this->app->bind(
-            \App\Repositories\AgencyWithdrawalCustomValueRepository\AgencyWithdrawalCustomValueRepositoryRepositoryInterface::class,
-            \App\Repositories\AgencyWithdrawalCustomValueRepository\AgencyWithdrawalCustomValueRepositoryRepository::class
+            \App\Repositories\AgencyWithdrawalCustomValue\AgencyWithdrawalCustomValueRepositoryInterface::class,
+            \App\Repositories\AgencyWithdrawalCustomValue\AgencyWithdrawalCustomValueRepository::class
         );
         $this->app->bind(
             \App\Repositories\ReservePurchasingSubjectOptionCustomValue\ReservePurchasingSubjectOptionCustomValueRepositoryInterface::class,
