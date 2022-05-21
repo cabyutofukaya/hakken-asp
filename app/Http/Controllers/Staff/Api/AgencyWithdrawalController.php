@@ -13,7 +13,7 @@ use App\Http\Requests\Staff\AgencyWithdrawalStoreRequest;
 use App\Http\Resources\Staff\AccountPayableDetail\IndexResource;
 use App\Models\AgencyWithdrawal;
 use App\Services\AccountPayableDetailService;
-use App\Services\agencyWithdrawalItemHistoryService;
+use App\Services\AgencyWithdrawalItemHistoryService;
 use App\Services\AgencyWithdrawalService;
 use Illuminate\Support\Arr;
 
