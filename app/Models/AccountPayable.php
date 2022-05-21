@@ -45,7 +45,6 @@ class AccountPayable extends Model
         'agency_id',
         'reserve_id',
         'reserve_itinerary_id',
-        'payable_number',
         'supplier_id',
         'supplier_name',
     ];

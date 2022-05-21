@@ -13,6 +13,6 @@ interface AccountPayableRepositoryInterface
   public function whereExists($where) : ?AccountPayable;
   // public function deleteNoDetailByReserveItineraryId(int $reserveItineraryId, bool $isSoftDelete = true) : bool;
   public function save($data) : AccountPayable;
-  public function deleteLostPurchaseData(int $reserveItineraryId, array $supplierIdIds, bool $isSoftDelete = true) : bool;
+  public function deleteLostPurchaseData(int $reserveItineraryId, array $supplierIds, bool $isSoftDelete = true) : bool;
   public function deleteDoseNotHaveDetails(int $reserveId, bool $isSoftDelete = true) : bool;
 }

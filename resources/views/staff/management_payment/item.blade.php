@@ -4,8 +4,19 @@
 <main>
   <div id="pageHead">
     <h1><span class="material-icons">upload</span>
-      @if($reserve)予約{{$reserve->control_number}} @endif
-      支払管理</h1>
+      @if($supplier)
+        {{ $supplier->name }}({{ optional($reserve)->control_number }}) 
+      @else
+        予約{{ optional($reserve)->control_number }} 
+      @endif
+      支払管理
+    </h1>
+    <ol class="breadCrumbs">
+      <li>
+        <a href="{{ route('staff.management.payment.reserve', [$agencyAccount]) }}">支払管理</a>
+      </li>
+      <li><span>仕入先商品一覧</span></li>
+    </ol>
 
       <form method="GET" action="{{ route('staff.management.payment.item', ['agencyAccount' => $agencyAccount, 'reserveHashId' => $reserveHashId]) }}">
         <div id="searchBox">
@@ -85,6 +96,7 @@
 
   <div id="paymentList" 
     reserveHashId='{{ $reserveHashId }}'
+    supplierHashId='{{ $supplierHashId }}'
     searchParam='@json($searchParam)' 
     formSelects='@json($formSelects)' 
     modalFormSelects='@json($modalFormSelects)'

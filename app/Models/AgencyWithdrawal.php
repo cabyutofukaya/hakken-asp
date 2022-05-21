@@ -35,6 +35,8 @@ class AgencyWithdrawal extends Model
         'participant_id',
         'supplier_id_log',
         'note',
+        'bulk_withdrawal_key',
+        'temp_id',
     ];
 
     protected $guarded = [
@@ -113,6 +115,14 @@ class AgencyWithdrawal extends Model
     public function v_agency_withdrawal_custom_values()
     {
         return $this->hasMany('App\Models\VAgencyWithdrawalCustomValue')->where('flg', true);
+    }
+
+    /**
+     * 一括出金からの出金の場合はtrue
+     */
+    public function is_bulk_withdrawal(): bool
+    {
+        return !is_null($this->bulk_withdrawal_key);
     }
 
     ///////////////// 読みやすい文字列に変換するAttribute ここから //////////////

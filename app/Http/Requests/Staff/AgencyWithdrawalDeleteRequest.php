@@ -31,7 +31,7 @@ class AgencyWithdrawalDeleteRequest extends FormRequest
     public function messages()
     {
         return [
-            'account_payable_detail_id.updated_at.date' => '料金関連更新日時の入力入力形式が不正です(YYYY/MM/DD)',
+            'account_payable_detail.updated_at.date' => '料金処理更新日時の入力入力形式が不正です(YYYY/MM/DD)',
         ];
     }
 }

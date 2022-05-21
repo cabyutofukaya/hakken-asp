@@ -20,8 +20,8 @@ class AccountPayableReserve extends Model
         'id',
         'reserve.control_number',
         'reserve.departure_date',
-        'amount_billed',
-        'unpaid_balance',
+        'total_amount_paid',
+        'total_amount_accrued',
         'reserve_manager',
         'reserve.note',
     ];
@@ -34,8 +34,8 @@ class AccountPayableReserve extends Model
     protected $fillable = [
         'agency_id',
         'reserve_id',
-        'amount_billed',
-        'unpaid_balance',
+        'total_amount_paid',
+        'total_amount_accrued',
         'status',
     ];
 
@@ -57,8 +57,8 @@ class AccountPayableReserve extends Model
      * @var array
      */
     protected $casts = [
-        'amount_billed' => 'integer',
-        'unpaid_balance' => 'integer',
+        'total_amount_paid' => 'integer',
+        'total_amount_accrued' => 'integer',
     ];
 
     protected $dates = [
@@ -125,5 +125,4 @@ class AccountPayableReserve extends Model
             ->leftJoin('staffs', 'reserves.manager_id', '=', 'staffs.id')
             ->orderBy('staffs.name', $direction);
     }
-
 }

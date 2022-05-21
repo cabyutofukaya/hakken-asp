@@ -13,6 +13,7 @@ use App\Http\Requests\Staff\AgencyWithdrawalStoreRequest;
 use App\Http\Resources\Staff\AccountPayableDetail\IndexResource;
 use App\Models\AgencyWithdrawal;
 use App\Services\AccountPayableDetailService;
+use App\Services\agencyWithdrawalItemHistoryService;
 use App\Services\AgencyWithdrawalService;
 use Illuminate\Support\Arr;
 
@@ -21,10 +22,11 @@ use Illuminate\Support\Arr;
  */
 class AgencyWithdrawalController extends Controller
 {
-    public function __construct(AgencyWithdrawalService $agencyWithdrawalService, AccountPayableDetailService $accountPayableDetailService)
+    public function __construct(AgencyWithdrawalService $agencyWithdrawalService, AccountPayableDetailService $accountPayableDetailService, AgencyWithdrawalItemHistoryService $agencyWithdrawalItemHistoryService)
     {
         $this->agencyWithdrawalService = $agencyWithdrawalService;
         $this->accountPayableDetailService = $accountPayableDetailService;
+        $this->agencyWithdrawalItemHistoryService = $agencyWithdrawalItemHistoryService;
     }
 
     /**
@@ -56,6 +58,8 @@ class AgencyWithdrawalController extends Controller
             $agencyWithdrawal = \DB::transaction(function () use ($input, $accountPayableDetail) {
                 $agencyWithdrawal = $this->agencyWithdrawalService->create($input); // 同時編集チェック。出金登録リクエストと入れ違いで行程が変更された(仕入先が変更された等)場合などは例外が投げられる
                 
+                $this->agencyWithdrawalItemHistoryService->setIndividualWithdrawal($agencyWithdrawal); // 一括出金履歴に当出金履歴を登録
+
                 // ステータスと支払い残高計算
                 event(new ChangePaymentDetailAmountEvent($agencyWithdrawal->account_payable_detail->id));
 
@@ -88,9 +92,9 @@ class AgencyWithdrawalController extends Controller
     /**
      * 出金データ削除
      */
-    public function destroy(AgencyWithdrawalDeleteRequest $request, $agencyAccount, $agencyWithdrawalId)
+    public function destroy(AgencyWithdrawalDeleteRequest $request, string $agencyAccount, int $agencyWithdrawalId)
     {
-        $agencyWithdrawal = $this->agencyWithdrawalService->find((int)$agencyWithdrawalId);
+        $agencyWithdrawal = $this->agencyWithdrawalService->find($agencyWithdrawalId);
 
         if (!$agencyWithdrawal) {
             abort(404, "データが見つかりません。編集する前に画面を再読み込みして最新情報を表示してください。");
@@ -110,7 +114,10 @@ class AgencyWithdrawalController extends Controller
             
             $result = \DB::transaction(function () use ($agencyWithdrawal) {
                 $this->agencyWithdrawalService->delete($agencyWithdrawal->id, true); // 論理削除
-    
+                
+                $this->agencyWithdrawalItemHistoryService->deleteByAgencyWithdrawalId($agencyWithdrawal->id, true);
+
+                
                 event(new ChangePaymentDetailAmountEvent($agencyWithdrawal->account_payable_detail_id));
 
                 // 当該行程の仕入先＆商品毎のステータスと未払金額計算。

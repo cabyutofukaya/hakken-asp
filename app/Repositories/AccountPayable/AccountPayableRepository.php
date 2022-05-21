@@ -81,7 +81,7 @@ class AccountPayableRepository implements AccountPayableRepositoryInterface
      */
     public function deleteLostPurchaseData(int $reserveItineraryId, array $supplierIds, bool $isSoftDelete = true) : bool
     {
-        // 出金登録レコードを持たない支払い詳細レコードを削除
+        // 出金登録レコードを持たない支払い詳細レコードを削除（各モデルのbootで動くので、以下の処理はおそらく動いていない↓）
         foreach ($this->accountPayable->with('account_payable_details.agency_withdrawals')->where('reserve_itinerary_id', $reserveItineraryId)->whereNotIn('supplier_id', $supplierIds)->get() as $accountPayable) {
             foreach ($accountPayable->account_payable_details()->doesntHave('agency_withdrawals')->get() as $accountPayableDetail) {
                 if ($isSoftDelete) {
@@ -93,14 +93,24 @@ class AccountPayableRepository implements AccountPayableRepositoryInterface
         }
 
         // 支払い詳細レコードを持たないaccount_payablesレコードを削除
-        foreach ($this->accountPayable->where('reserve_itinerary_id', $reserveItineraryId)->doesntHave('account_payable_details')->get() as $accountPayable) {
+        // $ids = $this->accountPayable->select(['id'])->where('reserve_itinerary_id', $reserveItineraryId)->doesntHave('account_payable_details')->pluck('id');
+        $ids = $this->accountPayable->select(['id'])->where('reserve_itinerary_id', $reserveItineraryId)->whereNotIn('supplier_id', $supplierIds)->pluck('id');
+        if ($ids->isNotEmpty()) {
             if ($isSoftDelete) {
-                $accountPayable->delete();
+                $accountPayable->whereIn('id', $ids->toArray())->delete();
             } else {
-                $accountPayable->forceDelete();
+                $accountPayable->whereIn('id', $ids->toArray())->forceDelete();
             }
         }
         return true;
+        // foreach ($this->accountPayable->where('reserve_itinerary_id', $reserveItineraryId)->doesntHave('account_payable_details')->get() as $accountPayable) {
+        //     if ($isSoftDelete) {
+        //         $accountPayable->delete();
+        //     } else {
+        //         $accountPayable->forceDelete();
+        //     }
+        // }
+        // return true;
     }
 
     /**

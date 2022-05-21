@@ -17,6 +17,7 @@ use App\Models\AccountPayableDetail;
 use App\Services\AccountPayableDetailService;
 use App\Services\AgencyWithdrawalService;
 use App\Services\ReserveItineraryService;
+use App\Services\ReserveBaseService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 
@@ -25,11 +26,12 @@ use Illuminate\Support\Arr;
  */
 class AccountPayableDetailController extends Controller
 {
-    public function __construct(AccountPayableDetailService $accountPayableDetailService, ReserveItineraryService $reserveItineraryService, AgencyWithdrawalService $agencyWithdrawalService)
+    public function __construct(AccountPayableDetailService $accountPayableDetailService, ReserveItineraryService $reserveItineraryService, AgencyWithdrawalService $agencyWithdrawalService, ReserveBaseService $reserveBaseService)
     {
         $this->accountPayableDetailService = $accountPayableDetailService;
         $this->reserveItineraryService = $reserveItineraryService;
         $this->agencyWithdrawalService = $agencyWithdrawalService;
+        $this->reserveBaseService = $reserveBaseService;
     }
 
     /**
@@ -39,14 +41,31 @@ class AccountPayableDetailController extends Controller
      * @param int $limit 取得件数
      * @param string $agencyAccount 会社アカウント
      */
-    private function search(array $params, int $limit, string $agencyAccount)
+    private function search(
+        int $reserveId,
+        int $reserveItineraryId,
+        int $supplierId,
+        string $subject,
+        int $itemId,
+        array $params,
+        int $limit,
+        string $agencyAccount
+    )
     {
         $search = [];
+
+        // 必須項目(予約ID、行程ID、仕入先ID、科目、商品ID)は直接検索パラメータにセット
+        $search['reserve_id'] = $reserveId;
+        $search['reserve_itinerary_id'] = $reserveItineraryId;
+        $search['supplier_id'] = $supplierId;
+        $search['subject'] = $subject;
+        $search['item_id'] = $itemId;
+
         // 一応検索に使用するパラメータだけに絞る
         foreach ($params as $key => $val) {
-            if (in_array($key, ['payable_number','status','reserve_number','supplier_name','item_name','item_code','last_manager_id','payment_date_from','payment_date_to']) || strpos($key, config('consts.user_custom_items.USER_CUSTOM_ITEM_PREFIX')) === 0) { // カスタム項目はプレフィックスを元に抽出
+            if (in_array($key, ['status', 'item_name', 'participant_name', 'last_manager_id', 'use_date_from', 'use_date_to']) || strpos($key, config('consts.user_custom_items.USER_CUSTOM_ITEM_PREFIX')) === 0) { // カスタム項目はプレフィックスを元に抽出
 
-                if (in_array($key, ['payment_date_from','payment_date_to'], true) || strpos($key, config('consts.user_custom_items.USER_CUSTOM_ITEM_CALENDAR_PREFIX')) === 0) { // カレンダーパラメータは日付を（YYYY/MM/DD → YYYY-MM-DD）に整形
+                if (in_array($key, ['use_date_from', 'use_date_to'], true) || strpos($key, config('consts.user_custom_items.USER_CUSTOM_ITEM_CALENDAR_PREFIX')) === 0) { // カレンダーパラメータは日付を（YYYY/MM/DD → YYYY-MM-DD）に整形
                     $search[$key] = !is_empty($val) ? date('Y-m-d', strtotime($val)) : null;
                 } else {
                     $search[$key] = $val;
@@ -57,6 +76,7 @@ class AccountPayableDetailController extends Controller
         return IndexResource::collection(
             $this->accountPayableDetailService->paginateByAgencyAccount(
                 $agencyAccount,
+                $subject,
                 $search,
                 $limit,
                 config('consts.reserves.APPLICATION_STEP_RESERVE'), // スコープ設定は確定済予約情報に
@@ -69,8 +89,14 @@ class AccountPayableDetailController extends Controller
 
     /**
      * 仕入一覧
+     *
+     * @param string $agencyAccount 会社アカウント
+     * @param string $reserveHashId 予約ID(ハッシュ)
+     * @param string $supplierHashId 支払先ID(ハッシュ)
+     * @param string $subject 科目(オプション、航空券、ホテル)
+     * @param string $itemHashId 商品ID(ハッシュ)
      */
-    public function index(Request $request, $agencyAccount)
+    public function index(Request $request, string $agencyAccount, string $reserveHashId, string $supplierHashId, string $subject, string $itemHashId)
     {
         // 認可チェック
         $response = \Gate::authorize('viewAny', new AccountPayableDetail);
@@ -78,7 +104,39 @@ class AccountPayableDetailController extends Controller
             abort(403, $response->message());
         }
 
-        return $this->search($request->all(), $request->get("per_page", 10), $agencyAccount);
+        if (!($reserveId = \Hashids::decode($reserveHashId)[0] ?? null)) {
+            abort(404);
+        }
+
+        if (!($reserve = $this->reserveBaseService->findForAgencyId($reserveId, auth("staff")->user()->agency_id))) {
+            abort(404);
+        }
+
+        // 有効行程
+        if (!($reserveItineraryId = $reserve->enabled_reserve_itinerary->id)) {
+            abort(404);
+        }
+
+        // 仕入先ID
+        if (!($supplierId = \Hashids::decode($supplierHashId)[0] ?? null)) {
+            abort(404);
+        }
+
+        // 商品ID
+        if (!($itemId = \Hashids::decode($itemHashId)[0] ?? null)) {
+            abort(404);
+        }
+
+        return $this->search(
+            $reserveId,
+            $reserveItineraryId,
+            $supplierId,
+            $subject,
+            $itemId,
+            $request->all(),
+            $request->get("per_page", 10),
+            $agencyAccount
+        );
     }
 
     /**

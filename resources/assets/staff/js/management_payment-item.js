@@ -23,6 +23,7 @@ import { RESERVE } from "./constants";
  */
 const PaymentList = ({
     reserveHashId,
+    supplierHashId,
     searchParam,
     formSelects,
     modalFormSelects,
@@ -59,8 +60,8 @@ const PaymentList = ({
         last_note: "asc",
         payment_date: "asc",
         use_date: "asc",
-        amount_billed: "asc",
-        unpaid_balance: "asc",
+        total_purchase_amount: "asc",
+        total_amount_accrued: "asc",
         status: "asc"
     });
 
@@ -107,10 +108,10 @@ const PaymentList = ({
                 currentPaymentData: {
                     ...paymentData
                 },
-                // 入力制御データの担当者と備考は、前回の入力をそのまま初期値として使う形で良いと思う
+                // 入力制御データの備考は前回の入力をそのまま初期値として使う形で良いと思う
                 withdrawalData: {
                     ...withdrawalInitial,
-                    manager_id: paymentData.manager_id ?? consts?.managerId,
+                    manager_id: consts?.managerId ?? "", // ログイン中のスタッフ
                     note: paymentData.note ?? ""
                     // supplier_id_log: paymentData.supplier_id
                 }
@@ -230,7 +231,8 @@ const PaymentList = ({
 
         const response = await axios
             .get(
-                `/api/${agencyAccount}/management/payment/reserve/${reserveHashId}/item/list`,
+                `/api/${agencyAccount}/management/payment/list/reserve/${reserveHashId}/` +
+                    (supplierHashId ? `${supplierHashId}/` : ""), // 仕入先ハッシュIDが設定されていればURLに付与
                 {
                     params: {
                         ...searchParam,
@@ -336,7 +338,7 @@ const PaymentList = ({
                                 <th
                                     className="sort txtalc"
                                     onClick={e =>
-                                        handleSortClick("amount_billed")
+                                        handleSortClick("total_purchase_amount")
                                     }
                                 >
                                     <span>仕入額</span>
@@ -344,7 +346,7 @@ const PaymentList = ({
                                 <th
                                     className="sort txtalc"
                                     onClick={e =>
-                                        handleSortClick("unpaid_balance")
+                                        handleSortClick("total_amount_accrued")
                                     }
                                 >
                                     <span>未払金額</span>
@@ -403,7 +405,11 @@ const PaymentList = ({
                                                 consts.statusVals.status_paid
                                         })}
                                     >
-                                        <td>{row?.item_code ?? "-"}</td>
+                                        <td>
+                                            <a href={row?.url}>
+                                                {row?.item_code ?? "-"}
+                                            </a>
+                                        </td>
                                         <td>{row?.item_name ?? "-"}</td>
                                         <td className="txtalc">
                                             {row?.status_label && (
@@ -432,14 +438,17 @@ const PaymentList = ({
                                         <td>{row?.supplier_name ?? "-"}</td>
                                         <td className="txtalc">
                                             ￥
-                                            {row.amount_billed.toLocaleString()}
+                                            {row.total_purchase_amount.toLocaleString()}
                                         </td>
                                         <td className="txtalc">
                                             <span
                                                 className={classNames({
-                                                    red: row.unpaid_balance > 0,
+                                                    red:
+                                                        row.total_amount_accrued >
+                                                        0,
                                                     payPeriod:
-                                                        row.unpaid_balance > 0,
+                                                        row.total_amount_accrued >
+                                                        0,
                                                     "js-modal-open": !isRegisting
                                                 })}
                                                 data-target="mdPayment"
@@ -448,7 +457,7 @@ const PaymentList = ({
                                                 }
                                             >
                                                 ￥
-                                                {row.unpaid_balance.toLocaleString()}
+                                                {row.total_amount_accrued.toLocaleString()}
                                             </span>
                                         </td>
                                         <td className="txtalc">
@@ -529,6 +538,7 @@ const PaymentList = ({
 const Element = document.getElementById("paymentList");
 if (Element) {
     const reserveHashId = Element.getAttribute("reserveHashId");
+    const supplierHashId = Element.getAttribute("supplierHashId");
     const jsVars = Element.getAttribute("jsVars");
     const parsedJsVars = jsVars && JSON.parse(jsVars);
     const customCategoryCode = Element.getAttribute("customCategoryCode");
@@ -548,6 +558,7 @@ if (Element) {
         <ConstApp jsVars={parsedJsVars}>
             <PaymentList
                 reserveHashId={reserveHashId}
+                supplierHashId={supplierHashId}
                 customCategoryCode={customCategoryCode}
                 searchParam={parsedSearchParam}
                 formSelects={parsedFormSelects}

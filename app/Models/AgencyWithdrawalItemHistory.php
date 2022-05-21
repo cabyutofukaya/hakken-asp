@@ -21,8 +21,10 @@ class AgencyWithdrawalItemHistory extends Model
     protected $fillable = [
         'agency_id',
         'reserve_id',
+        'payment_type',
         'account_payable_item_id',
-        'withdrawal_key',
+        'agency_withdrawal_id',
+        'bulk_withdrawal_key',
         'amount',
         'withdrawal_date',
         'record_date',
@@ -83,6 +85,12 @@ class AgencyWithdrawalItemHistory extends Model
         return $this->belongsTo('App\Models\Reserve')->withTrashed()->withDefault();
     }
 
+    // 予約
+    public function agency_withdrawal()
+    {
+        return $this->belongsTo('App\Models\AgencyWithdrawal')->withDefault();
+    }
+
     /**
      * 自社担当
      * 論理削除も取得
@@ -96,10 +104,19 @@ class AgencyWithdrawalItemHistory extends Model
 
     /**
      * カスタム項目を全取得（有効な項目のみ flg=1）
+     * agency_withdrawal_item_history用
      */
     public function v_agency_withdrawal_item_history_custom_values()
     {
         return $this->hasMany('App\Models\VAgencyWithdrawalItemHistoryCustomValue')->where('flg', true);
+    }
+
+    /**
+     * 一括出金レコードの場合はtrue
+     */
+    public function is_bulk_withdrawal(): bool
+    {
+        return $this->payment_type == config('consts.agency_withdrawal_item_histories.PAYMENT_TYPE_BULK');
     }
 
     ///////////////// 読みやすい文字列に変換するAttribute ここから //////////////

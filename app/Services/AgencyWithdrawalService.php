@@ -8,6 +8,7 @@ use App\Models\AgencyWithdrawal;
 use App\Repositories\AccountPayableDetail\AccountPayableDetailRepository;
 use App\Repositories\Agency\AgencyRepository;
 use App\Repositories\AgencyWithdrawal\AgencyWithdrawalRepository;
+use App\Repositories\UserCustomItem\UserCustomItemRepository;
 use App\Services\AccountPayableDetailService;
 use App\Services\AgencyWithdrawalCustomValueService;
 use App\Traits\UserCustomItemTrait;
@@ -19,13 +20,14 @@ class AgencyWithdrawalService
 {
     use UserCustomItemTrait;
 
-    public function __construct(AgencyRepository $agencyRepository, AgencyWithdrawalRepository $agencyWithdrawalRepository, AccountPayableDetailRepository $accountPayableDetailRepository, AgencyWithdrawalCustomValueService $agencyWithdrawalCustomValueService, AccountPayableDetailService $accountPayableDetailService)
+    public function __construct(AgencyRepository $agencyRepository, AgencyWithdrawalRepository $agencyWithdrawalRepository, AccountPayableDetailRepository $accountPayableDetailRepository, AgencyWithdrawalCustomValueService $agencyWithdrawalCustomValueService, AccountPayableDetailService $accountPayableDetailService, UserCustomItemRepository $userCustomItemRepository)
     {
         $this->agencyRepository = $agencyRepository;
         $this->agencyWithdrawalRepository = $agencyWithdrawalRepository;
         $this->accountPayableDetailRepository = $accountPayableDetailRepository;
         $this->agencyWithdrawalCustomValueService = $agencyWithdrawalCustomValueService;
         $this->accountPayableDetailService = $accountPayableDetailService;
+        $this->userCustomItemRepository = $userCustomItemRepository;
     }
 
     /**
@@ -95,25 +97,32 @@ class AgencyWithdrawalService
 
     /**
      * バルクインサート(支払管理の仕入先＆商品毎ページ用出金登録)
-     * クエリの組み立ては、基本的にAccountPayableDetailRepository@paginateByAgencyIdと同じ
      *
+     * @param string $bulkWithdrawalKey 一括出金識別キー
      * @param ?string $applicationStep 申し込み段階。全レコード対象の場合はnull
      * @param bool $exZero 仕入額・未払い額が0円のレコードを取得しない場合はtrue
      */
-    public function bulkCreateForItem(array $input, AccountPayableItem $accountPayableItem, ?string $applicationStep, bool $exZero = true)
+    public function bulkCreateForItem(array $input, string $bulkWithdrawalKey, AccountPayableItem $accountPayableItem, ?string $applicationStep)
     {
-        $insertParams = [];
+        /******************** agency_withdrawalsテーブルへの出金登録  ********************/
+
+        $insertParams = []; // agency_withdrawalsテーブルにinsertする値をセット
 
         // 出金割合
-        $rate = get_agency_withdrawal_rate(Arr::get($input, "amount"), $accountPayableItem->unpaid_balance);
+        $rate = get_agency_withdrawal_rate(Arr::get($input, "amount"), $accountPayableItem->unpaid_balance); // 1, 0.5 ...etc
 
         // 出金対象となる商品仕入れコードをselectし、出金レコード作成用の配列を作成
-        $query = $applicationStep === config('consts.reserves.APPLICATION_STEP_RESERVE') ? $this->accountPayableDetailService->getSummarizeItemQuery($accountPayableItem->toArray())->decided()->select(['id', 'unpaid_balance', 'reserve_travel_date_id', 'saleable_type', 'saleable_id'])->with(['saleable:id,participant_id']) : $this->accountPayableDetailService->getSummarizeItemQuery($accountPayableItem->toArray())->select(['id', 'unpaid_balance', 'reserve_travel_date_id', 'saleable_type', 'saleable_id'])->with(['saleable:id,participant_id']); // スコープを設定
+        $query = $applicationStep === config('consts.reserves.APPLICATION_STEP_RESERVE') ? $this->accountPayableDetailService->getSummarizeItemQuery($accountPayableItem->toArray())->decided()->select(['id', 'unpaid_balance', 'reserve_travel_date_id', 'saleable_type', 'saleable_id', 'supplier_id'])->with(['saleable:id,participant_id']) : $this->accountPayableDetailService->getSummarizeItemQuery($accountPayableItem->toArray())->select(['id', 'unpaid_balance', 'reserve_travel_date_id', 'saleable_type', 'saleable_id'])->with(['saleable:id,participant_id']); // スコープを設定
 
-        // 入額・未払い額が0円のレコードを取得しない場合はexcludingzero
-        $query = $exZero ? $query->excludingzero() : $query;
+        // 「支払ナシ」「支払済」以外のレコードが対象
+        $query = $query->where('status', '<>', config('consts.account_payable_details.STATUS_NONE'))->where('status', '<>', config('consts.account_payable_details.STATUS_PAID'));
 
-        $query->chunk(100, function ($rows) use (&$insertParams, $input, $rate) { // 負荷対策のため念の為、100件ずつ取得
+        // 作業用の一時IDを発行。あとで本IDを持つレコードに対してカスタム項目を一括登録するため
+        $tmpId = $this->generateTempId();
+
+        $withdrawalTotal = 0; // 出金合計。amountの値と等しいか検算するために使用
+
+        $query->chunk(100, function ($rows) use (&$insertParams, $input, $bulkWithdrawalKey, $rate, $tmpId, &$withdrawalTotal) { // 負荷対策のため念の為、100件ずつ取得
             foreach ($rows as $row) {
                 $tmp = [];
                 /** 全レコード共通値 */
@@ -122,8 +131,10 @@ class AgencyWithdrawalService
                 $tmp['withdrawal_date'] = Arr::get($input, "withdrawal_date");
                 $tmp['record_date'] = Arr::get($input, "record_date");
                 $tmp['manager_id'] = Arr::get($input, "manager_id");
-                $tmp['note'] = null; // 備考は一括入力したものをセットする必要はないとお思われる
-                $tmp['supplier_id_log'] = Arr::get($input, "manager_id");
+                $tmp['note'] = null; // 備考は一括入力したものをセットする必要はないと思われる
+                $tmp['supplier_id_log'] = $row->supplier_id;
+                $tmp['bulk_withdrawal_key'] = $bulkWithdrawalKey;
+                $tmp['temp_id'] = $tmpId;
                 /** レコードによって変わる値 */
                 $amount = $row->unpaid_balance * $rate;
                 if (!preg_match('/^[0-9\-]+$/', $amount)) { // 商品仕入額のパーセンテージが割り切れないケース。数字とマイナス記号のみの構成であること(マイナス記号は必要か不明だが、一応許可しておく)
@@ -135,11 +146,66 @@ class AgencyWithdrawalService
                 $tmp['participant_id'] = $row->saleable->participant_id;
 
                 $insertParams[] = $tmp;
+                $withdrawalTotal += $amount; // 検算用の合計金額を足し込み
             }
         });
 
-        // 出金レコードをバルクインサート
-        return $this->agencyWithdrawalRepository->insert($insertParams);
+        if ($withdrawalTotal != Arr::get($input, "amount")) {
+            throw new \Exception("出金額の合計が正しくありません。");
+        }
+
+        foreach (array_chunk($insertParams, 1000) as $rows) { // 念の為、1,000ずつの配列に分けてinsert
+            $this->agencyWithdrawalRepository->insert($rows); // 出金レコードをバルクインサート
+        }
+
+        /******************** account_payable_detailsレコードの最終担当者の更新  ********************/
+
+        $updateParams = []; // account_payable_detailsレコードで更新する値をセット(最終担者IDを更新する)
+        foreach ($insertParams as $row) { // insertParamsに保存したaccount_payable_detail_id,manager_idを抽出
+            $tmp = [];
+            $tmp['id'] = Arr::get($row, 'account_payable_detail_id');
+            $tmp['last_manager_id'] = Arr::get($row, 'manager_id');
+            $updateParams[] = $tmp;
+        }
+
+        foreach (array_chunk($updateParams, 1000) as $rows) { // 念の為、1,000ずつの配列に分けてupdate
+            $this->accountPayableDetailService->updateBulk($updateParams, "id");
+        }
+
+        /******************** カスタム項目の一括登録  ********************/
+
+        /**
+         * 入力データからカスタムフィールドを抽出
+         * ↓
+         * 出金登録した行をtemp_idを条件にid一覧を取得
+         * ↓
+         * カスタム項目を負荷対策のため1,000行ずつバルクインサート
+         */
+
+        $customFields = $this->customFieldsExtraction($input); // 入力データからカスタムフィールドを抽出
+        if ($customFields) {
+            $agencyWithdrawalIds = $this->agencyWithdrawalRepository->getIdsByTempId($tmpId); // 一括登録した出金ID一覧
+
+            // バルクインサート用配列
+            $insertRows = [];
+
+            $userCustomItems = $this->userCustomItemRepository->getByKeys(array_keys($customFields, ), [], ['id','key']);
+            
+            foreach ($agencyWithdrawalIds as $id) {
+                foreach ($userCustomItems as $uci) {
+                    $tmp = [];
+                    $tmp['agency_withdrawal_id'] = $id;
+                    $tmp['user_custom_item_id'] = $uci->id;
+                    $tmp['val'] = Arr::get($customFields, $uci->key);
+
+                    $insertRows[] = $tmp;
+                }
+            }
+
+            foreach (array_chunk($insertRows, 1000) as $rows) { // 念の為、1,000ずつの配列に分けてinsert
+                $this->agencyWithdrawalCustomValueService->insert($rows); // バルクインサート
+            }
+        }
     }
 
     /**
@@ -159,6 +225,14 @@ class AgencyWithdrawalService
     }
 
     /**
+     * 作業用一時IDを生成
+     */
+    public function generateTempId()
+    {
+        return uniqid(mt_rand());
+    }
+
+    /**
      * 削除
      *
      * @param int $id ID
@@ -167,5 +241,27 @@ class AgencyWithdrawalService
     public function delete(int $id, bool $isSoftDelete=true): bool
     {
         return $this->agencyWithdrawalRepository->delete($id, $isSoftDelete);
+    }
+
+    /**
+     * 当該一括出金識別キーのレコードを削除
+     *
+     * @param string $bulkWithdrawalKey 一括出金識別キー
+     * @return boolean
+     */
+    public function deleteByBulkWithdrawalKey(string $bulkWithdrawalKey, bool $isSoftDelete=true)
+    {
+        return $this->agencyWithdrawalRepository->deleteWhere(['bulk_withdrawal_key' => $bulkWithdrawalKey], $isSoftDelete);
+    }
+
+    /**
+     * 復元
+     * 
+     * @param int $id
+     * @return boolean
+     */
+    public function restore(int $id)
+    {
+        $this->agencyWithdrawalRepository->restore($id);
     }
 }

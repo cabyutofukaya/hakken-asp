@@ -37,15 +37,19 @@ class AccountPayableItemController extends Controller
      * 一覧取得＆表示処理
      *
      * @param int $reserveId 予約ID
+     * @param int $supplierId 仕入先ID
      * @param array $params 検索パラメータ
      * @param int $limit 取得件数
      * @param string $agencyAccount 会社アカウント
      */
-    private function search(int $reserveId, ?int $reserveItineraryId, array $params, int $limit, string $agencyAccount)
+    private function search(int $reserveId, ?int $supplierId, ?int $reserveItineraryId, array $params, int $limit, string $agencyAccount)
     {
         $search = [];
         $search['reserve_id'] = $reserveId; // 必須パラメータ
         $search['reserve_itinerary_id'] = $reserveItineraryId; // 必須パラメータ
+        if ($supplierId) { // 任意パラメータ
+            $search['supplier_id'] = $supplierId;
+        }
 
         // 一応検索に使用するパラメータだけに絞る
         foreach ($params as $key => $val) {
@@ -65,7 +69,7 @@ class AccountPayableItemController extends Controller
                 $search,
                 $limit,
                 config('consts.reserves.APPLICATION_STEP_RESERVE'), // スコープ設定は確定済予約情報に
-                ['reserve','agency_withdrawal_item_histories','agency_withdrawal_item_histories.v_agency_withdrawal_item_history_custom_values'],
+                ['reserve','supplier','agency_withdrawal_item_histories.v_agency_withdrawal_item_history_custom_values','agency_withdrawal_item_histories.agency_withdrawal.v_agency_withdrawal_custom_values'],
                 [],
                 true
             )
@@ -73,11 +77,11 @@ class AccountPayableItemController extends Controller
     }
 
     /**
-     * 仕入一覧
+     * 仕入先＆商品毎一覧
      *
      * @param string $reserveHashId 予約ID(ハッシュ値)
      */
-    public function index(Request $request, $agencyAccount, string $reserveHashId)
+    public function index(Request $request, $agencyAccount, string $reserveHashId, ?string $supplierHashId = null)
     {
         // 認可チェック
         $response = \Gate::authorize('viewAny', new AccountPayableItem);
@@ -91,14 +95,17 @@ class AccountPayableItemController extends Controller
 
         $reserve = $this->reserveBaseService->findForAgencyId($reserveId, auth("staff")->user()->agency_id);
 
-        if(!$reserve){
+        if (!$reserve) {
             abort(404);
         }
+
+        // 仕入先ID
+        $supplierId = \Hashids::decode($supplierHashId)[0] ?? null;
 
         // 有効行程
         $reserveItineraryId = $reserve->enabled_reserve_itinerary->id;
 
-        return $this->search($reserveId, $reserveItineraryId, $request->all(), $request->get("per_page", 10), $agencyAccount);
+        return $this->search($reserveId, $supplierId, $reserveItineraryId, $request->all(), $request->get("per_page", 10), $agencyAccount);
     }
 
     /**
@@ -129,7 +136,6 @@ class AccountPayableItemController extends Controller
             if ($newAccountPayableItem) {
                 return new IndexResource($newAccountPayableItem);
             }
-
         } catch (\Exception $e) {
             \Log::error($e);
         }

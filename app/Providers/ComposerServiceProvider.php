@@ -105,7 +105,7 @@ class ComposerServiceProvider extends ServiceProvider
         // 支払管理
         View::composer('staff.management_payment.reserve', VCStaff\ManagementPayment\ReserveFormComposer::class); // 予約毎一覧
         View::composer('staff.management_payment.item', VCStaff\ManagementPayment\ItemFormComposer::class); // 仕入先＆商品毎一覧
-        View::composer('staff.management_payment.index', VCStaff\ManagementPayment\IndexFormComposer::class); // 支払管理一覧
+        View::composer('staff.management_payment.detail', VCStaff\ManagementPayment\DetailFormComposer::class); // 商品一覧
 
         View::composer('staff.user.index', VCStaff\User\IndexFormComposer::class); // 個人顧客一覧
         View::composer('staff.user.show', VCStaff\User\ShowFormComposer::class); // 表示ページ

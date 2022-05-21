@@ -2,17 +2,24 @@
 namespace App\Repositories\AccountPayableDetail;
 
 use App\Models\AccountPayableDetail;
+use App\Models\ReserveParticipantOptionPrice;
+use App\Models\ReserveParticipantAirplanePrice;
+use App\Models\ReserveParticipantHotelPrice;
 use Illuminate\Support\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Arr;
 
 class AccountPayableDetailRepository implements AccountPayableDetailRepositoryInterface
 {
     /**
     * @param object $accountPayableDetail
     */
-    public function __construct(AccountPayableDetail $accountPayableDetail)
+    public function __construct(AccountPayableDetail $accountPayableDetail, ReserveParticipantOptionPrice $reserveParticipantOptionPrice, ReserveParticipantAirplanePrice $reserveParticipantAirplanePrice, ReserveParticipantHotelPrice $reserveParticipantHotelPrice)
     {
         $this->accountPayableDetail = $accountPayableDetail;
+        $this->reserveParticipantOptionPrice = $reserveParticipantOptionPrice;
+        $this->reserveParticipantAirplanePrice = $reserveParticipantAirplanePrice;
+        $this->reserveParticipantHotelPrice = $reserveParticipantHotelPrice;
     }
 
     /**
@@ -105,15 +112,13 @@ class AccountPayableDetailRepository implements AccountPayableDetailRepositoryIn
     /**
      * 仕入先＆商品毎にまとめるための条件クエリを取得
      */
-    public function getSummarizeItemQuery(int $agencyId, int $reserveId, int $reserveItineraryId, int $supplierId, string $subject, int $itemId)
+    public function getSummarizeItemQuery(array $where)
     {
-        return $this->accountPayableDetail
-            ->where('agency_id', $agencyId)
-            ->where('reserve_id', $reserveId)
-            ->where('reserve_itinerary_id', $reserveItineraryId)
-            ->where('supplier_id', $supplierId)
-            ->where('subject', $subject)
-            ->where('item_id', $itemId);
+        $query = $this->accountPayableDetail;
+        foreach ($where as $key => $val) {
+            $query = $query->where($key, $val);
+        }
+        return $query;
     }
 
     /**
@@ -138,12 +143,6 @@ class AccountPayableDetailRepository implements AccountPayableDetailRepositoryIn
     {
         $this->accountPayableDetail->where('id', $id)->update($data);
         return $this->find($id);
-        // $accountPayableDetail = $this->accountPayableDetail->findOrFail($id);
-        // foreach ($data as $k => $v) {
-        //     $accountPayableDetail->{$k} = $v; // プロパティに値をセット
-        // }
-        // $accountPayableDetail->save();
-        // return $this->find($id);
     }
 
     /**
@@ -219,7 +218,7 @@ class AccountPayableDetailRepository implements AccountPayableDetailRepositoryIn
      * @param bool $exZero 仕入額・未払い額が0円のレコードを取得しない場合はtrue
      * @return object
      */
-    public function paginateByAgencyId(int $agencyId, array $params, int $limit, ?string $applicationStep, array $with, array $select, bool $exZero = true) : LengthAwarePaginator
+    public function paginateByAgencyId(int $agencyId, string $subject, array $params, int $limit, ?string $applicationStep, array $with, array $select, bool $exZero = true) : LengthAwarePaginator
     {
         $query = $applicationStep === config('consts.reserves.APPLICATION_STEP_RESERVE') ? $this->accountPayableDetail->decided() : $this->accountPayableDetail; // スコープを設定
 
@@ -228,6 +227,13 @@ class AccountPayableDetailRepository implements AccountPayableDetailRepositoryIn
         }
 
         // $query = $isValid ? $query->isValid() : $query; // valid=trueのスコープ
+
+        // saleable対象モデルは無駄なSQLを発行させないように下記変換テーブルにて科目に対応したモデルに限定
+        $saleableTbl = [
+            config('consts.subject_categories.SUBJECT_CATEGORY_OPTION') => 'App\Models\ReserveParticipantOptionPrice',
+            config('consts.subject_categories.SUBJECT_CATEGORY_AIRPLANE') => 'App\Models\ReserveParticipantAirplanePrice',
+            config('consts.subject_categories.SUBJECT_CATEGORY_HOTEL') => 'App\Models\ReserveParticipantHotelPrice',
+        ];
 
         $query = $with ? $query->with($with) : $query;
         $query = $select ? $query->select($select) : $query;
@@ -242,32 +248,26 @@ class AccountPayableDetailRepository implements AccountPayableDetailRepositoryIn
                 $query = $query->whereHas('agency_withdrawals.v_agency_withdrawal_custom_values', function ($q) use ($key, $val) {
                     $q->where('key', $key)->where('val', 'like', "%$val%");
                 });
-            } elseif ($key === 'reserve_number') { // 予約番号
-                $query = $query->whereHas('reserve', function ($q) use ($val) {
-                    $q->where('control_number', 'like', "%$val%");
-                });
-            } elseif ($key === 'payable_number') { // 買い掛け金番号
-                $query = $query->whereHas('account_payable', function ($q) use ($key, $val) {
-                    $q->where($key, $val);
+            // 「予約ID」「行程ID」「仕入先ID」「科目」「商品ID」は必須パラメータにつき曖昧検索はしない
+            } elseif (in_array($key, ["reserve_id", "reserve_itinerary_id", "supplier_id", "subject", "item_id"], true)) {
+                $query = $query->where($key, $val);
+            } elseif ($key === 'participant_name') { // 参加者名(saleable.participant)
+                // 科目に対応したポリモーフィックリレーションの参加者で検索
+                $query = $query->whereHasMorph('saleable', [Arr::get($saleableTbl, $subject)], function ($q1) use ($val) {
+                    $q1->whereHas('participant', function ($q2) use ($val) {
+                        $q2->where('name', 'like', "%$val%");
+                    });
                 });
             } elseif ($key === 'last_manager_id' || $key === 'status') { // 自社担当、ステータス
                 $query = $query->where($key, $val);
-            } elseif ($key=== 'payment_date_from') { // 支払予定日(From)
-                $query = $query->where('payment_date', '>=', $val);
-            } elseif ($key=== 'payment_date_to') { // 支払予定日(To)
-                $query = $query->where('payment_date', '<=', $val);
-            } else { // 仕入先
+            } elseif ($key=== 'use_date_from') { // 利用日(From)
+                $query = $query->where('use_date', '>=', $val);
+            } elseif ($key=== 'use_date_to') { // 利用日(To)
+                $query = $query->where('use_date', '<=', $val);
+            } else { // 商品名
                 $query = $query->where($key, 'like', "%$val%");
             }
         }
-
-        // ↓excludingzeroスコープに変更
-        // if ($exZero) { // 請求額が0円だと、出金履歴が有っても非表示になるので注意。具合悪いようならこのフラグはなくす
-        //     $query = $query->where(function ($q) {
-        //         $q->where('amount_billed', "<>", 0)
-        //             ->orWhere('unpaid_balance', "<>", 0);
-        //     })->where('status', '<>', config('consts.account_payable_details.STATUS_NONE'));
-        // }
 
         return $query->where('account_payable_details.agency_id', $agencyId)->sortable()->paginate($limit); // sortableする際にagency_idがリレーション先のテーブルにも存在するのでエラー回避のために明示的にagency_idを指定する
     }

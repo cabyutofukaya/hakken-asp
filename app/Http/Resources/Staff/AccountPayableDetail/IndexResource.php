@@ -31,7 +31,7 @@ class IndexResource extends JsonResource
             'reserve_url' => $reserveUrl,
             'amount_billed' => $this->amount_billed,
             'unpaid_balance' => $this->unpaid_balance,
-            // 'payment_date' => $this->payment_date,
+            'payment_date' => $this->payment_date,
             'use_date' => $this->use_date,
             'status' => $this->status,
             'status_label' => $this->status_label,

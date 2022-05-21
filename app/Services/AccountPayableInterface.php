@@ -6,5 +6,5 @@ use Illuminate\Database\Eloquent\Model;
 
 interface AccountPayableInterface
 {
-    public function updateStatusAndUnpaidBalance($id, int $unpaidBalance, $status) : Model;
+    public function updateStatusAndPaidBalance($id, int $amountPayment, int $unpaidBalance, $status) : Model;
 }

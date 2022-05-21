@@ -235,15 +235,14 @@ class ReserveItineraryController extends Controller
                 }
 
                 event(new CreateItineraryEvent($reserveItinerary)); // 行程作成時イベント
-
-                event(new PriceRelatedChangeEvent($reserve->id, date('Y-m-d H:i:s'))); // 料金変更に関わるイベントが起きた際に日時を記録
-
                 
                 // 当該行程の仕入先＆商品毎のステータスと未払金額計算。
                 event(new ChangePaymentItemAmountEvent($reserveItinerary->id));
 
                 // 当該予約の支払いステータスと未払金額計算
                 event(new ChangePaymentReserveAmountEvent($reserveItinerary->reserve));
+
+                event(new PriceRelatedChangeEvent($reserve->id, date('Y-m-d H:i:s'))); // 料金変更に関わるイベントが起きた際に日時を記録
 
                 return $reserveItinerary;
             });

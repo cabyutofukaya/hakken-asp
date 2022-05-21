@@ -22,12 +22,12 @@ class AgencyWithdrawalItemHistoryRepository implements AgencyWithdrawalItemHisto
      *
      * @param int $id
      */
-    public function find(int $id, array $with = [], array $select = []): AgencyWithdrawalItemHistory
+    public function find(int $id, array $with = [], array $select = []): ?AgencyWithdrawalItemHistory
     {
         $query = $this->agencyWithdrawalItemHistory;
         $query = $with ? $query->with($with) : $query;
         $query = $select ? $query->select($select) : $query;
-        return $query->findOrFail($id);
+        return $query->find($id);
     }
 
     /**
@@ -81,6 +81,25 @@ class AgencyWithdrawalItemHistoryRepository implements AgencyWithdrawalItemHisto
     }
 
     /**
+     * 検索して1件取得
+     */
+    public function findWhere(array $where, array $with=[], array $select=[]) : ?AgencyWithdrawalItemHistory
+    {
+        $query = $this->agencyWithdrawalItemHistory;
+        
+        $query = $with ? $query->with($with) : $query;
+        $query = $select ? $query->select($select) : $query;
+
+        foreach ($where as $key => $val) {
+            if (is_empty($val)) {
+                continue;
+            }
+            $query = $query->where($key, $val);
+        }
+        return $query->first();
+    }
+
+    /**
      * 当該予約IDに紐づく出金情報があるか否か
      */
     public function isExistsParticipant(int $participantId, int $reserveId) : bool
@@ -101,6 +120,32 @@ class AgencyWithdrawalItemHistoryRepository implements AgencyWithdrawalItemHisto
             $this->agencyWithdrawalItemHistory->destroy($id);
         } else {
             $this->find($id)->forceDelete();
+        }
+        return true;
+    }
+
+    /**
+     * 条件検索で削除
+     *
+     * @param array $where
+     * @param boolean $isSoftDelete 論理削除の場合はtrue
+     * @return boolean
+     */
+    public function deleteWhere(array $where, bool $isSoftDelete): bool
+    {
+        $query = $this->agencyWithdrawalItemHistory;
+        
+        foreach ($where as $key => $val) {
+            if (is_empty($val)) {
+                continue;
+            }
+            $query = $query->where($key, $val);
+        }
+
+        if ($isSoftDelete) {
+            $query->delete();
+        } else {
+            $query->forceDelete();
         }
         return true;
     }

@@ -34,7 +34,7 @@ const PaymentModal = ({
     customFieldCodes,
     customCategoryCode
 }) => {
-    const { agencyAccount } = useContext(ConstContext);
+    const { agencyAccount, paymentTypes } = useContext(ConstContext);
 
     const mounted = useMountedRef(); // マウント・アンマウント制御
 
@@ -45,8 +45,11 @@ const PaymentModal = ({
     //未払い金額を計算。TODO 依存オブジェクトcurrentPaymentDataの扱いを再考
     const unpaidAmount = useMemo(() => {
         return (
-            currentPaymentData.amount_billed -
-            _.sumBy(currentPaymentData.agency_withdrawals, "amount")
+            currentPaymentData.total_purchase_amount -
+            _.sumBy(
+                currentPaymentData.agency_withdrawal_item_histories,
+                "amount"
+            )
         );
     }, [currentPaymentData]);
 
@@ -76,10 +79,10 @@ const PaymentModal = ({
 
         const response = await axios
             .delete(
-                `/api/${agencyAccount}/management/withdrawal/${deleteWithdrawalId}`,
+                `/api/${agencyAccount}/management/agency_withdrawal_item_history/${deleteWithdrawalId}`,
                 {
                     data: {
-                        account_payable_detail: {
+                        account_payable_item: {
                             updated_at: currentPaymentData?.updated_at
                         } // 同時編集チェックのために支払明細レコード更新日時もセット}
                     }
@@ -179,27 +182,48 @@ const PaymentModal = ({
                                         ].toLocaleString()}
                                     </td>
                                     <td className="txtalc">
-                                        {withdrawals[k][withdrawalMethodKey] ??
-                                            "-"}
+                                        {/**
+                                         * カスタム項目。出金種別により、参照プロパティを変更
+                                         * 一括出金→agency_withdrawal_item_history_custom_value
+                                         * 個別出金→agency_withdrawal_custom_values
+                                         * */}
+                                        {withdrawals[k]["is_bulk_withdrawal"] &&
+                                            (withdrawals[k][
+                                                "agency_withdrawal_item_history_custom_values"
+                                            ][withdrawalMethodKey] ??
+                                                "-")}
+                                        {!withdrawals[k][
+                                            "is_bulk_withdrawal"
+                                        ] &&
+                                            (withdrawals[k][
+                                                "agency_withdrawal_custom_values"
+                                            ][withdrawalMethodKey] ??
+                                                "-")}
                                     </td>
-
                                     <td className="txtalc">
-                                        <span
-                                            className={classNames(
-                                                "material-icons",
-                                                {
-                                                    "js-modal-open": !isWithdrawalDeleting
+                                        {withdrawals[k][
+                                            "is_bulk_withdrawal"
+                                        ] && (
+                                            <span
+                                                className={classNames(
+                                                    "material-icons",
+                                                    {
+                                                        "js-modal-open": !isWithdrawalDeleting
+                                                    }
+                                                )}
+                                                data-target="mdDeleteWithdrawal"
+                                                onClick={e =>
+                                                    handleDeleteModal(
+                                                        withdrawals[k]["id"]
+                                                    )
                                                 }
-                                            )}
-                                            data-target="mdDeleteWithdrawal"
-                                            onClick={e =>
-                                                handleDeleteModal(
-                                                    withdrawals[k]["id"]
-                                                )
-                                            }
-                                        >
-                                            delete
-                                        </span>
+                                            >
+                                                delete
+                                            </span>
+                                        )}
+                                        {!withdrawals[k][
+                                            "is_bulk_withdrawal"
+                                        ] && <>-</>}
                                     </td>
                                 </tr>
                             ))}
@@ -240,8 +264,8 @@ const PaymentModal = ({
                                     <th>支払金額</th>
                                     <td>
                                         ￥
-                                        {currentPaymentData?.amount_billed &&
-                                            currentPaymentData.amount_billed.toLocaleString()}
+                                        {currentPaymentData?.total_purchase_amount &&
+                                            currentPaymentData.total_purchase_amount.toLocaleString()}
                                     </td>
                                 </tr>
                                 <tr>

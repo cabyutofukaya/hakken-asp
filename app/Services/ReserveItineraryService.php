@@ -4,9 +4,11 @@ namespace App\Services;
 
 use App\Events\ChangePaymentDetailAmountEvent;
 use App\Events\ChangePaymentItemAmountEvent;
+use App\Events\ChangePaymentDetailAmountForItemEvent;
 use App\Exceptions\ExclusiveLockException;
 use App\Models\AccountPayable;
 use App\Models\AccountPayableDetail;
+use App\Models\AccountPayableItem;
 use App\Models\ParticipantPriceInterface;
 use App\Models\Reserve;
 use App\Models\ReserveItinerary;
@@ -16,6 +18,7 @@ use App\Repositories\Reserve\ReserveRepository;
 use App\Repositories\ReserveItinerary\ReserveItineraryRepository;
 use App\Repositories\Supplier\SupplierRepository;
 use App\Services\AccountPayableDetailService;
+use App\Services\AccountPayableItemService;
 use App\Services\AccountPayableService;
 use App\Services\ReserveParticipantAirplanePriceService;
 use App\Services\ReserveParticipantHotelPriceService;
@@ -31,8 +34,8 @@ use App\Services\ReserveSchedulePhotoService;
 use App\Services\ReserveScheduleService;
 use App\Services\ReserveService;
 use App\Services\ReserveTravelDateService;
-use App\Services\SupplierService;
 use App\Services\SupplierPaymentDateService;
+use App\Services\SupplierService;
 use App\Traits\ReserveItineraryTrait;
 use App\Traits\UserCustomItemTrait;
 use Illuminate\Support\Arr;
@@ -64,7 +67,8 @@ class ReserveItineraryService
         ReserveTravelDateService $reserveTravelDateService,
         SupplierRepository $supplierRepository,
         SupplierService $supplierService,
-        SupplierPaymentDateService $supplierPaymentDateService
+        SupplierPaymentDateService $supplierPaymentDateService,
+        AccountPayableItemService $accountPayableItemService
     ) {
         $this->accountPayableDetailService = $accountPayableDetailService;
         $this->accountPayableService = $accountPayableService;
@@ -88,6 +92,7 @@ class ReserveItineraryService
         $this->supplierRepository = $supplierRepository;
         $this->supplierService = $supplierService;
         $this->supplierPaymentDateService = $supplierPaymentDateService;
+        $this->accountPayableItemService = $accountPayableItemService;
     }
 
     /**
@@ -141,6 +146,7 @@ class ReserveItineraryService
      * @param int $reserveScheduleId スケジュールID
      * @param bool $valid 科目の有効・無効フラグ
      * @param bool $isCancel 科目のキャンセルフラグ
+     * @param int $itemId 商品ID
      * @param string $useDate 利用日
      * @param string $paymentDate 支払日
      */
@@ -208,6 +214,7 @@ class ReserveItineraryService
             $updateRows[] = $tmp;
         } else { // 新規
             $tmp['created_at'] = $date;
+            $tmp['amount_payment'] = 0; // 支払い額は0円で初期化
             $tmp['unpaid_balance'] = $amountBilled; // 未払金額は請求金額(NET)で初期化
             $tmp['payment_date'] = $paymentDate; // 支払日は支払管理ページで編集できるので新規登録時のみ保存
             $tmp['status'] = config('consts.account_payable_details.STATUS_UNPAID'); // ステータスは未払いで初期化
@@ -317,25 +324,26 @@ class ReserveItineraryService
                                 $currentSupplier = null;
                                 if (!isset($suppliers[$purchasingSubject['supplier_id']])) {
                                     $suppliers[$purchasingSubject['supplier_id']] = $this->supplierService->find($purchasingSubject['supplier_id'], [], true);//論理削除も取得
+
+
+                                    // $payableControlNumber = $this->accountPayableService->createUserNumber($reserveItinerary->reserve_id, $reserveItinerary->id, $currentSupplier->id); //買い掛け金番号
+
+                                    // accountPayableレコードを作成or更新
+                                    $accountPayable =  $this->accountPayableService->updateOrCreate(
+                                        [
+                                            'reserve_itinerary_id' => $reserveItinerary->id,
+                                            'supplier_id' => $purchasingSubject['supplier_id']
+                                        ],
+                                        [
+                                            'agency_id' => $agencyId,
+                                            'reserve_id' => $reserveItinerary->reserve_id,
+                                            // 'payable_number' => $payableControlNumber,
+                                            'supplier_name' => $suppliers[$purchasingSubject['supplier_id']]->name,
+                                        ]
+                                    );
                                 }
                                 $currentSupplier = $suppliers[$purchasingSubject['supplier_id']];
                                 
-
-                                $payableControlNumber = $this->accountPayableService->createUserNumber($reserveItinerary->reserve_id, $reserveItinerary->id, $currentSupplier->id); //買い掛け金番号
-
-
-                                $accountPayable =  $this->accountPayableService->updateOrCreate(
-                                    [
-                                        'reserve_itinerary_id' => $reserveItinerary->id,
-                                        'supplier_id' => $purchasingSubject['supplier_id']
-                                    ],
-                                    [
-                                        'agency_id' => $agencyId,
-                                        'reserve_id' => $reserveItinerary->reserve_id,
-                                        'payable_number' => $payableControlNumber,
-                                        'supplier_name' => $currentSupplier->name,
-                                    ]
-                                );
 
                                 if (!isset($supplierPaymentDates[$currentSupplier->id])) {
                                     // 仕入業者に対する支払日を算出
@@ -421,9 +429,19 @@ class ReserveItineraryService
                                         $accountPayableDetailInsertRows && $this->accountPayableDetailService->insert($accountPayableDetailInsertRows);
                                         $accountPayableDetailUpdateRows && $this->accountPayableDetailService->updateBulk($accountPayableDetailUpdateRows, 'id');
 
-                                        foreach (\App\Models\AccountPayableDetail::select(["id"])->where('reserve_schedule_id', $reserveSchedule->id)->where('saleable_type', 'App\Models\ReserveParticipantOptionPrice')->whereIn('saleable_id', $saleableIds)->get() as $accountPayableDetail) {
-                                            event(new ChangePaymentDetailAmountEvent($accountPayableDetail->id));
-                                        }
+                                        // foreach (\App\Models\AccountPayableDetail::select(["id"])->where('reserve_schedule_id', $reserveSchedule->id)->where('saleable_type', 'App\Models\ReserveParticipantOptionPrice')->whereIn('saleable_id', $saleableIds)->get() as $accountPayableDetail) {
+                                        //     event(new ChangePaymentDetailAmountEvent($accountPayableDetail->id));
+                                        // }
+
+                                        // 仕入詳細のステータスと支払残高計算
+                                        event(new ChangePaymentDetailAmountForItemEvent(
+                                            new AccountPayableItem([
+                                                'reserve_itinerary_id' => $reserveItinerary->id,
+                                                'supplier_id' => $currentSupplier->id,
+                                                'subject' => Arr::get($purchasingSubject, 'subject'),
+                                                'item_id' => data_get(json_decode(Arr::get($purchasingSubject, 'name_ex')), 'id'),
+                                            ])
+                                        ));
                                     }
                                 } elseif ($purchasingSubject['subject'] === config('consts.subject_categories.SUBJECT_CATEGORY_AIRPLANE')) { // 航空科目
 
@@ -501,9 +519,19 @@ class ReserveItineraryService
                                         $accountPayableDetailInsertRows && $this->accountPayableDetailService->insert($accountPayableDetailInsertRows);
                                         $accountPayableDetailUpdateRows && $this->accountPayableDetailService->updateBulk($accountPayableDetailUpdateRows, 'id');
 
-                                        foreach (\App\Models\AccountPayableDetail::select(["id"])->where('reserve_schedule_id', $reserveSchedule->id)->where('saleable_type', 'App\Models\ReserveParticipantAirplanePrice')->whereIn('saleable_id', $saleableIds)->get() as $accountPayableDetail) {
-                                            event(new ChangePaymentDetailAmountEvent($accountPayableDetail->id));
-                                        }
+                                        // foreach (\App\Models\AccountPayableDetail::select(["id"])->where('reserve_schedule_id', $reserveSchedule->id)->where('saleable_type', 'App\Models\ReserveParticipantAirplanePrice')->whereIn('saleable_id', $saleableIds)->get() as $accountPayableDetail) {
+                                        //     event(new ChangePaymentDetailAmountEvent($accountPayableDetail->id));
+                                        // }
+
+                                        // 仕入詳細のステータスと支払残高計算
+                                        event(new ChangePaymentDetailAmountForItemEvent(
+                                            new AccountPayableItem([
+                                                'reserve_itinerary_id' => $reserveItinerary->id,
+                                                'supplier_id' => $currentSupplier->id,
+                                                'subject' => Arr::get($purchasingSubject, 'subject'),
+                                                'item_id' => data_get(json_decode(Arr::get($purchasingSubject, 'name_ex')), 'id'),
+                                            ])
+                                        ));
                                     }
                                 } elseif ($purchasingSubject['subject'] === config('consts.subject_categories.SUBJECT_CATEGORY_HOTEL')) { // ホテル科目
 
@@ -581,9 +609,19 @@ class ReserveItineraryService
                                         $accountPayableDetailInsertRows && $this->accountPayableDetailService->insert($accountPayableDetailInsertRows);
                                         $accountPayableDetailUpdateRows && $this->accountPayableDetailService->updateBulk($accountPayableDetailUpdateRows, 'id');
 
-                                        foreach (\App\Models\AccountPayableDetail::select(["id"])->where('reserve_schedule_id', $reserveSchedule->id)->where('saleable_type', 'App\Models\ReserveParticipantHotelPrice')->whereIn('saleable_id', $saleableIds)->get() as $accountPayableDetail) {
-                                            event(new ChangePaymentDetailAmountEvent($accountPayableDetail->id));
-                                        }
+                                        // foreach (\App\Models\AccountPayableDetail::select(["id"])->where('reserve_schedule_id', $reserveSchedule->id)->where('saleable_type', 'App\Models\ReserveParticipantHotelPrice')->whereIn('saleable_id', $saleableIds)->get() as $accountPayableDetail) {
+                                        //     event(new ChangePaymentDetailAmountEvent($accountPayableDetail->id));
+                                        // }
+
+                                        // 仕入詳細のステータスと支払残高計算
+                                        event(new ChangePaymentDetailAmountForItemEvent(
+                                            new AccountPayableItem([
+                                                'reserve_itinerary_id' => $reserveItinerary->id,
+                                                'supplier_id' => $currentSupplier->id,
+                                                'subject' => Arr::get($purchasingSubject, 'subject'),
+                                                'item_id' => data_get(json_decode(Arr::get($purchasingSubject, 'name_ex')), 'id'),
+                                            ])
+                                        ));
                                     }
                                 } else { // 未定義科目
                                     throw new Exception("未定義の科目です");
@@ -648,8 +686,11 @@ class ReserveItineraryService
             $supplierIds[] = $supplier->id;
         }
 
-        // 買掛金明細がなくなった買掛金レコードを削除（親レコード、子レコードとも）。TODO ここに不要なaccount_payment_itemsレコードの削除処理も追加する
+        // 買掛金明細がなくなった買掛金レコードを削除
         $this->accountPayableService->deleteLostPurchaseData($reserveItinerary->id, $supplierIds, true);
+
+        // 編集対象にならなかった仕入先ID行を削除(account_payable_items)
+        $this->accountPayableItemService->deleteExceptSupplierIdsForReserveItineraryId($reserveItinerary->id, $supplierIds, false); // SQLの更新処理の関係から削除方式は物理削除のみ(第3引数)
     }
 
     /**

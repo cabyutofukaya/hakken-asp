@@ -3,9 +3,22 @@
 @section('content')
 <main>
   <div id="pageHead">
-    <h1><span class="material-icons">upload</span>支払管理</h1>
+    <h1><span class="material-icons">upload</span>
+      @if($itemCode){{ $itemCode }} @endif
+      支払管理
+    </h1>
 
-    <form method="GET" action="{{ route('staff.management.payment.index', [$agencyAccount]) }}">
+    <ol class="breadCrumbs">
+      <li>
+        <a href="{{ route('staff.management.payment.reserve', [$agencyAccount]) }}">支払管理</a>
+      </li>
+      <li>
+        <a href="{{ route('staff.management.payment.item', [$agencyAccount, $reserveHashId]) }}">仕入先商品一覧</a>
+      </li>
+      <li><span>商品内訳</span></li>
+    </ol>
+
+    <form method="GET" action="{{ route('staff.management.payment.detail', [$agencyAccount, $reserveHashId, $supplierHashId, $subject, $itemHashId]) }}">
       <div id="searchBox">
         <div id="inputList">
           <ul class="sideList">
@@ -18,13 +31,21 @@
                 </select>
               </div>
             </li>
-            <li class="wd30">
+            {{-- <li class="wd30">
               <span class="inputLabel">予約番号</span>
               <input type="text" name="reserve_number" value="{{ $searchParam['reserve_number'] }}">
-            </li>
-            <li class="wd25">
+            </li> --}}
+            {{-- <li class="wd25">
               <span class="inputLabel">仕入先</span>
               <input type="text" name="supplier_name" value="{{ $searchParam['supplier_name'] }}">
+            </li> --}}
+            <li class="wd25">
+              <span class="inputLabel">商品名</span>
+              <input type="text" name="item_name" value="{{ $searchParam['item_name'] }}">
+            </li>
+            <li class="wd25">
+              <span class="inputLabel">参加者名</span>
+              <input type="text" name="participant_name" value="{{ $searchParam['participant_name'] }}">
             </li>
             <li class="wd25 mr00">
               <span class="inputLabel">自社担当</span>
@@ -38,25 +59,17 @@
                 </li>
               </ul>
               <ul class="sideList">
-                <li class="wd25">
-                  <span class="inputLabel">商品名</span>
-                  <input type="text" name="item_name" value="{{ $searchParam['item_name'] }}">
-                </li>
-                <li class="wd25">
-                  <span class="inputLabel">商品コード</span>
-                  <input type="text" name="item_code" value="{{ $searchParam['item_code'] }}">
-                </li>
                 <li class="wd50 mr00">
-                  <span class="inputLabel">支払予定日</span>
+                  <span class="inputLabel">利用日</span>
                   <ul class="periodList">
                     <li>
                       <div class="calendar">
-                        <input type="text" name="payment_date_from" value="{{ $searchParam['payment_date_from'] }}">
+                        <input type="text" name="use_date_from" value="{{ $searchParam['use_date_from'] }}">
                       </div>
                     </li>
                     <li>
                     <div class="calendar">
-                      <input type="text" name="payment_date_to" value="{{ $searchParam['payment_date_to'] }}">
+                      <input type="text" name="use_date_to" value="{{ $searchParam['use_date_to'] }}">
                     </div>
                   </li>
                 </ul>
@@ -87,6 +100,10 @@
   @include('staff.common.error_message')
   
   <div id="paymentList" 
+    reserveHashId='{{ $reserveHashId }}'
+    supplierHashId='{{ $supplierHashId }}'
+    subject='{{ $subject }}'
+    itemHashId='{{ $itemHashId }}'
     searchParam='@json($searchParam)' 
     formSelects='@json($formSelects)' 
     modalFormSelects='@json($modalFormSelects)'
@@ -108,5 +125,5 @@
       dateFormat: "Y/m/d"
     });
 </script>
-<script src="{{ mix('/staff/js/management_payment-index.js') }}"></script>
+<script src="{{ mix('/staff/js/management_payment-detail.js') }}"></script>
 @endsection
