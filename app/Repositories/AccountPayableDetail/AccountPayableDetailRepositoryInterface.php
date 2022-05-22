@@ -12,7 +12,7 @@ interface AccountPayableDetailRepositoryInterface
 
   public function getWhere(array $where, array $with=[], array $select=[]) : Collection;
   
-  public function getIdsBySaleableIds(string $saleableType, array $saleableIds) : array;
+  public function getBySaleableIds(string $saleableType, array $saleableIds, array $select=['id']) : Collection;
   
   public function findWhere(array $where, array $with=[], array $select=[]) : ?AccountPayableDetail;
 

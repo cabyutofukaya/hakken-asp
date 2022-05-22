@@ -245,9 +245,9 @@ class AccountPayableDetailService implements AccountPayableInterface
      * @param string $saleableType 仕入科目
      * @param array $saleableIds 仕入科目ID一覧
      */
-    public function getIdsBySaleableIds(string $saleableType, array $saleableIds) : array
+    public function getBySaleableIds(string $saleableType, array $saleableIds, array $select=['id']) : Collection
     {
-        return $this->accountPayableDetailRepository->getIdsBySaleableIds($saleableType, $saleableIds);
+        return $this->accountPayableDetailRepository->getBySaleableIds($saleableType, $saleableIds, $select);
     }
     
     /**

@@ -14,20 +14,24 @@ use App\Services\ReserveParticipantAirplanePriceService;
 use App\Services\ReserveParticipantHotelPriceService;
 use App\Services\AccountPayableDetailService;
 use App\Services\AccountPayableReserveService;
-
+use App\Services\AgencyWithdrawalService;
+use App\Traits\PaymentTrait;
 
 /**
  * "ReserveParticipantXXXXPriceService系"サービスclass(ReserveParticipantOptionPriceService/ReserveParticipantAirplanePriceService/ReserveParticipantHotelPriceService)全てに対して作業する処理を提供するclass
  */
 class ReserveParticipantPriceService
 {
-    public function __construct(ReserveParticipantOptionPriceService $reserveParticipantOptionPriceService, ReserveParticipantAirplanePriceService $reserveParticipantAirplanePriceService, ReserveParticipantHotelPriceService $reserveParticipantHotelPriceService, AccountPayableDetailService $accountPayableDetailService, AccountPayableReserveService $accountPayableReserveService)
+    use PaymentTrait;
+
+    public function __construct(ReserveParticipantOptionPriceService $reserveParticipantOptionPriceService, ReserveParticipantAirplanePriceService $reserveParticipantAirplanePriceService, ReserveParticipantHotelPriceService $reserveParticipantHotelPriceService, AccountPayableDetailService $accountPayableDetailService, AccountPayableReserveService $accountPayableReserveService, AgencyWithdrawalService $agencyWithdrawalService)
     {
         $this->reserveParticipantOptionPriceService = $reserveParticipantOptionPriceService;
         $this->reserveParticipantAirplanePriceService = $reserveParticipantAirplanePriceService;
         $this->reserveParticipantHotelPriceService = $reserveParticipantHotelPriceService;
         $this->accountPayableDetailService = $accountPayableDetailService;
         $this->accountPayableReserveService = $accountPayableReserveService;
+        $this->agencyWithdrawalService = $agencyWithdrawalService;
     }
 
     /**
@@ -115,6 +119,81 @@ class ReserveParticipantPriceService
     }
 
     /**
+     * ノンチャージキャンセルの支払情報更新。オプション科目用
+     */
+    private function noCancelChargeAccountPayableDetailForOption(array $optionIds)
+    {
+        foreach (array_chunk($optionIds, 1000) as $ids) { // 念の為1000件ずつ処理
+            $params = [];
+            // reserve_participant_option_priceのIDからaccount_payable_detailsレコードを取得
+            foreach ($this->accountPayableDetailService->getBySaleableIds('App\Models\ReserveParticipantOptionPrice', $ids, ['id']) as $row) {
+                // 支払い額合計（行ロックで取得）
+                $withdrawalSum = $this->agencyWithdrawalService->getSumAmountByAccountPayableDetailId($row->id, true);
+
+                // 更新パラメータ
+                $tmp = [];
+                $tmp['id'] = $row->id;
+                $tmp['amount_billed'] = 0;//0円に
+                $tmp['unpaid_balance'] = $tmp['amount_billed'] - $withdrawalSum; // 未払金額
+                $tmp['status'] = $this->getPaymentStatus($tmp['unpaid_balance'], $tmp['amount_billed'], 'account_payable_details');
+
+                $params[] = $tmp;
+            }
+            $this->accountPayableDetailService->updateBulk($params, "id");
+        }
+    }
+
+    /**
+     * ノンチャージキャンセルの支払情報更新。航空券科目用
+     */
+    private function noCancelChargeAccountPayableDetailForAirplane(array $airplaneIds)
+    {
+        foreach (array_chunk($airplaneIds, 1000) as $ids) { // 念の為1000件ずつ処理
+            $params = [];
+            // reserve_participant_airplane_priceのIDからaccount_payable_detailsレコードを取得
+            foreach ($this->accountPayableDetailService->getBySaleableIds('App\Models\ReserveParticipantAirplanePrice', $ids, ['id']) as $row) {
+                // 支払い額合計（行ロックで取得）
+                $withdrawalSum = $this->agencyWithdrawalService->getSumAmountByAccountPayableDetailId($row->id, true);
+
+                // 更新パラメータ
+                $tmp = [];
+                $tmp['id'] = $row->id;
+                $tmp['amount_billed'] = 0;//0円に
+                $tmp['unpaid_balance'] = $tmp['amount_billed'] - $withdrawalSum; // 未払金額
+                $tmp['status'] = $this->getPaymentStatus($tmp['unpaid_balance'], $tmp['amount_billed'], 'account_payable_details');
+
+                $params[] = $tmp;
+            }
+            $this->accountPayableDetailService->updateBulk($params, "id");
+        }
+    }
+
+    /**
+     * ノンチャージキャンセルの支払情報更新。ホテル科目用
+     */
+    private function noCancelChargeAccountPayableDetailForHotel(array $hotelIds)
+    {
+        foreach (array_chunk($hotelIds, 1000) as $ids) { // 念の為1000件ずつ処理
+            $params = [];
+            // reserve_participant_hotel_priceのIDからaccount_payable_detailsレコードを取得
+            foreach ($this->accountPayableDetailService->getBySaleableIds('App\Models\ReserveParticipantHotelPrice', $ids, ['id']) as $row) {
+                // 支払い額合計（行ロックで取得）
+                $withdrawalSum = $this->agencyWithdrawalService->getSumAmountByAccountPayableDetailId($row->id, true);
+
+                // 更新パラメータ
+                $tmp = [];
+                $tmp['id'] = $row->id;
+                $tmp['amount_billed'] = 0;//0円に
+                $tmp['unpaid_balance'] = $tmp['amount_billed'] - $withdrawalSum; // 未払金額
+                $tmp['status'] = $this->getPaymentStatus($tmp['unpaid_balance'], $tmp['amount_billed'], 'account_payable_details');
+
+                $params[] = $tmp;
+            }
+            $this->accountPayableDetailService->updateBulk($params, "id");
+        }
+    }
+
+    /**
      * キャンセルチャージをリセット
      * 当該予約の有効行程に対して処理
      *
@@ -133,37 +212,43 @@ class ReserveParticipantPriceService
         $optionIds = $this->reserveParticipantOptionPriceService->setCancelChargeByReserveItineraryId(0, 0, 0, false, $reserveItineraryId); // オプション科目
 
         if ($optionIds) {
-            foreach ($optionIds as $id) {
-                // 当該科目に紐づくの支払い情報レコードの仕入額をリセット
-                $accountPayableDetailId = $this->accountPayableDetailService->setCancelChargeBySaleableId(0, 'App\Models\ReserveParticipantOptionPrice', $id, true);
+            $this->noCancelChargeAccountPayableDetailForOption($optionIds);
+
+            // foreach ($optionIds as $id) {
+            //     // 当該科目に紐づくの支払い情報レコードの仕入額をリセット
+            //     $accountPayableDetailId = $this->accountPayableDetailService->setCancelChargeBySaleableId(0, 'App\Models\ReserveParticipantOptionPrice', $id, true);
         
-                // ステータスと支払い残高計算
-                event(new ChangePaymentDetailAmountEvent($accountPayableDetailId));
-            }
+            //     // ステータスと支払い残高計算
+            //     event(new ChangePaymentDetailAmountEvent($accountPayableDetailId));
+            // }
         }
 
         $airplaneIds = $this->reserveParticipantAirplanePriceService->setCancelChargeByReserveItineraryId(0, 0, 0, false, $reserveItineraryId); // 航空券科目
 
         if ($airplaneIds) {
-            foreach ($airplaneIds as $id) {
-                // 当該科目に紐づくの支払い情報レコードの仕入額をリセット
-                $accountPayableDetailId = $this->accountPayableDetailService->setCancelChargeBySaleableId(0, 'App\Models\ReserveParticipantAirplanePrice', $id, true);
+            $this->noCancelChargeAccountPayableDetailForAirplane($airplaneIds);
 
-                // ステータスと支払い残高計算
-                event(new ChangePaymentDetailAmountEvent($accountPayableDetailId));
-            }
+            // foreach ($airplaneIds as $id) {
+            //     // 当該科目に紐づくの支払い情報レコードの仕入額をリセット
+            //     $accountPayableDetailId = $this->accountPayableDetailService->setCancelChargeBySaleableId(0, 'App\Models\ReserveParticipantAirplanePrice', $id, true);
+
+            //     // ステータスと支払い残高計算
+            //     event(new ChangePaymentDetailAmountEvent($accountPayableDetailId));
+            // }
         }
 
         $hotelIds = $this->reserveParticipantHotelPriceService->setCancelChargeByReserveItineraryId(0, 0, 0, false, $reserveItineraryId); // ホテル科目
 
         if ($hotelIds) {
-            foreach ($hotelIds as $id) {
-                // 当該科目に紐づくの支払い情報レコードの仕入額をリセット
-                $accountPayableDetailId = $this->accountPayableDetailService->setCancelChargeBySaleableId(0, 'App\Models\ReserveParticipantHotelPrice', $id, true);
+            $this->noCancelChargeAccountPayableDetailForHotel($hotelIds);
 
-                // ステータスと支払い残高計算
-                event(new ChangePaymentDetailAmountEvent($accountPayableDetailId));
-            }
+            // foreach ($hotelIds as $id) {
+            //     // 当該科目に紐づくの支払い情報レコードの仕入額をリセット
+            //     $accountPayableDetailId = $this->accountPayableDetailService->setCancelChargeBySaleableId(0, 'App\Models\ReserveParticipantHotelPrice', $id, true);
+
+            //     // ステータスと支払い残高計算
+            //     event(new ChangePaymentDetailAmountEvent($accountPayableDetailId));
+            // }
         }
 
         // 当該予約の有効行程の仕入先＆商品毎のステータスと未払金額計算
@@ -185,39 +270,42 @@ class ReserveParticipantPriceService
         $optionIds = $this->reserveParticipantOptionPriceService->setCancelChargeByParticipantId(0, 0, 0, false, $participantId, true);
 
         if ($optionIds) {
-            foreach ($optionIds as $id) {
-                // 当該科目に紐づくの支払い情報レコードの仕入額をリセット
-                $accountPayableDetailId = $this->accountPayableDetailService->setCancelChargeBySaleableId(0, 'App\Models\ReserveParticipantOptionPrice', $id, true);
+            $this->noCancelChargeAccountPayableDetailForOption($optionIds);
+            // foreach ($optionIds as $id) {
+            //     // 当該科目に紐づくの支払い情報レコードの仕入額をリセット
+            //     $accountPayableDetailId = $this->accountPayableDetailService->setCancelChargeBySaleableId(0, 'App\Models\ReserveParticipantOptionPrice', $id, true);
         
-                // ステータスと支払い残高計算
-                event(new ChangePaymentDetailAmountEvent($accountPayableDetailId));
-            }
+            //     // ステータスと支払い残高計算
+            //     event(new ChangePaymentDetailAmountEvent($accountPayableDetailId));
+            // }
         }
 
         // 航空券科目
         $airplaneIds = $this->reserveParticipantAirplanePriceService->setCancelChargeByParticipantId(0, 0, 0, false, $participantId, true);
 
         if ($airplaneIds) {
-            foreach ($airplaneIds as $id) {
-                // 当該科目に紐づくの支払い情報レコードの仕入額をリセット
-                $accountPayableDetailId = $this->accountPayableDetailService->setCancelChargeBySaleableId(0, 'App\Models\ReserveParticipantAirplanePrice', $id, true);
+            $this->noCancelChargeAccountPayableDetailForAirplane($airplaneIds);
+            // foreach ($airplaneIds as $id) {
+            //     // 当該科目に紐づくの支払い情報レコードの仕入額をリセット
+            //     $accountPayableDetailId = $this->accountPayableDetailService->setCancelChargeBySaleableId(0, 'App\Models\ReserveParticipantAirplanePrice', $id, true);
 
-                // ステータスと支払い残高計算
-                event(new ChangePaymentDetailAmountEvent($accountPayableDetailId));
-            }
+            //     // ステータスと支払い残高計算
+            //     event(new ChangePaymentDetailAmountEvent($accountPayableDetailId));
+            // }
         }
 
         // ホテル科目
         $hotelIds = $this->reserveParticipantHotelPriceService->setCancelChargeByParticipantId(0, 0, 0, false, $participantId, true);
 
         if ($hotelIds) {
-            foreach ($hotelIds as $id) {
-                // 当該科目に紐づくの支払い情報レコードの仕入額をリセット
-                $accountPayableDetailId = $this->accountPayableDetailService->setCancelChargeBySaleableId(0, 'App\Models\ReserveParticipantHotelPrice', $id, true);
+            $this->noCancelChargeAccountPayableDetailForHotel($hotelIds);
+            // foreach ($hotelIds as $id) {
+            //     // 当該科目に紐づくの支払い情報レコードの仕入額をリセット
+            //     $accountPayableDetailId = $this->accountPayableDetailService->setCancelChargeBySaleableId(0, 'App\Models\ReserveParticipantHotelPrice', $id, true);
 
-                // ステータスと支払い残高計算
-                event(new ChangePaymentDetailAmountEvent($accountPayableDetailId));
-            }
+            //     // ステータスと支払い残高計算
+            //     event(new ChangePaymentDetailAmountEvent($accountPayableDetailId));
+            // }
         }
 
         // 当該予約の有効行程の仕入先＆商品毎のステータスと未払金額計算
@@ -391,6 +479,7 @@ class ReserveParticipantPriceService
             $tmp = [];
 
             $tmp['subject'] = config('consts.subject_categories.SUBJECT_CATEGORY_OPTION');
+            $tmp['item_id'] = data_get(json_decode($row->reserve_purchasing_subject_option->name_ex), 'id');
             $tmp['code'] = optional($row->reserve_purchasing_subject_option)->code; // 商品コード
             $tmp['name'] = optional($row->reserve_purchasing_subject_option)->name; // 商品名
             ///////
@@ -408,6 +497,7 @@ class ReserveParticipantPriceService
             $tmp = [];
 
             $tmp['subject'] = config('consts.subject_categories.SUBJECT_CATEGORY_AIRPLANE');
+            $tmp['item_id'] = data_get(json_decode($row->reserve_purchasing_subject_airplane->name_ex), 'id');
             $tmp['code'] = optional($row->reserve_purchasing_subject_airplane)->code; // 商品コード
             $tmp['name'] = optional($row->reserve_purchasing_subject_airplane)->name; // 商品名
             ///////
@@ -425,6 +515,7 @@ class ReserveParticipantPriceService
             $tmp = [];
 
             $tmp['subject'] = config('consts.subject_categories.SUBJECT_CATEGORY_HOTEL');
+            $tmp['item_id'] = data_get(json_decode($row->reserve_purchasing_subject_hotel->name_ex), 'id');
             $tmp['code'] = optional($row->reserve_purchasing_subject_hotel)->code; // 商品コード
             $tmp['name'] = optional($row->reserve_purchasing_subject_hotel)->name; // 商品名
             ///////
@@ -438,7 +529,14 @@ class ReserveParticipantPriceService
         }
 
         // 仕分け基準フィールド。仕入科目、仕入コード、商品名、仕入先で比較 ←TODO これで良いか要確認。purchase_typeを含めないとリストは綺麗に纏まるが、例えばキャンセルチャージナシで個別にキャンセルした人がいた場合、仕入商品ごとにまとまってしまうとその設定が無視されてまとまってしまうので比較カラムとしておくべき。この基準はvalidとis_candelも同じ理屈。validについてはそもそもvalid=trueの条件で抽出しているのでvalid=falseのレコードは無い前提
-        $sortingCriteria = ['purchase_type','subject','code','name','supplier_id','supplier_name','valid','is_cancel'];
+        // $sortingCriteria = ['purchase_type','subject','code','name','supplier_id','supplier_name','valid','is_cancel'];
+
+        // 仕分け基準フィールド。仕入先ID、仕入科目、商品IDで比較
+        $sortingCriteria = ['purchase_type','subject','supplier_id','item_id','valid','is_cancel'];
+
+        $common = [
+            'code','name','supplier_name',
+        ];
 
         $res = []; // 数量を求めるために同じ商品ごとに配列にまとめる
         foreach ($list as $l) {
@@ -456,7 +554,11 @@ class ReserveParticipantPriceService
 
             $tmp['quantity'] = count($rows); // 数量
 
-            foreach ($sortingCriteria as $col) { // 共通値
+            foreach ($sortingCriteria as $col) { // 仕分け基準
+                $tmp[$col] = Arr::get($rows, "0.{$col}");
+            }
+
+            foreach ($common as $col) { // 共通値
                 $tmp[$col] = Arr::get($rows, "0.{$col}");
             }
 

@@ -77,7 +77,7 @@ class AccountPayableDetailRepository implements AccountPayableDetailRepositoryIn
 
         // ↓一気に取得すると危険なので以下のようにした方が良いかも
         $res = [];
-        $query->chunk(1000, function ($rows) use (&$res) {
+        $query->chunk(300, function ($rows) use (&$res) {
             foreach ($rows as $row) {
                 $res[] = $row;
             }
@@ -87,14 +87,14 @@ class AccountPayableDetailRepository implements AccountPayableDetailRepositoryIn
     }
 
     /**
-     * 当該仕入IDリストに紐づくid一覧を取得
+     * 当該仕入IDリストに紐づく一覧を取得
      *
      * @param string $saleableType 仕入科目
      * @param array $saleableIds 仕入科目ID一覧
      */
-    public function getIdsBySaleableIds(string $saleableType, array $saleableIds) : array
+    public function getBySaleableIds(string $saleableType, array $saleableIds, array $select=['id']) : Collection
     {
-        return $this->accountPayableDetail->select('id')->where('saleable_type', $saleableType)->whereIn('saleable_id', $saleableIds)->pluck("id")->toArray();
+        return $this->accountPayableDetail->select($select)->where('saleable_type', $saleableType)->whereIn('saleable_id', $saleableIds)->get();
     }
 
     /**

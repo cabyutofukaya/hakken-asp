@@ -2,36 +2,38 @@
 
 namespace App\Http\Controllers\Staff\Api;
 
+use App\Events\PriceRelatedChangeEvent;
+use App\Events\ReserveChangeHeadcountEvent;
 use App\Events\ReserveUpdateStatusEvent;
 use App\Events\UpdateBillingAmountEvent;
-use App\Events\ReserveChangeHeadcountEvent;
-use App\Events\PriceRelatedChangeEvent;
 use App\Exceptions\ExclusiveLockException;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Staff\ReserveStatusUpdateRequest;
-use App\Http\Requests\Staff\ReserveNoCancelChargeCancelRequest;
-use App\Http\Requests\Staff\ReserveCancelChargeUpdateRequest;
 use App\Http\Requests\Staff\CheckReserveScheduleChangeRequest;
+use App\Http\Requests\Staff\ReserveCancelChargeUpdateRequest;
+use App\Http\Requests\Staff\ReserveNoCancelChargeCancelRequest;
+use App\Http\Requests\Staff\ReserveStatusUpdateRequest;
 use App\Http\Resources\Staff\Reserve\IndexResource;
 use App\Http\Resources\Staff\Reserve\ShowResource;
 use App\Http\Resources\Staff\Reserve\StatusResource;
 use App\Http\Resources\Staff\Reserve\VAreaResource;
 use App\Models\Reserve;
+use App\Services\AccountPayableDetailService;
+use App\Services\AccountPayableReserveService;
+use App\Services\AgencyWithdrawalService;
 use App\Services\BusinessUserManagerService;
+use App\Services\ParticipantService;
 use App\Services\ReserveCustomValueService;
+use App\Services\ReserveItineraryService;
+use App\Services\ReserveParticipantAirplanePriceService;
+use App\Services\ReserveParticipantHotelPriceService;
+use App\Services\ReserveParticipantOptionPriceService;
 use App\Services\ReserveParticipantPriceService;
 use App\Services\ReserveService;
 use App\Services\UserCustomItemService;
 use App\Services\UserService;
 use App\Services\VAreaService;
-use App\Services\ReserveItineraryService;
-use App\Services\ParticipantService;
-use App\Services\ReserveParticipantOptionPriceService;
-use App\Services\ReserveParticipantAirplanePriceService;
-use App\Services\ReserveParticipantHotelPriceService;
-use App\Services\AccountPayableDetailService;
-use App\Services\AccountPayableReserveService;
 use App\Traits\CancelChargeTrait;
+use App\Traits\PaymentTrait;
 use DB;
 use Exception;
 use Gate;
@@ -41,9 +43,9 @@ use Log;
 
 class ReserveController extends Controller
 {
-    use CancelChargeTrait;
+    use CancelChargeTrait, PaymentTrait;
     
-    public function __construct(UserService $userService, BusinessUserManagerService $businessUserManagerService, VAreaService $vAreaService, ReserveService $reserveService, ReserveCustomValueService $reserveCustomValueService, UserCustomItemService $userCustomItemService, ReserveParticipantPriceService $reserveParticipantPriceService, ReserveItineraryService $reserveItineraryService, ParticipantService $participantService, ReserveParticipantOptionPriceService $reserveParticipantOptionPriceService, ReserveParticipantAirplanePriceService $reserveParticipantAirplanePriceService, ReserveParticipantHotelPriceService $reserveParticipantHotelPriceService, AccountPayableDetailService $accountPayableDetailService, AccountPayableReserveService $accountPayableReserveService)
+    public function __construct(UserService $userService, BusinessUserManagerService $businessUserManagerService, VAreaService $vAreaService, ReserveService $reserveService, ReserveCustomValueService $reserveCustomValueService, UserCustomItemService $userCustomItemService, ReserveParticipantPriceService $reserveParticipantPriceService, ReserveItineraryService $reserveItineraryService, ParticipantService $participantService, ReserveParticipantOptionPriceService $reserveParticipantOptionPriceService, ReserveParticipantAirplanePriceService $reserveParticipantAirplanePriceService, ReserveParticipantHotelPriceService $reserveParticipantHotelPriceService, AccountPayableDetailService $accountPayableDetailService, AccountPayableReserveService $accountPayableReserveService, AgencyWithdrawalService $agencyWithdrawalService)
     {
         $this->reserveService = $reserveService;
         $this->userService = $userService;
@@ -60,6 +62,7 @@ class ReserveController extends Controller
         $this->reserveParticipantHotelPriceService = $reserveParticipantHotelPriceService;
         $this->accountPayableDetailService = $accountPayableDetailService;
         $this->accountPayableReserveService = $accountPayableReserveService;
+        $this->agencyWithdrawalService = $agencyWithdrawalService;
     }
 
     // 一件取得

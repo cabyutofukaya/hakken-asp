@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Staff\Api;
 
 use App\Events\UpdateBillingAmountEvent;
 use App\Traits\CancelChargeTrait;
+use App\Traits\PaymentTrait;
 use App\Events\ReserveChangeHeadcountEvent;
 use App\Events\ReserveChangeRepresentativeEvent;
 use App\Events\PriceRelatedChangeEvent;
@@ -40,6 +41,7 @@ use App\Services\ReserveParticipantPriceService;
 use App\Services\ReserveItineraryService;
 use App\Services\AccountPayableDetailService;
 use App\Services\AccountPayableReserveService;
+use App\Services\AgencyWithdrawalService;
 use App\Traits\ReserveTrait;
 use DB;
 use Exception;
@@ -50,7 +52,7 @@ use Log;
 
 class ParticipantController extends Controller
 {
-    use ReserveTrait, CancelChargeTrait;
+    use ReserveTrait, CancelChargeTrait, PaymentTrait;
 
     public function __construct(
         BusinessUserManagerService $businessUserManagerService,
@@ -68,7 +70,8 @@ class ParticipantController extends Controller
         ReserveParticipantPriceService $reserveParticipantPriceService,
         ReserveItineraryService $reserveItineraryService,
         AccountPayableDetailService $accountPayableDetailService, 
-        AccountPayableReserveService $accountPayableReserveService
+        AccountPayableReserveService $accountPayableReserveService,
+        AgencyWithdrawalService $agencyWithdrawalService
     ) {
         $this->businessUserManagerService = $businessUserManagerService;
         $this->estimateService = $estimateService;
@@ -87,6 +90,7 @@ class ParticipantController extends Controller
         $this->reserveItineraryService = $reserveItineraryService;
         $this->accountPayableDetailService = $accountPayableDetailService;
         $this->accountPayableReserveService = $accountPayableReserveService;
+        $this->agencyWithdrawalService = $agencyWithdrawalService;
     }
 
     /**
