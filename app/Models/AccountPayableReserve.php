@@ -97,6 +97,20 @@ class AccountPayableReserve extends Model
         });
     }
 
+    /**
+     * 0円を除く
+     *
+     * @param $query
+     * @return mixed
+     */
+    public function scopeExcludingzero($query)
+    {
+        return $query->where(function ($q) {
+            $q->where('total_amount_paid', "<>", 0)
+                ->orWhere('total_amount_accrued', "<>", 0);
+        })->where('status', '<>', config('consts.account_payable_reserves.STATUS_NONE'));
+    }
+
     ///////////////// 読みやすい文字列に変換するAttribute ここから //////////////
     
     /**

@@ -23,6 +23,7 @@ class AccountPayableItem extends Model
         'status',
         'supplier_name',
         'total_purchase_amount',
+        'total_amount_paid',
         'total_amount_accrued',
         'last_manager.name',
         'last_note',
@@ -71,6 +72,7 @@ class AccountPayableItem extends Model
      */
     protected $casts = [
         'total_purchase_amount' => 'integer',
+        'total_amount_paid' => 'integer',
         'total_amount_accrued' => 'integer',
     ];
 
@@ -126,6 +128,21 @@ class AccountPayableItem extends Model
         return $query->whereHas('reserve', function ($q) {
             $q->where('application_step', config('consts.reserves.APPLICATION_STEP_RESERVE'));
         });
+    }
+
+    /**
+     * 0円を除く
+     *
+     * @param $query
+     * @return mixed
+     */
+    public function scopeExcludingzero($query)
+    {
+        return $query->where(function ($q) {
+            $q->where('total_purchase_amount', "<>", 0)
+                ->orWhere('total_amount_paid', "<>", 0)
+                ->orWhere('total_amount_accrued', "<>", 0);
+        })->where('status', '<>', config('consts.account_payable_items.STATUS_NONE'));
     }
 
     ///////////////// 読みやすい文字列に変換するAttribute ここから //////////////

@@ -208,7 +208,7 @@ class AccountPayableReserveRepository implements AccountPayableReserveRepository
                         CASE
                             WHEN sum(if(unpaid_balance > 0, unpaid_balance, 0)) > 0 THEN {$statusUnpaid}
                             WHEN sum(amount_payment) > sum(amount_billed) THEN {$statusOverpaid}
-                            WHEN sum(amount_billed) = sum(amount_payment) THEN {$statusPaid}
+                            WHEN sum(amount_billed) > 0 AND sum(amount_billed) = sum(amount_payment) THEN {$statusPaid}
                             ELSE {$statusNone}
                         END AS status
                     FROM
@@ -248,6 +248,10 @@ class AccountPayableReserveRepository implements AccountPayableReserveRepository
         $query = $with ? $query->with($with) : $query;
         $query = $select ? $query->select($select) : $query;
         
+        if ($exZero) { 
+            $query = $query->excludingzero();
+        }
+
         foreach ($params as $key => $val) {
             if (is_empty($val)) {
                 continue;
@@ -274,13 +278,6 @@ class AccountPayableReserveRepository implements AccountPayableReserveRepository
             } else { // 上記以外
                 $query = $query->where($key, 'like', "%$val%");
             }
-        }
-
-        if ($exZero) { // 請求額が0円だと出金履歴が有っても非表示になるので注意。具合悪いようならこのフラグはなくす
-            $query = $query->where(function ($q) {
-                $q->where('total_amount_paid', "<>", 0)
-                    ->orWhere('total_amount_accrued', "<>", 0);
-            })->where('status', '<>', config('consts.account_payable_reserves.STATUS_NONE'));
         }
 
         return $query->where('account_payable_reserves.agency_id', $agencyId)->sortable()->paginate($limit); // sortableする際にagency_idがリレーション先のテーブルにも存在するのでエラー回避のために明示的にagency_idを指定する

@@ -66,116 +66,6 @@ class AccountPayableItemRepository implements AccountPayableItemRepositoryInterf
         return $this->accountPayableItem->find($id);
     }
 
-    // /**
-    //  * 当該行程IDのNet・未払金額を更新
-    //  *
-    //  * @param int $reserveItineraryId 行程ID
-    //  */
-    // public function refreshAmountByReserveItineraryId(int $reserveItineraryId) : bool
-    // {
-    //     $itemPayableNumberColumn = implode(
-    //         ",",
-    //         array_map(function ($colName) {
-    //             return "a.{$colName},'" . config("consts.account_payable_items.ITEM_PAYABLE_NUMBER_DELIMITER") . "'"; // CONCAT関数実行のためテーブル名のエイリアスをつける(a)。また、各値の桁数が決まっていないので一意性を保証するために各値をハイフンで区切る（作成する値は例えば次のような文字列　57-17-airplane-3-）。
-    //         }, config("consts.account_payable_items.ITEM_PAYABLE_NUMBER_COLUMNS")) // item_payable_number生成に使うカラム群
-    //     );
-
-    //     // ステータス値
-    //     $statusUnpaid = config("consts.account_payable_items.STATUS_UNPAID");
-    //     $statusOverpaid = config("consts.account_payable_items.STATUS_OVERPAID");
-    //     $statusPaid = config("consts.account_payable_items.STATUS_PAID");
-    //     $statusNone = config("consts.account_payable_items.STATUS_NONE");
-
-    //     // 当該行程に対し、item_payable_numberカラムが存在していれば(金額カラムを)更新、なければレコードを登録。削除済み行(deleted_at)は集計には含めない
-    //     // 支払日は支払管理ページにて編集可能なのでここでは更新はせず、新規登録のみ行う
-    //     // statusのcase文はPaymentTrait@getPaymentStatusと同じロジック
-    //     $sql = "
-    //     INSERT INTO account_payable_items(
-    //         item_payable_number,
-    //         agency_id,
-    //         reserve_id,
-    //         reserve_itinerary_id,
-    //         supplier_id,
-    //         supplier_name,
-    //         item_id,
-    //         item_code,
-    //         item_name,
-    //         subject,
-    //         total_purchase_amount,
-    //         total_amount_accrued,
-    //         payment_date,
-    //         status,
-    //         updated_at,
-    //         created_at
-    //     )
-    //     SELECT
-    //         item_payable_number,
-    //         agency_id,
-    //         reserve_id,
-    //         reserve_itinerary_id,
-    //         supplier_id,
-    //         supplier_name,
-    //         item_id,
-    //         item_code,
-    //         item_name,
-    //         subject,
-    //         total_purchase_amount,
-    //         total_amount_accrued,
-    //         payment_date,
-    //         status,
-    //         NOW(),
-    //         NOW()
-    //     FROM
-    //         (
-    //             SELECT
-    //                 MD5(CONCAT({$itemPayableNumberColumn})) AS item_payable_number,
-    //                 a.agency_id,
-    //                 a.reserve_id,
-    //                 a.reserve_itinerary_id,
-    //                 a.supplier_id,
-    //                 b.name AS supplier_name,
-    //                 a.item_id,
-    //                 a.item_code,
-    //                 a.item_name,
-    //                 a.subject,
-    //                 sum(a.amount_billed) AS total_purchase_amount,
-    //                 sum(a.unpaid_balance) AS total_amount_accrued,
-    //                 c.payment_date,
-    //                 CASE
-    //                     WHEN sum(a.unpaid_balance) > 0 THEN {$statusUnpaid}
-    //                     WHEN sum(a.unpaid_balance) < 0 THEN {$statusOverpaid}
-    //                     WHEN sum(a.unpaid_balance) = 0 AND sum(a.amount_billed) > 0 THEN {$statusPaid}
-    //                     ELSE {$statusNone}
-    //                 END AS status
-    //             FROM
-    //                 account_payable_details AS a
-    //                 LEFT JOIN
-    //                     suppliers AS b
-    //                 ON  a.supplier_id = b.id
-    //                 LEFT JOIN
-    //                     supplier_payment_dates AS c
-    //                 ON  a.reserve_id = c.reserve_id AND a.supplier_id = c.supplier_id
-    //             WHERE
-    //                 reserve_itinerary_id = {$reserveItineraryId} AND a.deleted_at IS NULL
-    //             GROUP BY
-    //                 reserve_itinerary_id,
-    //                 supplier_id,
-    //                 item_code,
-    //                 saleable_type
-    //         ) t
-    //     ON DUPLICATE KEY UPDATE
-    //         total_purchase_amount = t.total_purchase_amount,
-    //         total_amount_accrued = t.total_amount_accrued,
-    //         supplier_name = t.supplier_name,
-    //         status = t.status,
-    //         updated_at = NOW()
-    //     ";
-
-    //     \DB::statement($sql);
-
-    //     return true;
-    // }
-
     /**
      * 当該行程IDのNet・未払金額を更新
      *
@@ -211,6 +101,7 @@ class AccountPayableItemRepository implements AccountPayableItemRepositoryInterf
             item_name,
             subject,
             total_purchase_amount,
+            total_amount_paid,
             total_amount_accrued,
             payment_date,
             status,
@@ -229,6 +120,7 @@ class AccountPayableItemRepository implements AccountPayableItemRepositoryInterf
             item_name,
             subject,
             total_purchase_amount,
+            total_amount_paid,
             total_amount_accrued,
             payment_date,
             status,
@@ -248,12 +140,13 @@ class AccountPayableItemRepository implements AccountPayableItemRepositoryInterf
                     a.item_name,
                     a.subject,
                     sum(a.amount_billed) AS total_purchase_amount,
+                    sum(a.amount_payment) AS total_amount_paid,
                     sum(if(a.unpaid_balance > 0, a.unpaid_balance, 0)) AS total_amount_accrued,
                     c.payment_date,
                     CASE
                         WHEN sum(if(a.unpaid_balance > 0, a.unpaid_balance, 0)) > 0 THEN {$statusUnpaid}
                         WHEN sum(a.amount_payment) > sum(a.amount_billed) THEN {$statusOverpaid}
-                        WHEN sum(a.amount_billed) = sum(a.amount_payment) THEN {$statusPaid}
+                        WHEN sum(a.amount_billed) > 0 AND sum(a.amount_billed) = sum(a.amount_payment) THEN {$statusPaid}
                         ELSE {$statusNone}
                     END AS status
                 FROM
@@ -274,6 +167,7 @@ class AccountPayableItemRepository implements AccountPayableItemRepositoryInterf
             ) t
         ON DUPLICATE KEY UPDATE
             total_purchase_amount = t.total_purchase_amount,
+            total_amount_paid = t.total_amount_paid,
             total_amount_accrued = t.total_amount_accrued,
             supplier_name = t.supplier_name,
             status = t.status,
@@ -299,7 +193,11 @@ class AccountPayableItemRepository implements AccountPayableItemRepositoryInterf
         
         $query = $with ? $query->with($with) : $query;
         $query = $select ? $query->select($select) : $query;
-        
+
+        if ($exZero) { 
+            $query = $query->excludingzero();
+        }
+
         foreach ($params as $key => $val) {
             if (is_empty($val)) {
                 continue;
@@ -337,13 +235,6 @@ class AccountPayableItemRepository implements AccountPayableItemRepositoryInterf
             } else { // 仕入先
                 $query = $query->where($key, 'like', "%$val%");
             }
-        }
-
-        if ($exZero) { // 請求額が0円だと、出金履歴が有っても非表示になるので注意。具合悪いようならこのフラグはなくす
-            $query = $query->where(function ($q) {
-                $q->where('total_purchase_amount', "<>", 0)
-                    ->orWhere('total_amount_accrued', "<>", 0);
-            })->where('status', '<>', config('consts.account_payable_items.STATUS_NONE'));
         }
 
         return $query->where('account_payable_items.agency_id', $agencyId)->sortable()->paginate($limit); // sortableする際にagency_idがリレーション先のテーブルにも存在するのでエラー回避のために明示的にagency_idを指定する
