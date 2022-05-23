@@ -3,8 +3,8 @@
 namespace App\Services;
 
 use App\Events\ChangePaymentDetailAmountEvent;
-use App\Events\ChangePaymentItemAmountEvent;
 use App\Events\ChangePaymentDetailAmountForItemEvent;
+use App\Events\ChangePaymentItemAmountEvent;
 use App\Exceptions\ExclusiveLockException;
 use App\Models\AccountPayable;
 use App\Models\AccountPayableDetail;
@@ -177,14 +177,15 @@ class ReserveItineraryService
             $amountBilled = !$isCancel ? 0 : ($participantPrice->cancel_charge_net ?? 0); // 数字なのでnullの場合は0で初期化
         }
         
-        // 新規か更新かを判断してパラメータを準備
+        // // 新規か更新かを判断してパラメータを準備
         $attributes = [
             'reserve_schedule_id' => $reserveScheduleId,
             'saleable_type' => get_class($participantPrice),
             'saleable_id' => $participantPrice->id,
         ];
 
-        $result = $this->accountPayableDetailService->findWhere($attributes, [], ['id']);
+        // $result = $this->accountPayableDetailService->findWhere($attributes, [], ['id']);
+        $result = $participantPrice->account_payable_detail;
 
         $date = date('Y-m-d H:i:s');
 
@@ -375,8 +376,9 @@ class ReserveItineraryService
                                         $updateRows = [];
                                         $accountPayableDetailInsertRows = [];
                                         $accountPayableDetailUpdateRows = [];
+
                                         // saleable_idリストを保存。後に処理する編集対象となるaccount_payable_detailsを検索するために使用
-                                        $saleableIds = [];
+                                        // $saleableIds = [];
 
                                         foreach ($participantPrices as $participantPrice) {
                                             $tmp=[];
@@ -400,30 +402,58 @@ class ReserveItineraryService
                                         $insertRows && $this->reserveParticipantOptionPriceService->insert($insertRows);
                                         $updateRows && $this->reserveParticipantOptionPriceService->updateBulk($updateRows, 'id');
 
-                                        foreach (\App\Models\ReserveParticipantOptionPrice::where('reserve_purchasing_subject_option_id', $subject->id)->get() as $price) {
-                                            $this->accountPayableDetailCommon(
-                                                $accountPayableDetailInsertRows,
-                                                $accountPayableDetailUpdateRows,
-                                                $agencyId,
-                                                $reserveItinerary->reserve_id,
-                                                $reserveItinerary->id,
-                                                $reserveTravelDate->id,
-                                                $reserveSchedule->id,
-                                                $price->valid == 1,
-                                                $price->is_cancel == 1,
-                                                $accountPayable->id,
-                                                $price,
-                                                $currentSupplier,
-                                                Arr::get($purchasingSubject, 'subject'),
-                                                data_get(json_decode(Arr::get($purchasingSubject, 'name_ex')), 'id'),
-                                                Arr::get($purchasingSubject, 'code'),
-                                                Arr::get($purchasingSubject, 'name'),
-                                                $date,
-                                                $paymentDate
-                                            );
 
-                                            $saleableIds[] = $price->id;
-                                        }
+                                        ////// reserve_participant_option_pricesに紐づく仕入詳細レコードがあるかチェックして、新規or更新パラメータをセット
+                                        \App\Models\ReserveParticipantOptionPrice::with(['account_payable_detail:id,saleable_type,saleable_id'])->where('reserve_purchasing_subject_option_id', $subject->id)->chunk(300, function ($prices) use (&$accountPayableDetailInsertRows, &$accountPayableDetailUpdateRows, $agencyId, $reserveItinerary, $reserveTravelDate, $reserveSchedule, $accountPayable, $currentSupplier, $purchasingSubject, $date, $paymentDate) { // 負荷対策のため、念の為300件ずつ処理
+                                            foreach ($prices as $price) {
+                                                $this->accountPayableDetailCommon(
+                                                    $accountPayableDetailInsertRows,
+                                                    $accountPayableDetailUpdateRows,
+                                                    $agencyId,
+                                                    $reserveItinerary->reserve_id,
+                                                    $reserveItinerary->id,
+                                                    $reserveTravelDate->id,
+                                                    $reserveSchedule->id,
+                                                    $price->valid == 1,
+                                                    $price->is_cancel == 1,
+                                                    $accountPayable->id,
+                                                    $price,
+                                                    $currentSupplier,
+                                                    Arr::get($purchasingSubject, 'subject'),
+                                                    data_get(json_decode(Arr::get($purchasingSubject, 'name_ex')), 'id'),
+                                                    Arr::get($purchasingSubject, 'code'),
+                                                    Arr::get($purchasingSubject, 'name'),
+                                                    $date,
+                                                    $paymentDate
+                                                );
+                                            }
+                                        });
+
+
+                                        // foreach (\App\Models\ReserveParticipantOptionPrice::where('reserve_purchasing_subject_option_id', $subject->id)->get() as $price) {
+                                        //     $this->accountPayableDetailCommon(
+                                        //         $accountPayableDetailInsertRows,
+                                        //         $accountPayableDetailUpdateRows,
+                                        //         $agencyId,
+                                        //         $reserveItinerary->reserve_id,
+                                        //         $reserveItinerary->id,
+                                        //         $reserveTravelDate->id,
+                                        //         $reserveSchedule->id,
+                                        //         $price->valid == 1,
+                                        //         $price->is_cancel == 1,
+                                        //         $accountPayable->id,
+                                        //         $price,
+                                        //         $currentSupplier,
+                                        //         Arr::get($purchasingSubject, 'subject'),
+                                        //         data_get(json_decode(Arr::get($purchasingSubject, 'name_ex')), 'id'),
+                                        //         Arr::get($purchasingSubject, 'code'),
+                                        //         Arr::get($purchasingSubject, 'name'),
+                                        //         $date,
+                                        //         $paymentDate
+                                        //     );
+
+                                        //     // $saleableIds[] = $price->id;
+                                        // }
 
                                         // account_payable_detailsをバルクインサートとバルクアップデート
                                         $accountPayableDetailInsertRows && $this->accountPayableDetailService->insert($accountPayableDetailInsertRows);
@@ -465,8 +495,9 @@ class ReserveItineraryService
                                         $updateRows = [];
                                         $accountPayableDetailInsertRows = [];
                                         $accountPayableDetailUpdateRows = [];
+
                                         // saleable_idリストを保存。後に処理する編集対象となるaccount_payable_detailsを検索するために使用
-                                        $saleableIds = [];
+                                        // $saleableIds = [];
 
                                         foreach ($participantPrices as $participantPrice) {
                                             $tmp=[];
@@ -490,30 +521,57 @@ class ReserveItineraryService
                                         $insertRows && $this->reserveParticipantAirplanePriceService->insert($insertRows);
                                         $updateRows && $this->reserveParticipantAirplanePriceService->updateBulk($updateRows, 'id');
 
-                                        foreach (\App\Models\ReserveParticipantAirplanePrice::where('reserve_purchasing_subject_airplane_id', $subject->id)->get() as $price) {
-                                            $this->accountPayableDetailCommon(
-                                                $accountPayableDetailInsertRows,
-                                                $accountPayableDetailUpdateRows,
-                                                $agencyId,
-                                                $reserveItinerary->reserve_id,
-                                                $reserveItinerary->id,
-                                                $reserveTravelDate->id,
-                                                $reserveSchedule->id,
-                                                $price->valid == 1,
-                                                $price->is_cancel == 1,
-                                                $accountPayable->id,
-                                                $price,
-                                                $currentSupplier,
-                                                Arr::get($purchasingSubject, 'subject'),
-                                                data_get(json_decode(Arr::get($purchasingSubject, 'name_ex')), 'id'),
-                                                Arr::get($purchasingSubject, 'code'),
-                                                Arr::get($purchasingSubject, 'name'),
-                                                $date,
-                                                $paymentDate
-                                            );
+
+                                        ////// reserve_participant_airplane_pricesに紐づく仕入詳細レコードがあるかチェックして、新規or更新パラメータをセット
+                                        \App\Models\ReserveParticipantAirplanePrice::with(['account_payable_detail:id,saleable_type,saleable_id'])->where('reserve_purchasing_subject_airplane_id', $subject->id)->chunk(300, function ($prices) use (&$accountPayableDetailInsertRows, &$accountPayableDetailUpdateRows, $agencyId, $reserveItinerary, $reserveTravelDate, $reserveSchedule, $accountPayable, $currentSupplier, $purchasingSubject, $date, $paymentDate) { // 負荷対策のため、念の為300件ずつ処理
+                                            foreach ($prices as $price) {
+                                                $this->accountPayableDetailCommon(
+                                                    $accountPayableDetailInsertRows,
+                                                    $accountPayableDetailUpdateRows,
+                                                    $agencyId,
+                                                    $reserveItinerary->reserve_id,
+                                                    $reserveItinerary->id,
+                                                    $reserveTravelDate->id,
+                                                    $reserveSchedule->id,
+                                                    $price->valid == 1,
+                                                    $price->is_cancel == 1,
+                                                    $accountPayable->id,
+                                                    $price,
+                                                    $currentSupplier,
+                                                    Arr::get($purchasingSubject, 'subject'),
+                                                    data_get(json_decode(Arr::get($purchasingSubject, 'name_ex')), 'id'),
+                                                    Arr::get($purchasingSubject, 'code'),
+                                                    Arr::get($purchasingSubject, 'name'),
+                                                    $date,
+                                                    $paymentDate
+                                                );
+                                            }
+                                        });
+
+                                        // foreach (\App\Models\ReserveParticipantAirplanePrice::where('reserve_purchasing_subject_airplane_id', $subject->id)->get() as $price) {
+                                        //     $this->accountPayableDetailCommon(
+                                        //         $accountPayableDetailInsertRows,
+                                        //         $accountPayableDetailUpdateRows,
+                                        //         $agencyId,
+                                        //         $reserveItinerary->reserve_id,
+                                        //         $reserveItinerary->id,
+                                        //         $reserveTravelDate->id,
+                                        //         $reserveSchedule->id,
+                                        //         $price->valid == 1,
+                                        //         $price->is_cancel == 1,
+                                        //         $accountPayable->id,
+                                        //         $price,
+                                        //         $currentSupplier,
+                                        //         Arr::get($purchasingSubject, 'subject'),
+                                        //         data_get(json_decode(Arr::get($purchasingSubject, 'name_ex')), 'id'),
+                                        //         Arr::get($purchasingSubject, 'code'),
+                                        //         Arr::get($purchasingSubject, 'name'),
+                                        //         $date,
+                                        //         $paymentDate
+                                        //     );
     
-                                            $saleableIds[] = $price->id;
-                                        }
+                                        //     // $saleableIds[] = $price->id;
+                                        // }
 
                                         // account_payable_detailsをバルクインサートとバルクアップデート
                                         $accountPayableDetailInsertRows && $this->accountPayableDetailService->insert($accountPayableDetailInsertRows);
@@ -555,8 +613,9 @@ class ReserveItineraryService
                                         $updateRows = [];
                                         $accountPayableDetailInsertRows = [];
                                         $accountPayableDetailUpdateRows = [];
+
                                         // saleable_idリストを保存。後に処理する編集対象となるaccount_payable_detailsを検索するために使用
-                                        $saleableIds = [];
+                                        // $saleableIds = [];
 
                                         foreach ($participantPrices as $participantPrice) {
                                             $tmp=[];
@@ -580,30 +639,57 @@ class ReserveItineraryService
                                         $insertRows && $this->reserveParticipantHotelPriceService->insert($insertRows);
                                         $updateRows && $this->reserveParticipantHotelPriceService->updateBulk($updateRows, 'id');
 
-                                        foreach (\App\Models\ReserveParticipantHotelPrice::where('reserve_purchasing_subject_hotel_id', $subject->id)->get() as $price) {
-                                            $this->accountPayableDetailCommon(
-                                                $accountPayableDetailInsertRows,
-                                                $accountPayableDetailUpdateRows,
-                                                $agencyId,
-                                                $reserveItinerary->reserve_id,
-                                                $reserveItinerary->id,
-                                                $reserveTravelDate->id,
-                                                $reserveSchedule->id,
-                                                $price->valid == 1,
-                                                $price->is_cancel == 1,
-                                                $accountPayable->id,
-                                                $price,
-                                                $currentSupplier,
-                                                Arr::get($purchasingSubject, 'subject'),
-                                                data_get(json_decode(Arr::get($purchasingSubject, 'name_ex')), 'id'),
-                                                Arr::get($purchasingSubject, 'code'),
-                                                Arr::get($purchasingSubject, 'name'),
-                                                $date,
-                                                $paymentDate
-                                            );
 
-                                            $saleableIds[] = $price->id;
-                                        }
+                                        ////// reserve_participant_hotel_pricesに紐づく仕入詳細レコードがあるかチェックして、新規or更新パラメータをセット
+                                        \App\Models\ReserveParticipantHotelPrice::with(['account_payable_detail:id,saleable_type,saleable_id'])->where('reserve_purchasing_subject_hotel_id', $subject->id)->chunk(300, function ($prices) use (&$accountPayableDetailInsertRows, &$accountPayableDetailUpdateRows, $agencyId, $reserveItinerary, $reserveTravelDate, $reserveSchedule, $accountPayable, $currentSupplier, $purchasingSubject, $date, $paymentDate) { // 負荷対策のため、念の為300件ずつ処理
+                                            foreach ($prices as $price) {
+                                                $this->accountPayableDetailCommon(
+                                                    $accountPayableDetailInsertRows,
+                                                    $accountPayableDetailUpdateRows,
+                                                    $agencyId,
+                                                    $reserveItinerary->reserve_id,
+                                                    $reserveItinerary->id,
+                                                    $reserveTravelDate->id,
+                                                    $reserveSchedule->id,
+                                                    $price->valid == 1,
+                                                    $price->is_cancel == 1,
+                                                    $accountPayable->id,
+                                                    $price,
+                                                    $currentSupplier,
+                                                    Arr::get($purchasingSubject, 'subject'),
+                                                    data_get(json_decode(Arr::get($purchasingSubject, 'name_ex')), 'id'),
+                                                    Arr::get($purchasingSubject, 'code'),
+                                                    Arr::get($purchasingSubject, 'name'),
+                                                    $date,
+                                                    $paymentDate
+                                                );
+                                            }
+                                        });
+
+                                        // foreach (\App\Models\ReserveParticipantHotelPrice::where('reserve_purchasing_subject_hotel_id', $subject->id)->get() as $price) {
+                                        //     $this->accountPayableDetailCommon(
+                                        //         $accountPayableDetailInsertRows,
+                                        //         $accountPayableDetailUpdateRows,
+                                        //         $agencyId,
+                                        //         $reserveItinerary->reserve_id,
+                                        //         $reserveItinerary->id,
+                                        //         $reserveTravelDate->id,
+                                        //         $reserveSchedule->id,
+                                        //         $price->valid == 1,
+                                        //         $price->is_cancel == 1,
+                                        //         $accountPayable->id,
+                                        //         $price,
+                                        //         $currentSupplier,
+                                        //         Arr::get($purchasingSubject, 'subject'),
+                                        //         data_get(json_decode(Arr::get($purchasingSubject, 'name_ex')), 'id'),
+                                        //         Arr::get($purchasingSubject, 'code'),
+                                        //         Arr::get($purchasingSubject, 'name'),
+                                        //         $date,
+                                        //         $paymentDate
+                                        //     );
+
+                                        //     // $saleableIds[] = $price->id;
+                                        // }
                                         
                                         // account_payable_detailsをバルクインサートとバルクアップデート
                                         $accountPayableDetailInsertRows && $this->accountPayableDetailService->insert($accountPayableDetailInsertRows);
