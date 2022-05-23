@@ -8,7 +8,7 @@
       支払管理
     </h1>
 
-    <ol class="breadCrumbs">
+    <ol class="breadCrumbs mb20">
       <li>
         <a href="{{ route('staff.management.payment.reserve', [$agencyAccount]) }}">支払管理</a>
       </li>
