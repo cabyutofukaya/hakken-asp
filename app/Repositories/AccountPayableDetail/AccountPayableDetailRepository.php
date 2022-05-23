@@ -92,9 +92,17 @@ class AccountPayableDetailRepository implements AccountPayableDetailRepositoryIn
      * @param string $saleableType 仕入科目
      * @param array $saleableIds 仕入科目ID一覧
      */
-    public function getBySaleableIds(string $saleableType, array $saleableIds, array $select=['id']) : Collection
+    public function getBySaleableIds(string $saleableType, array $saleableIds, array $with=[], array $select=['id']) : Collection
     {
-        return $this->accountPayableDetail->select($select)->where('saleable_type', $saleableType)->whereIn('saleable_id', $saleableIds)->get();
+        $query = $this->accountPayableDetail;
+        
+        $query = $with ? $query->with($with) : $query;
+        $query = $select ? $query->select($select) : $query;
+
+
+        return $query->where('saleable_type', $saleableType)
+            ->whereIn('saleable_id', $saleableIds)
+            ->get();
     }
 
     /**

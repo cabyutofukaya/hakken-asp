@@ -126,9 +126,9 @@ class ReserveParticipantPriceService
         foreach (array_chunk($optionIds, 1000) as $ids) { // 念の為1000件ずつ処理
             $params = [];
             // reserve_participant_option_priceのIDからaccount_payable_detailsレコードを取得
-            foreach ($this->accountPayableDetailService->getBySaleableIds('App\Models\ReserveParticipantOptionPrice', $ids, ['id']) as $row) {
-                // 支払い額合計（行ロックで取得）
-                $withdrawalSum = $this->agencyWithdrawalService->getSumAmountByAccountPayableDetailId($row->id, true);
+            foreach ($this->accountPayableDetailService->getBySaleableIds('App\Models\ReserveParticipantOptionPrice', $ids, ['v_agency_withdrawal_total:account_payable_detail_id,total_amount'], ['id']) as $row) {
+
+                $withdrawalSum = data_get($row, 'v_agency_withdrawal_total.total_amount', 0); // 支払額
 
                 // 更新パラメータ
                 $tmp = [];
@@ -151,9 +151,9 @@ class ReserveParticipantPriceService
         foreach (array_chunk($airplaneIds, 1000) as $ids) { // 念の為1000件ずつ処理
             $params = [];
             // reserve_participant_airplane_priceのIDからaccount_payable_detailsレコードを取得
-            foreach ($this->accountPayableDetailService->getBySaleableIds('App\Models\ReserveParticipantAirplanePrice', $ids, ['id']) as $row) {
-                // 支払い額合計（行ロックで取得）
-                $withdrawalSum = $this->agencyWithdrawalService->getSumAmountByAccountPayableDetailId($row->id, true);
+            foreach ($this->accountPayableDetailService->getBySaleableIds('App\Models\ReserveParticipantAirplanePrice', $ids, ['v_agency_withdrawal_total:account_payable_detail_id,total_amount'], ['id']) as $row) {
+
+                $withdrawalSum = data_get($row, 'v_agency_withdrawal_total.total_amount', 0); // 支払額
 
                 // 更新パラメータ
                 $tmp = [];
@@ -176,9 +176,9 @@ class ReserveParticipantPriceService
         foreach (array_chunk($hotelIds, 1000) as $ids) { // 念の為1000件ずつ処理
             $params = [];
             // reserve_participant_hotel_priceのIDからaccount_payable_detailsレコードを取得
-            foreach ($this->accountPayableDetailService->getBySaleableIds('App\Models\ReserveParticipantHotelPrice', $ids, ['id']) as $row) {
-                // 支払い額合計（行ロックで取得）
-                $withdrawalSum = $this->agencyWithdrawalService->getSumAmountByAccountPayableDetailId($row->id, true);
+            foreach ($this->accountPayableDetailService->getBySaleableIds('App\Models\ReserveParticipantHotelPrice', $ids, ['v_agency_withdrawal_total:account_payable_detail_id,total_amount'], ['id']) as $row) {
+
+                $withdrawalSum = data_get($row, 'v_agency_withdrawal_total.total_amount', 0); // 支払額
 
                 // 更新パラメータ
                 $tmp = [];

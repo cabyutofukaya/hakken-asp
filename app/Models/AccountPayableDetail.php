@@ -119,11 +119,11 @@ class AccountPayableDetail extends Model
         return $this->belongsTo('App\Models\Reserve')->withTrashed()->withDefault();
     }
     
-    // // 仕入先ごとにまとめた買掛金親レコード
-    // public function account_payable()
-    // {
-    //     return $this->belongsTo('App\Models\AccountPayable')->withDefault();
-    // }
+    // 出金合計view
+    public function v_agency_withdrawal_total()
+    {
+        return $this->hasOne('App\Models\VAgencyWithdrawalTotal')->withDefault();
+    }
 
     // 仕入先
     public function supplier()

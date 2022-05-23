@@ -44,8 +44,6 @@ trait CancelChargeTrait
      * キャンセルチャージ料金を保存
      * 予約キャンセル、参加者キャンセルに使用
      *
-     * TODO
-     * 本メソッド、処理が重すぎるようなら非同期で実行することも検討
      */
     public function setReserveCancelCharge(array $input, Reserve $reserve)
     {
@@ -144,11 +142,11 @@ trait CancelChargeTrait
 
                 $params = [];
                 // reserve_participant_option_priceのIDからaccount_payable_detailsレコードを取得
-                foreach ($this->accountPayableDetailService->getBySaleableIds('App\Models\ReserveParticipantOptionPrice', $ids, ['id','saleable_id']) as $row) {
+                foreach ($this->accountPayableDetailService->getBySaleableIds('App\Models\ReserveParticipantOptionPrice', $ids, ['v_agency_withdrawal_total:account_payable_detail_id,total_amount'], ['id','saleable_id']) as $row) {
+
                     $priceData = $optsCollect->firstWhere('id',$row->saleable_id);
 
-                    // 支払い額合計（行ロックで取得）
-                    $withdrawalSum = $this->agencyWithdrawalService->getSumAmountByAccountPayableDetailId($row->id, true);
+                    $withdrawalSum = data_get($row, 'v_agency_withdrawal_total.total_amount', 0); // 支払額
 
                     // 更新パラメータ
                     $tmp = [];
@@ -178,11 +176,10 @@ trait CancelChargeTrait
 
                 $params = [];
                 // reserve_participant_ariplane_priceのIDからaccount_payable_detailsレコードを取得
-                foreach ($this->accountPayableDetailService->getBySaleableIds('App\Models\ReserveParticipantAirplanePrice', $ids, ['id','saleable_id']) as $row) {
+                foreach ($this->accountPayableDetailService->getBySaleableIds('App\Models\ReserveParticipantAirplanePrice', $ids, ['v_agency_withdrawal_total:account_payable_detail_id,total_amount'], ['id','saleable_id']) as $row) {
                     $priceData = $airsCollect->firstWhere('id',$row->saleable_id);
 
-                    // 支払い額合計（行ロックで取得）
-                    $withdrawalSum = $this->agencyWithdrawalService->getSumAmountByAccountPayableDetailId($row->id, true);
+                    $withdrawalSum = data_get($row, 'v_agency_withdrawal_total.total_amount', 0); // 支払額
 
                     // 更新パラメータ
                     $tmp = [];
@@ -231,11 +228,10 @@ trait CancelChargeTrait
 
                 $params = [];
                 // reserve_participant_hotel_priceのIDからaccount_payable_detailsレコードを取得
-                foreach ($this->accountPayableDetailService->getBySaleableIds('App\Models\ReserveParticipantHotelPrice', $ids, ['id','saleable_id']) as $row) {
+                foreach ($this->accountPayableDetailService->getBySaleableIds('App\Models\ReserveParticipantHotelPrice', $ids, ['v_agency_withdrawal_total:account_payable_detail_id,total_amount'], ['id','saleable_id']) as $row) {
                     $priceData = $htlsCollect->firstWhere('id',$row->saleable_id);
 
-                    // 支払い額合計（行ロックで取得）
-                    $withdrawalSum = $this->agencyWithdrawalService->getSumAmountByAccountPayableDetailId($row->id, true);
+                    $withdrawalSum = data_get($row, 'v_agency_withdrawal_total.total_amount', 0); // 支払額
 
                     // 更新パラメータ
                     $tmp = [];

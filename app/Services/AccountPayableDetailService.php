@@ -80,11 +80,15 @@ class AccountPayableDetailService implements AccountPayableInterface
     {
         $updateParams = [];
 
-        $this->getSummarizeItemQuery($columnVals)->select(['id','amount_billed','unpaid_balance', 'status'])->chunk(300, function ($rows) use (&$updateParams) { // 念の為300件ずつ取得
+        $this->getSummarizeItemQuery($columnVals)
+            ->with(['v_agency_withdrawal_total:account_payable_detail_id,total_amount'])
+            ->select(['id', 'amount_billed','unpaid_balance', 'status'])
+            // ->lockForUpdate()
+            ->chunk(300, function ($rows) use (&$updateParams) { // 念の為300件ずつ取得
             foreach ($rows as $row) {
                 $tmp = [];
 
-                $amountPayment = $this->agencyWithdrawalRepository->getSumAmountByAccountPayableDetailId($row->id, true); // 支払額
+                $amountPayment = data_get($row, 'v_agency_withdrawal_total.total_amount', 0); // 支払額
 
                 $tmp['id'] = $row->id;
                 $tmp['amount_billed'] = $row->amount_billed;
@@ -245,9 +249,9 @@ class AccountPayableDetailService implements AccountPayableInterface
      * @param string $saleableType 仕入科目
      * @param array $saleableIds 仕入科目ID一覧
      */
-    public function getBySaleableIds(string $saleableType, array $saleableIds, array $select=['id']) : Collection
+    public function getBySaleableIds(string $saleableType, array $saleableIds, array $with=[], array $select=['id']) : Collection
     {
-        return $this->accountPayableDetailRepository->getBySaleableIds($saleableType, $saleableIds, $select);
+        return $this->accountPayableDetailRepository->getBySaleableIds($saleableType, $saleableIds, $with, $select);
     }
     
     /**

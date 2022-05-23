@@ -42,17 +42,17 @@ class AgencyWithdrawalItemHistoryRepository implements AgencyWithdrawalItemHisto
         return $isLock ? $this->agencyWithdrawalItemHistory->where('reserve_id', $reserveId)->lockForUpdate()->sum("amount") :  $this->agencyWithdrawalItemHistory->where('reserve_id', $reserveId)->sum("amount");
     }
 
-    /**
-     * 当該支払い明細の出金額合計を取得
-     * 行ロックで取得
-     *
-     * @param int $accountPayableDetailId 支払い明細ID
-     * @return int
-     */
-    public function getSumAmountByAccountPayableDetailId(int $accountPayableDetailId, bool $isLock=false) : int
-    {
-        return $isLock ? $this->agencyWithdrawalItemHistory->where('account_payable_detail_id', $accountPayableDetailId)->lockForUpdate()->sum("amount") :  $this->agencyWithdrawalItemHistory->where('account_payable_detail_id', $accountPayableDetailId)->sum("amount");
-    }
+    // /**
+    //  * 当該支払い明細の出金額合計を取得
+    //  * 行ロックで取得
+    //  *
+    //  * @param int $accountPayableDetailId 支払い明細ID
+    //  * @return int
+    //  */
+    // public function getSumAmountByAccountPayableDetailId(int $accountPayableDetailId, bool $isLock=false) : int
+    // {
+    //     return $isLock ? $this->agencyWithdrawalItemHistory->where('account_payable_detail_id', $accountPayableDetailId)->lockForUpdate()->sum("amount") :  $this->agencyWithdrawalItemHistory->where('account_payable_detail_id', $accountPayableDetailId)->sum("amount");
+    // }
 
     /**
      * 出金登録
