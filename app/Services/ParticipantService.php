@@ -379,10 +379,11 @@ class ParticipantService
      * @param int $reserveId
      * @param array $with
      * @param array $select
+     * @param bool $getCanceller 取消者を取得する場合はtrue
      */
-    public function getByReserveId(int $reserveId, array $with=[], $select=[]) : Collection
+    public function getByReserveId(int $reserveId, array $with=[], $select=[], bool $getCanceller = false) : Collection
     {
-        return $this->participantRepository->getByReserveId($reserveId, $with, $select);
+        return $this->participantRepository->getByReserveId($reserveId, $with, $select, $getCanceller);
     }
 
     /**

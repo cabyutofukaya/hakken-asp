@@ -20,6 +20,10 @@ class ReserveParticipantAirplanePrice extends Model implements ParticipantPriceI
     // ReservePurchasingSubjectAirplaneのbootメソッド内にて出金登録がある本モデルは消さないように制御しているので、softCascadeで削除されるレコードは出金登録がないものに限定される → 現在はsoftCascadeを使わずに削除するように変更
     protected $softCascade = ['account_payable_detail'];
 
+    protected $with = [
+        'participant', // 料金やホテル情報をまとめる際に参加者情報を参照する箇所が多いのでwithしておく
+    ];
+
     /**
      * The attributes that are mass assignable.
      *

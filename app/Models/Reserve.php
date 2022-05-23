@@ -177,13 +177,13 @@ class Reserve extends Model
     // 参加者（取消者含む）
     public function participants()
     {
-        return $this->belongsToMany('App\Models\Participant')->orderBy('id', 'asc');
+        return $this->belongsToMany('App\Models\Participant');
     }
 
     // 参加者（取消者除く）
     public function participant_except_cancellers()
     {
-        return $this->belongsToMany('App\Models\Participant')->where('cancel', false)->orderBy('id', 'asc');
+        return $this->belongsToMany('App\Models\Participant')->where('cancel', false);
     }
 
     /**

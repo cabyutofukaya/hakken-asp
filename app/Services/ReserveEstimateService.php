@@ -262,7 +262,7 @@ class ReserveEstimateService extends ReserveBaseService implements ReserveEstima
      */
     public function getParticipants(int $reserveId, bool $getCanceller = true) : Collection
     {
-        return $this->reserveRepository->getParticipants($reserveId, $getCanceller);
+        return $this->participantService->getByReserveId($reserveId, ['user'], [], $getCanceller);
     }
 
     /**

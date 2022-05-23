@@ -143,21 +143,21 @@ class ReserveRepository implements ReserveRepositoryInterface
         return true;
     }
 
-    /**
-     * 当該予約の全参加者を取得
-     *
-     * @param boolean $getCanceller 取消者も含むか否か
-     * @return Illuminate\Support\Collection
-     */
-    public function getParticipants(int $reserveId, bool $getCanceller = true) : Collection
-    {
-        $reserve = $this->find($reserveId);
-        if ($getCanceller) {
-            return $reserve->participants()->with(['user'])->get();
-        } else {
-            return $reserve->participant_except_cancellers()->with(['user'])->get();
-        }
-    }
+    // /**
+    //  * 当該予約の全参加者を取得
+    //  *
+    //  * @param boolean $getCanceller 取消者も含むか否か
+    //  * @return Illuminate\Support\Collection
+    //  */
+    // public function getParticipants(int $reserveId, bool $getCanceller = true) : Collection
+    // {
+    //     $reserve = $this->find($reserveId);
+    //     if ($getCanceller) {
+    //         return $reserve->participants()->with(['user'])->get();
+    //     } else {
+    //         return $reserve->participant_except_cancellers()->with(['user'])->get();
+    //     }
+    // }
 
     /**
      * 項目更新

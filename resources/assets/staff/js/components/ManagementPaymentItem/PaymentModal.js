@@ -539,7 +539,9 @@ const PaymentModal = ({
                     </li>
                     <li className="wd50 mr00">
                         <button
-                            className="blueBtn"
+                            className={classNames("blueBtn", {
+                                loading: isRegisting || isWithdrawalDeleting
+                            })}
                             onClick={handleWithdrawal}
                             disabled={isRegisting || isWithdrawalDeleting}
                         >

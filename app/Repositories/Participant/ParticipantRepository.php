@@ -79,13 +79,20 @@ class ParticipantRepository implements ParticipantRepositoryInterface
 
     /**
      * 全件取得
+     *
+     * @param bool $getCanceller 取消者を取得する場合はtrue
      */
-    public function getByReserveId(int $reserveId, array $with=[], $select=[]) : Collection
+    public function getByReserveId(int $reserveId, array $with=[], $select=[], bool $getCanceller = false) : Collection
     {
         $query = $this->participant;
         $query = $with ? $query->with($with) : $query;
         $query = $select ? $query->select($select) : $query;
-        return $query->where('reserve_id', $reserveId)->sortable()->get();
+
+        if (!$getCanceller) { // 取消者を取得しない
+            $query = $query->where('cancel', false);
+        }
+
+        return $query->where('reserve_id', $reserveId)->sortable(['id' => 'asc'])->get();
     }
 
     /**

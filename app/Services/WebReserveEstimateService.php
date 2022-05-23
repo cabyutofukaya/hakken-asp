@@ -135,7 +135,7 @@ class WebReserveEstimateService extends ReserveBaseService implements ReserveEst
      */
     public function getParticipants(int $reserveId, bool $getCanceller = true) : Collection
     {
-        return $this->webReserveRepository->getParticipants($reserveId, $getCanceller);
+        return $this->participantService->getByReserveId($reserveId, ['user'], [], $getCanceller);
     }
 
     /**

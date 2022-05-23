@@ -2616,3 +2616,25 @@ hr.sepBorder {
     padding: 15px 0 0 0;
     color: #fd595e;
 }
+.redBtn.loading:before {
+    content: "";
+    background: url("../img/shared/oval.svg") center center no-repeat;
+    background-size: 100%;
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+.blueBtn.loading:before {
+    content: "";
+    background: url("../img/shared/oval.svg") center center no-repeat;
+    background-size: 100%;
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+}
