@@ -57,13 +57,15 @@ trait CancelChargeTrait
         $airplaneIds = [];
         $hotelIds = [];
 
-
         // キャンセルチャージ料金を保存
-        foreach ($input['rows'] as $key => $row) { // $keyは [科目名]_(仕入ID_...)という形式
-            $info = explode(config('consts.const.CANCEL_CHARGE_DATA_DELIMITER'), $key);
+        foreach ($input['rows'] as $key => $row) {
+            // $info = explode(config('consts.const.CANCEL_CHARGE_DATA_DELIMITER'), $key);
     
-            $subject = $info[0]; // $infoの1番目の配列は科目名
-            $ids = array_slice($info, 1); // idリスト
+            // $subject = $info[0]; // $infoの1番目の配列は科目名
+            // $ids = array_slice($info, 1); // idリスト
+
+            $subject = $row['subject'];
+            $ids = explode(config('consts.const.CANCEL_CHARGE_DATA_DELIMITER'), $row['ids']); // idリスト
 
             $isCancel = Arr::get($row, 'is_cancel') == 1; // キャンセル料金有無のチェックボックス
 

@@ -36,6 +36,8 @@ class ReserveCancelChargeUpdateRequest extends FormRequest
         return [
             'reserve_number' => 'required',
             'rows' => 'required|array',
+            'rows.*.subject' => 'required',
+            'rows.*.ids' => 'required',
             'rows.*.is_cancel' => 'nullable|boolean',
             'rows.*.cancel_charge' => 'nullable|regex:/^[0-9]+$/i', // 整数のみ許可
             'rows.*.cancel_charge_net' => 'nullable|regex:/^[0-9]+$/i', // 整数のみ許可
@@ -50,6 +52,8 @@ class ReserveCancelChargeUpdateRequest extends FormRequest
             'reserve_number.required' => '予約番号は必須です。',
             'rows.required' => 'キャンセル料金情報が入力されていません。',
             'rows.array' => 'キャンセル料金情報の入力形式が不正です。',
+            'rows.*.subject.required' => '科目名は必須です。',
+            'rows.*.ids.required' => '科目IDは必須です。',
             'rows.*.is_cancel.boolean' => '「キャンセル料の有無」の指定が不正です。',
             'rows.*.cancel_charge.regex' => '「キャンセル料金」の入力が正しくありません。',
             'rows.*.cancel_charge_net.regex' => '「仕入先支払料金合計」の入力が正しくありません。',

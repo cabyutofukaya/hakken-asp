@@ -416,10 +416,14 @@ class ReserveParticipantPriceService
     {
         // 集計した仕入情報に明細行をセット
         foreach ($purchaseFormData as $key => $pfd) {
-            $info = explode(config('consts.const.CANCEL_CHARGE_DATA_DELIMITER'), $key);
+            // $info = explode(config('consts.const.CANCEL_CHARGE_DATA_DELIMITER'), $key);
     
-            $subject = $info[0]; // $infoの1番目の配列は科目名
-            $ids = array_slice($info, 1); // idリスト
+            // $subject = $info[0]; // $infoの1番目の配列は科目名
+            // $ids = array_slice($info, 1); // idリスト
+    
+            $subject = $pfd['subject'];
+            $ids = explode(config('consts.const.CANCEL_CHARGE_DATA_DELIMITER'), $pfd['ids']); // idリスト
+
 
             if ($subject == config('consts.subject_categories.SUBJECT_CATEGORY_OPTION')) { // オプション科目
                 $rows = $options->whereIn('id', $ids);
@@ -575,9 +579,11 @@ class ReserveParticipantPriceService
                 $tmp[$col] = collect($rows)->sum($col);
             }
 
-            $key = sprintf("%s" . config('consts.const.CANCEL_CHARGE_DATA_DELIMITER') . "%s", Arr::get($rows, "0.subject"), implode(config('consts.const.CANCEL_CHARGE_DATA_DELIMITER'), collect($rows)->pluck('id')->all())); // [subject値]_[ID]_[ID]_.. の形式でキー値を作成
+            // $rowKey = sprintf("%s" . config('consts.const.CANCEL_CHARGE_DATA_DELIMITER') . "%s", Arr::get($rows, "0.subject"), implode(config('consts.const.CANCEL_CHARGE_DATA_DELIMITER'), collect($rows)->pluck('id')->all())); // [subject値]_[ID]_[ID]_.. の形式でキー値を作成
 
-            $result[$key] = $tmp;
+            $tmp['ids'] = implode(config('consts.const.CANCEL_CHARGE_DATA_DELIMITER'), collect($rows)->pluck('id')->all()); // IDの値を区切り文字で区切って保存
+
+            $result[] = $tmp;
         }
 
         return $result;
