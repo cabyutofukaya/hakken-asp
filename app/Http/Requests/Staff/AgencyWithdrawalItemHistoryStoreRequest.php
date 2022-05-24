@@ -45,12 +45,12 @@ class AgencyWithdrawalItemHistoryStoreRequest extends FormRequest
                 $accountPayableItem = $this->accountPayableItemService->find($this->accountPayableItemId);
 
                 try {
-                    if ($value == 0) { // ゼロ除算禁止
-                        throw new \Exception("正しい入金額を入力してください。");
+                    if ($accountPayableItem->total_amount_accrued == 0) { // ゼロ除算禁止
+                        throw new \Exception("未払額はありません。");
                     }
     
                     // 出金割合(1, 0.5 ... etc)
-                    $rate = get_agency_withdrawal_rate($value, $accountPayableItem->unpaid_balance);
+                    $rate = get_agency_withdrawal_rate($value, $accountPayableItem->total_amount_accrued);
                     
                     if (!preg_match('/^[0-9\-]+$/', $rate * 100)) { // パーセンテージが割り切れないケース。数字とマイナス記号のみの構成であること(マイナス記号は必要か不明だが、一応許可しておく)
                         throw new \Exception("未払金額に対する出金額の割合が正しくありません。");
@@ -58,14 +58,7 @@ class AgencyWithdrawalItemHistoryStoreRequest extends FormRequest
 
                     $total = 0;
                     $this->accountPayableDetailService->getSummarizeItemQuery(
-                        [
-                            'agency_id' => $accountPayableItem->agency_id,
-                            'reserve_id' => $accountPayableItem->reserve_id,
-                            'reserve_itinerary_id' => $accountPayableItem->reserve_itinerary_id,
-                            'supplier_id' => $accountPayableItem->supplier_id,
-                            'subject' => $accountPayableItem->subject,
-                            'item_id' => $accountPayableItem->item_id,
-                        ]
+                            $accountPayableItem->toArray()
                     )->chunk(100, function ($rows) use ($rate, &$total) { // 念の為100件ずつ取得
                         foreach ($rows as $row) {
                             $p = $row->unpaid_balance * $rate;
@@ -76,7 +69,7 @@ class AgencyWithdrawalItemHistoryStoreRequest extends FormRequest
                         }
                     });
 
-                    if ($total != $value) { // 一応、計算があるかチェック
+                    if ($total != $value) { // 一応、計算が合うかチェック
                         throw new \Exception("出金額の入力が正しくありません。");
                     }
                 } catch (\Exception $e) {

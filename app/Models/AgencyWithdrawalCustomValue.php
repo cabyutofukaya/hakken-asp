@@ -14,6 +14,8 @@ class AgencyWithdrawalCustomValue extends Model
 {
     use ModelLogTrait,SoftDeletes,CustomValueTrait;
 
+    public $timestamps = false;
+    
     // // timestamps連携 TODOこれ必要か検討
     // protected $touches = ['agency_withdrawals'];
 

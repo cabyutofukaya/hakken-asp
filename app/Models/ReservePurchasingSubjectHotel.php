@@ -112,14 +112,41 @@ class ReservePurchasingSubjectHotel extends Model
         self::saveModelLog();
 
         static::deleting(function ($row) {
-            foreach ($row->reserve_participant_prices as $price) {
-                if ($price->account_payable_detail && $price->account_payable_detail->agency_withdrawals->isEmpty()) { // 出金登録がなければ削除
-                    $price->delete();
-                } else { // 出金登録がある場合はvalidフラグを無効に
-                    $price->valid = false;
-                    $price->save();
+
+            /****** ReserveParticipantHotelPriceに紐づく支払情報について、出金登録がなければreserve_participant_hotel_prices、account_payable_detailsレコードをまとめて削除 ******/
+            
+            $deleteReserveParticipantHotelPriceIds = []; // 削除対象のdelete_reserve_participant_hotel_pricesのID一覧
+            $deleteAccountPayableDetailIds = []; // 削除対象のdelete_account_payable_detailsのID一覧
+
+            \App\Models\ReserveParticipantHotelPrice::with(['account_payable_detail:id,saleable_type,saleable_id'])->select(['id'])->where('reserve_purchasing_subject_hotel_id', $row->id)->doesntHave('account_payable_detail.agency_withdrawals')->chunk(300, function ($rows) use (&$deleteReserveParticipantHotelPriceIds, &$deleteAccountPayableDetailIds) {
+                foreach ($rows as $row) {
+                    $deleteReserveParticipantHotelPriceIds[] = $row->id;
+                    $deleteAccountPayableDetailIds[] = $row->account_payable_detail->id;
+                }
+            }); // 念の為chunkで少しずつ取得
+
+            if ($deleteReserveParticipantHotelPriceIds) {
+                foreach (array_chunk($deleteReserveParticipantHotelPriceIds, 1000) as $ids) { // レコード削除処理。念の為1000件ずつ
+                    \App\Models\ReserveParticipantHotelPrice::whereIn('id', $ids)->delete();
                 }
             }
+
+            if ($deleteAccountPayableDetailIds) {
+                foreach (array_chunk($deleteAccountPayableDetailIds, 1000) as $ids) { // レコード削除処理。念の為1000件ずつ
+                    \App\Models\AccountPayableDetail::whereIn('id', $ids)->delete();
+                }
+            }
+
+
+
+            // foreach ($row->reserve_participant_prices as $price) {
+            //     if ($price->account_payable_detail && $price->account_payable_detail->agency_withdrawals->isEmpty()) { // 出金登録がなければ削除
+            //         $price->delete();
+            //     } else { // 出金登録がある場合はvalidフラグを無効に
+            //         $price->valid = false;
+            //         $price->save();
+            //     }
+            // }
         });
 
     }

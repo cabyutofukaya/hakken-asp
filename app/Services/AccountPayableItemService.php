@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Exceptions\ExclusiveLockException;
+use App\Models\AccountPayableDetail;
 use App\Models\AccountPayableItem;
 use App\Repositories\AccountPayableItem\AccountPayableItemRepository;
 use App\Repositories\Agency\AgencyRepository;
@@ -96,5 +97,31 @@ class AccountPayableItemService
         }
 
         return $this->accountPayableItemRepository->update($id, $data);
+    }
+
+    /**
+     * 当該支払先を除く行程行を削除
+     *
+     * @param int $reserveItineraryId 行程ID
+     * @param array $supplierIds 仕入先ID一覧。当リストに含まれる仕入先は削除対象外
+     * @param bool $isSoftDelete 論理削除の場合はTrue
+     */
+    public function deleteExceptSupplierIdsForReserveItineraryId(int $reserveItineraryId, array $supplierIds, bool $isSoftDelete = true) : bool
+    {
+        return $this->accountPayableItemRepository->deleteExceptSupplierIdsForReserveItineraryId($reserveItineraryId, $supplierIds, $isSoftDelete);
+    }
+
+    /**
+     * account_payable_item_idを取得
+     */
+    public function getIdByAccountPayableDetail(AccountPayableDetail $accountPayableDetail) : ?int
+    {
+        $where = [];
+        foreach (config("consts.account_payable_items.ITEM_PAYABLE_NUMBER_COLUMNS") as $col) {
+            $where[$col] = $accountPayableDetail->{$col};
+        }
+
+        $result = $this->accountPayableItemRepository->findWhere($where, [], ['id']);
+        return $result ? $result->id : null;
     }
 }

@@ -142,14 +142,20 @@ const AccountPayableArea = ({
                                     <tr key={index}>
                                         <td>
                                             {/**予約状態の場合は支払管理ページへ遷移可能 */}
-                                            {applicationStep ==
+                                            {row?.url && (
+                                                <a href={row.url}>
+                                                    {row?.supplier_name ?? "-"}
+                                                </a>
+                                            )}
+
+                                            {/* {applicationStep ==
                                                 applicationStepList.application_step_reserve && (
                                                 <a
                                                     href={`/${agencyAccount}/management/payment/index?payable_number=${row?.payable_number}`}
                                                 >
                                                     {row?.supplier_name ?? "-"}
                                                 </a>
-                                            )}
+                                            )} */}
                                             {applicationStep !=
                                                 applicationStepList.application_step_reserve &&
                                                 (row?.supplier_name ?? "-")}

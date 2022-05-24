@@ -177,13 +177,13 @@ class Reserve extends Model
     // 参加者（取消者含む）
     public function participants()
     {
-        return $this->belongsToMany('App\Models\Participant')->orderBy('id', 'asc');
+        return $this->belongsToMany('App\Models\Participant');
     }
 
     // 参加者（取消者除く）
     public function participant_except_cancellers()
     {
-        return $this->belongsToMany('App\Models\Participant')->where('cancel', false)->orderBy('id', 'asc');
+        return $this->belongsToMany('App\Models\Participant')->where('cancel', false);
     }
 
     /**
@@ -795,9 +795,7 @@ class Reserve extends Model
     {
         // 計算は予約ステータス時のみ
         if ($this->application_step == config('consts.reserves.APPLICATION_STEP_RESERVE')) {
-            // ↓有効な仕入のみ(enabled_account_payable_details)にすると取り消しユーザーで支払い済みの仕入があった場合に計算対象外になってしまうため、enabled_account_payable_detailsに変更
-            // return $this->enabled_account_payable_details->sum('unpaid_balance');
-            return $this->account_payable_details->sum('unpaid_balance');
+            return $this->account_payable_details->where('unpaid_balance', '>', 0)->sum('unpaid_balance');
         } else {
             return 0;
         }

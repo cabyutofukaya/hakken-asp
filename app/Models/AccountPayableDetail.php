@@ -48,7 +48,7 @@ class AccountPayableDetail extends Model
         'reserve_itinerary_id',
         'reserve_travel_date_id',
         'reserve_schedule_id',
-        'account_payable_id',
+        // 'account_payable_id',
         'supplier_id',
         'supplier_name',
         'item_name',
@@ -58,6 +58,7 @@ class AccountPayableDetail extends Model
         'saleable_type',
         'saleable_id',
         'amount_billed',
+        'amount_payment',
         'unpaid_balance',
         // 'official', // ←使っていないかも
         'last_manager_id',
@@ -84,6 +85,7 @@ class AccountPayableDetail extends Model
      */
     protected $casts = [
         'amount_billed' => 'integer',
+        'amount_payment' => 'integer',
         'unpaid_balance' => 'integer',
     ];
 
@@ -117,10 +119,10 @@ class AccountPayableDetail extends Model
         return $this->belongsTo('App\Models\Reserve')->withTrashed()->withDefault();
     }
     
-    // 仕入先ごとにまとめた買掛金親レコード
-    public function account_payable()
+    // 出金合計view
+    public function v_agency_withdrawal_total()
     {
-        return $this->belongsTo('App\Models\AccountPayable')->withDefault();
+        return $this->hasOne('App\Models\VAgencyWithdrawalTotal')->withDefault();
     }
 
     // 仕入先

@@ -10,6 +10,8 @@ interface AgencyWithdrawalRepositoryInterface
 {
   public function find(int $id, array $with = [], array $select = []): AgencyWithdrawal;
   
+  public function getIdsByTempId(string $tempID) : array;
+  
   public function create(array $data): AgencyWithdrawal;
 
   public function insert(array $rows) : bool;
@@ -23,4 +25,8 @@ interface AgencyWithdrawalRepositoryInterface
   public function isExistsParticipant(int $participantId, int $reserveId) : bool;
 
   public function delete(int $id, bool $isSoftDelete): bool;
+
+  public function deleteWhere(array $where, bool $isSoftDelete) : bool;
+
+  public function restore(int $id);
 }

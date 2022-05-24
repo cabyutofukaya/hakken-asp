@@ -41,6 +41,15 @@ class AgencyWithdrawalCustomValueService
     }
 
     /**
+     * バルクインサート
+     */
+    public function insert(array $params) : bool
+    {
+        $this->agencyWithdrawalCustomValueRepository->insert($params);
+        return true;
+    }
+
+    /**
      * 項目更新
      */
     public function updateField(int $agencyWithdrawalCustomValueId, array $params) : Model

@@ -18,7 +18,7 @@ interface ParticipantRepositoryInterface
 
     public function paginateByReserveId(int $reserveId, array $params, int $limit, array $with=[], $select=[]) : LengthAwarePaginator;
   
-    public function getByReserveId(int $reserveId, array $with=[], $select=[]) : Collection;
+    public function getByReserveId(int $reserveId, array $with=[], $select=[], bool $getCanceller = false) : Collection;
 
     public function getIdsByReserveIdAndUserIds(int $reserveId, array $userIds) : array;
 

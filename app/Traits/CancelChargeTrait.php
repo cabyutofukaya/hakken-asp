@@ -44,8 +44,6 @@ trait CancelChargeTrait
      * キャンセルチャージ料金を保存
      * 予約キャンセル、参加者キャンセルに使用
      *
-     * TODO
-     * 本メソッド、処理が重すぎるようなら非同期で実行することも検討
      */
     public function setReserveCancelCharge(array $input, Reserve $reserve)
     {
@@ -85,7 +83,6 @@ trait CancelChargeTrait
 
                 // 処理したIDを追記
                 $optionIds = array_merge($optionIds, $ids);
-
             } elseif ($subject == config('consts.subject_categories.SUBJECT_CATEGORY_AIRPLANE')) { // 航空券科目
                 foreach (Arr::get($row, 'participants', []) as $p) {
                     $tmp = [];
@@ -101,7 +98,6 @@ trait CancelChargeTrait
 
                 // 処理したIDを追記
                 $airplaneIds = array_merge($airplaneIds, $ids);
-
             } elseif ($subject == config('consts.subject_categories.SUBJECT_CATEGORY_HOTEL')) { // ホテル科目
                 foreach (Arr::get($row, 'participants', []) as $p) {
                     $tmp = [];
@@ -122,69 +118,152 @@ trait CancelChargeTrait
 
         // キャンセル料金カラムをバルクアップデート
         if ($options) { // オプション科目
-            $this->reserveParticipantOptionPriceService->updateBulk($options, 'id');
 
-            // 仕入先支払レコードの金額情報を更新
-            $params = [];
-            foreach ($options as $r) {
-                $tmp = [];
-                $tmp['saleable_id'] = Arr::get($r, "id");
-                $tmp['amount_billed'] = Arr::get($r, "cancel_charge_net", 0); // 支払い金額にキャンセルチャージ
+            foreach (array_chunk($options, 1000) as $opts) { // 念の為、1000件ずつ処理
+                $this->reserveParticipantOptionPriceService->updateBulk($opts, 'id');
 
-                $params[] = $tmp;
-            }
+                // // 仕入先支払レコードの金額情報を更新
+                // $params = [];
+                // foreach ($opts as $r) {
+                //     $tmp = [];
+                //     $tmp['saleable_id'] = Arr::get($r, "id");
+                //     $tmp['amount_billed'] = Arr::get($r, "cancel_charge_net", 0); // 支払い金額にキャンセルチャージ
+    
+                //     $params[] = $tmp;
+                // }
+    
+                // $this->accountPayableDetailService->setAmountBilledBulk('App\Models\ReserveParticipantOptionPrice', $params, 'saleable_id'); // バルクアップデート
 
-            $this->accountPayableDetailService->setAmountBilledBulk('App\Models\ReserveParticipantOptionPrice', $params, 'saleable_id'); // バルクアップデート
+                // 仕入先支払レコードのステータスと支払い残高計算
+                $ids = collect($opts)->pluck("id")->all();
 
-            // 仕入先支払レコードのステータスと支払い残高計算
-            $ids = collect($options)->pluck("id")->all();
+                // 値を検索しやすいようにcollect化
+                $optsCollect = collect($opts);
 
-            foreach ($this->accountPayableDetailService->getIdsBySaleableIds('App\Models\ReserveParticipantOptionPrice', $ids) as $accountPayableDetailId) {
-                event(new ChangePaymentDetailAmountEvent($accountPayableDetailId));
+                $params = [];
+                // reserve_participant_option_priceのIDからaccount_payable_detailsレコードを取得
+                foreach ($this->accountPayableDetailService->getBySaleableIds('App\Models\ReserveParticipantOptionPrice', $ids, ['v_agency_withdrawal_total:account_payable_detail_id,total_amount'], ['id','saleable_id']) as $row) {
+
+                    $priceData = $optsCollect->firstWhere('id',$row->saleable_id);
+
+                    $withdrawalSum = data_get($row, 'v_agency_withdrawal_total.total_amount', 0); // 支払額
+
+                    // 更新パラメータ
+                    $tmp = [];
+                    $tmp['id'] = $row->id;
+                    $tmp['amount_billed'] = Arr::get($priceData, "cancel_charge_net", 0); // 支払い金額にキャンセルチャージ
+                    $tmp['unpaid_balance'] = $tmp['amount_billed'] - $withdrawalSum; // 未払金額
+                    $tmp['status'] = $this->getPaymentStatus($tmp['unpaid_balance'], $tmp['amount_billed'], 'account_payable_details');
+
+                    $params[] = $tmp;
+                    // event(new ChangePaymentDetailAmountEvent($accountPayableDetailId));
+                }
+
+                // account_payable_detailsの一括更新
+                $this->accountPayableDetailService->updateBulk($params, "id");
             }
         }
         if ($airplanes) { // 航空券科目
-            $this->reserveParticipantAirplanePriceService->updateBulk($airplanes, 'id');
 
-            // 仕入先支払レコードの金額情報を更新
-            $params = [];
-            foreach ($airplanes as $r) {
-                $tmp = [];
-                $tmp['saleable_id'] = Arr::get($r, "id");
-                $tmp['amount_billed'] = Arr::get($r, "cancel_charge_net", 0); // 支払い金額にキャンセルチャージ
+            foreach (array_chunk($airplanes, 1000) as $airs) { // 念の為、1000件ずつ処理
+                $this->reserveParticipantAirplanePriceService->updateBulk($airs, 'id');
 
-                $params[] = $tmp;
-            }
+                // 仕入先支払レコードのステータスと支払い残高計算
+                $ids = collect($airs)->pluck("id")->all();
 
-            $this->accountPayableDetailService->setAmountBilledBulk('App\Models\ReserveParticipantAirplanePrice', $params, 'saleable_id'); // バルクアップデート
+                // 値を検索しやすいようにcollect化
+                $airsCollect = collect($airs);
 
-            // 仕入先支払レコードのステータスと支払い残高計算
-            $ids = collect($airplanes)->pluck("id")->all();
+                $params = [];
+                // reserve_participant_ariplane_priceのIDからaccount_payable_detailsレコードを取得
+                foreach ($this->accountPayableDetailService->getBySaleableIds('App\Models\ReserveParticipantAirplanePrice', $ids, ['v_agency_withdrawal_total:account_payable_detail_id,total_amount'], ['id','saleable_id']) as $row) {
+                    $priceData = $airsCollect->firstWhere('id',$row->saleable_id);
 
-            foreach ($this->accountPayableDetailService->getIdsBySaleableIds('App\Models\ReserveParticipantAirplanePrice', $ids) as $accountPayableDetailId) {
-                event(new ChangePaymentDetailAmountEvent($accountPayableDetailId));
+                    $withdrawalSum = data_get($row, 'v_agency_withdrawal_total.total_amount', 0); // 支払額
+
+                    // 更新パラメータ
+                    $tmp = [];
+                    $tmp['id'] = $row->id;
+                    $tmp['amount_billed'] = Arr::get($priceData, "cancel_charge_net", 0); // 支払い金額にキャンセルチャージ
+                    $tmp['unpaid_balance'] = $tmp['amount_billed'] - $withdrawalSum; // 未払金額
+                    $tmp['status'] = $this->getPaymentStatus($tmp['unpaid_balance'], $tmp['amount_billed'], 'account_payable_details');
+
+                    $params[] = $tmp;
+                }
+
+                // account_payable_detailsの一括更新
+                $this->accountPayableDetailService->updateBulk($params, "id");
+
+
+                // // 仕入先支払レコードの金額情報を更新
+                // $params = [];
+                // foreach ($airs as $r) {
+                //     $tmp = [];
+                //     $tmp['saleable_id'] = Arr::get($r, "id");
+                //     $tmp['amount_billed'] = Arr::get($r, "cancel_charge_net", 0); // 支払い金額にキャンセルチャージ
+    
+                //     $params[] = $tmp;
+                // }
+    
+                // $this->accountPayableDetailService->setAmountBilledBulk('App\Models\ReserveParticipantAirplanePrice', $params, 'saleable_id'); // バルクアップデート
+    
+                // // 仕入先支払レコードのステータスと支払い残高計算
+                // $ids = collect($airs)->pluck("id")->all();
+    
+                // foreach ($this->accountPayableDetailService->getBySaleableIds('App\Models\ReserveParticipantAirplanePrice', $ids, ['id'])->pluck("id")->toArray() as $accountPayableDetailId) {
+                //     event(new ChangePaymentDetailAmountEvent($accountPayableDetailId));
+                // }
             }
         }
         if ($hotels) { // ホテル科目
-            $this->reserveParticipantHotelPriceService->updateBulk($hotels, 'id');
 
-            // 仕入先支払レコードの金額情報を更新
-            $params = [];
-            foreach ($hotels as $r) {
-                $tmp = [];
-                $tmp['saleable_id'] = Arr::get($r, "id");
-                $tmp['amount_billed'] = Arr::get($r, "cancel_charge_net", 0); // 支払い金額にキャンセルチャージ
+            foreach (array_chunk($hotels, 1000) as $htls) { // 念の為、1000件ずつ処理
+                $this->reserveParticipantHotelPriceService->updateBulk($htls, 'id');
 
-                $params[] = $tmp;
-            }
+                // 仕入先支払レコードのステータスと支払い残高計算
+                $ids = collect($htls)->pluck("id")->all();
 
-            $this->accountPayableDetailService->setAmountBilledBulk('App\Models\ReserveParticipantHotelPrice', $params, 'saleable_id'); // バルクアップデート
+                // 値を検索しやすいようにcollect化
+                $htlsCollect = collect($htls);
 
-            // 仕入先支払レコードのステータスと支払い残高計算
-            $ids = collect($hotels)->pluck("id")->all();
+                $params = [];
+                // reserve_participant_hotel_priceのIDからaccount_payable_detailsレコードを取得
+                foreach ($this->accountPayableDetailService->getBySaleableIds('App\Models\ReserveParticipantHotelPrice', $ids, ['v_agency_withdrawal_total:account_payable_detail_id,total_amount'], ['id','saleable_id']) as $row) {
+                    $priceData = $htlsCollect->firstWhere('id',$row->saleable_id);
 
-            foreach ($this->accountPayableDetailService->getIdsBySaleableIds('App\Models\ReserveParticipantHotelPrice', $ids) as $accountPayableDetailId) {
-                event(new ChangePaymentDetailAmountEvent($accountPayableDetailId));
+                    $withdrawalSum = data_get($row, 'v_agency_withdrawal_total.total_amount', 0); // 支払額
+
+                    // 更新パラメータ
+                    $tmp = [];
+                    $tmp['id'] = $row->id;
+                    $tmp['amount_billed'] = Arr::get($priceData, "cancel_charge_net", 0); // 支払い金額にキャンセルチャージ
+                    $tmp['unpaid_balance'] = $tmp['amount_billed'] - $withdrawalSum; // 未払金額
+                    $tmp['status'] = $this->getPaymentStatus($tmp['unpaid_balance'], $tmp['amount_billed'], 'account_payable_details');
+
+                    $params[] = $tmp;
+                }
+
+                // account_payable_detailsの一括更新
+                $this->accountPayableDetailService->updateBulk($params, "id");
+
+                // // 仕入先支払レコードの金額情報を更新
+                // $params = [];
+                // foreach ($htls as $r) {
+                //     $tmp = [];
+                //     $tmp['saleable_id'] = Arr::get($r, "id");
+                //     $tmp['amount_billed'] = Arr::get($r, "cancel_charge_net", 0); // 支払い金額にキャンセルチャージ
+    
+                //     $params[] = $tmp;
+                // }
+    
+                // $this->accountPayableDetailService->setAmountBilledBulk('App\Models\ReserveParticipantHotelPrice', $params, 'saleable_id'); // バルクアップデート
+    
+                // // 仕入先支払レコードのステータスと支払い残高計算
+                // $ids = collect($htls)->pluck("id")->all();
+    
+                // foreach ($this->accountPayableDetailService->getBySaleableIds('App\Models\ReserveParticipantHotelPrice', $ids, ['id'])->pluck("id")->toArray() as $accountPayableDetailId) {
+                //     event(new ChangePaymentDetailAmountEvent($accountPayableDetailId));
+                // }
             }
         }
 
@@ -199,7 +278,6 @@ trait CancelChargeTrait
             $airplaneIds,
             $hotelIds
         ];
-
     }
 
     /**

@@ -33,8 +33,8 @@ const PaymentList = ({ searchParam, formSelects, consts }) => {
         "reserve.control_number": "desc",
         "reserve.departure_date": "desc",
         status: "desc",
-        amount_billed: "asc",
-        unpaid_balance: "asc",
+        total_amount_paid: "asc",
+        total_amount_accrued: "asc",
         reserve_manager: "asc",
         "reserve.note": "asc"
     });
@@ -46,7 +46,7 @@ const PaymentList = ({ searchParam, formSelects, consts }) => {
         setIsLoading(true);
 
         const response = await axios
-            .get(`/api/${agencyAccount}/management/payment/reserve/list`, {
+            .get(`/api/${agencyAccount}/management/payment/list/reserve`, {
                 params: {
                     ...searchParam,
                     page: page,
@@ -125,7 +125,7 @@ const PaymentList = ({ searchParam, formSelects, consts }) => {
                                 <th
                                     className="sort txtalc"
                                     onClick={e =>
-                                        handleSortClick("amount_billed")
+                                        handleSortClick("total_amount_paid")
                                     }
                                 >
                                     <span>支払総額</span>
@@ -133,7 +133,7 @@ const PaymentList = ({ searchParam, formSelects, consts }) => {
                                 <th
                                     className="sort txtalc"
                                     onClick={e =>
-                                        handleSortClick("unpaid_balance")
+                                        handleSortClick("total_amount_accrued")
                                     }
                                 >
                                     <span>未払総額</span>
@@ -190,7 +190,7 @@ const PaymentList = ({ searchParam, formSelects, consts }) => {
                                         <td>
                                             {!row.reserve?.is_deleted && (
                                                 <>
-                                                    <a href={row.link_url}>
+                                                    <a href={row.url}>
                                                         {row.reserve
                                                             ?.control_number ??
                                                             "-"}
@@ -237,18 +237,21 @@ const PaymentList = ({ searchParam, formSelects, consts }) => {
                                         </td>
                                         <td className="txtalc">
                                             ￥
-                                            {row.amount_billed.toLocaleString()}
+                                            {row.total_amount_paid.toLocaleString()}
                                         </td>
                                         <td className="txtalc">
                                             <span
                                                 className={classNames({
-                                                    red: row.unpaid_balance > 0,
+                                                    red:
+                                                        row.total_amount_accrued >
+                                                        0,
                                                     payPeriod:
-                                                        row.unpaid_balance > 0
+                                                        row.total_amount_accrued >
+                                                        0
                                                 })}
                                             >
                                                 ￥
-                                                {row.unpaid_balance.toLocaleString()}
+                                                {row.total_amount_accrued.toLocaleString()}
                                             </span>
                                         </td>
                                         <td className="txtalc">

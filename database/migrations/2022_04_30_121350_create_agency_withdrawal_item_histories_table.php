@@ -18,7 +18,7 @@ class CreateAgencyWithdrawalItemHistoriesTable extends Migration
             $table->unsignedInteger('agency_id')->comment('会社ID');
             $table->unsignedBigInteger('reserve_id')->comment('予約ID');
             $table->unsignedBigInteger('account_payable_item_id')->comment('買い掛け金明細ID(商品毎)');
-            $table->string("withdrawal_key")->comment("出金ID");
+            $table->string("withdrawal_key")->comment("一括出金識別キー");
             $table->integer('amount')->default(0)->comment('出金額');
             $table->date('withdrawal_date')->nullable()->comment('出金日');
             $table->date('record_date')->nullable()->comment('登録日');

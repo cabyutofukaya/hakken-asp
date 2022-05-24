@@ -28,9 +28,10 @@ class IndexResource extends JsonResource
 
         return [
             'id' => $this->id,
+            'url' => route('staff.management.payment.detail', ['agencyAccount' => $request->agencyAccount, 'reserveHashId' => optional($this->reserve)->hash_id, optional($this->supplier)->hash_id, $this->subject, $this->item_hash_id]),
             'reserve_url' => $reserveUrl,
-            'amount_billed' => $this->amount_billed,
-            'unpaid_balance' => $this->unpaid_balance,
+            'total_purchase_amount' => $this->total_purchase_amount,
+            'total_amount_accrued' => $this->total_amount_accrued,
             'payment_date' => $this->payment_date,
             'status' => $this->status,
             'status_label' => $this->status_label,

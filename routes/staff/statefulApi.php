@@ -86,9 +86,9 @@ Route::domain(env('STAFF_DOMAIN', 'asp.hakken-tour.com'))->namespace('Staff\Api'
         // 支払管理
         Route::get('{reception}/{applicationStep}/{controlNumber}/itinerary/{itineraryNumber}/payable/list', 'AccountPayableController@index'); // 仕入先毎一覧（予約・見積詳細の「仕入れ先買掛金」枠）
 
-        Route::get('management/payment/reserve/list', 'AccountPayableReserveController@index'); 
-        Route::get('management/payment/reserve/{hashId}/item/list', 'AccountPayableItemController@index'); 
-        Route::get('management/payment/list', 'AccountPayableDetailController@index'); // 詳細リスト
+        Route::get('management/payment/list/reserve', 'AccountPayableReserveController@index'); 
+        Route::get('management/payment/list/reserve/{reserveHashId}/{supplierHashId?}', 'AccountPayableItemController@index'); 
+        Route::get('management/payment/list/reserve/{reserveHashId}/{supplierHashId}/{subject}/{itemHashId}', 'AccountPayableDetailController@index'); // 詳細リスト
 
         Route::put('management/account_payable_item/{accountPayableItemId}/payment_date', 'AccountPayableItemController@paymentDateUpdate')->where('accountPayableItemId', '[0-9]+'); // 支払日更新(仕入先＆商品毎)
 
@@ -97,6 +97,7 @@ Route::domain(env('STAFF_DOMAIN', 'asp.hakken-tour.com'))->namespace('Staff\Api'
         Route::delete('management/withdrawal/{agencyWithdrawalId}', 'AgencyWithdrawalController@destroy'); // 出金登録削除
 
         Route::post('management/withdrawal/account_payable_item/{accountPayableItemId}', 'AgencyWithdrawalItemHistoryController@store')->where('accountPayableItemlId', '[0-9]+'); // 出金登録(商品毎)
+        Route::delete('management/agency_withdrawal_item_history/{agencyWithdrawalItemHistoryId}', 'AgencyWithdrawalItemHistoryController@destroy'); // 出金登録削除(商品毎)
 
         Route::put('management/account_payable_detail/{accountPayableDetailId}', 'AccountPayableDetailController@update')->where('accountPayableDetailId', '[0-9]+'); // 支払情報編集(詳細)
         Route::put('management/account_payable_detail/payment_batch', 'AccountPayableDetailController@paymentBatch'); // 支払一括処理

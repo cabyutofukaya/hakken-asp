@@ -22,12 +22,12 @@ class AgencyWithdrawalItemHistoryRepository implements AgencyWithdrawalItemHisto
      *
      * @param int $id
      */
-    public function find(int $id, array $with = [], array $select = []): AgencyWithdrawalItemHistory
+    public function find(int $id, array $with = [], array $select = []): ?AgencyWithdrawalItemHistory
     {
         $query = $this->agencyWithdrawalItemHistory;
         $query = $with ? $query->with($with) : $query;
         $query = $select ? $query->select($select) : $query;
-        return $query->findOrFail($id);
+        return $query->find($id);
     }
 
     /**
@@ -42,17 +42,17 @@ class AgencyWithdrawalItemHistoryRepository implements AgencyWithdrawalItemHisto
         return $isLock ? $this->agencyWithdrawalItemHistory->where('reserve_id', $reserveId)->lockForUpdate()->sum("amount") :  $this->agencyWithdrawalItemHistory->where('reserve_id', $reserveId)->sum("amount");
     }
 
-    /**
-     * 当該支払い明細の出金額合計を取得
-     * 行ロックで取得
-     *
-     * @param int $accountPayableDetailId 支払い明細ID
-     * @return int
-     */
-    public function getSumAmountByAccountPayableDetailId(int $accountPayableDetailId, bool $isLock=false) : int
-    {
-        return $isLock ? $this->agencyWithdrawalItemHistory->where('account_payable_detail_id', $accountPayableDetailId)->lockForUpdate()->sum("amount") :  $this->agencyWithdrawalItemHistory->where('account_payable_detail_id', $accountPayableDetailId)->sum("amount");
-    }
+    // /**
+    //  * 当該支払い明細の出金額合計を取得
+    //  * 行ロックで取得
+    //  *
+    //  * @param int $accountPayableDetailId 支払い明細ID
+    //  * @return int
+    //  */
+    // public function getSumAmountByAccountPayableDetailId(int $accountPayableDetailId, bool $isLock=false) : int
+    // {
+    //     return $isLock ? $this->agencyWithdrawalItemHistory->where('account_payable_detail_id', $accountPayableDetailId)->lockForUpdate()->sum("amount") :  $this->agencyWithdrawalItemHistory->where('account_payable_detail_id', $accountPayableDetailId)->sum("amount");
+    // }
 
     /**
      * 出金登録
@@ -81,6 +81,25 @@ class AgencyWithdrawalItemHistoryRepository implements AgencyWithdrawalItemHisto
     }
 
     /**
+     * 検索して1件取得
+     */
+    public function findWhere(array $where, array $with=[], array $select=[]) : ?AgencyWithdrawalItemHistory
+    {
+        $query = $this->agencyWithdrawalItemHistory;
+        
+        $query = $with ? $query->with($with) : $query;
+        $query = $select ? $query->select($select) : $query;
+
+        foreach ($where as $key => $val) {
+            if (is_empty($val)) {
+                continue;
+            }
+            $query = $query->where($key, $val);
+        }
+        return $query->first();
+    }
+
+    /**
      * 当該予約IDに紐づく出金情報があるか否か
      */
     public function isExistsParticipant(int $participantId, int $reserveId) : bool
@@ -101,6 +120,32 @@ class AgencyWithdrawalItemHistoryRepository implements AgencyWithdrawalItemHisto
             $this->agencyWithdrawalItemHistory->destroy($id);
         } else {
             $this->find($id)->forceDelete();
+        }
+        return true;
+    }
+
+    /**
+     * 条件検索で削除
+     *
+     * @param array $where
+     * @param boolean $isSoftDelete 論理削除の場合はtrue
+     * @return boolean
+     */
+    public function deleteWhere(array $where, bool $isSoftDelete): bool
+    {
+        $query = $this->agencyWithdrawalItemHistory;
+        
+        foreach ($where as $key => $val) {
+            if (is_empty($val)) {
+                continue;
+            }
+            $query = $query->where($key, $val);
+        }
+
+        if ($isSoftDelete) {
+            $query->delete();
+        } else {
+            $query->forceDelete();
         }
         return true;
     }

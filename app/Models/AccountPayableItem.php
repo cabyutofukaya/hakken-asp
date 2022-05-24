@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Arr;
 use Kyslik\ColumnSortable\Sortable;
+use Vinkla\Hashids\Facades\Hashids;
 use Lang;
 
 /**
@@ -21,8 +22,9 @@ class AccountPayableItem extends Model
         'item_name',
         'status',
         'supplier_name',
-        'amount_billed',
-        'unpaid_balance',
+        'total_purchase_amount',
+        'total_amount_paid',
+        'total_amount_accrued',
         'last_manager.name',
         'last_note',
     ];
@@ -33,7 +35,7 @@ class AccountPayableItem extends Model
      * @var array
      */
     protected $fillable = [
-        'payable_number',
+        'item_payable_number',
         'reserve_itinerary_id',
         'supplier_id',
         'supplier_name',
@@ -43,8 +45,8 @@ class AccountPayableItem extends Model
         'subject',
         'agency_id',
         'reserve_id',
-        'amount_billed',
-        'unpaid_balance',
+        'total_purchase_amount',
+        'total_amount_accrued',
         'payment_date',
         'last_manager_id',
         'last_note',
@@ -69,8 +71,9 @@ class AccountPayableItem extends Model
      * @var array
      */
     protected $casts = [
-        'amount_billed' => 'integer',
-        'unpaid_balance' => 'integer',
+        'total_purchase_amount' => 'integer',
+        'total_amount_paid' => 'integer',
+        'total_amount_accrued' => 'integer',
     ];
 
     protected $dates = [
@@ -127,8 +130,29 @@ class AccountPayableItem extends Model
         });
     }
 
+    /**
+     * 0円を除く
+     *
+     * @param $query
+     * @return mixed
+     */
+    public function scopeExcludingzero($query)
+    {
+        return $query->where(function ($q) {
+            $q->where('total_purchase_amount', "<>", 0)
+                ->orWhere('total_amount_paid', "<>", 0)
+                ->orWhere('total_amount_accrued', "<>", 0);
+        })->where('status', '<>', config('consts.account_payable_items.STATUS_NONE'));
+    }
+
     ///////////////// 読みやすい文字列に変換するAttribute ここから //////////////
     
+    // 商品IDのハッシュ値
+    public function getItemHashIdAttribute($value) : string
+    {
+        return Hashids::encode($this->item_id);
+    }
+
     /**
      * ステータス値を文字に変換
      */

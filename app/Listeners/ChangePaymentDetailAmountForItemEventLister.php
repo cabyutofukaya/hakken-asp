@@ -30,8 +30,6 @@ class ChangePaymentDetailAmountForItemEventLister
         // 個別商品の仕入金額更新処理
         $this->accountPayableDetailService->batchRefreshAmountForItem(
             [
-                'agency_id' => $event->accountPayableItem->agency_id,
-                'reserve_id' => $event->accountPayableItem->reserve_id,
                 'reserve_itinerary_id' => $event->accountPayableItem->reserve_itinerary_id,
                 'supplier_id' => $event->accountPayableItem->supplier_id,
                 'subject' => $event->accountPayableItem->subject,

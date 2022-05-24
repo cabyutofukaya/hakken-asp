@@ -11,9 +11,9 @@ use Illuminate\View\View;
 use Request;
 
 /**
- *一覧ページに使う選択項目などを提供するViewComposer
+ * 商品一覧ページに使う選択項目などを提供するViewComposer
  */
-class IndexFormComposer
+class DetailFormComposer
 {
     use UserCustomItemTrait, ConstsTrait, JsConstsTrait;
 
@@ -59,7 +59,7 @@ class IndexFormComposer
         ];
 
         $searchParam = [];// 検索パラメータ
-        foreach (array_merge(['payable_number','status','reserve_number','supplier_name','item_name','item_code','last_manager_id','payment_date_from','payment_date_to', 'search_option_open'], $userCustomItems->pluck('key')->all()) as $p) { // 基本パラメータ + カスタム項目パラメータ
+        foreach (array_merge(['status','item_name','participant_name','last_manager_id', 'use_date_from', 'use_date_to', 'search_option_open'], $userCustomItems->pluck('key')->all()) as $p) { // 基本パラメータ + カスタム項目パラメータ
             $searchParam[$p] = Request::get($p);
         }
 

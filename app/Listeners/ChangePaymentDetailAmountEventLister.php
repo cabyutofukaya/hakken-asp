@@ -48,7 +48,7 @@ class ChangePaymentDetailAmountEventLister
         $newStatus = $this->getPaymentStatus($unpaidAmount, $accountPayableDetail->amount_billed, 'account_payable_details');
 
         if ($currentStatus != $newStatus || $currentUnpaidAmount != $unpaidAmount) { // ステータスか未払い金額が変更されていたら更新
-            $this->accountPayableDetailService->updateStatusAndUnpaidBalance($accountPayableDetail->id, $unpaidAmount, $newStatus);
+            $this->accountPayableDetailService->updateStatusAndPaidBalance($accountPayableDetail->id, $withdrawalSum, $unpaidAmount, $newStatus);
         }
     }
 }

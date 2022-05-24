@@ -54,7 +54,7 @@
     "/staff/js/mail_template-index.js": "/staff/js/mail_template-index.js",
     "/staff/js/management_invoice-breakdown.js": "/staff/js/management_invoice-breakdown.js",
     "/staff/js/management_invoice-index.js": "/staff/js/management_invoice-index.js",
-    "/staff/js/management_payment-index.js": "/staff/js/management_payment-index.js",
+    "/staff/js/management_payment-detail.js": "/staff/js/management_payment-detail.js",
     "/staff/js/management_payment-item.js": "/staff/js/management_payment-item.js",
     "/staff/js/management_payment-reserve.js": "/staff/js/management_payment-reserve.js",
     "/staff/js/news.js": "/staff/js/news.js",

@@ -308,7 +308,9 @@ const PaymentBatchModal = ({
                     </li>
                     <li className="wd50 mr00">
                         <button
-                            className="blueBtn"
+                            className={classNames("blueBtn", {
+                                loading: isProcessing
+                            })}
                             onClick={handleClick}
                             disabled={isProcessing}
                         >

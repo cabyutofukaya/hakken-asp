@@ -31,6 +31,15 @@ class AgencyWithdrawalRepository implements AgencyWithdrawalRepositoryInterface
     }
 
     /**
+     * 当該一時IDに紐づくID一覧を取得
+     */
+    public function getIdsByTempId(string $tempId) : array
+    {
+        return $this->agencyWithdrawal->select(['id'])->where('temp_id', $tempId)->pluck('id')->toArray();
+    }
+
+
+    /**
      * 当該予約の出金額合計を取得
      * 行ロックで取得
      *
@@ -39,7 +48,7 @@ class AgencyWithdrawalRepository implements AgencyWithdrawalRepositoryInterface
      */
     public function getSumAmountByReserveId(int $reserveId, bool $isLock=false) : int
     {
-        return $isLock ? $this->agencyWithdrawal->where('reserve_id', $reserveId)->lockForUpdate()->sum("amount") :  $this->agencyWithdrawal->where('reserve_id', $reserveId)->sum("amount");
+        return $isLock ? $this->agencyWithdrawal->where('reserve_id', $reserveId)->lockForUpdate()->sum("amount") : $this->agencyWithdrawal->where('reserve_id', $reserveId)->sum("amount");
     }
 
     /**
@@ -112,5 +121,34 @@ class AgencyWithdrawalRepository implements AgencyWithdrawalRepositoryInterface
             $this->find($id)->forceDelete();
         }
         return true;
+    }
+
+    /**
+     * 条件で削除
+     */
+    public function deleteWhere(array $where, bool $isSoftDelete) : bool
+    {
+        $query = $this->agencyWithdrawal;
+        foreach ($where as $key => $val) {
+            if (is_empty($val)) {
+                continue;
+            }
+            $query = $query->where($key, $val);
+        }
+
+        if ($isSoftDelete) {
+            $query->delete();
+        } else {
+            $query->forceDelete();
+        }
+        return true;
+    }
+
+    /**
+     * 復元
+     */
+    public function restore(int $id)
+    {
+        $this->agencyWithdrawal->onlyTrashed()->find($id)->restore();
     }
 }

@@ -7,10 +7,12 @@ use Askedio\SoftCascade\Traits\SoftCascadeTrait;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Kyslik\ColumnSortable\Sortable;
+use App\Traits\HashidsTrait;
+
 
 class ReserveItinerary extends Model
 {
-    use ModelLogTrait,SoftDeletes,Sortable,SoftCascadeTrait;
+    use ModelLogTrait,SoftDeletes,Sortable,SoftCascadeTrait,HashidsTrait;
 
     // protected $touches = ['reserve'];
 
@@ -156,6 +158,14 @@ class ReserveItinerary extends Model
     public function getReserveConfirmNumAttribute() : int
     {
         return $this->reserve_confirms->count();
+    }
+
+    ///////////////// 読みやすい文字列に変換するAttribute ここから //////////////
+
+    // ハッシュID
+    public function getHashIdAttribute($value) : string
+    {
+        return $this->getRouteKey();
     }
 
     ///////////////  集計メソッド ここから ///////////////

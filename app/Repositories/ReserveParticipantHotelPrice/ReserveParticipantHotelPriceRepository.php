@@ -28,7 +28,7 @@ class ReserveParticipantHotelPriceRepository implements ReserveParticipantHotelP
         // return $query->get();
         // ↓一気に取得すると危険なので以下のようにした方が良いかも
         $res = [];
-        $query->chunk(1000, function ($rows) use (&$res) {
+        $query->chunk(300, function ($rows) use (&$res) {
             foreach ($rows as $row) {
                 $res[] = $row;
             }
@@ -170,12 +170,19 @@ class ReserveParticipantHotelPriceRepository implements ReserveParticipantHotelP
         foreach ($where as $key => $val) {
             $query = $query->where($key, $val);
         }
-        foreach ($query->get() as $row) {
-            foreach ($update as $key => $val) {
-                $row->{$key} = $val;
-            }
-            $row->save();
-        }
+        $query->update($update);
         return true;
+
+        // $query = $this->reserveParticipantHotelPrice;
+        // foreach ($where as $key => $val) {
+        //     $query = $query->where($key, $val);
+        // }
+        // foreach ($query->get() as $row) {
+        //     foreach ($update as $key => $val) {
+        //         $row->{$key} = $val;
+        //     }
+        //     $row->save();
+        // }
+        // return true;
     }
 }

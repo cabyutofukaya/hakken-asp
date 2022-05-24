@@ -22,7 +22,7 @@ interface ReserveRepositoryInterface
 
     public function detachParticipant(int $resesrveId, int $participantId) : bool;
 
-    public function getParticipants(int $reserveId, bool $getCanceller = true) : Collection;
+    // public function getParticipants(int $reserveId, bool $getCanceller = true) : Collection;
 
     public function create(array $data) : Reserve;
 

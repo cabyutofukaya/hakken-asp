@@ -165,6 +165,7 @@ const PaymentModal = ({
                             </tr>
                         </thead>
                         <tbody>
+                            {console.log(withdrawals)}
                             {Object.keys(withdrawals).map((k, index) => (
                                 <tr key={index}>
                                     <td>
@@ -184,24 +185,31 @@ const PaymentModal = ({
                                         {withdrawals[k][withdrawalMethodKey] ??
                                             "-"}
                                     </td>
-
                                     <td className="txtalc">
-                                        <span
-                                            className={classNames(
-                                                "material-icons",
-                                                {
-                                                    "js-modal-open": !isWithdrawalDeleting
+                                        {/**一括出金(第2階層からの出金)でない場合は削除可 */}
+                                        {!withdrawals[k][
+                                            "is_bulk_withdrawal"
+                                        ] && (
+                                            <span
+                                                className={classNames(
+                                                    "material-icons",
+                                                    {
+                                                        "js-modal-open": !isWithdrawalDeleting
+                                                    }
+                                                )}
+                                                data-target="mdDeleteWithdrawal"
+                                                onClick={e =>
+                                                    handleDeleteModal(
+                                                        withdrawals[k]["id"]
+                                                    )
                                                 }
-                                            )}
-                                            data-target="mdDeleteWithdrawal"
-                                            onClick={e =>
-                                                handleDeleteModal(
-                                                    withdrawals[k]["id"]
-                                                )
-                                            }
-                                        >
-                                            delete
-                                        </span>
+                                            >
+                                                delete
+                                            </span>
+                                        )}
+                                        {withdrawals[k][
+                                            "is_bulk_withdrawal"
+                                        ] && <>-</>}
                                     </td>
                                 </tr>
                             ))}
@@ -522,7 +530,9 @@ const PaymentModal = ({
                     </li>
                     <li className="wd50 mr00">
                         <button
-                            className="blueBtn"
+                            className={classNames("blueBtn", {
+                                loading: isRegisting || isWithdrawalDeleting
+                            })}
                             onClick={handleWithdrawal}
                             disabled={isRegisting || isWithdrawalDeleting}
                         >

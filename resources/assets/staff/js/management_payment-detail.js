@@ -16,6 +16,10 @@ import PaymentBatchModal from "./components/ManagementPaymentDetail/PaymentBatch
 import { RESERVE } from "./constants";
 
 const PaymentList = ({
+    reserveHashId,
+    supplierHashId,
+    subject,
+    itemHashId,
     searchParam,
     formSelects,
     modalFormSelects,
@@ -45,9 +49,7 @@ const PaymentList = ({
 
     const [sortParam, setSortParam] = useState({
         id: "desc",
-        "reserve.control_number": "desc",
         supplier_name: "asc",
-        item_code: "asc",
         item_name: "asc",
         "last_manager.name": "asc",
         last_note: "asc",
@@ -61,7 +63,6 @@ const PaymentList = ({
     // 出金登録モーダル関連処理
     const withdrawalInitial = {
         amount: 0,
-        // withdrawal_method: withdrawalModalDefaultValue.withdrawalDefault,
         withdrawal_date: moment().format("YYYY/MM/DD"),
         record_date: moment().format("YYYY/MM/DD")
         // note: ""
@@ -103,10 +104,10 @@ const PaymentList = ({
                 currentPaymentData: {
                     ...paymentData
                 },
-                // 入力制御データの担当者と備考は、前回の入力をそのまま初期値として使う形で良いと思う
+                // 入力制御データの備考は前回の入力をそのまま初期値として使う形で良いと思う
                 withdrawalData: {
                     ...withdrawalInitial,
-                    manager_id: paymentData.manager_id ?? consts?.managerId,
+                    manager_id: consts?.managerId ?? "", // ログイン中のスタッフ
                     note: paymentData.note ?? "",
                     supplier_id_log: paymentData.supplier_id
                 }
@@ -237,15 +238,18 @@ const PaymentList = ({
         setIsLoading(true);
 
         const response = await axios
-            .get(`/api/${agencyAccount}/management/payment/list`, {
-                params: {
-                    ...searchParam,
-                    page: page,
-                    sort: sort,
-                    direction: direction,
-                    per_page: perPage
+            .get(
+                `/api/${agencyAccount}/management/payment/list/reserve/${reserveHashId}/${supplierHashId}/${subject}/${itemHashId}`,
+                {
+                    params: {
+                        ...searchParam,
+                        page: page,
+                        sort: sort,
+                        direction: direction,
+                        per_page: perPage
+                    }
                 }
-            })
+            )
             .finally(() => {
                 if (mounted.current) {
                     setIsLoading(false);
@@ -312,16 +316,15 @@ const PaymentList = ({
                     <table>
                         <thead>
                             <tr>
-                                <th className="txtalc">&nbsp;</th>
+                                {/* <th className="txtalc">&nbsp;</th> */}
+                                <th>
+                                    <span>商品コード</span>
+                                </th>
                                 <th
                                     className="sort"
-                                    onClick={e =>
-                                        handleSortClick(
-                                            "reserve.control_number"
-                                        )
-                                    }
+                                    onClick={e => handleSortClick("item_name")}
                                 >
-                                    <span>予約番号</span>
+                                    <span>商品名</span>
                                 </th>
                                 <th
                                     className="sort txtalc"
@@ -329,6 +332,7 @@ const PaymentList = ({
                                 >
                                     <span>ステータス</span>
                                 </th>
+                                <th>参加者名</th>
                                 <th
                                     className="sort"
                                     onClick={e =>
@@ -353,31 +357,19 @@ const PaymentList = ({
                                 >
                                     <span>未払金額</span>
                                 </th>
-                                {/* <th
+                                <th
+                                    className="txtalc sort"
+                                    onClick={e => handleSortClick("use_date")}
+                                >
+                                    <span>利用日</span>
+                                </th>
+                                <th
                                     className="sort txtalc"
                                     onClick={e =>
                                         handleSortClick("payment_date")
                                     }
                                 >
                                     <span>支払予定日</span>
-                                </th> */}
-                                <th
-                                    className="sort"
-                                    onClick={e => handleSortClick("item_code")}
-                                >
-                                    <span>商品コード</span>
-                                </th>
-                                <th
-                                    className="sort"
-                                    onClick={e => handleSortClick("item_name")}
-                                >
-                                    <span>商品名</span>
-                                </th>
-                                <th
-                                    className="txtalc sort"
-                                    onClick={e => handleSortClick("use_date")}
-                                >
-                                    <span>利用日</span>
                                 </th>
                                 <th className="txtalc">
                                     <span>予約詳細</span>
@@ -401,7 +393,7 @@ const PaymentList = ({
                         <tbody>
                             {isLoading && (
                                 <tr>
-                                    <td colSpan={13}>
+                                    <td colSpan={11}>
                                         <ReactLoading
                                             type={"bubbles"}
                                             color={"#dddddd"}
@@ -411,7 +403,7 @@ const PaymentList = ({
                             )}
                             {!isLoading && data.paymentLists.length === 0 && (
                                 <tr>
-                                    <td colSpan={13}>支払データはありません</td>
+                                    <td colSpan={11}>支払データはありません</td>
                                 </tr>
                             )}
                             {!isLoading &&
@@ -428,12 +420,10 @@ const PaymentList = ({
                                         })}
                                     >
                                         {/**支払済or無効仕入の場合はグレー行に */}
-                                        <td className="txtalc checkBox">
+                                        {/* <td className="txtalc checkBox">
                                             {row.unpaid_balance === 0 && <>-</>}
                                             {row.unpaid_balance !== 0 && (
                                                 <>
-                                                    {/**バッチ処理中は一応押せないようにdisable化。checkbox
-                                                     */}
                                                     <input
                                                         type="checkbox"
                                                         id={`done${index}`}
@@ -459,32 +449,9 @@ const PaymentList = ({
                                                     </label>
                                                 </>
                                             )}
-                                        </td>
-                                        <td>
-                                            {!row.reserve?.is_deleted && (
-                                                <>
-                                                    <a
-                                                        href={
-                                                            row.reserve_url ??
-                                                            ""
-                                                        }
-                                                    >
-                                                        {row.reserve
-                                                            ?.control_number ??
-                                                            "-"}
-                                                    </a>
-                                                    {row.reserve?.is_canceled &&
-                                                        RESERVE.CANCEL_LABEL}
-                                                </>
-                                            )}
-                                            {row.reserve?.is_deleted && (
-                                                <>
-                                                    {row?.reserve
-                                                        ?.control_number ?? "-"}
-                                                    {RESERVE.DELETE_LABEL}
-                                                </>
-                                            )}
-                                        </td>
+                                        </td> */}
+                                        <td>{row?.item_code ?? "-"}</td>
+                                        <td>{row?.item_name ?? "-"}</td>
                                         <td className="txtalc">
                                             {row?.status_label && (
                                                 <span
@@ -509,6 +476,10 @@ const PaymentList = ({
                                             )}
                                             {!row?.status_label && "-"}
                                         </td>
+                                        <td>
+                                            {row?.saleable?.participant?.name ??
+                                                "-"}
+                                        </td>
                                         <td>{row?.supplier_name ?? "-"}</td>
                                         <td className="txtalc">
                                             ￥
@@ -531,7 +502,10 @@ const PaymentList = ({
                                                 {row.unpaid_balance.toLocaleString()}
                                             </span>
                                         </td>
-                                        {/* <td className="txtalc">
+                                        <td className="txtalc">
+                                            {row?.use_date ?? "-"}
+                                        </td>
+                                                                            <td className="txtalc">
                                             <span
                                                 className={classNames(
                                                     "payPeriod blue",
@@ -548,11 +522,6 @@ const PaymentList = ({
                                             >
                                                 {row?.payment_date ?? "-"}
                                             </span>
-                                        </td> */}
-                                        <td>{row?.item_code ?? "-"}</td>
-                                        <td>{row?.item_name ?? "-"}</td>
-                                        <td className="txtalc">
-                                            {row?.use_date ?? "-"}
                                         </td>
                                         <td className="txtalc">
                                             {!row.reserve?.is_deleted && (
@@ -574,7 +543,7 @@ const PaymentList = ({
                                 ))}
                         </tbody>
                     </table>
-                    <div className="allCheck">
+                    {/* <div className="allCheck">
                         <button
                             className={classNames("blueBtn", {
                                 "js-modal-open": data.doneLists.length > 0
@@ -585,7 +554,7 @@ const PaymentList = ({
                         >
                             チェックした項目の未払額を支払済みに反映する
                         </button>
-                    </div>
+                    </div> */}
                     {lastPage > 1 && (
                         <PageNation
                             currentPage={page}
@@ -612,15 +581,15 @@ const PaymentList = ({
                 customCategoryCode={customCategoryCode}
             />
             {/** 支払予定日変更モーダル*/}
-            {/* <PaymentDateModal
+            <PaymentDateModal
                 id="mdEditPayday"
                 data={data}
                 dataDispatch={dataDispatch}
                 isProcessing={isPaymentDateChanging}
                 setIsProcessing={setIsPaymentDateChanging}
-            /> */}
+            />
             {/** 支払い済み一括処理モーダル */}
-            <PaymentBatchModal
+            {/* <PaymentBatchModal
                 id="mdAllCheck"
                 data={data}
                 dataDispatch={dataDispatch}
@@ -638,13 +607,17 @@ const PaymentList = ({
                     direction,
                     per_page: perPage
                 }}
-            />
+            /> */}
         </>
     );
 };
 
 const Element = document.getElementById("paymentList");
 if (Element) {
+    const reserveHashId = Element.getAttribute("reserveHashId");
+    const supplierHashId = Element.getAttribute("supplierHashId");
+    const subject = Element.getAttribute("subject");
+    const itemHashId = Element.getAttribute("itemHashId");
     const jsVars = Element.getAttribute("jsVars");
     const parsedJsVars = jsVars && JSON.parse(jsVars);
     const customCategoryCode = Element.getAttribute("customCategoryCode");
@@ -663,6 +636,10 @@ if (Element) {
     render(
         <ConstApp jsVars={parsedJsVars}>
             <PaymentList
+                reserveHashId={reserveHashId}
+                supplierHashId={supplierHashId}
+                subject={subject}
+                itemHashId={itemHashId}
                 customCategoryCode={customCategoryCode}
                 searchParam={parsedSearchParam}
                 formSelects={parsedFormSelects}

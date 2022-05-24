@@ -26,6 +26,7 @@ class IndexResource extends JsonResource
             'note' => $this->note,
             'record_date' => $this->record_date,
             'withdrawal_date' => $this->withdrawal_date,
+            'is_bulk_withdrawal' => $this->is_bulk_withdrawal(), // 一括出金(第2階層からの出金)か否か
         ];
 
         // カスタム項目とマージ

@@ -59,6 +59,14 @@ class Supplier extends Model
         return $this->hasMany('App\Models\VSupplierCustomValue')->where('flg', true);
     }
 
+    ///////////////// 読みやすい文字列に変換するAttribute ここから //////////////
+
+    // ハッシュID
+    public function getHashIdAttribute($value) : string
+    {
+        return $this->getRouteKey();
+    }
+
     /**
      * 仕入先名称
      * 

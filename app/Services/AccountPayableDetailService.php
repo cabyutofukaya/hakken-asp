@@ -14,14 +14,10 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 
-
 class AccountPayableDetailService implements AccountPayableInterface
 {
     use PaymentTrait;
-
-    // 仕入先＆商品毎にまとめるための条件カラム一覧
-    const SUMMARIZE_ITEM_COLUMNS = ['agency_id', 'reserve_id', 'reserve_itinerary_id', 'supplier_id', 'subject', 'item_id'];
-
+    
     public function __construct(AgencyRepository $agencyRepository, AccountPayableDetailRepository $accountPayableDetailRepository, AgencyWithdrawalRepository $agencyWithdrawalRepository)
     {
         $this->agencyRepository = $agencyRepository;
@@ -59,59 +55,74 @@ class AccountPayableDetailService implements AccountPayableInterface
 
     /**
      * 仕入先＆商品毎にまとめるための条件クエリを取得
-     * 
+     *
      * @param array $columnVals 対応カラム名と値の配列
      */
     public function getSummarizeItemQuery(array $columnVals)
     {
-        foreach (self::SUMMARIZE_ITEM_COLUMNS as $col) {
-            $$col = $columnVals[$col];
+        $where = [];
+
+        foreach (config("consts.account_payable_items.ITEM_PAYABLE_NUMBER_COLUMNS") as $col) {
+            $where[$col] = $columnVals[$col];
         }
 
-        return $this->accountPayableDetailRepository->getSummarizeItemQuery($agency_id, $reserve_id, $reserve_itinerary_id, $supplier_id, $subject, $item_id);
+        return $this->accountPayableDetailRepository->getSummarizeItemQuery($where);
     }
 
     /**
      * 商品毎レコードの一括金額＆ステータス更新
-     * 
+     *
      * @param int $amount 出金額
      * @param int $withdrawalRate 出金額比率
-     * @param array $columnVals 
+     * @param array $columnVals
      */
     public function batchRefreshAmountForItem(array $columnVals) : bool
     {
         $updateParams = [];
 
-        $this->getSummarizeItemQuery($columnVals)->select(['id','amount_billed','unpaid_balance', 'status'])->chunk(100, function ($rows) use(&$updateParams) { // 念の為100件ずつ取得
-            foreach($rows as $row){
+        $this->getSummarizeItemQuery($columnVals)
+            ->with(['v_agency_withdrawal_total:account_payable_detail_id,total_amount'])
+            ->select(['id', 'amount_billed','unpaid_balance', 'status'])
+            // ->lockForUpdate()
+            ->chunk(300, function ($rows) use (&$updateParams) { // 念の為300件ずつ取得
+            foreach ($rows as $row) {
                 $tmp = [];
+
+                $amountPayment = data_get($row, 'v_agency_withdrawal_total.total_amount', 0); // 支払額
+
                 $tmp['id'] = $row->id;
                 $tmp['amount_billed'] = $row->amount_billed;
-                $tmp['unpaid_balance'] = $row->unpaid_balance - $this->agencyWithdrawalRepository->getSumAmountByAccountPayableDetailId($row->id, true); // 出金後の金額を計算
+                $tmp['amount_payment'] = $amountPayment;
+                $tmp['unpaid_balance'] = $row->amount_billed - $amountPayment; // 未払額を計算
                 $tmp['status'] = $this->getPaymentStatus($tmp['unpaid_balance'], $tmp['amount_billed'], 'account_payable_details'); // ステータス更新
 
                 $updateParams[] = $tmp;
             }
         });
 
-        // 対象行の残高、ステータスをバルクアップデート
-        return $this->accountPayableDetailRepository->updateBulk($updateParams, 'id');
+        foreach (array_chunk($updateParams, 1000) as $rows) { // 念の為1000件ずつ処理
+            // 対象行の残高、ステータスをバルクアップデート
+            $this->accountPayableDetailRepository->updateBulk($rows, 'id');
+        }
+
+        return true;
     }
 
     /**
      * 一覧を取得
      *
      * @param string $agencyAccount
+     * @param string $subject 科目
      * @param int $applicationStep 予約段階（見積/予約）
      * @param int $limit
      * @param array $with
      * @param bool $exZero 仕入額・未払い額が0円のレコードを取得しない場合はtrue
      * @param
      */
-    public function paginateByAgencyAccount(string $agencyAccount, array $params, int $limit, ?string $applicationStep = null, array $with = [], array $select=[], bool $exZero = true) : LengthAwarePaginator
+    public function paginateByAgencyAccount(string $agencyAccount, string $subject, array $params, int $limit, ?string $applicationStep = null, array $with = [], array $select=[], bool $exZero = true) : LengthAwarePaginator
     {
         $agencyId = $this->agencyRepository->getIdByAccount($agencyAccount);
-        return $this->accountPayableDetailRepository->paginateByAgencyId($agencyId, $params, $limit, $applicationStep, $with, $select, $exZero);
+        return $this->accountPayableDetailRepository->paginateByAgencyId($agencyId, $subject, $params, $limit, $applicationStep, $with, $select, $exZero);
     }
 
     /**
@@ -131,10 +142,22 @@ class AccountPayableDetailService implements AccountPayableInterface
 
     /**
      * 未払い金額とステータスを更新
+     *
+     * @param int $id account_payable_detail_id
+     * @param int $amountPayment 支払額
+     * @param int $unpaidBalance 未払額
+     * @param int $status 支払いステータス
      */
-    public function updateStatusAndUnpaidBalance($id, int $unpaidBalance, $status) : Model
+    public function updateStatusAndPaidBalance($id, int $amountPayment, int $unpaidBalance, $status) : Model
     {
-        return $this->accountPayableDetailRepository->updateField($id, ['unpaid_balance' => $unpaidBalance, 'status' => $status]);
+        return $this->accountPayableDetailRepository->updateField(
+            $id,
+            [
+                'amount_payment' => $amountPayment,
+                'unpaid_balance' => $unpaidBalance,
+                'status' => $status
+            ]
+        );
     }
 
     /**
@@ -226,9 +249,9 @@ class AccountPayableDetailService implements AccountPayableInterface
      * @param string $saleableType 仕入科目
      * @param array $saleableIds 仕入科目ID一覧
      */
-    public function getIdsBySaleableIds(string $saleableType, array $saleableIds) : array
+    public function getBySaleableIds(string $saleableType, array $saleableIds, array $with=[], array $select=['id']) : Collection
     {
-        return $this->accountPayableDetailRepository->getIdsBySaleableIds($saleableType, $saleableIds);
+        return $this->accountPayableDetailRepository->getBySaleableIds($saleableType, $saleableIds, $with, $select);
     }
     
     /**

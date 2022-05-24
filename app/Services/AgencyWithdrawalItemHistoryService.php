@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Illuminate\Support\Str;
 use App\Exceptions\ExclusiveLockException;
+use App\Models\AgencyWithdrawal;
 use App\Models\AgencyWithdrawalItemHistory;
 use App\Repositories\AccountPayableItem\AccountPayableItemRepository;
 use App\Repositories\Agency\AgencyRepository;
@@ -28,16 +29,16 @@ class AgencyWithdrawalItemHistoryService
         $this->accountPayableItemService = $accountPayableItemService;
     }
 
-    // /**
-    //  * 該当IDを一件取得
-    //  *
-    //  * @param int $id ID
-    //  * @param array $select 取得カラム
-    //  */
-    // public function find(int $id, array $with = [], array $select=[]) : ?AgencyWithdrawalItemHistory
-    // {
-    //     return $this->agencyWithdrawalItemHistoryRepository->find($id, $with, $select);
-    // }
+    /**
+     * 該当IDを一件取得
+     *
+     * @param int $id ID
+     * @param array $select 取得カラム
+     */
+    public function find(int $id, array $with = [], array $select=[]) : ?AgencyWithdrawalItemHistory
+    {
+        return $this->agencyWithdrawalItemHistoryRepository->find($id, $with, $select);
+    }
 
     // /**
     //  * 当該予約の出金額合計を取得
@@ -78,11 +79,6 @@ class AgencyWithdrawalItemHistoryService
             }
         }
 
-        // 出金IDを生成
-        $withdrawalKey = $this->generateWithdrawalKey();
-
-        $data['withdrawal_key'] = $withdrawalKey;
-
         $agencyWithdrawalItemHistory = $this->agencyWithdrawalItemHistoryRepository->create($data);
 
         $customFields = $this->customFieldsExtraction($data); // 入力データからカスタムフィールドを抽出
@@ -94,6 +90,33 @@ class AgencyWithdrawalItemHistoryService
             'last_manager_id' => $agencyWithdrawalItemHistory->manager_id,
             'last_note' => $agencyWithdrawalItemHistory->note
         ]); // account_payable_detailsテーブルの担当者と備考を更新
+
+        return $agencyWithdrawalItemHistory;
+    }
+
+    /**
+     * 個別出金の出金情報を記録(仕入管理の第3階層で出金登録した内容を第2階層へ記録)
+     * 出力しやすくするためカスタム項目もagency_withdrawal_item_historiesにコピー
+     *
+     * @param AgencyWithdrawal $agencyWithdrawal
+     */
+    public function setIndividualWithdrawal(AgencyWithdrawal $agencyWithdrawal) : AgencyWithdrawalItemHistory
+    {
+        // 保存データを作成
+        $data = [];
+        $data['account_payable_item_id'] = $this->accountPayableItemService->getIdByAccountPayableDetail($agencyWithdrawal->account_payable_detail);
+        $data['agency_id'] = $agencyWithdrawal->agency_id;
+        $data['reserve_id'] = $agencyWithdrawal->reserve_id;
+        $data['agency_withdrawal_id'] = $agencyWithdrawal->id;
+        $data['payment_type'] = config('consts.agency_withdrawal_item_histories.PAYMENT_TYPE_INDIVIDUAL'); // 個別出金ステータス
+        $data['amount'] = $agencyWithdrawal->amount; // 出金額
+        $data['manager_id'] = $agencyWithdrawal->manager_id;
+        $data['bulk_withdrawal_key'] = null;
+        $data['withdrawal_date'] = $agencyWithdrawal->withdrawal_date; // 出金日
+        $data['record_date'] = $agencyWithdrawal->record_date; // 登録日
+        $data['note'] = $agencyWithdrawal->note;
+
+        $agencyWithdrawalItemHistory = $this->agencyWithdrawalItemHistoryRepository->create($data);
 
         return $agencyWithdrawalItemHistory;
     }
@@ -114,22 +137,35 @@ class AgencyWithdrawalItemHistoryService
     //     return $this->agencyWithdrawalItemHistoryRepository->isExistsParticipant($participantId, $reserveId);
     // }
 
-    // /**
-    //  * 削除
-    //  *
-    //  * @param int $id ID
-    //  * @param boolean $isSoftDelete 論理削除の場合はtrue。falseは物理削除
-    //  */
-    // public function delete(int $id, bool $isSoftDelete=true): bool
-    // {
-    //     return $this->agencyWithdrawalItemHistoryRepository->delete($id, $isSoftDelete);
-    // }
+    /**
+     * 削除
+     *
+     * @param int $id ID
+     * @param boolean $isSoftDelete 論理削除の場合はtrue。falseは物理削除
+     */
+    public function delete(int $id, bool $isSoftDelete=true): bool
+    {
+        return $this->agencyWithdrawalItemHistoryRepository->delete($id, $isSoftDelete);
+    }
 
     /**
-     * 出金IDを生成
+     * 当該 agency_withdrawal_idのレコードを削除
+     *
+     * @param int $agencyWithdrawalId
+     * @param boolean $isSoftDelete 論理削除の場合はtrue。falseは物理削除
      */
-    private function generateWithdrawalKey()
+    public function deleteByAgencyWithdrawalId(int $agencyWithdrawalId, bool $isSoftDelete=true)
     {
-        return (string)Str::uuid();
+        return $this->agencyWithdrawalItemHistoryRepository->deleteWhere(['agency_withdrawal_id' => $agencyWithdrawalId], $isSoftDelete);
+    }
+
+    /**
+     * 一括出金識別キーを生成
+     *
+     * @return string
+     */
+    public function generateWithdrawalKey()
+    {
+        return md5(uniqid(mt_rand(), true));
     }
 }

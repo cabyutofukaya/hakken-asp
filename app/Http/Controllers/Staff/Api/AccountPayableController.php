@@ -78,7 +78,8 @@ class AccountPayableController extends Controller
 
         return IndexResource::collection(
             $this->accountPayableService->getByReserveItineraryId(
-                $reserveItinerary->id
+                $reserveItinerary->id,
+                ['reserve', 'supplier']
             )
         );
     }

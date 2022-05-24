@@ -176,20 +176,20 @@ class AccountPayableService
         // return null;
     }
 
-    /**
-     * 管理番号を生成
-     *
-     * フォーマット: 工程表番号 + 仕入先コード
-     * 仕入先コードに大文字小文字を混ぜられるとまずので、⬇︎に変更
-     * 工程表番号 + 仕入先IDのハッシュ値
-     * 予約番号を入れないと一意性が保てなくなるので、予約番号を入れる。そうなると長くなるのでとりあえずmd5形式にする
-     * 予約ID+行程ID+仕入IDのMD5値
-     *
-     * @param int $itineraryNumber 工程表番号
-     * @return string
-     */
-    public function createUserNumber(int $reserveId, int $reserveItineraryId, int $supplierId) : string
-    {
-        return md5(sprintf("%d%d%d", $reserveId, $reserveItineraryId, $supplierId));
-    }
+    // /**
+    //  * 管理番号を生成
+    //  *
+    //  * フォーマット: 工程表番号 + 仕入先コード
+    //  * 仕入先コードに大文字小文字を混ぜられるとまずので、⬇︎に変更
+    //  * 工程表番号 + 仕入先IDのハッシュ値
+    //  * 予約番号を入れないと一意性が保てなくなるので、予約番号を入れる。そうなると長くなるのでとりあえずmd5形式にする
+    //  * 予約ID+行程ID+仕入IDのMD5値(各値の後ろにハイフンを付ける)
+    //  *
+    //  * @param int $itineraryNumber 工程表番号
+    //  * @return string
+    //  */
+    // public function createUserNumber(int $reserveId, int $reserveItineraryId, int $supplierId) : string
+    // {
+    //     return md5(sprintf("%d-%d-%d-", $reserveId, $reserveItineraryId, $supplierId));
+    // }
 }

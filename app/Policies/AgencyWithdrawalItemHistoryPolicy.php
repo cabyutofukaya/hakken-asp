@@ -26,7 +26,7 @@ class AgencyWithdrawalItemHistoryPolicy
         if ($model === 'Admin') {
             return Response::allow();
         } elseif ($model === 'Staff') {
-            if($appUser->isApproval('agency_withdrawal_item_histories', config("consts.agency_roles.READ"))){
+            if ($appUser->isApproval('agency_withdrawal_item_histories', config("consts.agency_roles.READ"))) {
                 return Response::allow();
             }
         }
@@ -46,7 +46,7 @@ class AgencyWithdrawalItemHistoryPolicy
         if ($model === 'Admin') {
             return Response::allow();
         } elseif ($model === 'Staff') {
-            if($appUser->isApproval('agency_withdrawal_item_histories', config("consts.agency_roles.READ")) && $agencyWithdrawalItemHistory->agency_id == $appUser->agency_id){
+            if ($appUser->isApproval('agency_withdrawal_item_histories', config("consts.agency_roles.READ")) && $agencyWithdrawalItemHistory->agency_id == $appUser->agency_id) {
                 return Response::allow();
             }
         }
@@ -65,7 +65,7 @@ class AgencyWithdrawalItemHistoryPolicy
         if ($model === 'Admin') {
             return Response::allow();
         } elseif ($model === 'Staff') {
-            if($appUser->isApproval('agency_withdrawal_item_histories', config("consts.agency_roles.CREATE")) && $accountPayableItem->agency_id == $appUser->agency_id){
+            if ($appUser->isApproval('agency_withdrawal_item_histories', config("consts.agency_roles.CREATE")) && $accountPayableItem->agency_id == $appUser->agency_id) {
                 return Response::allow();
             }
         }
@@ -85,7 +85,7 @@ class AgencyWithdrawalItemHistoryPolicy
         if ($model === 'Admin') {
             return Response::allow();
         } elseif ($model === 'Staff') {
-            if($appUser->isApproval('agency_withdrawal_item_histories', config("consts.agency_roles.UPDATE")) && $agencyWithdrawalItemHistory->agency_id == $appUser->agency_id){
+            if ($appUser->isApproval('agency_withdrawal_item_histories', config("consts.agency_roles.UPDATE")) && $agencyWithdrawalItemHistory->agency_id == $appUser->agency_id) {
                 return Response::allow();
             }
         }
@@ -105,7 +105,7 @@ class AgencyWithdrawalItemHistoryPolicy
         if ($model === 'Admin') {
             return Response::allow();
         } elseif ($model === 'Staff') {
-            if($appUser->isApproval('agency_withdrawal_item_histories', config("consts.agency_roles.DELETE")) && $agencyWithdrawalItemHistory->agency_id == $appUser->agency_id){
+            if ($appUser->isApproval('agency_withdrawal_item_histories', config("consts.agency_roles.DELETE")) && $agencyWithdrawalItemHistory->agency_id == $appUser->agency_id) {
                 return Response::allow();
             }
         }
@@ -137,7 +137,7 @@ class AgencyWithdrawalItemHistoryPolicy
         if ($model === 'Admin') {
             return Response::allow();
         } elseif ($model === 'Staff') {
-            if($appUser->isApproval('agency_withdrawal_item_histories', config("consts.agency_roles.DELETE")) && $agencyWithdrawalItemHistory->agency_id == $appUser->agency_id){
+            if ($appUser->isApproval('agency_withdrawal_item_histories', config("consts.agency_roles.DELETE")) && $agencyWithdrawalItemHistory->agency_id == $appUser->agency_id) {
                 return Response::allow();
             }
         }

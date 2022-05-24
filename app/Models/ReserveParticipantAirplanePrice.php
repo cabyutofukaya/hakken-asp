@@ -17,8 +17,12 @@ class ReserveParticipantAirplanePrice extends Model implements ParticipantPriceI
     // 行程管理テーブルupdated_at更新
     // protected $touches = ['reserve_itinerary']; // 参加者の状態(取り消し、削除)が変わった時にも本レコードが更新される。行程ページを開きっぱなしの間に、別のPCから参加情報が更新されたときに行程情報が合わなくならならないようにするための対策
 
-    // ReservePurchasingSubjectAirplaneのbootメソッド内にて出金登録がある本モデルは消さないように制御しているので、softCascadeで削除されるレコードは出金登録がないものに限定される
+    // ReservePurchasingSubjectAirplaneのbootメソッド内にて出金登録がある本モデルは消さないように制御しているので、softCascadeで削除されるレコードは出金登録がないものに限定される → 現在はsoftCascadeを使わずに削除するように変更
     protected $softCascade = ['account_payable_detail'];
+
+    protected $with = [
+        'participant', // 料金やホテル情報をまとめる際に参加者情報を参照する箇所が多いのでwithしておく
+    ];
 
     /**
      * The attributes that are mass assignable.
@@ -95,11 +99,12 @@ class ReserveParticipantAirplanePrice extends Model implements ParticipantPriceI
         parent::boot();
         self::saveModelLog();
 
-        // 削除時は「valid」フラグを念の為Offにしておく
-        static::deleting(function ($row) {
-            $row->valid = false;
-            $row->save();
-        });
+        // ↓削除済みは集計しないので不要かも
+        // // 削除時は「valid」フラグを念の為Offにしておく
+        // static::deleting(function ($row) {
+        //     $row->valid = false;
+        //     $row->save();
+        // });
     }
 
     // 旅行会社

@@ -26,10 +26,10 @@ class IndexResource extends JsonResource
 
         return [
             'id' => $this->id,
-            'link_url' => route('staff.management.payment.item', ['agencyAccount' => $request->agencyAccount, 'reserveHashId' => optional($this->reserve)->hash_id]), // 仕入先＆商品毎詳細ページURL。reserve_idのパラメータで遷移（遷移先の検索formと連動しないパラメータ）
+            'url' => route('staff.management.payment.item', ['agencyAccount' => $request->agencyAccount, 'reserveHashId' => optional($this->reserve)->hash_id]), // 仕入先＆商品毎詳細ページURL。reserve_idのパラメータで遷移（遷移先の検索formと連動しないパラメータ）
             'reserve_url' => $reserveUrl,
-            'amount_billed' => $this->amount_billed,
-            'unpaid_balance' => $this->unpaid_balance,
+            'total_amount_paid' => $this->total_amount_paid,
+            'total_amount_accrued' => $this->total_amount_accrued,
             'status' => $this->status,
             'status_label' => $this->status_label,
             // 'updated_at' => optional($this->updated_at)->format('Y-m-d H:i:s'),

@@ -14,6 +14,15 @@ class AgencyWithdrawalCustomValueRepository implements AgencyWithdrawalCustomVal
     }
 
     /**
+     * バルクインサート
+     */
+    public function insert(array $params) : bool
+    {
+        $this->agencyWithdrawalCustomValue->insert($params);
+        return true;
+    }
+
+    /**
      * update or insert
      *
      * @return \Illuminate\Database\Eloquent\Model|static
