@@ -17,6 +17,9 @@ return [
   // 参加者上限。無制限に追加できてしまうと困るので一応制限しておく
   'PARTICIPANT_MAX_NUM' => 800,
 
+  // カスタム項目数追加上限。負荷対策のためにも一応制限
+  'CUSTOM_ITEM_MAX_NUM' => 15,
+
   // Web相談の応札上限
   'WEB_CONSULT_MAX_UNDERTAKE' => 5,
 
