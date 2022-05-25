@@ -21,7 +21,7 @@ class ChangePaymentItemAmountEvent
      *
      * @return void
      */
-    public function __construct(int $reserveItineraryId)
+    public function __construct(?int $reserveItineraryId)
     {
         $this->reserveItineraryId = $reserveItineraryId;
     }

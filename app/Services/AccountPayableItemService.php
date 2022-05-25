@@ -39,7 +39,7 @@ class AccountPayableItemService
      *
      * @param int $reserveItineraryId 行程ID
      */
-    public function refreshAmountByReserveItineraryId(int $reserveItineraryId)
+    public function refreshAmountByReserveItineraryId(?int $reserveItineraryId)
     {
         $this->accountPayableItemRepository->refreshAmountByReserveItineraryId($reserveItineraryId);
     }

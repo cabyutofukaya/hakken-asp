@@ -222,7 +222,7 @@ class ReserveController extends Controller
 
                 $this->reserveParticipantPriceService->reserveNoCancelCharge($reserve, $reserve->enabled_reserve_itinerary->id); // 全ての仕入情報をキャンセルチャージ0円で初期化
 
-                $this->reserveParticipantPriceService->setIsAliveCancelByReserveId($reserve->id, $reserve->enabled_reserve_itinerary->id); // 全valid=true行(かつpurchase_type=PURCHASE_CANCEL)に対し、is_alive_cancelフラグをONにする。
+                $this->reserveParticipantPriceService->setIsAliveCancelByReserveId($reserve->id, $reserve->enabled_reserve_itinerary->id); // 全仕入行に対し、is_alive_cancelフラグをON、purchase_typeをPURCHASE_CANCEL)に設定
 
                 if ($reserve->enabled_reserve_itinerary->id) {
                     $this->refreshItineraryTotalAmount($reserve->enabled_reserve_itinerary); // 有効行程の合計金額更新
@@ -294,7 +294,7 @@ class ReserveController extends Controller
                 // キャンセルチャージ料金を保存
                 $this->setReserveCancelCharge($input, $reserve);
                 
-                $this->reserveParticipantPriceService->setIsAliveCancelByReserveId($reserve->id, $reserve->enabled_reserve_itinerary->id); // 全valid=true行(かつpurchase_type=PURCHASE_CANCEL)に対し、is_alive_cancelフラグをONにする。
+                $this->reserveParticipantPriceService->setIsAliveCancelByReserveId($reserve->id, $reserve->enabled_reserve_itinerary->id); // 全仕入行に対し、is_alive_cancelフラグをON、purchase_typeをPURCHASE_CANCEL)に設定
 
                 if ($reserve->enabled_reserve_itinerary->id) {
                     $this->refreshItineraryTotalAmount($reserve->enabled_reserve_itinerary); // 有効行程の合計金額更新
