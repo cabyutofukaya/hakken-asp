@@ -103,6 +103,7 @@ class AccountPayableItemRepository implements AccountPayableItemRepositoryInterf
             total_purchase_amount,
             total_amount_paid,
             total_amount_accrued,
+            total_overpayment,
             payment_date,
             status,
             updated_at,
@@ -122,6 +123,7 @@ class AccountPayableItemRepository implements AccountPayableItemRepositoryInterf
             total_purchase_amount,
             total_amount_paid,
             total_amount_accrued,
+            total_overpayment,
             payment_date,
             status,
             NOW(),
@@ -142,6 +144,7 @@ class AccountPayableItemRepository implements AccountPayableItemRepositoryInterf
                     sum(a.amount_billed) AS total_purchase_amount,
                     sum(a.amount_payment) AS total_amount_paid,
                     sum(if(a.unpaid_balance > 0, a.unpaid_balance, 0)) AS total_amount_accrued,
+                    sum(if(a.unpaid_balance < 0, a.unpaid_balance, 0)) AS total_overpayment,
                     c.payment_date,
                     CASE
                         WHEN sum(if(a.unpaid_balance > 0, a.unpaid_balance, 0)) > 0 THEN {$statusUnpaid}
@@ -169,6 +172,7 @@ class AccountPayableItemRepository implements AccountPayableItemRepositoryInterf
             total_purchase_amount = t.total_purchase_amount,
             total_amount_paid = t.total_amount_paid,
             total_amount_accrued = t.total_amount_accrued,
+            total_overpayment = t.total_overpayment,
             supplier_name = t.supplier_name,
             status = t.status,
             updated_at = NOW()

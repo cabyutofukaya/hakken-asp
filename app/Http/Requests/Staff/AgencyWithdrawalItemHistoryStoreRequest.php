@@ -42,35 +42,81 @@ class AgencyWithdrawalItemHistoryStoreRequest extends FormRequest
         return [
             'account_payable_item_id' => 'required',
             'amount' => ['required','integer',function ($attribute, $value, $fail) {
-                $accountPayableItem = $this->accountPayableItemService->find($this->accountPayableItemId);
-
                 try {
-                    if ($accountPayableItem->total_amount_accrued == 0) { // ゼロ除算禁止
-                        throw new \Exception("未払額はありません。");
-                    }
-    
-                    // 出金割合(1, 0.5 ... etc)
-                    $rate = get_agency_withdrawal_rate($value, $accountPayableItem->total_amount_accrued);
-                    
-                    if (!preg_match('/^[0-9\-]+$/', $rate * 100)) { // パーセンテージが割り切れないケース。数字とマイナス記号のみの構成であること(マイナス記号は必要か不明だが、一応許可しておく)
-                        throw new \Exception("未払金額に対する出金額の割合が正しくありません。");
+                    if ($value == 0) { // ゼロ除算禁止
+                        throw new \Exception("出金額を入力してください。");
                     }
 
-                    $total = 0;
-                    $this->accountPayableDetailService->getSummarizeItemQuery(
-                            $accountPayableItem->toArray()
-                    )->chunk(100, function ($rows) use ($rate, &$total) { // 念の為100件ずつ取得
-                        foreach ($rows as $row) {
-                            $p = $row->unpaid_balance * $rate;
-                            if (!preg_match('/^[0-9\-]+$/', $p)) { // 商品仕入額のパーセンテージが割り切れないケース。数字とマイナス記号のみの構成であること(マイナス記号は必要か不明だが、一応許可しておく)
-                                throw new \Exception("未払金額に対する出金額の割合が正しくありません。");
-                            }
-                            $total += $p;
+                    $accountPayableItem = $this->accountPayableItemService->find($this->accountPayableItemId, [], [], true);
+
+                    if ($value > 0) { // 出金
+                        if ($accountPayableItem->total_amount_accrued == 0) {
+                            throw new \Exception("未払金額はありません。");
                         }
-                    });
+    
+                        // 出金割合(1, 0.5 ... etc)
+                        $rate = get_agency_withdrawal_rate($value, $accountPayableItem->total_amount_accrued);
 
-                    if ($total != $value) { // 一応、計算が合うかチェック
-                        throw new \Exception("出金額の入力が正しくありません。");
+                        if (!preg_match('/^[0-9]+$/', $rate * 100)) { // パーセンテージが割り切れないケース
+                            throw new \Exception("未払金額に対する出金額の割合が正しくありません。");
+                        }
+
+                        $total = 0;
+                        $this->accountPayableDetailService
+                            ->getSummarizeItemQuery(
+                                $accountPayableItem->toArray(),
+                                true
+                            )
+                            ->chunk(100, function ($rows) use ($rate, &$total) { // 念の為100件ずつ取得。行ロックで取得
+                                foreach ($rows as $row) {
+                                    if ($row->unpaid_balance <= 0) { // 0以下の場合は処理ナシ
+                                        continue;
+                                    }
+                                    $p = $row->unpaid_balance * $rate;
+                                    if (!preg_match('/^[0-9]+$/', $p)) { // 商品仕入額のパーセンテージが割り切れないケース
+                                        throw new \Exception("未払金額に対する出金額の割合が正しくありません。");
+                                    }
+                                    $total += $p;
+                                }
+                            });
+
+                        if ($total != $value) { // 一応、計算が合うかチェック
+                            throw new \Exception("出金額の入力が正しくありません。");
+                        }
+                    } else { // マイナス出金（過払金処理）
+                        if ($accountPayableItem->total_overpayment == 0) {
+                            throw new \Exception("過払金額はありません。");
+                        }
+    
+                        // 出金割合(1, 0.5 ... etc)
+                        $rate = get_agency_withdrawal_rate($value, $accountPayableItem->total_overpayment);
+
+                        if (!preg_match('/^[0-9]+$/', $rate * 100)) { // パーセンテージが割り切れないケース
+                            throw new \Exception("過払金額に対する出金額の割合が正しくありません。");
+                        }
+
+                        $total = 0;
+                        $this->accountPayableDetailService
+                            ->getSummarizeItemQuery(
+                                $accountPayableItem->toArray(),
+                                true
+                            )
+                            ->chunk(100, function ($rows) use ($rate, &$total) { // 念の為100件ずつ取得。行ロックで取得
+                                foreach ($rows as $row) {
+                                    if ($row->unpaid_balance >= 0) { // 0以上の場合は処理ナシ
+                                        continue;
+                                    }
+                                    $p = $row->unpaid_balance * $rate;
+                                    if (!preg_match('/^[\-0-9]+$/', $p)) { // 商品仕入額のパーセンテージが割り切れないケース
+                                        throw new \Exception("過払金額に対する出金額の割合が正しくありません。");
+                                    }
+                                    $total += $p;
+                                }
+                            });
+
+                        if ($total != $value) { // 一応、計算が合うかチェック
+                            throw new \Exception("出金額の入力が正しくありません。");
+                        }
                     }
                 } catch (\Exception $e) {
                     $fail($e->getMessage());

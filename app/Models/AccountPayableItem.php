@@ -47,6 +47,7 @@ class AccountPayableItem extends Model
         'reserve_id',
         'total_purchase_amount',
         'total_amount_accrued',
+        'total_overpayment',
         'payment_date',
         'last_manager_id',
         'last_note',
@@ -74,6 +75,7 @@ class AccountPayableItem extends Model
         'total_purchase_amount' => 'integer',
         'total_amount_paid' => 'integer',
         'total_amount_accrued' => 'integer',
+        'total_overpayment' => 'integer',
     ];
 
     protected $dates = [
