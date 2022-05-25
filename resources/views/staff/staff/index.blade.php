@@ -5,11 +5,13 @@
   <div id="pageHead">
     <h1><span class="material-icons">person_search</span>ユーザー管理</h1>
     @can('create', [new App\Models\Staff, $agencyId])
-      <div class="rtBtn">
-        <button onclick="location.href='{{ route('staff.system.user.create', [$agencyAccount]) }}'" class="addBtn">
-          <span class="material-icons">person_add</span>ユーザー追加
-        </button>
-      </div>
+      @if($agency->staffs->count() < $agency->number_staff_allowed){{-- スタッフ登録上限数 --}}
+        <div class="rtBtn">
+          <button onclick="location.href='{{ route('staff.system.user.create', [$agencyAccount]) }}'" class="addBtn">
+            <span class="material-icons">person_add</span>ユーザー追加
+          </button>
+        </div>
+      @endif
     @endcan
     <form method="GET" action="{{ route('staff.system.user.index', [$agencyAccount]) }}">
       <div id="searchBox">
