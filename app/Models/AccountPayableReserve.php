@@ -36,6 +36,7 @@ class AccountPayableReserve extends Model
         'reserve_id',
         'total_amount_paid',
         'total_amount_accrued',
+        'total_overpayment',
         'status',
     ];
 
@@ -59,6 +60,7 @@ class AccountPayableReserve extends Model
     protected $casts = [
         'total_amount_paid' => 'integer',
         'total_amount_accrued' => 'integer',
+        'total_overpayment' => 'integer',
     ];
 
     protected $dates = [

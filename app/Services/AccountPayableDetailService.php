@@ -57,8 +57,9 @@ class AccountPayableDetailService implements AccountPayableInterface
      * 仕入先＆商品毎にまとめるための条件クエリを取得
      *
      * @param array $columnVals 対応カラム名と値の配列
+     * @param bool $isLock 行ロックで取得する場合はtrue
      */
-    public function getSummarizeItemQuery(array $columnVals)
+    public function getSummarizeItemQuery(array $columnVals, bool $isLock = false)
     {
         $where = [];
 
@@ -66,7 +67,7 @@ class AccountPayableDetailService implements AccountPayableInterface
             $where[$col] = $columnVals[$col];
         }
 
-        return $this->accountPayableDetailRepository->getSummarizeItemQuery($where);
+        return $this->accountPayableDetailRepository->getSummarizeItemQuery($where, $isLock);
     }
 
     /**
@@ -80,10 +81,9 @@ class AccountPayableDetailService implements AccountPayableInterface
     {
         $updateParams = [];
 
-        $this->getSummarizeItemQuery($columnVals)
+        $this->getSummarizeItemQuery($columnVals, true) // 行ロック
             ->with(['v_agency_withdrawal_total:account_payable_detail_id,total_amount'])
             ->select(['id', 'amount_billed','unpaid_balance', 'status'])
-            // ->lockForUpdate()
             ->chunk(300, function ($rows) use (&$updateParams) { // 念の為300件ずつ取得
             foreach ($rows as $row) {
                 $tmp = [];
@@ -98,7 +98,7 @@ class AccountPayableDetailService implements AccountPayableInterface
 
                 $updateParams[] = $tmp;
             }
-        });
+            });
 
         foreach (array_chunk($updateParams, 1000) as $rows) { // 念の為1000件ずつ処理
             // 対象行の残高、ステータスをバルクアップデート

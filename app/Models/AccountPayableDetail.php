@@ -160,6 +160,8 @@ class AccountPayableDetail extends Model
 
     /**
      * 0円を除く
+     * 
+     * 出金履歴のあるもの、もしくは支払額or未払額があり支払いナシ以外のステータスのレコードを取得
      *
      * @param $query
      * @return mixed
@@ -167,9 +169,17 @@ class AccountPayableDetail extends Model
     public function scopeExcludingzero($query)
     {
         return $query->where(function ($q) {
-            $q->where('amount_billed', "<>", 0)
-                ->orWhere('unpaid_balance', "<>", 0);
-        })->where('status', '<>', config('consts.account_payable_details.STATUS_NONE'));
+            $q->whereHas('agency_withdrawals')
+                ->orWhere(function ($q2) {
+                    $q2->where('amount_billed', "<>", 0)
+                    ->orWhere('unpaid_balance', "<>", 0);
+                })->where('status', '<>', config('consts.account_payable_details.STATUS_NONE'));
+        });
+
+        // return $query->where(function ($q) {
+        //     $q->where('amount_billed', "<>", 0)
+        //         ->orWhere('unpaid_balance', "<>", 0);
+        // })->where('status', '<>', config('consts.account_payable_details.STATUS_NONE'));
     }
 
     // /**
@@ -178,8 +188,8 @@ class AccountPayableDetail extends Model
     // public function scopeIsValid($query)
     // {
     //     return $query->whereHasMorph('saleable', [
-    //         'App\Models\ReserveParticipantOptionPrice', 
-    //         'App\Models\ReserveParticipantAirplanePrice', 
+    //         'App\Models\ReserveParticipantOptionPrice',
+    //         'App\Models\ReserveParticipantAirplanePrice',
     //         'App\Models\ReserveParticipantHotelPrice',
     //     ], function ($q) {
     //         $q->where('valid', true);

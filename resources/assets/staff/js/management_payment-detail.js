@@ -416,6 +416,9 @@ const PaymentList = ({
                                                 row?.status ==
                                                     consts.statusVals
                                                         .status_paid ||
+                                                row?.status ==
+                                                    consts.statusVals
+                                                        .status_none ||
                                                 row.saleable.valid == 0
                                         })}
                                     >
@@ -505,7 +508,7 @@ const PaymentList = ({
                                         <td className="txtalc">
                                             {row?.use_date ?? "-"}
                                         </td>
-                                                                            <td className="txtalc">
+                                        <td className="txtalc">
                                             <span
                                                 className={classNames(
                                                     "payPeriod blue",

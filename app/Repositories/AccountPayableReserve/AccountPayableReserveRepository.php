@@ -60,91 +60,6 @@ class AccountPayableReserveRepository implements AccountPayableReserveRepository
         return $this->accountPayableReserve->find($id);
     }
 
-    // /**
-    //  * 当該予約IDのNet・未払金額を更新
-    //  *
-    //  * @param int $reserveId 予約ID
-    //  * @param int $reserveItineraryId (有効)行程ID
-    //  */
-    // public function refreshAmountByReserveId(int $reserveId, ?int $reserveItineraryId) : bool
-    // {
-    //     if (!$reserveItineraryId) { // 行程IDがない場合は0円で初期化
-
-    //         $agencyId = \App\Models\Reserve::where('id', $reserveId)->value('agency_id');
-
-    //         $this->accountPayableReserve->updateOrCreate(
-    //             ['reserve_id' => $reserveId],
-    //             [
-    //                 'agency_id' => $agencyId,
-    //                 'total_amount_paid' => 0,
-    //                 'total_amount_accrued' => 0,
-    //                 'status' => config("consts.account_payable_reserves.STATUS_NONE"),
-    //                 'updated_at' => date('Y-m-d H:i:s'),
-    //                 'created_at' => date('Y-m-d H:i:s'),
-    //             ],
-    //         );
-    //     } else {
-
-    //         // ステータス値
-    //         $statusUnpaid = config("consts.account_payable_reserves.STATUS_UNPAID");
-    //         $statusOverpaid = config("consts.account_payable_reserves.STATUS_OVERPAID");
-    //         $statusPaid = config("consts.account_payable_reserves.STATUS_PAID");
-    //         $statusNone = config("consts.account_payable_reserves.STATUS_NONE");
-
-    //         $AND_RESERVE_ITINERARY_ID = $reserveItineraryId ? " AND reserve_itinerary_id = {$reserveItineraryId}" : "";
-
-    //         // 当該予約レコードが存在していれば(金額カラムを)更新、なければレコードを登録。削除済み行(deleted_at)は集計には含めない
-    //         // statusのcase文はPaymentTrait@getPaymentStatusと同じロジック
-    //         $sql = "
-    //         INSERT INTO account_payable_reserves(
-    //             reserve_id,
-    //             agency_id,
-    //             total_amount_paid,
-    //             total_amount_accrued,
-    //             status,
-    //             updated_at,
-    //             created_at
-    //         )
-    //         SELECT
-    //             reserve_id,
-    //             agency_id,
-    //             total_amount_paid,
-    //             total_amount_accrued,
-    //             status,
-    //             NOW(),
-    //             NOW()
-    //         FROM
-    //             (
-    //                 SELECT
-    //                     reserve_id,
-    //                     agency_id,
-    //                     sum(CASE WHEN deleted_at IS NULL THEN total_amount_paid ELSE 0 END) AS total_amount_paid,
-    //                     sum(CASE WHEN deleted_at IS NULL THEN unpaid_balance ELSE 0 END) AS total_amount_accrued,
-    //                     CASE
-    //                         WHEN sum(CASE WHEN deleted_at IS NULL THEN unpaid_balance ELSE 0 END) > 0 THEN {$statusUnpaid}
-    //                         WHEN sum(CASE WHEN deleted_at IS NULL THEN unpaid_balance ELSE 0 END) < 0 THEN {$statusOverpaid}
-    //                         WHEN sum(CASE WHEN deleted_at IS NULL THEN unpaid_balance ELSE 0 END) = 0 AND sum(CASE WHEN deleted_at IS NULL THEN unpaid_balance ELSE 0 END) > 0 THEN {$statusPaid}
-    //                         ELSE {$statusNone}
-    //                     END AS status
-    //                 FROM
-    //                     account_payable_details
-    //                 WHERE
-    //                 reserve_id = {$reserveId} AND reserve_itinerary_id = {$reserveItineraryId} 
-    //                 GROUP BY
-    //                     reserve_id
-    //             ) t
-    //         ON DUPLICATE KEY UPDATE
-    //             total_amount_paid = t.total_amount_paid,
-    //             total_amount_accrued = t.total_amount_accrued,
-    //             status = t.status,
-    //             updated_at = NOW()
-    //         ";
-
-    //         \DB::statement($sql);
-    //     }
-    //     return true;
-    // }
-
     /**
      * 当該予約IDのNet・未払金額を更新
      *
@@ -163,6 +78,7 @@ class AccountPayableReserveRepository implements AccountPayableReserveRepository
                     'agency_id' => $agencyId,
                     'total_amount_paid' => 0,
                     'total_amount_accrued' => 0,
+                    'total_overpayment' => 0,
                     'status' => config("consts.account_payable_reserves.STATUS_NONE"),
                     'updated_at' => date('Y-m-d H:i:s'),
                     'created_at' => date('Y-m-d H:i:s'),
@@ -185,6 +101,7 @@ class AccountPayableReserveRepository implements AccountPayableReserveRepository
                 agency_id,
                 total_amount_paid,
                 total_amount_accrued,
+                total_overpayment,
                 status,
                 updated_at,
                 created_at
@@ -194,6 +111,7 @@ class AccountPayableReserveRepository implements AccountPayableReserveRepository
                 agency_id,
                 total_amount_paid,
                 total_amount_accrued,
+                total_overpayment,
                 status,
                 NOW(),
                 NOW()
@@ -204,6 +122,7 @@ class AccountPayableReserveRepository implements AccountPayableReserveRepository
                         agency_id,
                         sum(amount_payment) AS total_amount_paid,
                         sum(if(unpaid_balance > 0, unpaid_balance, 0)) AS total_amount_accrued,
+                        sum(if(unpaid_balance < 0, unpaid_balance, 0)) AS total_overpayment,
                         sum(amount_billed) AS amount_billed,
                         CASE
                             WHEN sum(if(unpaid_balance > 0, unpaid_balance, 0)) > 0 THEN {$statusUnpaid}
@@ -221,6 +140,7 @@ class AccountPayableReserveRepository implements AccountPayableReserveRepository
             ON DUPLICATE KEY UPDATE
                 total_amount_paid = t.total_amount_paid,
                 total_amount_accrued = t.total_amount_accrued,
+                total_overpayment = t.total_overpayment,
                 status = t.status,
                 updated_at = NOW()
             ";

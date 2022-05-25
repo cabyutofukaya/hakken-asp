@@ -119,13 +119,23 @@ class AccountPayableDetailRepository implements AccountPayableDetailRepositoryIn
 
     /**
      * 仕入先＆商品毎にまとめるための条件クエリを取得
+     *
+     * @param bool $isLock 行ロックして取得する場合はtrue
      */
-    public function getSummarizeItemQuery(array $where)
+    public function getSummarizeItemQuery(array $where, bool $isLock = false)
     {
         $query = $this->accountPayableDetail;
+
+        if ($isLock) {
+            $query = $this->accountPayableDetail->lockForUpdate();
+        } else {
+            $query = $this->accountPayableDetail;
+        }
+
         foreach ($where as $key => $val) {
             $query = $query->where($key, $val);
         }
+
         return $query;
     }
 
@@ -230,7 +240,7 @@ class AccountPayableDetailRepository implements AccountPayableDetailRepositoryIn
     {
         $query = $applicationStep === config('consts.reserves.APPLICATION_STEP_RESERVE') ? $this->accountPayableDetail->decided() : $this->accountPayableDetail; // スコープを設定
 
-        if ($exZero) { // 請求額が0円だと、出金履歴が有っても非表示になるので注意。具合悪いようならこのフラグはなくす
+        if ($exZero) {
             $query = $query->excludingzero();
         }
 

@@ -42,24 +42,13 @@ const PaymentModal = ({
 
     const [deleteWithdrawalId, setDeleteWithdrawalId] = useState(null); // 削除対象の出金ID
 
-    //未払い金額を計算。TODO 依存オブジェクトcurrentPaymentDataの扱いを再考
-    const unpaidAmount = useMemo(() => {
-        return (
-            currentPaymentData.total_purchase_amount -
-            _.sumBy(
-                currentPaymentData.agency_withdrawal_item_histories,
-                "amount"
-            )
-        );
-    }, [currentPaymentData]);
-
     // 「未払金額を反映」ボタン
     const handleUnpaidReflect = e => {
         dataDispatch({
             type: MANAGEMENT_PAYMENT_ITEM.CHANGE_WITHDRAWAL_INPUT,
             payload: {
                 name: "amount",
-                value: unpaidAmount ?? 0
+                value: currentPaymentData?.total_amount_accrued ?? 0
             }
         });
     };
@@ -270,7 +259,11 @@ const PaymentModal = ({
                                 </tr>
                                 <tr>
                                     <th>未払額</th>
-                                    <td>￥{unpaidAmount.toLocaleString()}</td>
+                                    <td>
+                                        ￥
+                                        {currentPaymentData?.total_purchase_amount &&
+                                            currentPaymentData.total_amount_accrued.toLocaleString()}
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>

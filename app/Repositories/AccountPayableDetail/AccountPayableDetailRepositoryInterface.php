@@ -18,7 +18,7 @@ interface AccountPayableDetailRepositoryInterface
 
   public function whereExists($where) : bool;
 
-  public function getSummarizeItemQuery(array $where);
+  public function getSummarizeItemQuery(array $where, bool $isLock = false);
 
   public function save($data) : AccountPayableDetail;
 

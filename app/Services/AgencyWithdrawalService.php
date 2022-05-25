@@ -108,19 +108,51 @@ class AgencyWithdrawalService
 
         $insertParams = []; // agency_withdrawalsテーブルにinsertする値をセット
 
-        // 出金割合
-        $rate = get_agency_withdrawal_rate(Arr::get($input, "amount"), $accountPayableItem->total_amount_accrued); // 1, 0.5 ...etc
-
-        // 出金対象となる商品仕入れコードをselectし、出金レコード作成用の配列を作成
-        $query = $applicationStep === config('consts.reserves.APPLICATION_STEP_RESERVE') ? $this->accountPayableDetailService->getSummarizeItemQuery($accountPayableItem->toArray())->decided()->select(['id', 'unpaid_balance', 'reserve_travel_date_id', 'saleable_type', 'saleable_id', 'supplier_id'])->with(['saleable:id,participant_id']) : $this->accountPayableDetailService->getSummarizeItemQuery($accountPayableItem->toArray())->select(['id', 'unpaid_balance', 'reserve_travel_date_id', 'saleable_type', 'saleable_id'])->with(['saleable:id,participant_id']); // スコープを設定
-
-        // 「支払ナシ」「支払済」以外のレコードが対象
-        $query = $query->where('status', '<>', config('consts.account_payable_details.STATUS_NONE'))->where('status', '<>', config('consts.account_payable_details.STATUS_PAID'));
-
         // 作業用の一時IDを発行。あとで本IDを持つレコードに対してカスタム項目を一括登録するため
         $tmpId = $this->generateTempId();
 
+
         $withdrawalTotal = 0; // 出金合計。amountの値と等しいか検算するために使用
+        
+        $amount = Arr::get($input, "amount", 0);
+        if ($amount == 0) {
+            throw new \Exception("出金額を入力してください。");
+        }
+
+        // 出金対象となる商品仕入れコードをselectし、出金レコード作成用の配列を作成
+        $query = $this->accountPayableDetailService
+                    ->getSummarizeItemQuery($accountPayableItem->toArray(), true) // 行ロック
+                    ->select(['id', 'unpaid_balance', 'reserve_travel_date_id', 'saleable_type', 'saleable_id', 'supplier_id'])
+                    ->with(['saleable:id,participant_id']); 
+    
+        $query = $applicationStep === config('consts.reserves.APPLICATION_STEP_RESERVE') ? $query->decided() : $query;
+    
+        if($amount > 0){ // 通常出金
+            
+            if ($accountPayableItem->total_amount_accrued == 0) {
+                throw new \Exception("未払金額はありません。");
+            }
+
+            // 出金割合
+            $rate = get_agency_withdrawal_rate($amount, $accountPayableItem->total_amount_accrued); // 1, 0.5 ...etc
+
+            // 未払金額があるレコードが対象
+            $query = $query->where('unpaid_balance', '>', 0);
+
+
+        } else { // マイナス出金(過払金処理)
+
+            if ($accountPayableItem->total_overpayment == 0) {
+                throw new \Exception("過払金額はありません。");
+            }
+
+            // 出金割合
+            $rate = get_agency_withdrawal_rate($amount, $accountPayableItem->total_overpayment); // 1, 0.5 ...etc
+
+            // 過払金額があるレコードが対象
+            $query = $query->where('unpaid_balance', '<', 0);
+
+        }
 
         $query->chunk(100, function ($rows) use (&$insertParams, $input, $bulkWithdrawalKey, $rate, $tmpId, &$withdrawalTotal) { // 負荷対策のため念の為、100件ずつ取得
             foreach ($rows as $row) {
@@ -136,21 +168,21 @@ class AgencyWithdrawalService
                 $tmp['bulk_withdrawal_key'] = $bulkWithdrawalKey;
                 $tmp['temp_id'] = $tmpId;
                 /** レコードによって変わる値 */
-                $amount = $row->unpaid_balance * $rate;
-                if (!preg_match('/^[0-9\-]+$/', $amount)) { // 商品仕入額のパーセンテージが割り切れないケース。数字とマイナス記号のみの構成であること(マイナス記号は必要か不明だが、一応許可しておく)
+                $amnt = $row->unpaid_balance * $rate;
+                if (!preg_match('/^[\-0-9]+$/', $amnt)) { // 商品仕入額のパーセンテージが割り切れないケース(過払金処理の場合はマイナスなのでマイナス符号もパターンに含む)
                     throw new \Exception("未払金額に対する出金額の割合が正しくありません。");
                 }
-                $tmp['amount'] = $amount;
+                $tmp['amount'] = $amnt;
                 $tmp['account_payable_detail_id'] = $row->id;
                 $tmp['reserve_travel_date_id'] = $row->reserve_travel_date_id;
                 $tmp['participant_id'] = $row->saleable->participant_id;
 
                 $insertParams[] = $tmp;
-                $withdrawalTotal += $amount; // 検算用の合計金額を足し込み
+                $withdrawalTotal += $amnt; // 検算用の合計金額を足し込み
             }
         });
 
-        if ($withdrawalTotal != Arr::get($input, "amount")) {
+        if ($withdrawalTotal != $amount) {
             throw new \Exception("出金額の合計が正しくありません。");
         }
 

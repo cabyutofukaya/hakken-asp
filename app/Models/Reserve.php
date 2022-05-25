@@ -795,7 +795,10 @@ class Reserve extends Model
     {
         // 計算は予約ステータス時のみ
         if ($this->application_step == config('consts.reserves.APPLICATION_STEP_RESERVE')) {
-            return $this->account_payable_details->where('unpaid_balance', '>', 0)->sum('unpaid_balance');
+            return $this->account_payable_details
+                ->where('reserve_itinerary_id', optional($this->enabled_reserve_itinerary)->id)
+                ->where('unpaid_balance', '>', 0)
+                ->sum('unpaid_balance');
         } else {
             return 0;
         }
