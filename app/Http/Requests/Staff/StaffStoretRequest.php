@@ -33,19 +33,26 @@ class StaffStoretRequest extends FormRequest
      */
     public function rules()
     {
+        $agency = auth('staff')->user()->agency;
+
         return [
             'account' => ['required','regex:/^[a-zA-Z0-9_\-]+$/',
-                function ($attribute, $value, $fail) {
-                    if ($this->staffService->isAccountExists(auth('staff')->user()->agency->id, $value)
+                function ($attribute, $value, $fail) use ($agency) {
+                    if ($this->staffService->isAccountExists($agency->id, $value)
                     ) {
                         return $fail("そのアカウントはすでに使用されています。");
+                    }
+                },
+                function ($attribute, $value, $fail) use ($agency) {
+                    if ($agency->staffs->count() >= $agency->number_staff_allowed) {
+                        return $fail("ユーザー作成数上限に達してるためユーザーを追加できません。");
                     }
                 }
             ],
             'name' => 'required',
             'agency_role_id' => ['required',
                 function ($attribute, $value, $fail) {
-                    if(!in_array($value, $this->agencyRoleService->getIdsByAgencyId(auth('staff')->user()->agency->id))){
+                    if (!in_array($value, $this->agencyRoleService->getIdsByAgencyId(auth('staff')->user()->agency->id))) {
                         return $fail("権限IDの指定が不正です。");
                     }
                 }
@@ -61,7 +68,7 @@ class StaffStoretRequest extends FormRequest
     {
         return [
             'account.required' => 'アカウントIDは必須です。',
-            'account.regex' => 'アカウントIDは半角英数文字(a-z,A-Z,0-9,-_)で入力してください。', 
+            'account.regex' => 'アカウントIDは半角英数文字(a-z,A-Z,0-9,-_)で入力してください。',
             'name.required' => 'ユーザー名は必須です。',
             'agency_role_id.required' => 'ユーザー権限は必須です。',
             'password.required' => 'パスワードは必須です。',

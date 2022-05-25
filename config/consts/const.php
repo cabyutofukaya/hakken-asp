@@ -2,8 +2,8 @@
 
 return [
   'LOGOUT_RESPONSE_STATUS' => 999, // ログアウト時のResponseステータス
-  'NUMBER_STAFF_ALLOWED_DEFAULT' => 5, // スタッフ登録可能数デフォルト値
-  'NUMBER_STAFF_ALLOWED_MAX' => 20, // スタッフ登録可能数最大値(Web相談のリクエスト番号生成時にスタッフ数に依存した処理を書いているのでMaxは99人が上限)
+  'NUMBER_STAFF_ALLOWED_DEFAULT' => 30, // スタッフ登録可能数デフォルト値(会社登録時に本値をセット)
+  'NUMBER_STAFF_ALLOWED_MAX' => 99, // スタッフ登録可能数最大値(Web相談のリクエスト番号生成時にスタッフ数に依存した処理を書いているのでMaxは99人が上限)
   'TRIAL_PERIOD' => 30, // トライアル期間（日）
   'AGENCY_CONTRACT_PERIOD_DEFAULT' => 12, // 旅行会社契約期間デフォルト（月）
   'AGENCY_CONTRACT_EFFECTIVE_MARGIN' => 60, // 契約期間が切れたあと実際にログイン停止にするまでの余白時間（分）。契約更新プログラムの処理に時間がかる可能性があるため1時間程度を目安に設定
@@ -18,7 +18,7 @@ return [
   'PARTICIPANT_MAX_NUM' => 800,
 
   // カスタム項目数追加上限。負荷対策のためにも一応制限
-  'CUSTOM_ITEM_MAX_NUM' => 15,
+  'CUSTOM_ITEM_MAX_NUM' => 10,
 
   // Web相談の応札上限
   'WEB_CONSULT_MAX_UNDERTAKE' => 5,

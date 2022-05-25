@@ -30,7 +30,8 @@ class IndexFormComposer
 
     public function compose(View $view)
     {
-        $agencyId = auth('staff')->user()->agency->id;
+        $agency = auth('staff')->user()->agency;
+        $agencyId = $agency->id;
 
         // 当該会社に紐づく全カスタム項目データ(flg=true)
         $userCustomItemDatas = $this->userCustomItemService->getByCategoryCodeForAgencyAccount(
@@ -57,6 +58,6 @@ class IndexFormComposer
             'userCustomItemDatas' => $userCustomItemDatas->whereNotIn('code', [config('consts.user_custom_items.CODE_STAFF_SHOZOKU')])
         ];
 
-        $view->with(compact('formSelects', 'searchParam', 'agencyId', 'customCategoryCode'));
+        $view->with(compact('formSelects', 'searchParam', 'agency', 'agencyId', 'customCategoryCode'));
     }
 }
