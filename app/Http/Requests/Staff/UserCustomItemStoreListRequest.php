@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Staff;
 
+use App\Rules\CheckCustomItemNum;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -25,7 +26,7 @@ class UserCustomItemStoreListRequest extends FormRequest
     public function rules()
     {
         return [
-            'user_custom_category_id' => ['required', 'exists:user_custom_categories,id'],
+            'user_custom_category_id' => ['required', 'exists:user_custom_categories,id',new CheckCustomItemNum(config("consts.user_custom_items.CUSTOM_ITEM_TYPE_LIST"))],
             'display_position' => 'nullable',
             'name' => 'required',
             'list' => 'nullable|array',

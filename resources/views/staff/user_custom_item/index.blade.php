@@ -38,15 +38,17 @@
         <h2>
           <span class="material-icons">text_fields</span>{{ $categoryItem->name }}
           @can('create', App\Models\UserCustomItem::class) {{-- 作成権限 --}}
-            <a href="
-            @if($categoryItem->type === config('consts.user_custom_items.CUSTOM_ITEM_TYPE_TEXT'))
-              {{ route('staff.system.custom.text.create', [$agencyAccount]) }}?default_category={{$categoryItem->user_custom_category_id}}
-            @elseif($categoryItem->type === config('consts.user_custom_items.CUSTOM_ITEM_TYPE_LIST'))
-              {{ route('staff.system.custom.list.create', [$agencyAccount]) }}?default_category={{$categoryItem->user_custom_category_id}}
-            @elseif($categoryItem->type === config('consts.user_custom_items.CUSTOM_ITEM_TYPE_DATE'))
-              {{ route('staff.system.custom.date.create', [$agencyAccount]) }}?default_category={{$categoryItem->user_custom_category_id}}
+            @if($categoryItem->user_custom_items_for_agency->count() < config('consts.const.CUSTOM_ITEM_MAX_NUM')) {{-- 念の為作成数制限 --}}
+              <a href="
+              @if($categoryItem->type === config('consts.user_custom_items.CUSTOM_ITEM_TYPE_TEXT'))
+                {{ route('staff.system.custom.text.create', [$agencyAccount]) }}?default_category={{$categoryItem->user_custom_category_id}}
+              @elseif($categoryItem->type === config('consts.user_custom_items.CUSTOM_ITEM_TYPE_LIST'))
+                {{ route('staff.system.custom.list.create', [$agencyAccount]) }}?default_category={{$categoryItem->user_custom_category_id}}
+              @elseif($categoryItem->type === config('consts.user_custom_items.CUSTOM_ITEM_TYPE_DATE'))
+                {{ route('staff.system.custom.date.create', [$agencyAccount]) }}?default_category={{$categoryItem->user_custom_category_id}}
+              @endif
+              "><span class="material-icons">add_circle</span>項目追加</a>
             @endif
-            "><span class="material-icons">add_circle</span>項目追加</a>
           @endcan
         </h2>
         <table>
