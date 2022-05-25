@@ -155,13 +155,13 @@ class ReserveParticipantHotelPriceService implements ReserveParticipantPriceInte
     }
 
     /**
-     * キャンセル済みの有効仕入(valid=true)行に対し、キャンセル設定フラグ(is_alive_cancel)をオンに。is_alive_cancel=trueの行は行程編集ページの「キャンセルした仕入」一覧にリストアップされる
+     * キャンセル済み仕入行に対し、キャンセル設定フラグ(is_alive_cancel)をオンに。is_alive_cancel=trueの行は行程編集ページの「キャンセルした仕入」一覧にリストアップされる
      */
     public function setIsAliveCancelByParticipantIdForPurchaseCancel(int $participantId) : bool
     {
         return $this->reserveParticipantHotelPriceRepository->updateWhere(
             ['is_alive_cancel' => true], 
-            ['participant_id' => $participantId, 'purchase_type' => config('consts.const.PURCHASE_CANCEL'), 'valid' => true]
+            ['participant_id' => $participantId, 'purchase_type' => config('consts.const.PURCHASE_CANCEL')]
         );
     }
 
@@ -176,8 +176,10 @@ class ReserveParticipantHotelPriceService implements ReserveParticipantPriceInte
     public function setIsAliveCancelByReserveId(int $reserveId, int $reserveItineraryId) : bool
     {
         return $this->reserveParticipantHotelPriceRepository->updateWhere(
-            ['is_alive_cancel' => true], 
-            ['reserve_id' => $reserveId, 'reserve_itinerary_id' => $reserveItineraryId, 'purchase_type' => config('consts.const.PURCHASE_CANCEL'), 'valid' => true]
+            ['is_alive_cancel' => true, 'purchase_type' => config('consts.const.PURCHASE_CANCEL')],
+            ['reserve_id' => $reserveId, 'reserve_itinerary_id' => $reserveItineraryId]
+            // ['is_alive_cancel' => true], 
+            // ['reserve_id' => $reserveId, 'reserve_itinerary_id' => $reserveItineraryId, 'purchase_type' => config('consts.const.PURCHASE_CANCEL'), 'valid' => true]
         );
     }
 

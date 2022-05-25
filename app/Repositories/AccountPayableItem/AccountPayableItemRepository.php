@@ -71,8 +71,10 @@ class AccountPayableItemRepository implements AccountPayableItemRepositoryInterf
      *
      * @param int $reserveItineraryId 行程ID
      */
-    public function refreshAmountByReserveItineraryId(int $reserveItineraryId) : bool
+    public function refreshAmountByReserveItineraryId(?int $reserveItineraryId) : bool
     {
+        if (!$reserveItineraryId) return true; // 有効行程がない場合は処理ナシ
+        
         $itemPayableNumberColumn = implode(
             ",",
             array_map(function ($colName) {

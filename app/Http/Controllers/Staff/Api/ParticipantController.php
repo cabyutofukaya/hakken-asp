@@ -442,7 +442,7 @@ class ParticipantController extends Controller
                 
                 $this->reserveParticipantPriceService->participantNoCancelCharge($reserve, $oldParticipant->id); // 当該参加者をキャンセルチャージナシで更新
 
-                $this->reserveParticipantPriceService->setIsAliveCancelByParticipantIdForPurchaseCancel($oldParticipant->id); // 全有効仕入行に対し、is_alive_cancelフラグをONにする。
+                $this->reserveParticipantPriceService->setIsAliveCancelByParticipantIdForPurchaseCancel($oldParticipant->id); // 全仕入行に対し、is_alive_cancelフラグをONにする。valid=true/falseに関係なくis_alive_cancelをonに
 
                 if ($reserve->enabled_reserve_itinerary->id) {
                     $this->refreshItineraryTotalAmount($reserve->enabled_reserve_itinerary); // 有効行程の合計金額更新。不要かもしれないが、念の為

@@ -59,7 +59,7 @@ class ReserveParticipantPriceService
     }
 
     /**
-     * 当該参加者に紐づくvalid=true行に対し、キャンセル設定フラグ(is_alive_cancel)をオンに。is_alive_cancel=trueの行は行程編集ページの「キャンセルした仕入」一覧にリストアップされる。
+     * 当該参加者行に対し、キャンセル設定フラグ(is_alive_cancel)をオンに。is_alive_cancel=trueの行は行程編集ページの「キャンセルした仕入」一覧にリストアップされる。
      * キャンセル仕入行用。ノーチャージキャンセル用
      */
     public function setIsAliveCancelByParticipantIdForPurchaseCancel(int $participantId) : bool

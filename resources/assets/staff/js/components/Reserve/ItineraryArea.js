@@ -5,7 +5,6 @@ import SmallDangerModal from "../SmallDangerModal";
 import ReactLoading from "react-loading";
 import { calcProfitRate } from "../../libs";
 import classNames from "classnames";
-import moment from "moment";
 
 // 一覧取得API URL
 const getListApiUrl = (
@@ -161,11 +160,23 @@ const ItineraryArea = ({
             let errNumbers = [];
             rows.forEach((row, index) => {
                 if (
-                    row.reserve.participant.updated_at &&
                     new Date(row.reserve.participant.updated_at) >
-                        new Date(row.updated_at)
+                    new Date(row.updated_at)
                 ) {
-                    errNumbers.push(row.control_number);
+                    if (
+                        // 見積状態の場合は有効行程も無効行程もチェック対象
+                        applicationStep ==
+                        applicationStepList.application_step_draft
+                    ) {
+                        errNumbers.push(row.control_number);
+                    } else if (
+                        // 予約状態の場合は有効行程のみチェック対象
+                        applicationStep ==
+                            applicationStepList.application_step_reserve &&
+                        row.enabled
+                    ) {
+                        errNumbers.push(row.control_number);
+                    }
                 }
             });
             if (errNumbers.length > 0) {
