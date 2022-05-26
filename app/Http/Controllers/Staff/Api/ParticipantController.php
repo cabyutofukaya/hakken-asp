@@ -8,6 +8,7 @@ use App\Traits\PaymentTrait;
 use App\Events\ReserveChangeHeadcountEvent;
 use App\Events\ReserveChangeRepresentativeEvent;
 use App\Events\PriceRelatedChangeEvent;
+use App\Events\ReserveChangeSumGrossEvent;
 use App\Exceptions\ExclusiveLockException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Staff\CustomerSearchRequest;
@@ -445,7 +446,11 @@ class ParticipantController extends Controller
                 $this->reserveParticipantPriceService->setIsAliveCancelByParticipantIdForPurchaseCancel($oldParticipant->id); // 全仕入行に対し、is_alive_cancelフラグをONにする。valid=true/falseに関係なくis_alive_cancelをonに
 
                 if ($reserve->enabled_reserve_itinerary->id) {
-                    $this->refreshItineraryTotalAmount($reserve->enabled_reserve_itinerary); // 有効行程の合計金額更新。不要かもしれないが、念の為
+                    $this->refreshItineraryTotalAmount($reserve->enabled_reserve_itinerary); // 有効行程の合計金額更新
+                }
+
+                if ($reserve->enabled_reserve_itinerary->id) {
+                    event(new ReserveChangeSumGrossEvent($reserve->enabled_reserve_itinerary)); // 旅行代金変更イベント
                 }
 
                 // キャンセル時も特にoffにする必要もない気がするので一旦無効化
@@ -522,6 +527,10 @@ class ParticipantController extends Controller
 
                 if ($reserve->enabled_reserve_itinerary->id) {
                     $this->refreshItineraryTotalAmount($reserve->enabled_reserve_itinerary); // 有効行程の合計金額更新
+                }
+
+                if ($reserve->enabled_reserve_itinerary->id) {
+                    event(new ReserveChangeSumGrossEvent($reserve->enabled_reserve_itinerary)); // 旅行代金変更イベント
                 }
 
                 // キャンセル時に代表者をOFFにする必要もない気がするので一旦無効化
