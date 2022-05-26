@@ -36,12 +36,15 @@ class ReserveChangeHeadcountEventListener
          */
         if ($event->reserve->reception_type === config('consts.reserves.RECEPTION_TYPE_ASP')) {
             $this->reserveEstimateService->updateFields($event->reserve->id, [
-                'headcount' => $event->reserve->participant_except_cancellers->count()
-            ]); 
+                // 'headcount' => $event->reserve->participant_except_cancellers->count()
+                'headcount' => $event->reserve->participants->count()
+            ]); // 取消者含んで計算
+
         } elseif ($event->reserve->reception_type === config('consts.reserves.RECEPTION_TYPE_WEB')) {
             $this->webReserveEstimateService->updateFields($event->reserve->id, [
-                'headcount' => $event->reserve->participant_except_cancellers->count()
-            ]); 
+                // 'headcount' => $event->reserve->participant_except_cancellers->count()
+                'headcount' => $event->reserve->participants->count()
+            ]); // 取消者含んで計算
         }
     }
 }

@@ -6,6 +6,7 @@ use App\Events\PriceRelatedChangeEvent;
 use App\Events\ReserveChangeHeadcountEvent;
 use App\Events\ReserveUpdateStatusEvent;
 use App\Events\UpdateBillingAmountEvent;
+use App\Events\ReserveChangeSumGrossEvent;
 use App\Exceptions\ExclusiveLockException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Staff\CheckReserveScheduleChangeRequest;
@@ -231,6 +232,10 @@ class ReserveController extends Controller
                     $this->refreshItineraryTotalAmount($reserve->enabled_reserve_itinerary); // 有効行程の合計金額更新
                 }
 
+                if ($reserve->enabled_reserve_itinerary->id) {
+                    event(new ReserveChangeSumGrossEvent($reserve->enabled_reserve_itinerary)); // 旅行代金変更イベント
+                }
+
                 event(new ReserveChangeHeadcountEvent($reserve)); // 参加者人数変更イベント
 
                 event(new UpdateBillingAmountEvent($this->reserveService->find($reserve->id))); // 請求金額変更イベント
@@ -301,6 +306,10 @@ class ReserveController extends Controller
 
                 if ($reserve->enabled_reserve_itinerary->id) {
                     $this->refreshItineraryTotalAmount($reserve->enabled_reserve_itinerary); // 有効行程の合計金額更新
+                }
+
+                if ($reserve->enabled_reserve_itinerary->id) {
+                    event(new ReserveChangeSumGrossEvent($reserve->enabled_reserve_itinerary)); // 旅行代金変更イベント
                 }
 
                 event(new ReserveChangeHeadcountEvent($reserve)); // 参加者人数変更イベント
