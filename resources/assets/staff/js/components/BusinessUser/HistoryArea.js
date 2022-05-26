@@ -14,13 +14,13 @@ const HistoryArea = ({ isShow, userNumber, consts, permission }) => {
     // ページャー関連変数
     const [page, setPage] = useState(1);
     const [lastPage, setLastPage] = useState(0);
-    const [sort, setSort] = useState("reserve_estimate_number");
+    const [sort, setSort] = useState("latest_number_issue_at");
     const [direction, setDirection] = useState("desc");
     const [total, setTotal] = useState(0);
     const perPage = 10; // 1ページ表示件数
 
     const [sortParam, setSortParam] = useState({
-        reserve_estimate_number: "desc",
+        latest_number_issue_at: "desc",
         departure_date: "desc",
         name: "desc",
         "destination.name": "desc",
@@ -121,7 +121,7 @@ const HistoryArea = ({ isShow, userNumber, consts, permission }) => {
                                     className="sort"
                                     onClick={e =>
                                         handleSortClick(
-                                            "reserve_estimate_number"
+                                            "latest_number_issue_at"
                                         )
                                     }
                                 >
