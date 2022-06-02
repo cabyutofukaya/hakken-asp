@@ -18,6 +18,8 @@ Route::pattern('controlNumber', '[0-9A-Z\-]+');
 Route::pattern('courseNo', 'MD[0-9]{4}');
 Route::pattern('id', '[0-9]+');
 
+dd('staff/web.php');
+
 Route::get('/', 'Staff\DefaultController@index');
 
 // スタッフ（旅行会社）

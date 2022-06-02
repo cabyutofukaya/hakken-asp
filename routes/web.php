@@ -11,6 +11,8 @@
 |
 */
 Route::pattern('staff', '[0-9]+');
+
+
 // Route::pattern('agency', '[0-9]+');
 
 // // 管理者
@@ -24,12 +26,13 @@ Route::pattern('staff', '[0-9]+');
 //     ]);
     
 //     Route::get('/', 'DefaultController@index');
+//     // Route::resource('home', 'HomeController', ['only' => 'index']);
 
 //     // ログイン認証後
 //     Route::middleware('auth:admin')->group(function () {
 
 //         // TOPページ
-//         Route::resource('home', 'HomeController', ['only' => 'index']);
+//         // Route::resource('home', 'HomeController', ['only' => 'index']);
 
 //         Route::resource('prefectures', 'PrefectureController');
 //         Route::resource('inflows', 'InflowController', ['only' => ['index', 'create', 'edit', 'store', 'update', 'destroy']]);

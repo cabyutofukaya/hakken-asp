@@ -1,5 +1,6 @@
 <?php
 
+dd('breeadcrums.php');
 // Home
 Breadcrumbs::for('admin.home.index', function ($trail) {
     $trail->push('Dashboard', route('admin.home.index'));

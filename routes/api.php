@@ -16,7 +16,6 @@ use Illuminate\Http\Request;
 // Route::middleware('auth:api')->get('/user', function (Request $request) {
 //     return $request->user();
 // });
-
 Route::domain(env('API_DOMAIN', 'api.hakken-tour.com'))->group(function () {
   Route::get('web-area/list', 'User\Api\MasterDirectionController@list');
 });
